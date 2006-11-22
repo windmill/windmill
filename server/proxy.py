@@ -16,7 +16,7 @@ from wsgiref.simple_server import make_server
 from wsgiref.util import request_uri
 from urlparse import urlparse, urljoin
 import os.path
-import httplib
+import httplib, copy
 
 CORE_PATH = os.path.abspath('../core')
 PORT = 4444
@@ -40,18 +40,25 @@ def guess_content_type(path_info):
         return 'text/html'
     else:
         return 'text/plain'
-        
 
-def windmill_serv_app(environ, start_response):
+class WindmillServApplication(object):
     """Application to serve out windmill provided"""
-    url = urlparse(environ['PATH_INFO'])
-    serve_file = url[2].replace('/windmill-serv/', '')
-    #Open file
-    f = open('%s/%s' % (CORE_PATH, serve_file), 'r')
-    content_type = guess_content_type(environ['PATH_INFO'])
-    start_response('200 OK', [('Cache-Control','no-cache'), ('Pragma','no-cache'),
-                              ('Content-Type', content_type)])
-    return [f.read()]
+    
+    def __init__(self, path=CORE_PATH):
+        self.path = path
+    
+    def handler(self, environ, start_response):
+        """Application to serve out windmill provided"""
+        url = urlparse(environ['PATH_INFO'])
+        serve_file = url[2].replace('/windmill-serv/', '')
+        #Open file
+        f = open('%s/%s' % (CORE_PATH, serve_file), 'r')
+        content_type = guess_content_type(environ['PATH_INFO'])
+        start_response('200 OK', [('Cache-Control','no-cache'), ('Pragma','no-cache'),
+                                  ('Content-Type', content_type)])
+        return [f.read()]
+            
+    __call__ = handler
     
     
 def windmill_jsonrpc_app(environ, start_response):
@@ -117,8 +124,9 @@ def windmill_proxy(environ, start_response):
     
     # Return the proper wsgi response
     response_body = response.read()
-    headers = response.getheaders()
-    for header in headers:
+    hopped_headers = response.getheaders()
+    headers = copy.copy(hopped_headers)
+    for header in hopped_headers:
         if is_hop_by_hop(header[0]):
             headers.remove(header)
     start_response(response.status.__str__()+' '+response.reason, headers)
@@ -179,3 +187,7 @@ def main(port=PORT):
 
     # Respond to requests until process is killed
     httpd.serve_forever()
+    
+if __name__ == "__main__":
+    
+    main()
