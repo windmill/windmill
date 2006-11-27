@@ -18,7 +18,7 @@ from urlparse import urlparse, urljoin
 import os.path
 import httplib, copy
 
-CORE_PATH = os.path.abspath('../')
+CORE_PATH = os.path.abspath('../core')
 PORT = 4444
 
 # wsgiref.utils.is_hop_by_hop doesn't pick up proxy-connection so we need to write our own
