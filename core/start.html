@@ -19,67 +19,34 @@ Copyright 2006, Open Source Applications Foundation
 	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 	<title>Windmill Testing UI</title>
 
-<style type="text/css">
-.frameid {
-	left:0px;
-	right:0px;
-	width:100%;
-	height:100%;
-	border:0px;
-}
-#ctrldiv{
-	left:0px;
-	right:0px;
-	top:0px;
-	height:4%;
-	border:0;
-	border:0px solid black;
-	overflow: hidden;
-
-}
-#pagediv{
-	left:0px;
-	right:0px;
-	height:96%;
-	width:100%;
-	border:0px;
-	border:0px solid black;
-}
-</style>
-
-
-<script language="JavaScript" type="text/javascript" src="sel/lib/cssQuery/cssQuery-p.js"></script>
-<script language="JavaScript" type="text/javascript" src="sel/scripts/selenium-browserdetect.js"></script>
-<script language="JavaScript" type="text/javascript" src="sel/scripts/selenium-browserbot.js"></script>
-<script language="JavaScript" type="text/javascript" src="sel/scripts/find_matching_child.js"></script>
-<script language="JavaScript" type="text/javascript" src="sel/scripts/htmlutils.js"></script>
-
-<script language="JavaScript" type="text/javascript" src="sel/scripts/selenium-api.js"></script>
-
-<script language="JavaScript" type="text/javascript" src="sel/scripts/selenium-logging.js"></script>
-
-<script language="JavaScript" type="text/javascript" src="sel/xpath/misc.js"></script>
-<script language="JavaScript" type="text/javascript" src="sel/xpath/dom.js"></script>
-<script language="JavaScript" type="text/javascript" src="sel/xpath/xpath.js"></script>
-
-<script language="JavaScript" type="text/javascript" src="sel/scripts/user-extensions.js"></script>
-<script language="JavaScript" type="text/javascript" src="js/windmill-exec.js"></script>
-
+	<link rel="stylesheet" type="text/css" href="./css/windmill.css"/>
+	<script language="JavaScript" type="text/javascript" src="sel/lib/cssQuery/cssQuery-p.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/selenium-browserdetect.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/selenium-browserbot.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/find_matching_child.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/htmlutils.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/selenium-api.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/selenium-logging.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/xpath/misc.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/xpath/dom.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/xpath/xpath.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/user-extensions.js"></script>
+	<script language="JavaScript" type="text/javascript" src="js/windmill-exec.js"></script>
 </head>
 		
 	<body onLoad="Load();">
 	
-	<div id="ctrldiv" style="width:150px;top:0px;left:115px;height:150px;position:absolute;border:0px solid black;">
+	<div id="ctrldiv">
 		<IFRAME class="frameid" id="testFrame" name="testFrame" SRC="http://qacosmo.osafoundation.org:8080/windmill-serv/control.html" scrolling=no></iframe>
 	</div>
 	
-	<div id="optionsdiv" style="width:450px;top:0px;left:270px;position:absolute;height:150px;visibility:hidden;border:0px solid black;">
-		<iframe class="frameid" name="testSuiteFrame" id="testSuiteFrame" scrolling=no src="http://qacosmo.osafoundation.org:8080/windmill-serv/options.html"></iframe>
+	<div id="optionsdiv">
+		<iframe class="frameid" name="testSuiteFrame" id="testSuiteFrame" scrolling=no 		src="http://qacosmo.osafoundation.org:8080/windmill-serv/options.html"></iframe>
 	</div>	
 	
-	<div id="resultsdiv" style="width:165px;top:0px;left:725px;position:absolute;height:150px;border:0px solid black;visibility:hidden;"></div>
+	<div id="resultsdiv"></div>
 	
-	<div id="pagediv" style="position:absolute;top:40px;">
+	<div id="pagediv">
 		<IFRAME class="frameid" id="myiframe" name="myiframe" SRC="http://qacosmo.osafoundation.org:8080"></iframe>
 	</div>
 	

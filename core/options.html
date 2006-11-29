@@ -21,12 +21,7 @@ function runJS(){
 	result = parent.Run(jstext.value);
 	
 	var resultsDiv = parent.document.getElementById("resultsdiv");
-	if (result == "undefined"){
-		resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>Error";
-	}
-	else{
-		resultsDiv.innerHTML = resultsDiv.innerHTML + result;
-	}
+	resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + result;
 	
 	/*example's of code that can be input:
 	windmill.doClick("xpath=//html/body/div/div/div[5]/div/div[3]/a");
@@ -49,10 +44,16 @@ function clearJS(){
 
 </script>
 
-<div style="font-family:Arial;font-size:10;"><b>Javascript Runner</b> </div>
-<div style="font-family:Arial;font-size:10;"><TEXTAREA id="jsrunner" NAME="runner" ROWS="4" COLS="50"></TEXTAREA><br>Example Command: windmill.doClick("link=Create an Account");</div>
+<div style="font-family:Arial;font-size:10;">
+	<b>Javascript Runner</b> 
+</div>
+
+<div style="font-family:Arial;font-size:10;">
+	<TEXTAREA id="jsrunner" NAME="runner" ROWS="4" COLS="50"></TEXTAREA>
+	<br>Example Command: windmill.doClick("link=Create an Account");
+</div>
 
 <div>
-<input type="button" id="runJSButton" value="Run" onClick="javascript:runJS();">
-<input type="button" id="clearButton" value="Clear" onClick="javascript:clearJS();">
+	<input type="button" id="runJSButton" value="Run" onClick="javascript:runJS();">
+	<input type="button" id="clearButton" value="Clear" onClick="javascript:clearJS();">
 </div>

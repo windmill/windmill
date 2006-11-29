@@ -23,8 +23,12 @@ var selenium = null;
 
 function Load(){
     windmillBot = new BrowserBot(this.window);
-    windSel = new Selenium(windmillBot);
+    windmill = new Selenium(windmillBot);
+    
+    //This is because there is still some code expecting this to exist
     selenium = new Selenium(windmillBot);
+    
+    
     //alert("blah");
     //windSel.doClick("xpath=//html/body/div/div/div[5]/div/div[3]/a");
     //windSel.doRefresh();
@@ -33,7 +37,15 @@ function Load(){
 }
 //Run function, allows one to call the function and execute code against the page.
 function Run(code){
-    eval(code);
+    
+    try {
+    var resp = eval(code);
+    } catch (error) {
+    var resp = "Error";
+    }
+    
+    return resp;
+    
     //var windmillBot = new BrowserBot(this.window);
     //var windSel = new Selenium(windmillBot);
     //windSel.doRefresh();
