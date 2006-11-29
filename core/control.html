@@ -21,6 +21,7 @@ function expand(){
 	var buttonContent = document.getElementById("expandButton");
 	var pageDiv = parent.document.getElementById("pagediv");
 	var optionsDiv = parent.document.getElementById("optionsdiv");
+	var resultsDiv = parent.document.getElementById("resultsdiv");
 	
     
 	if (controlDiv.style.height == "20%"){
@@ -30,6 +31,7 @@ function expand(){
 		controlDiv.style.height="4%";
 		buttonContent.value = "Expand Control";
 		optionsDiv.style.visibility = "hidden";
+		resultsDiv.style.visibility = "hidden";
 	}
 	else{
 		controlDiv.style.height="20%";
@@ -37,6 +39,7 @@ function expand(){
 		pageDiv.style.height="80%;";
 		buttonContent.value = "Collapse Control";
 		optionsDiv.style.visibility = "visible";
+		resultsDiv.style.visibility = "visible";
 	}
 	
 }

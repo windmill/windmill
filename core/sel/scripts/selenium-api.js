@@ -205,6 +205,8 @@ Selenium.prototype.doClick = function(locator) {
    */
    var element = this.page().findElement(locator);
    this.page().clickElement(element);
+   
+   return "success";
 };
 
 Selenium.prototype.doDblclick = function(locator) {
