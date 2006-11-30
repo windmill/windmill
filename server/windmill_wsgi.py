@@ -16,7 +16,7 @@ from wsgiref.simple_server import make_server
 from wsgiref.util import request_uri
 from urlparse import urlparse, urljoin
 import os.path
-import httplib, copy
+import httplib, copy, time, socket
 
 CORE_PATH = os.path.abspath('../core')
 PORT = 4444
@@ -42,7 +42,11 @@ class WindmillServApplication(object):
         url = urlparse(environ['PATH_INFO'])
         serve_file = url[2].replace('/windmill-serv/', '')
         #Open file
-        f = open('%s/%s' % (CORE_PATH, serve_file), 'r')
+        try:
+            f = open('%s/%s' % (CORE_PATH, serve_file), 'r')
+        except:
+            start_response('404 Not found', [('Content-Type', 'text/plain')])
+            return ['404 Not Found']
         content_type = self.guess_content_type(environ['PATH_INFO'])
         start_response('200 OK', [('Cache-Control','no-cache'), ('Pragma','no-cache'),
                                   ('Content-Type', content_type)])
@@ -74,11 +78,57 @@ class WindmillJSONRPCApplication(object):
 class WindmillXMLRPCApplication(object):
     """Application to handle requests to the XMLRPC service"""
 
+    def __init__(self):
+        """Create windmill xmlrpc dispatcher"""
+        
+        from windmill_xmlrpc import make_windmill_dispatcher        
+        self.dispatcher = make_windmill_dispatcher()
+
     def handler(self, environ, start_response):
         """XMLRPC service for windmill browser core to communicate with"""
 
-        start_response("200 OK", [('Content-Type','text/plain')])
-        return ['']
+        if environ['REQUEST_METHOD'] == 'POST':
+            return self.handle_POST(environ, start_response)
+        else:
+            start_response("400 Bad request", [('Content-Type','text/plain')])
+            return ['']
+        
+    def handle_POST(self, environ, start_response):
+        """Handles the HTTP POST request.
+
+        Attempts to interpret all HTTP POST requests as XML-RPC calls,
+        which are forwarded to the server's _dispatch method for handling.
+        """
+        
+        try:
+            # Get arguments by reading body of request.
+            # We read this in chunks to avoid straining
+            # socket.read(); around the 10 or 15Mb mark, some platforms
+            # begin to have problems (bug #792570).
+
+            length = int(environ['CONTENT_LENGTH'])
+            data = environ['wsgi.input'].read(length)
+            
+            max_chunk_size = 10*1024*1024
+            size_remaining = length
+
+            # In previous versions of SimpleXMLRPCServer, _dispatch
+            # could be overridden in this class, instead of in
+            # SimpleXMLRPCDispatcher. To maintain backwards compatibility,
+            # check to see if a subclass implements _dispatch and dispatch
+            # using that method if present.
+            response = self.dispatcher._marshaled_dispatch(
+                    data, getattr(self.dispatcher, '_dispatch', None)
+                )
+        except: # This should only happen if the module is buggy
+            # internal error, report as HTTP server error
+            start_response("500 Server error", [('Content-Type', 'text/plain')])
+            return []
+        else:
+            # got a valid XML RPC response
+            start_response("200 OK", [('Content-Type','text/xml')])
+            return [response]
+            
 
     def __call__(self, environ, start_response):
         return self.handler(environ, start_response)    
@@ -165,8 +215,10 @@ class WindmillChooserApplication(object):
     def handler(self, environ, start_response):
         """Windmill app chooser"""
         
-        print environ['PATH_INFO']
+        print 'environ["PATH_INFO"] = ' + environ['PATH_INFO']
+        print environ['PATH_INFO'].find('/windmill-serv/')
         if environ['PATH_INFO'].find('/windmill-serv/') is not -1:
+            print 'windmill_serv_app called'
             return self.windmill_serv_app(environ, start_response)
         elif environ['PATH_INFO'].find('/windmill-jsonrpc/') is not -1:
             return self.windmill_jsonrpc_app(environ, start_response)
@@ -181,16 +233,33 @@ class WindmillChooserApplication(object):
 
 import SocketServer
 
-class ThreadedWSGIServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+class ServerStopError(BaseException):
+    """Could not stop server in timeout"""
+    pass
 
+class ThreadedWSGIServer(SocketServer.ThreadingTCPServer):
     """Threaded WSGI Server. Does not inherit from wsgiref.simple_server.WSGIServer because
     of a static call to BaseHTTPServer.HTTPServer"""
 
     application = None
+    timeout = 10
 
     def server_bind(self):
         """Override server_bind to store the server name."""
-        SocketServer.TCPServer.server_bind(self)
+        
+        # We do a lot of testing where we bring down the server and put it back up again very quickly. 
+        # Unfortunately there are states where you can't make client socket connections anymore but still can't bind to the socket, this left us with no alternative than to try binding to the socket for timeout
+        timer = 0
+        while 1:
+            try:
+                SocketServer.ThreadingTCPServer.server_bind(self)
+                break
+            except:
+                time.sleep(.5)
+                timer = timer + 1
+            
+            if timer > self.timeout * 2:
+                raise 'Failed to bind to socket'
         
         # Set some values that would have been set by HTTPServer
         # These two lines, the removal of a call to BaseHTTPServer.HTTPServer, and the inheritance change
@@ -215,6 +284,28 @@ class ThreadedWSGIServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
     def set_app(self,application):
         self.application = application
+        
+        # From here down I implement conditional serving to make it easier to quit when I'm running this in a thread
+    def serve_until(self):
+        self._run = True
+        self._active = True
+        while self._run is True:
+            self.handle_request()
+        self._active = False
+    
+    def server_stop(self):
+        self._run = False
+        #This is a bit of a hack, but we need to make one last connection to make self.handle_request() return
+        if self._active is False:
+            conn = httplib.HTTPConnection(self.server_name, self.server_port)
+            conn.request('GET', '/endingrequest')
+            conn.getresponse()
+        time.sleep(.5)
+        if self.is_alive():
+            raise ServerStopError
+    
+    def is_alive(self):
+        return self._active 
         
 def make_windmill_server(port=PORT, core_path=CORE_PATH):
     windmill_serv_app = WindmillServApplication(core_path)
