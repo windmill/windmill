@@ -32,20 +32,47 @@ Copyright 2006, Open Source Applications Foundation
 	<script language="JavaScript" type="text/javascript" src="sel/xpath/xpath.js"></script>
 	<script language="JavaScript" type="text/javascript" src="sel/scripts/user-extensions.js"></script>
 	<script language="JavaScript" type="text/javascript" src="js/windmill-exec.js"></script>
+	
+	<script type="text/javascript">
+		var djConfig = {isDebug: true};
+		//djConfig.debugAtAllCosts = true;
+	</script>
+	<script type="text/javascript" src="./dojo/dojo.js"></script>
+	<script language="JavaScript" type="text/javascript">
+		dojo.require("dojo.widget.TabContainer");
+		dojo.require("dojo.widget.ContentPane");
+	</script>
 </head>
 		
 	<body onLoad="Load();">
+
+<div id="wrapper">
+<div id="mainTabContainer" dojoType="TabContainer" sizeMin="30" sizeShare="70">
+
+	<a id="tab1" label="Welcome" dojoType="ContentPane" sizeMin="20" sizeShare="30">
+		<img src="img/logo.jpg">
+		<div id="welcome">Welcome to <b>Windmill</b>, <br><br>Here is the link to the wiki page, the latest version, any other kind of introduction information. </div>	
+	</a>
+	<a id="tab2" label="Console" dojoType="ContentPane" sizeMin="20" sizeShare="30">
+			<iframe class="frameid" name="testSuiteFrame" id="testSuiteFrame" scrolling=no 		src="http://qacosmo.osafoundation.org:8080/windmill-serv/options.html"></iframe>
+			</a>
+	</a>
+	<a id="tab3" label="Performance" dojoType="ContentPane" sizeMin="20" sizeShare="30">
+	Options used in measuring performance, timing etc.
+	</a>
+	<a id="tab4" label="Log" dojoType="ContentPane" sizeMin="20" sizeShare="30">
+		<div id="resultsdiv"></div>
+	</a>
+	<a id="tab5" label="RC" dojoType="ContentPane" sizeMin="20" sizeShare="30">
+		RC options, close browser after rest, turn off loop grabbing requests, logging server, etc
+	</a>
+</div>
+</div>
 	
 	<div id="ctrldiv">
 		<IFRAME class="frameid" id="testFrame" name="testFrame" SRC="http://qacosmo.osafoundation.org:8080/windmill-serv/control.html" scrolling=no></iframe>
 	</div>
-	
-	<div id="optionsdiv">
-		<iframe class="frameid" name="testSuiteFrame" id="testSuiteFrame" scrolling=no 		src="http://qacosmo.osafoundation.org:8080/windmill-serv/options.html"></iframe>
-	</div>	
-	
-	<div id="resultsdiv"></div>
-	
+
 	<div id="pagediv">
 		<IFRAME class="frameid" id="myiframe" name="myiframe" SRC="http://qacosmo.osafoundation.org:8080"></iframe>
 	</div>

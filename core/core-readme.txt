@@ -16,7 +16,7 @@ _____
 
 Usage:
 
-Check out the code: svn co http://svn.osafoundation.org/svn/windmill/trunk windmill
+Check out the code: svn co http://svn.osafoundation.org/windmill/trunk windmill
 Run the server: python ./windmill/server/proxy.py
 Configure browser to use http proxy : localhost port 4444
 The default setup is configured as a demo, so launch the browser to: http://qacosmo.osafoundation.org:8080/windmill-serv/start.html
@@ -26,7 +26,7 @@ From here you can click "Expand Control" to run tests.
 All test commands are available that are in the selenium core but in a new format:
 	example: windmill.doClick("link=Create an Account");
 
-Here windSel is the object created to allow for direct javascript interaction with the core.
+Here windmill is the object created to allow for direct javascript interaction with the core.
 doClick is the selenium action you want to perform, this could also by doType, doKeyDown etc.
 The next piece is the parameters, some tests only require a locater such as the above example is saying click this link.
 These can also be specified with id's or xpath.
@@ -34,7 +34,7 @@ These can also be specified with id's or xpath.
 An example with to parameters:
 	example windmill.doType("id=loginDialogPasswordInput", "test");
 	
-This is telling selenium to type in the textbox with the id: loginDialogPasswordInput, and to type the text "test".
+This is telling selenium to type in the text box with the id: loginDialogPasswordInput, and to type the text "test".
 
 Configuration:
 

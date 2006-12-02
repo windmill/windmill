@@ -39,9 +39,10 @@ function Load(){
 function Run(code){
     
     try {
-    var resp = eval(code);
-    } catch (error) {
-    var resp = "Error";
+        var resp = eval(code);
+    } 
+    catch (error) {
+        var resp = "Error";
     }
     
     return resp;

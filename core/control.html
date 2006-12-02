@@ -13,36 +13,56 @@ Copyright 2006, Open Source Applications Foundation
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
+<script type="text/javascript">
+	var djConfig = {isDebug: true , debugAtAllCosts: false };
+</script>
+
+<script type="text/javascript" src="./dojo/dojo.js"></script>
+<script type="text/javascript">
+	dojo.require("dojo.widget.Button");
+</script>
+
+<style type="text/css">
+.dojoButton {
+		font-size: medium;
+	}
+	
+</style>
 
 
 <script type="text/javascript">
 function expand(){
-    var controlDiv = parent.document.getElementById("ctrldiv");
-	var buttonContent = document.getElementById("expandButton");
+    //var controlDiv = parent.document.getElementById("ctrldiv");
 	var pageDiv = parent.document.getElementById("pagediv");
-	var optionsDiv = parent.document.getElementById("optionsdiv");
+	//var optionsDiv = parent.document.getElementById("optionsdiv");
 	var resultsDiv = parent.document.getElementById("resultsdiv");
+	var wrapperDiv = parent.document.getElementById("wrapper");
 	
     
-	if (controlDiv.style.height == "20%"){
+	if (wrapperDiv.style.visibility == "visible"){
 		
 		pageDiv.style.height="96%";
 		pageDiv.style.top="4%;";
-		controlDiv.style.height="4%";
-		buttonContent.value = "Expand Control";
-		optionsDiv.style.visibility = "hidden";
-		resultsDiv.style.visibility = "hidden";
+	//	controlDiv.style.height="4%";
+		wrapperDiv.style.visibility = "hidden";
+	//	optionsDiv.style.visibility = "hidden";
+	//	resultsDiv.style.visibility = "hidden";
+
 	}
 	else{
-		controlDiv.style.height="20%";
+	//	controlDiv.style.height="20%";
+		wrapperDiv.style.height="20%";
 		pageDiv.style.top="20%;";
 		pageDiv.style.height="80%;";
-		buttonContent.value = "Collapse Control";
-		optionsDiv.style.visibility = "visible";
-		resultsDiv.style.visibility = "visible";
+		wrapperDiv.style.visibility = "visible";
+	//	optionsDiv.style.visibility = "visible";
+	//	resultsDiv.style.visibility = "visible";
 	}
 	
 }
 
 </script>
-<input type="button" id="expandButton" value="Expand Control" onClick="javascript:expand();">
+
+<button dojoType="Button" id="expandButton" onclick='javascript:expand();'>
+Toggle
+</button>
