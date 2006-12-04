@@ -20,6 +20,7 @@ if __name__ == "__main__":
 
     import time
     import windmill_wsgi
+    import xmlrpclib
     from threading import Thread
 
     HTTPD = windmill_wsgi.make_windmill_server()
@@ -27,11 +28,24 @@ if __name__ == "__main__":
     HTTPD_THREAD.start()
     time.sleep(5)
     
-    from test_server import test_browser, test_jsonrpc, test_proxy, test_xmlrpc
+    from browser_tools import *
+    from server_tools import *
 
     # Browser tests
-    browser = test_browser.setup_browser()
+    # browser = setup_browser()
     print 'browser should be coming up'
     
-    import code
-    code.interact(local=locals())
+    # Setup xmlrpc client
+    p = ProxiedTransport('localhost:4444')
+    xmlrpc_obj = xmlrpclib.ServerProxy('http://www.google.com/windmill-xmlrpc/',transport=p)
+    for method in xmlrpc_obj.system.listMethods():
+        print method, xmlrpc_obj.system.methodHelp(method)
+    
+    try:
+        # try to use IPython if possible
+        import IPython
+        shell = IPython.Shell.IPShell(user_ns=locals())
+        shell.mainloop()
+    except:
+        import code
+        code.interact(local=locals())

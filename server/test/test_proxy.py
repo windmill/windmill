@@ -16,13 +16,11 @@ import time
 import httplib, urllib
 from urlparse import urlparse
 
-def get_request(url, proxy_host='localhost', proxy_port=4444):
-    
-    connection = httplib.HTTPConnection(proxy_host + ':' + str(proxy_port))
-    connection.request('GET', url)
-    response = connection.getresponse()
-    response.body = response.read()
-    return response
+import sys
+sys.path.append('../')
+
+from dev_tools.server_tools import get_request
+
         
 def test_proxy_passthrough():
     """Test that we can get google.com through the proxy"""

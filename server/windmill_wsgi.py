@@ -215,10 +215,7 @@ class WindmillChooserApplication(object):
     def handler(self, environ, start_response):
         """Windmill app chooser"""
         
-        print 'environ["PATH_INFO"] = ' + environ['PATH_INFO']
-        print environ['PATH_INFO'].find('/windmill-serv/')
         if environ['PATH_INFO'].find('/windmill-serv/') is not -1:
-            print 'windmill_serv_app called'
             return self.windmill_serv_app(environ, start_response)
         elif environ['PATH_INFO'].find('/windmill-jsonrpc/') is not -1:
             return self.windmill_jsonrpc_app(environ, start_response)
@@ -296,7 +293,7 @@ class ThreadedWSGIServer(SocketServer.ThreadingTCPServer):
     def server_stop(self):
         self._run = False
         #This is a bit of a hack, but we need to make one last connection to make self.handle_request() return
-        if self._active is False:
+        if self._active is not False:
             conn = httplib.HTTPConnection(self.server_name, self.server_port)
             conn.request('GET', '/endingrequest')
             conn.getresponse()

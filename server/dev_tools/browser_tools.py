@@ -12,13 +12,17 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from dev_tools import browser_tools
- 
-browser = browser_tools.setup_browser():
-    
-browser_tools.teardown_browser(browser):
-            
+import time
 
+import windmill_browser
+import windmill_wsgi
+from threading import Thread
+ 
+def setup_browser():
+    profile = windmill_browser.MozillaProfile()
+    browser = windmill_browser.MozillaBrowser(profile)
+    browser.open()
+    return browser
     
-        
-        
+def teardown_browser(browser):
+    browser.kill()

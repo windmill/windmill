@@ -28,14 +28,14 @@ if __name__ == "__main__":
     time.sleep(5)
     print 'setup server'
 
-    import test_browser, test_jsonrpc, test_proxy, test_xmlrpc
+    from dev_tools import server_tools, browser_tools
+    from test_proxy import test_proxy
 
     # Browser tests
-    browser = test_browser.setup_browser()
+    browser = browser_tools.setup_browser()
     print 'browser should be coming up'
     time.sleep(5)
-    test_browser.test_browser()
-    test_browser.teardown_browser(browser)
+    browser_tools.teardown_browser(browser)
 
     # Proxy tests
     test_proxy.test_proxy_passthrough()
