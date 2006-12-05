@@ -7,10 +7,10 @@ body, html
 	text-align: left;
 	font-family:  'Lucida Grande', Geneva, sans-serif; 
     width: 100%;	/* make the body expand to fill the visible window */
-    		height: 100%;
-    		overflow: hidden;	/* erase window level scrollbars */
-    		padding: 0 0 0 0;
-    		margin: 0 0 0 0;
+    height: 100%;
+    overflow: hidden;	/* erase window level scrollbars */
+    padding: 0 0 0 0;
+    margin: 0 0 0 0;
 
 }
 
@@ -46,8 +46,6 @@ body, html
 
 }
 
-
-
 #resultsdiv{
     width:100%;
     top:0px;
@@ -63,6 +61,7 @@ body, html
     left: 120px;
     width: 320px;
     height: 80px;
+    border: none;
 
 }
 
@@ -71,6 +70,7 @@ body, html
     left: 0%;
     width: 85%;
     height: 150px;
+    border: none;
 }
 
 #welcome{

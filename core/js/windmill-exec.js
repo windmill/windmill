@@ -28,6 +28,8 @@ function Load(){
     //This is because there is still some code expecting this to exist
     selenium = new Selenium(windmillBot);
     
+    tabContainer = document.getElementById("tab1").parentNode;
+	tabContainer.style.border = "0px";
     
     //alert("blah");
     //windSel.doClick("xpath=//html/body/div/div/div[5]/div/div[3]/a");

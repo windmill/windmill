@@ -42,6 +42,8 @@ Copyright 2006, Open Source Applications Foundation
 		dojo.require("dojo.widget.TabContainer");
 		dojo.require("dojo.widget.ContentPane");
 	</script>
+
+
 </head>
 		
 	<body onLoad="Load();">
@@ -70,11 +72,11 @@ Copyright 2006, Open Source Applications Foundation
 </div>
 	
 	<div id="ctrldiv">
-		<IFRAME class="frameid" id="testFrame" name="testFrame" SRC="http://qacosmo.osafoundation.org:8080/windmill-serv/control.html" scrolling=no></iframe>
+		<IFRAME class="frameid" id="testFrame" name="testFrame" target="_self" SRC="http://qacosmo.osafoundation.org:8080/windmill-serv/control.html" scrolling=no></iframe>
 	</div>
 
 	<div id="pagediv">
-		<IFRAME class="frameid" id="myiframe" name="myiframe" SRC="http://qacosmo.osafoundation.org:8080"></iframe>
+		<IFRAME class="frameid" id="myiframe" name="myiframe" target="_self" SRC="http://qacosmo.osafoundation.org:8080"></iframe>
 	</div>
 	
 </body>

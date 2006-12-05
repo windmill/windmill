@@ -32,31 +32,21 @@ Copyright 2006, Open Source Applications Foundation
 
 <script type="text/javascript">
 function expand(){
-    //var controlDiv = parent.document.getElementById("ctrldiv");
 	var pageDiv = parent.document.getElementById("pagediv");
-	//var optionsDiv = parent.document.getElementById("optionsdiv");
 	var resultsDiv = parent.document.getElementById("resultsdiv");
 	var wrapperDiv = parent.document.getElementById("wrapper");
 	
     
 	if (wrapperDiv.style.visibility == "visible"){
-		
 		pageDiv.style.height="96%";
 		pageDiv.style.top="4%;";
-	//	controlDiv.style.height="4%";
 		wrapperDiv.style.visibility = "hidden";
-	//	optionsDiv.style.visibility = "hidden";
-	//	resultsDiv.style.visibility = "hidden";
-
 	}
 	else{
-	//	controlDiv.style.height="20%";
 		wrapperDiv.style.height="20%";
 		pageDiv.style.top="20%;";
 		pageDiv.style.height="80%;";
 		wrapperDiv.style.visibility = "visible";
-	//	optionsDiv.style.visibility = "visible";
-	//	resultsDiv.style.visibility = "visible";
 	}
 	
 }
@@ -64,5 +54,5 @@ function expand(){
 </script>
 
 <button dojoType="Button" id="expandButton" onclick='javascript:expand();'>
-Toggle
+Windmill Toggle
 </button>
