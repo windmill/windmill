@@ -17,6 +17,8 @@ from wsgiref.util import request_uri
 from urlparse import urlparse, urljoin
 import os.path
 import httplib, copy, time, socket
+import windmill_jsonrpc
+
 
 CORE_PATH = os.path.abspath('../core')
 PORT = 4444
@@ -62,18 +64,23 @@ class WindmillServApplication(object):
             
     def __call__(self, environ, start_response):
         return self.handler(environ, start_response)            
+        
                 
 class WindmillJSONRPCApplication(object):
     """Application to handle requests to the JSONRPC service"""
     
+    def __init__(self, xmlrpc_dispatcher, jsonrpc_dispatcher=windmill_jsonrpc.get_dispatcher()):
+        """Create windmill jsonrpc dispatcher"""
+        self.jsonrpc_dispatcher = jsonrpc_dispatcher
+    
     def handler(self, environ, start_response):
         """JSONRPC service for windmill browser core to communicate with"""
         
-        start_response("200 OK", [('Content-Type','text/plain')])
-        return ['']
+        return self.jsonrpc_dispatcher.wsgi_dispatcher(environ, start_response)
     
     def __call__(self, environ, start_response):
         return self.handler(environ, start_response)    
+        
 
 class WindmillXMLRPCApplication(object):
     """Application to handle requests to the XMLRPC service"""
@@ -82,7 +89,7 @@ class WindmillXMLRPCApplication(object):
         """Create windmill xmlrpc dispatcher"""
         
         from windmill_xmlrpc import make_windmill_dispatcher        
-        self.dispatcher = make_windmill_dispatcher()
+        self.dispatcher, self.xmlrpc_handler = make_windmill_dispatcher()
 
     def handler(self, environ, start_response):
         """XMLRPC service for windmill browser core to communicate with"""
@@ -98,6 +105,8 @@ class WindmillXMLRPCApplication(object):
 
         Attempts to interpret all HTTP POST requests as XML-RPC calls,
         which are forwarded to the server's _dispatch method for handling.
+        
+        Most code taken from SimpleXMLRPCServer with modifications for wsgi and my custom dispatcher.
         """
         
         try:
@@ -115,7 +124,7 @@ class WindmillXMLRPCApplication(object):
             # In previous versions of SimpleXMLRPCServer, _dispatch
             # could be overridden in this class, instead of in
             # SimpleXMLRPCDispatcher. To maintain backwards compatibility,
-            # check to see if a subclass implements _dispatch and dispatch
+            # check to see if a subclass implements _dispatch and 
             # using that method if present.
             response = self.dispatcher._marshaled_dispatch(
                     data, getattr(self.dispatcher, '_dispatch', None)
@@ -165,7 +174,7 @@ class WindmillProxyApplication(object):
         if environ.get('CONTENT_LENGTH'):
             length = int(environ['CONTENT_LENGTH'])
             body = environ['wsgi.input'].read(length)
-        
+            
         # Build headers
         headers = {}
         for key in environ.keys():
@@ -177,6 +186,10 @@ class WindmillProxyApplication(object):
                 if is_hop_by_hop(key) is False:
                     headers[key] = value
     
+        # Handler headers that aren't HTTP_ in environ
+        if environ.get('CONTENT_TYPE'):
+            headers['content-type'] = environ['CONTENT_TYPE']
+        
         # Add our host if one isn't defined
         if not headers.has_key('host'):
             headers['host'] = environ['SERVER_NAME']   
@@ -203,6 +216,7 @@ class WindmillProxyApplication(object):
     
     def __call__(self, environ, start_response):
         return self.handler(environ, start_response)
+    
     
 class WindmillChooserApplication(object):
     """Application to handle choosing the proper application to handle each request"""
@@ -233,6 +247,7 @@ import SocketServer
 class ServerStopError(BaseException):
     """Could not stop server in timeout"""
     pass
+    
 
 class ThreadedWSGIServer(SocketServer.ThreadingTCPServer):
     """Threaded WSGI Server. Does not inherit from wsgiref.simple_server.WSGIServer because
@@ -244,23 +259,8 @@ class ThreadedWSGIServer(SocketServer.ThreadingTCPServer):
     def server_bind(self):
         """Override server_bind to store the server name."""
         
-        # We do a lot of testing where we bring down the server and put it back up again very quickly. 
-        # Unfortunately there are states where you can't make client socket connections anymore but still can't bind to the socket, this left us with no alternative than to try binding to the socket for timeout
-        timer = 0
-        while 1:
-            try:
-                SocketServer.ThreadingTCPServer.server_bind(self)
-                break
-            except:
-                time.sleep(.5)
-                timer = timer + 1
-            
-            if timer > self.timeout * 2:
-                raise 'Failed to bind to socket'
-        
-        # Set some values that would have been set by HTTPServer
-        # These two lines, the removal of a call to BaseHTTPServer.HTTPServer, and the inheritance change
-        # are the only changes to the original WSGIServer code
+        SocketServer.ThreadingTCPServer.server_bind(self)
+
         self.server_name = self.server_address[0]
         self.server_port = self.server_address[1]
         
@@ -303,12 +303,13 @@ class ThreadedWSGIServer(SocketServer.ThreadingTCPServer):
     
     def is_alive(self):
         return self._active 
+    
         
 def make_windmill_server(port=PORT, core_path=CORE_PATH):
     windmill_serv_app = WindmillServApplication(core_path)
     windmill_proxy_app = WindmillProxyApplication()
-    windmill_jsonrpc_app = WindmillJSONRPCApplication()
     windmill_xmlrpc_app =  WindmillXMLRPCApplication()
+    windmill_jsonrpc_app = WindmillJSONRPCApplication(windmill_xmlrpc_app.xmlrpc_handler)
     windmill_chooser_app = WindmillChooserApplication(windmill_serv_app, windmill_jsonrpc_app,
                                                       windmill_xmlrpc_app, windmill_proxy_app)
     return make_server('', port, windmill_chooser_app, server_class=ThreadedWSGIServer)

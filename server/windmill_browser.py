@@ -59,6 +59,21 @@ class MozillaProfile(object):
         self.user_pref('"network.proxy.http", "%s"' % self.proxy_host)
         self.user_pref('"network.proxy.http_port", %s' % str(self.proxy_port))
         self.user_pref('"network.proxy.type", 1')
+        
+        # Safer mode
+        # self.user_pref('"network.http.max-connections", 1')
+        # self.user_pref('"network.http.max-connections-per-sever", 1')
+        # self.user_pref('"network.http.max-persistent-connections-per-proxy", 1')
+        # self.user_pref('"network.http.max-persistent-connections-per-server", 1')
+        self.user_pref('"network.http.proxy.pipelining", false')
+        
+        # Turn off favicon requests, no need for even more requests
+        self.user_pref('"browser.chrome.favicons", false')
+        
+        # Turn off proxy keep-alive, this is much cleaner for debugging
+        self.user_pref('"network.http.proxy.version", "1.0"')
+        self.user_pref('"network.http.proxy.keep-alive", false')
+        
         self.user_pref('"startup.homepage_override_url", "' + self.test_url + '"')
         self.user_pref('"browser.startup.homepage", "' + self.test_url + '"')
         self.user_pref('"startup.homepage_welcome_url", ""')

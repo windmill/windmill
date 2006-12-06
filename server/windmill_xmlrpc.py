@@ -31,7 +31,7 @@ class JSTask(object):
         self.status = status
         self.time_changes.append(datetime.now())
 
-class RPC(object):
+class XMLRPCHandler(object):
     
     def __init__(self):
         
@@ -58,11 +58,12 @@ def make_dispatcher(rpc):
     
     dispatcher = SimpleXMLRPCDispatcher(allow_none=False, encoding=None)
     dispatcher.register_introspection_functions()
-    dispatcher.register_instance(rpc())
+    dispatcher.register_instance(rpc)
     return dispatcher
     
 def make_windmill_dispatcher():
     
-    return make_dispatcher(RPC)
+    rpc = XMLRPCHandler()
+    return make_dispatcher(rpc), rpc
     
     

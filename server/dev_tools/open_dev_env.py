@@ -32,7 +32,7 @@ if __name__ == "__main__":
     from server_tools import *
 
     # Browser tests
-    # browser = setup_browser()
+    browser = setup_browser()
     print 'browser should be coming up'
     
     # Setup xmlrpc client
