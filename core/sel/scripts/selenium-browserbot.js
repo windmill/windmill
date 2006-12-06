@@ -1250,7 +1250,8 @@ MozillaPageBot.prototype.fireEventOnElement = function(eventType, element, clien
     if (!browserVersion.isChrome && !preventDefault) {
         var targetWindow = this.browserbot._getTargetWindow(element);
         if (element.href) {
-            targetWindow.location.href = element.href;
+            //targetWindow.location.href = element.href;
+            document.getElementById('myiframe').src = element.href;
         } else {
             this.browserbot._handleClickingImagesInsideLinks(targetWindow, element);
         }
