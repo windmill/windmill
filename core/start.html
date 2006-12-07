@@ -60,13 +60,24 @@ Copyright 2006, Open Source Applications Foundation
 			</a>
 	</a>
 	<a id="tab3" label="Performance" dojoType="ContentPane" sizeMin="20" sizeShare="30">
-	Options used in measuring performance, timing etc.
+	<div id="performancediv"></div>
 	</a>
 	<a id="tab4" label="Log" dojoType="ContentPane" sizeMin="20" sizeShare="30">
 		<div id="resultsdiv"></div>
 	</a>
 	<a id="tab5" label="RC" dojoType="ContentPane" sizeMin="20" sizeShare="30">
 		RC options, close browser after rest, turn off loop grabbing requests, logging server, etc
+	</a>
+	<a id="tab6" label="Info" dojoType="ContentPane" sizeMin="20" sizeShare="30">
+		<div id="Info">
+		Running a performance test can be done in the following way:<br><br>
+		windmill.startTime('register');<br>
+		windmill.doClick("link=Create an Account");<br>
+		windmill.endTime('register');<br><br>
+		You can then view this output in the Performance tab.<br><br>
+		
+		Each Command, or set of commands will write their results to the Log tab
+		</div>
 	</a>
 </div>
 </div>

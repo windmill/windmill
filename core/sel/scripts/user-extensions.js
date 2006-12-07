@@ -154,8 +154,8 @@ Selenium.prototype.startTime = function(identifier){
     var time = (curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec);
    
     
-    var resultsDiv = parent.document.getElementById("resultsdiv");
-	resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>Starting "+ identifier + " : " + time;
+    var performanceDiv = parent.document.getElementById("performancediv");
+	performanceDiv.innerHTML = performanceDiv.innerHTML + "<br>Ending " + identifier + " : " + time;
 }
 
 
@@ -171,6 +171,16 @@ Selenium.prototype.endTime = function(identifier){
 
     var time = (curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec);
     
-    var resultsDiv = parent.document.getElementById("resultsdiv");
-	resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>Ending " + identifier + " : " + time;  
+    var performanceDiv = parent.document.getElementById("performancediv");
+	performanceDiv.innerHTML = performanceDiv.innerHTML + "<br>Ending " + identifier + " : " + time;  
 }
+
+//This will need to be workable if we want to use windmill as a core, but for RC since they will be given 1 cmd at a time
+//Using the python backend pause cmd will work just fine.
+/*
+Selenium.prototype.doPause = function(cmd){
+    setTimeout("eval('" + cmd + "');",4000);
+    return true;
+}
+*/
+

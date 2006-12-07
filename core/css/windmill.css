@@ -55,6 +55,15 @@ body, html
     
 }
 
+#performancediv{
+    width:100%;
+    top:0px;
+    position:absolute;
+    height:100%;
+    border:0px solid black;
+    
+}
+
 #tabBlock {
 
     top: 0px;
@@ -81,5 +90,12 @@ body, html
     font-size:10px;
 
 }
+#Info{
+    width:320px;
+    position: absolute;
+    top: 20px;
+    left: 100px;
+    font-size:10px;
 
+}
 
