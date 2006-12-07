@@ -108,6 +108,8 @@ Selenium.prototype.doDragdropDivCosmo = function(origlocator, destlocator) {
     //Mouseup in the final resting place for the event
     triggerMouseEvent(element, 'mouseup',   true, clientFinishX, clientFinishY);
     
+    return true;
+    
 }
 
 //Author: Adam Christian, Open Source Applications Foundation
@@ -135,4 +137,40 @@ Selenium.prototype.doStoreId = function(expression, variableName) {
     else{
         storedVars[variableName] =  this.browserbot.getCurrentWindow().cosmo.view.cal.canvas.eventRegistry.getFirst().id;
     }
+    
+    return true;
+}
+
+//Used for users who want to log the time and MS so they can compute how long a test took to run
+Selenium.prototype.startTime = function(identifier){
+    
+    var d = new Date();
+    var curr_hour = d.getHours();
+    var curr_min = d.getMinutes();
+
+    var curr_sec = d.getSeconds();
+    var curr_msec = d.getMilliseconds();
+
+    var time = (curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec);
+   
+    
+    var resultsDiv = parent.document.getElementById("resultsdiv");
+	resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>Starting "+ identifier + " : " + time;
+}
+
+
+//Storing end time used for performance computation
+Selenium.prototype.endTime = function(identifier){
+    
+    var d = new Date();
+    var curr_hour = d.getHours();
+    var curr_min = d.getMinutes();
+
+    var curr_sec = d.getSeconds();
+    var curr_msec = d.getMilliseconds();
+
+    var time = (curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec);
+    
+    var resultsDiv = parent.document.getElementById("resultsdiv");
+	resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>Ending " + identifier + " : " + time;  
 }

@@ -20,9 +20,15 @@ Copyright 2006, Open Source Applications Foundation
 function runJS(){
 	var jstext = document.getElementById("jsrunner");
 	result = parent.Run(jstext.value);
-	
 	var resultsDiv = parent.document.getElementById("resultsdiv");
-	resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + result;
+	
+	if (result == true){
+		resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + 'Success';
+	}
+	else{
+		resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + 'No Response';
+	}
+	
 	
 	/*example's of code that can be input:
 	windmill.doClick("xpath=//html/body/div/div/div[5]/div/div[3]/a");

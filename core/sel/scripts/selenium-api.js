@@ -206,7 +206,7 @@ Selenium.prototype.doClick = function(locator) {
    var element = this.page().findElement(locator);
    this.page().clickElement(element);
    
-   return "success";
+   return true;
 };
 
 Selenium.prototype.doDblclick = function(locator) {
@@ -220,6 +220,8 @@ Selenium.prototype.doDblclick = function(locator) {
    */
    var element = this.page().findElement(locator);
    this.page().doubleClickElement(element);
+   
+   return true;
 };
 
 Selenium.prototype.doDoubleClick = function(locator) {
@@ -233,6 +235,8 @@ Selenium.prototype.doDoubleClick = function(locator) {
    */
    var element = this.page().findElement(locator);
    this.page().doubleClickElement(element);
+   
+   return true;
 };
 
 Selenium.prototype.doClickAt = function(locator, coordString) {
@@ -252,6 +256,8 @@ Selenium.prototype.doClickAt = function(locator, coordString) {
     var element = this.page().findElement(locator);
     var clientXY = getClientXY(element, coordString)
     this.page().clickElement(element, clientXY[0], clientXY[1]);
+    
+    return true;
 };
 
 Selenium.prototype.doDoubleClickAt = function(locator, coordString) {
@@ -271,6 +277,8 @@ Selenium.prototype.doDoubleClickAt = function(locator, coordString) {
     var element = this.page().findElement(locator);
     var clientXY = getClientXY(element, coordString)
     this.page().doubleClickElement(element, clientXY[0], clientXY[1]);
+    
+    return true;
 };
 
 Selenium.prototype.doFireEvent = function(locator, eventName) {
@@ -283,6 +291,8 @@ Selenium.prototype.doFireEvent = function(locator, eventName) {
    */
     var element = this.page().findElement(locator);
     triggerEvent(element, eventName, false);
+    
+    return true;
 };
 
 Selenium.prototype.doKeyPress = function(locator, keySequence) {
@@ -300,6 +310,8 @@ Selenium.prototype.doKeyPress = function(locator, keySequence) {
     	this.browserbot.altKeyDown, 
         	this.browserbot.shiftKeyDown,
         	this.browserbot.metaKeyDown);
+        	
+        	return true;
 };
 
 Selenium.prototype.doShiftKeyDown = function() {
@@ -308,6 +320,8 @@ Selenium.prototype.doShiftKeyDown = function() {
    *
    */
    this.browserbot.shiftKeyDown = true;
+   
+   return true;
 };
 
 Selenium.prototype.doShiftKeyUp = function() {
@@ -316,6 +330,8 @@ Selenium.prototype.doShiftKeyUp = function() {
    *
    */
    this.browserbot.shiftKeyDown = false;
+   
+   return true;
 };
 
 Selenium.prototype.doMetaKeyDown = function() {
@@ -324,6 +340,8 @@ Selenium.prototype.doMetaKeyDown = function() {
    *
    */
    this.browserbot.metaKeyDown = true;
+   
+   return true;
 };
 
 Selenium.prototype.doMetaKeyUp = function() {
@@ -332,6 +350,8 @@ Selenium.prototype.doMetaKeyUp = function() {
    *
    */
    this.browserbot.metaKeyDown = false;
+   
+   return true;
 };
 
 Selenium.prototype.doAltKeyDown = function() {
@@ -340,6 +360,8 @@ Selenium.prototype.doAltKeyDown = function() {
    *
    */
    this.browserbot.altKeyDown = true;
+   
+   return true;
 };
 
 Selenium.prototype.doAltKeyUp = function() {
@@ -348,6 +370,8 @@ Selenium.prototype.doAltKeyUp = function() {
    *
    */
    this.browserbot.altKeyDown = false;
+   
+   return true;
 };
 
 Selenium.prototype.doControlKeyDown = function() {
@@ -356,6 +380,8 @@ Selenium.prototype.doControlKeyDown = function() {
    *
    */
    this.browserbot.controlKeyDown = true;
+   
+   return true;
 };
 
 Selenium.prototype.doControlKeyUp = function() {
@@ -364,6 +390,8 @@ Selenium.prototype.doControlKeyUp = function() {
    *
    */
    this.browserbot.controlKeyDown = false;
+   
+   return true;
 };
 
 Selenium.prototype.doKeyDown = function(locator, keySequence) {
@@ -381,6 +409,8 @@ Selenium.prototype.doKeyDown = function(locator, keySequence) {
         	this.browserbot.altKeyDown, 
             this.browserbot.shiftKeyDown, 
             this.browserbot.metaKeyDown);
+            
+            return true;
 };
 
 Selenium.prototype.doKeyUp = function(locator, keySequence) {
@@ -398,6 +428,8 @@ Selenium.prototype.doKeyUp = function(locator, keySequence) {
         	this.browserbot.altKeyDown, 
     	this.browserbot.shiftKeyDown,
     	this.browserbot.metaKeyDown);
+    	
+    	return true;
 };
 
 function getClientXY(element, coordString) {
@@ -427,6 +459,8 @@ Selenium.prototype.doMouseOver = function(locator) {
    */
     var element = this.page().findElement(locator);
     triggerMouseEvent(element, 'mouseover', true);
+    
+    return true;
 };
 
 Selenium.prototype.doMouseOut = function(locator) {
@@ -437,6 +471,8 @@ Selenium.prototype.doMouseOut = function(locator) {
    */
     var element = this.page().findElement(locator);
     triggerMouseEvent(element, 'mouseout', true);
+    
+    return true;
 };
 
 Selenium.prototype.doMouseDown = function(locator) {
@@ -448,6 +484,8 @@ Selenium.prototype.doMouseDown = function(locator) {
    */
    var element = this.page().findElement(locator);
    triggerMouseEvent(element, 'mousedown', true);
+   
+   return true;
 };
 
 Selenium.prototype.doMouseDownAt = function(locator, coordString) {
@@ -466,6 +504,8 @@ Selenium.prototype.doMouseDownAt = function(locator, coordString) {
     var clientXY = getClientXY(element, coordString)
 
     triggerMouseEvent(element, 'mousedown', true, clientXY[0], clientXY[1]);
+    
+    return true;
 };
 
 Selenium.prototype.doMouseUp = function(locator) {
@@ -477,6 +517,8 @@ Selenium.prototype.doMouseUp = function(locator) {
    */
    var element = this.page().findElement(locator);
    triggerMouseEvent(element, 'mouseup', true);
+   
+   return true;
 };
 
 Selenium.prototype.doMouseUpAt = function(locator, coordString) {
@@ -495,6 +537,8 @@ Selenium.prototype.doMouseUpAt = function(locator, coordString) {
     var clientXY = getClientXY(element, coordString)
 
     triggerMouseEvent(element, 'mouseup', true, clientXY[0], clientXY[1]);
+    
+    return true;
 };
 
 Selenium.prototype.doMouseMove = function(locator) {
@@ -506,6 +550,8 @@ Selenium.prototype.doMouseMove = function(locator) {
    */
    var element = this.page().findElement(locator);
    triggerMouseEvent(element, 'mousemove', true);
+   
+   return true;
 };
 
 Selenium.prototype.doMouseMoveAt = function(locator, coordString) {
@@ -525,6 +571,8 @@ Selenium.prototype.doMouseMoveAt = function(locator, coordString) {
     var clientXY = getClientXY(element, coordString)
 
     triggerMouseEvent(element, 'mousemove', true, clientXY[0], clientXY[1]);
+    
+    return true;
 };
 
 Selenium.prototype.doType = function(locator, value) {
@@ -546,6 +594,8 @@ Selenium.prototype.doType = function(locator, value) {
     	value = new String(value).toUpperCase();
     }
     this.page().replaceText(element, value);
+    
+    return true;
 };
 
 Selenium.prototype.doSetSpeed = function(value) {
@@ -583,6 +633,8 @@ Selenium.prototype.doCheck = function(locator) {
    * @param locator an <a href="#locators">element locator</a>
    */
     this.findToggleButton(locator).checked = true;
+    
+    return true;
 };
 
 Selenium.prototype.doUncheck = function(locator) {
@@ -592,6 +644,8 @@ Selenium.prototype.doUncheck = function(locator) {
    * @param locator an <a href="#locators">element locator</a>
    */
     this.findToggleButton(locator).checked = false;
+    
+    return true;
 };
 
 Selenium.prototype.doSelect = function(selectLocator, optionLocator) {
@@ -650,6 +704,8 @@ Selenium.prototype.doSelect = function(selectLocator, optionLocator) {
     var locator = this.optionLocatorFactory.fromLocatorString(optionLocator);
     var option = locator.findOption(element);
     this.page().selectOption(element, option);
+    
+    return true;
 };
 
 Selenium.prototype.doAddSelection = function(locator, optionLocator) {
@@ -668,6 +724,8 @@ Selenium.prototype.doAddSelection = function(locator, optionLocator) {
     var locator = this.optionLocatorFactory.fromLocatorString(optionLocator);
     var option = locator.findOption(element);
     this.page().addSelection(element, option);
+    
+    return true;
 };
 
 Selenium.prototype.doRemoveSelection = function(locator, optionLocator) {
@@ -687,6 +745,8 @@ Selenium.prototype.doRemoveSelection = function(locator, optionLocator) {
     var locator = this.optionLocatorFactory.fromLocatorString(optionLocator);
     var option = locator.findOption(element);
     this.page().removeSelection(element, option);
+    
+    return true;
 };
 
 Selenium.prototype.doSubmit = function(formLocator) {
@@ -719,7 +779,7 @@ Selenium.prototype.doSubmit = function(formLocator) {
     } else {
     	form.submit();
     }
-
+return true;
 };
 
 Selenium.prototype.makePageLoadCondition = function(timeout) {
