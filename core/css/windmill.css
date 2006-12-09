@@ -52,6 +52,8 @@ body, html
     position:absolute;
     height:100%;
     border:0px solid black;
+    font-size:10px;
+
     
 }
 
@@ -61,6 +63,7 @@ body, html
     position:absolute;
     height:100%;
     border:0px solid black;
+    font-size:10px;
     
 }
 
@@ -90,6 +93,7 @@ body, html
     font-size:10px;
 
 }
+
 #Info{
     width:320px;
     position: absolute;
@@ -99,3 +103,11 @@ body, html
 
 }
 
+#RC{
+    width:320px;
+    position: absolute;
+    top: 20px;
+    left: 100px;
+    font-size:10px;
+
+}

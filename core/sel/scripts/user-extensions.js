@@ -141,39 +141,6 @@ Selenium.prototype.doStoreId = function(expression, variableName) {
     return true;
 }
 
-//Used for users who want to log the time and MS so they can compute how long a test took to run
-Selenium.prototype.startTime = function(identifier){
-    
-    var d = new Date();
-    var curr_hour = d.getHours();
-    var curr_min = d.getMinutes();
-
-    var curr_sec = d.getSeconds();
-    var curr_msec = d.getMilliseconds();
-
-    var time = (curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec);
-   
-    
-    var performanceDiv = parent.document.getElementById("performancediv");
-	performanceDiv.innerHTML = performanceDiv.innerHTML + "<br>Ending " + identifier + " : " + time;
-}
-
-
-//Storing end time used for performance computation
-Selenium.prototype.endTime = function(identifier){
-    
-    var d = new Date();
-    var curr_hour = d.getHours();
-    var curr_min = d.getMinutes();
-
-    var curr_sec = d.getSeconds();
-    var curr_msec = d.getMilliseconds();
-
-    var time = (curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec);
-    
-    var performanceDiv = parent.document.getElementById("performancediv");
-	performanceDiv.innerHTML = performanceDiv.innerHTML + "<br>Ending " + identifier + " : " + time;  
-}
 
 //This will need to be workable if we want to use windmill as a core, but for RC since they will be given 1 cmd at a time
 //Using the python backend pause cmd will work just fine.

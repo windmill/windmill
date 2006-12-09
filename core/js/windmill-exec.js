@@ -24,6 +24,8 @@ var selenium = null;
 function Load(){
     windmillBot = new BrowserBot(this.window);
     windmill = new Selenium(windmillBot);
+    timing = new TimeObj();
+    
     
     //This is because there is still some code expecting this to exist
     selenium = new Selenium(windmillBot);

@@ -32,6 +32,7 @@ Copyright 2006, Open Source Applications Foundation
 	<script language="JavaScript" type="text/javascript" src="sel/xpath/xpath.js"></script>
 	<script language="JavaScript" type="text/javascript" src="sel/scripts/user-extensions.js"></script>
 	<script language="JavaScript" type="text/javascript" src="js/windmill-exec.js"></script>
+	<script language="JavaScript" type="text/javascript" src="js/timing.js"></script>
 	
 	<script type="text/javascript">
 		var djConfig = {isDebug: true};
@@ -56,38 +57,34 @@ Copyright 2006, Open Source Applications Foundation
 		<div id="welcome">Welcome to <b>Windmill</b>, <br><br>Here is the link to the wiki page, the latest version, any other kind of introduction information. </div>	
 	</a>
 	<a id="tab2" label="Console" dojoType="ContentPane" sizeMin="20" sizeShare="30">
-			<iframe class="frameid" name="testSuiteFrame" id="testSuiteFrame" scrolling=no 		src="http://qacosmo.osafoundation.org:8080/windmill-serv/options.html"></iframe>
+			<iframe class="frameid" name="testSuiteFrame" id="testSuiteFrame" scrolling=no src="/windmill-serv/options.html"></iframe>
 			</a>
 	</a>
 	<a id="tab3" label="Performance" dojoType="ContentPane" sizeMin="20" sizeShare="30">
-	<div id="performancediv"></div>
+		<div id="performancediv"></div>
 	</a>
 	<a id="tab4" label="Log" dojoType="ContentPane" sizeMin="20" sizeShare="30">
 		<div id="resultsdiv"></div>
 	</a>
 	<a id="tab5" label="RC" dojoType="ContentPane" sizeMin="20" sizeShare="30">
+		<div id="RC">
 		RC options, close browser after rest, turn off loop grabbing requests, logging server, etc
+		</div>
 	</a>
 	<a id="tab6" label="Info" dojoType="ContentPane" sizeMin="20" sizeShare="30">
 		<div id="Info">
-		Running a performance test can be done in the following way:<br><br>
-		windmill.startTime('register');<br>
-		windmill.doClick("link=Create an Account");<br>
-		windmill.endTime('register');<br><br>
-		You can then view this output in the Performance tab.<br><br>
-		
-		Each Command, or set of commands will write their results to the Log tab
+		Probably links to different wiki docs
 		</div>
 	</a>
 </div>
 </div>
 	
 	<div id="ctrldiv">
-		<IFRAME class="frameid" id="testFrame" name="testFrame" target="_self" SRC="http://qacosmo.osafoundation.org:8080/windmill-serv/control.html" scrolling=no></iframe>
+		<IFRAME class="frameid" id="testFrame" name="testFrame" target="_self" SRC="/windmill-serv/control.html" scrolling=no></iframe>
 	</div>
 
 	<div id="pagediv">
-		<IFRAME class="frameid" id="myiframe" name="myiframe" target="_self" SRC="http://qacosmo.osafoundation.org:8080"></iframe>
+		<IFRAME class="frameid" id="myiframe" name="myiframe" target="_self" SRC="/"></iframe>
 	</div>
 	
 </body>
