@@ -12,11 +12,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from wsgiref.simple_server import make_server
+from wsgiref.simple_server import make_server, WSGIRequestHandler
 from wsgiref.util import request_uri
 from urlparse import urlparse, urljoin
-import os.path
-import httplib, copy, time, socket
+import httplib, os.path, copy, time, socket, logging
 import windmill_jsonrpc
 
 
@@ -36,17 +35,21 @@ def is_hop_by_hop(header):
 class WindmillServApplication(object):
     """Application to serve out windmill provided"""
     
-    def __init__(self, path=CORE_PATH):
-        self.path = path
+    def __init__(self, logger, core_path=CORE_PATH):
+        self.path = core_path
+        self.logger = logger
     
     def handler(self, environ, start_response):
         """Application to serve out windmill provided"""
         url = urlparse(environ['PATH_INFO'])
         serve_file = url[2].replace('/windmill-serv/', '')
+        
         #Open file
         try:
             f = open('%s/%s' % (CORE_PATH, serve_file), 'r')
+            self.logger.debug('opened file %s' % serve_file)
         except:
+            self.logger.error('failed to open file %s' % serve_file)
             start_response('404 Not found', [('Content-Type', 'text/plain')])
             return ['404 Not Found']
         content_type = self.guess_content_type(environ['PATH_INFO'])
@@ -69,9 +72,10 @@ class WindmillServApplication(object):
 class WindmillJSONRPCApplication(object):
     """Application to handle requests to the JSONRPC service"""
     
-    def __init__(self, xmlrpc_dispatcher, jsonrpc_dispatcher=windmill_jsonrpc.get_dispatcher()):
+    def __init__(self, xmlrpc_dispatcher, logger, jsonrpc_dispatcher=windmill_jsonrpc.get_dispatcher()):
         """Create windmill jsonrpc dispatcher"""
         self.jsonrpc_dispatcher = jsonrpc_dispatcher
+        self.logger = logger
     
     def handler(self, environ, start_response):
         """JSONRPC service for windmill browser core to communicate with"""
@@ -85,11 +89,12 @@ class WindmillJSONRPCApplication(object):
 class WindmillXMLRPCApplication(object):
     """Application to handle requests to the XMLRPC service"""
 
-    def __init__(self):
+    def __init__(self, logger):
         """Create windmill xmlrpc dispatcher"""
         
         from windmill_xmlrpc import make_windmill_dispatcher        
         self.dispatcher, self.xmlrpc_handler = make_windmill_dispatcher()
+        self.logger = logger
 
     def handler(self, environ, start_response):
         """XMLRPC service for windmill browser core to communicate with"""
@@ -145,6 +150,9 @@ class WindmillXMLRPCApplication(object):
 
 class WindmillProxyApplication(object):
     """Application to handle requests that need to be proxied"""
+    
+    def __init__(self, logger):
+        self.logger = logger
     
     def handler(self, environ, start_response):
         """Proxy for requests to the actual http server"""
@@ -220,22 +228,27 @@ class WindmillProxyApplication(object):
     
 class WindmillChooserApplication(object):
     """Application to handle choosing the proper application to handle each request"""
-    def __init__(self, windmill_serv_app, windmill_jsonrpc_app, windmill_xmlrpc_app, windmill_proxy_app):
+    def __init__(self, windmill_serv_app, windmill_jsonrpc_app, windmill_xmlrpc_app, windmill_proxy_app, logger):
         self.windmill_serv_app = windmill_serv_app
         self.windmill_jsonrpc_app = windmill_jsonrpc_app
         self.windmill_xmlrpc_app = windmill_xmlrpc_app
         self.windmill_proxy_app = windmill_proxy_app
+        self.logger = logger
 
     def handler(self, environ, start_response):
         """Windmill app chooser"""
-        
+        self.logger.debug('dispatching request %s' % environ['PATH_INFO'])
         if environ['PATH_INFO'].find('/windmill-serv/') is not -1:
+            self.logger.debug('dispatching request to WindmillServApplication')
             return self.windmill_serv_app(environ, start_response)
         elif environ['PATH_INFO'].find('/windmill-jsonrpc/') is not -1:
+            self.logger.debug('dispatching request to WindmillJSONRPCApplication')
             return self.windmill_jsonrpc_app(environ, start_response)
         elif environ['PATH_INFO'].find('/windmill-xmlrpc/') is not -1:
+            self.logger.debug('dispatching request to WindmillXMLRPCApplication')
             return self.windmill_xmlrpc_app(environ, start_response)
         else:
+            self.logger.debug('dispatching request to WindmillProxyApplication')
             return self.windmill_proxy_app(environ, start_response)
             
     def __call__(self, environ, start_response):
@@ -243,11 +256,6 @@ class WindmillChooserApplication(object):
 
 
 import SocketServer
-
-class ServerStopError(BaseException):
-    """Could not stop server in timeout"""
-    pass
-    
 
 class ThreadedWSGIServer(SocketServer.ThreadingTCPServer):
     """Threaded WSGI Server. Does not inherit from wsgiref.simple_server.WSGIServer because
@@ -299,20 +307,36 @@ class ThreadedWSGIServer(SocketServer.ThreadingTCPServer):
             conn.getresponse()
         time.sleep(.5)
         if self.is_alive():
-            raise ServerStopError
+            raise Exception, 'the server is still alive'
     
     def is_alive(self):
         return self._active 
     
+class WindmillHandler(WSGIRequestHandler):
+    
+    def log_message(self, format, *args):
+        self.logger.info("%s - - [%s] %s\n" %
+                         (self.address_string(),
+                          self.log_date_time_string(),
+                          format%args))
+                          
         
-def make_windmill_server(port=PORT, core_path=CORE_PATH):
-    windmill_serv_app = WindmillServApplication(core_path)
-    windmill_proxy_app = WindmillProxyApplication()
-    windmill_xmlrpc_app =  WindmillXMLRPCApplication()
-    windmill_jsonrpc_app = WindmillJSONRPCApplication(windmill_xmlrpc_app.xmlrpc_handler)
+def make_windmill_server(port=PORT, core_path=CORE_PATH, 
+                         server_loggers={'proxy':logging.getLogger(),
+                                         'serv':logging.getLogger(),
+                                         'xmlrpc':logging.getLogger(),
+                                         'jsonrpc':logging.getLogger(),
+                                         'wsgi':logging.getLogger()}):
+    windmill_serv_app = WindmillServApplication(logger=server_loggers['serv'], core_path=core_path)
+    windmill_proxy_app = WindmillProxyApplication(logger=server_loggers['proxy'])
+    windmill_xmlrpc_app =  WindmillXMLRPCApplication(logger=server_loggers['xmlrpc'])
+    windmill_jsonrpc_app = WindmillJSONRPCApplication(windmill_xmlrpc_app.xmlrpc_handler,
+                                                      logger=server_loggers['jsonrpc'])
     windmill_chooser_app = WindmillChooserApplication(windmill_serv_app, windmill_jsonrpc_app,
-                                                      windmill_xmlrpc_app, windmill_proxy_app)
-    return make_server('', port, windmill_chooser_app, server_class=ThreadedWSGIServer)
+                                                      windmill_xmlrpc_app, windmill_proxy_app,
+                                                      logger=server_loggers['wsgi'])
+    WindmillHandler.logger = server_loggers['wsgi']
+    return make_server('', port, windmill_chooser_app, server_class=ThreadedWSGIServer, handler_class=WindmillHandler)
 
 def main(port=PORT):
     httpd = make_windmill_server()
