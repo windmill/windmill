@@ -14,13 +14,12 @@
 
 import time
 
-import windmill_browser
-import windmill_wsgi
+import windmill.server
 from threading import Thread
  
 def setup_browser():
-    profile = windmill_browser.MozillaProfile()
-    browser = windmill_browser.MozillaBrowser(profile)
+    profile = windmill.server.browser.MozillaProfile()
+    browser = windmill.server.browser.MozillaBrowser(profile)
     browser.open()
     return browser
     

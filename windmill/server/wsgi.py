@@ -16,8 +16,11 @@ from wsgiref.simple_server import make_server, WSGIRequestHandler
 from wsgiref.util import request_uri
 from urlparse import urlparse, urljoin
 import httplib, os.path, copy, time, socket, logging
-import windmill_jsonrpc
 
+import windmill.server.jsonrpc
+import windmill.server.xmlrpc
+import windmill.server.logging
+import windmill.server.xmlrpc
 
 CORE_PATH = os.path.abspath('../core')
 PORT = 4444
@@ -72,7 +75,7 @@ class WindmillServApplication(object):
 class WindmillJSONRPCApplication(object):
     """Application to handle requests to the JSONRPC service"""
     
-    def __init__(self, xmlrpc_dispatcher, logger, jsonrpc_dispatcher=windmill_jsonrpc.get_dispatcher()):
+    def __init__(self, xmlrpc_dispatcher, logger, jsonrpc_dispatcher=windmill.server.jsonrpc.get_dispatcher()):
         """Create windmill jsonrpc dispatcher"""
         self.jsonrpc_dispatcher = jsonrpc_dispatcher
         self.logger = logger
@@ -92,7 +95,7 @@ class WindmillXMLRPCApplication(object):
     def __init__(self, logger):
         """Create windmill xmlrpc dispatcher"""
         
-        from windmill_xmlrpc import make_windmill_dispatcher        
+        from windmill.server.xmlrpc import make_windmill_dispatcher        
         self.dispatcher, self.xmlrpc_handler = make_windmill_dispatcher()
         self.logger = logger
 
@@ -228,10 +231,10 @@ class WindmillProxyApplication(object):
     
 class WindmillChooserApplication(object):
     """Application to handle choosing the proper application to handle each request"""
-    def __init__(self, windmill_serv_app, windmill_jsonrpc_app, windmill_xmlrpc_app, windmill_proxy_app, logger):
+    def __init__(self, windmill_serv_app, windmill.server.jsonrpc_app, windmill.server.xmlrpc_app, windmill_proxy_app, logger):
         self.windmill_serv_app = windmill_serv_app
-        self.windmill_jsonrpc_app = windmill_jsonrpc_app
-        self.windmill_xmlrpc_app = windmill_xmlrpc_app
+        self.windmill.server.jsonrpc_app = windmill.server.jsonrpc_app
+        self.windmill.server.xmlrpc_app = windmill.server.xmlrpc_app
         self.windmill_proxy_app = windmill_proxy_app
         self.logger = logger
 
@@ -243,10 +246,10 @@ class WindmillChooserApplication(object):
             return self.windmill_serv_app(environ, start_response)
         elif environ['PATH_INFO'].find('/windmill-jsonrpc/') is not -1:
             self.logger.debug('dispatching request to WindmillJSONRPCApplication')
-            return self.windmill_jsonrpc_app(environ, start_response)
+            return self.windmill.server.jsonrpc_app(environ, start_response)
         elif environ['PATH_INFO'].find('/windmill-xmlrpc/') is not -1:
             self.logger.debug('dispatching request to WindmillXMLRPCApplication')
-            return self.windmill_xmlrpc_app(environ, start_response)
+            return self.windmill.server.xmlrpc_app(environ, start_response)
         else:
             self.logger.debug('dispatching request to WindmillProxyApplication')
             return self.windmill_proxy_app(environ, start_response)
@@ -329,11 +332,11 @@ def make_windmill_server(port=PORT, core_path=CORE_PATH,
                                          'wsgi':logging.getLogger()}):
     windmill_serv_app = WindmillServApplication(logger=server_loggers['serv'], core_path=core_path)
     windmill_proxy_app = WindmillProxyApplication(logger=server_loggers['proxy'])
-    windmill_xmlrpc_app =  WindmillXMLRPCApplication(logger=server_loggers['xmlrpc'])
-    windmill_jsonrpc_app = WindmillJSONRPCApplication(windmill_xmlrpc_app.xmlrpc_handler,
+    windmill.server.xmlrpc_app =  WindmillXMLRPCApplication(logger=server_loggers['xmlrpc'])
+    windmill.server.jsonrpc_app = WindmillJSONRPCApplication(windmill.server.xmlrpc_app.xmlrpc_handler,
                                                       logger=server_loggers['jsonrpc'])
-    windmill_chooser_app = WindmillChooserApplication(windmill_serv_app, windmill_jsonrpc_app,
-                                                      windmill_xmlrpc_app, windmill_proxy_app,
+    windmill_chooser_app = WindmillChooserApplication(windmill_serv_app, windmill.server.jsonrpc_app,
+                                                      windmill.server.xmlrpc_app, windmill_proxy_app,
                                                       logger=server_loggers['wsgi'])
     WindmillHandler.logger = server_loggers['wsgi']
     return make_server('', port, windmill_chooser_app, server_class=ThreadedWSGIServer, handler_class=WindmillHandler)

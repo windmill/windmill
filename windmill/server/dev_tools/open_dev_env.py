@@ -101,7 +101,7 @@ if __name__ == "__main__":
     sys.path.append('.')
 
     import time
-    import windmill_wsgi
+    import wsgi
     import xmlrpclib
     import logging
     from threading import Thread

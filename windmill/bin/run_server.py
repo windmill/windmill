@@ -12,25 +12,25 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import windmill_logging, windmill_wsgi
+import windmill.server
 import logging, time, xmlrpclib
 from threading import Thread
 
 
 def main(console_level=logging.INFO):
     """Run the server with various values"""
-    windmill_logging.setup_root_logger(console_level=console_level)
+    windmill.server.logging.setup_root_logger(console_level=console_level)
     
     # Set loggers for each necessary area
     
-    loggers = {'server':{'proxy':   windmill_logging.setup_individual_logger('server.proxy'),
-                         'serv':    windmill_logging.setup_individual_logger('server.serv'),
-                         'xmlrpc':  windmill_logging.setup_individual_logger('server.xmlrpc'),
-                         'jsonrpc': windmill_logging.setup_individual_logger('server.jsonrpc'),
-                         'wsgi':    windmill_logging.setup_individual_logger('server.wsgi')},
-               'browser': windmill_logging.setup_individual_logger('browser')}
+    loggers = {'server':{'proxy':   windmill.server.logging.setup_individual_logger('server.proxy'),
+                         'serv':    windmill.server.logging.setup_individual_logger('server.serv'),
+                         'xmlrpc':  windmill.server.logging.setup_individual_logger('server.xmlrpc'),
+                         'jsonrpc': windmill.server.logging.setup_individual_logger('server.jsonrpc'),
+                         'wsgi':    windmill.server.logging.setup_individual_logger('server.wsgi')},
+               'browser': windmill.server.logging.setup_individual_logger('browser')}
                
-    httpd = windmill_wsgi.make_windmill_server(server_loggers=loggers['server'])
+    httpd = windmill.server.wsgi.make_windmill_server(server_loggers=loggers['server'])
     httpd_thread = Thread(target=httpd.serve_until)
     httpd_thread.start()
     time.sleep(5)
