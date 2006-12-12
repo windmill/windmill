@@ -16,11 +16,8 @@
 import os, sys
 import windmill
 
-def configure_global_settings():
-    
-    global WINDMILL_SETTINGS
-    WINDMILL_SETTINGS = {}
-    
+def configure_global_settings(WINDMILL_SETTINGS):
+        
     # Get local config
     
     if os.environ.has_key('WINDMILL_CONFIG_FILE'):
@@ -33,10 +30,7 @@ def configure_global_settings():
         except:
             local_settings = object()
             
-    import windmill
-    dir(windmill)
-    import windmill.conf        
-    windmill.conf.configure_settings(local_settings, WINDMILL_SETTINGS)
+    windmill.settings = windmill.conf.configure_settings(local_settings)
     
         
 def make_xmlrpc_client():
@@ -79,10 +73,14 @@ mapping = {'shell':shell, 'runserver':runserver}
 
 if __name__ == "__main__":
  
- 
     action = sys.argv[1]
     
+    global WINDMILL_SETTINGS
+    WINDMILL_SETTINGS = {}
+    configure_global_settings(WINDMILL_SETTINGS)
+    
     mapping[action]()
+    
     
 
 

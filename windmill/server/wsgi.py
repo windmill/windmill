@@ -15,11 +15,13 @@
 from wsgiref.simple_server import make_server, WSGIRequestHandler
 from wsgiref.util import request_uri
 from urlparse import urlparse, urljoin
-import httplib, os.path, copy, time, socket, logging
+import httplib, os.path, copy, time, socket, logging, sys
 
 import jsonrpc, xmlrpc, logger
+import windmill
 
-CORE_PATH = os.path.abspath('../js')
+CORE_PATH = os.path.dirname(sys.modules['windmill'].__file__)+'/js'
+print CORE_PATH
 PORT = 4444
 
 # wsgiref.utils.is_hop_by_hop doesn't pick up proxy-connection so we need to write our own
