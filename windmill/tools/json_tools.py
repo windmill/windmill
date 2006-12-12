@@ -79,7 +79,3 @@ class ServerProxy(xmlrpclib.ServerProxy):
         # magic method dispatcher
         return xmlrpclib._Method(self.__request, name)
 
-    # note: to call a remote object with an non-standard name, use
-    # result getattr(server, "strange-python-name")(args)
-
-# compatibility

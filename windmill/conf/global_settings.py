@@ -12,4 +12,4 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import bin, browser, server, conf, test, tools
+TEST_URL = 'http://www.google.com'

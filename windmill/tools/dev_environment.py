@@ -69,8 +69,8 @@ try:
                     if self.autoindent:
                         self.readline_startup_hook(None)
                     self.write('\n')
-                    while HTTPD_THREAD.isAlive() is True:
-                        HTTPD.server_stop()
+                    while self.httpd_thread.isAlive() is True:
+                        self.httpd.server_stop()
                     self.exit()
                 except bdb.BdbQuit:
                     warn('The Python debugger has exited with a BdbQuit exception.\n'
@@ -91,20 +91,11 @@ try:
             __builtin__.__dict__['__IPYTHON__active'] -= 1
 
 except:
-    pass
+    
+    import code
 
 
-if __name__ == "__main__":
-
-    import sys
-    sys.path.append('../')
-    sys.path.append('.')
-
-    import time
-    import wsgi
-    import xmlrpclib
-    import logging
-    from threading import Thread
+def make_shell():
 
     import run_server
     
@@ -116,12 +107,6 @@ if __name__ == "__main__":
     # Browser tests
     browser = browser_tools.setup_browser()
     print 'browser should be coming up'
-    
-    # Setup xmlrpc client
-    p = server_tools.ProxiedTransport('localhost:4444')
-    xmlrpc_obj = xmlrpclib.ServerProxy('http://www.google.com/windmill-xmlrpc/',transport=p)
-    for method in xmlrpc_obj.system.listMethods():
-        print method, xmlrpc_obj.system.methodHelp(method)
     
     try:
         # try to use IPython if possible
