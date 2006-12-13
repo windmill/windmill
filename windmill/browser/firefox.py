@@ -60,19 +60,14 @@ class MozillaProfile(object):
         self.user_pref('"network.proxy.http_port", %s' % str(self.proxy_port))
         self.user_pref('"network.proxy.type", 1')
         
-        # Safer mode
-        self.user_pref('"network.http.max-connections", 1')
-        self.user_pref('"network.http.max-connections-per-server", 1')
-        self.user_pref('"network.http.max-persistent-connections-per-proxy", 1')
-        self.user_pref('"network.http.max-persistent-connections-per-server", 1')
-        self.user_pref('"network.http.proxy.pipelining", false')
+        self.user_pref('"network.http.max-connections", 40')
+        self.user_pref('"network.http.max-connections-per-server", 16')
+        self.user_pref('"network.http.max-persistent-connections-per-proxy", 12')
+        self.user_pref('"network.http.max-persistent-connections-per-server", 6')
+        self.user_pref('"network.http.pipelining.maxrequests", 6')
         
         # Turn off favicon requests, no need for even more requests
         self.user_pref('"browser.chrome.favicons", false')
-        
-        # Turn off proxy keep-alive, this is much cleaner for debugging
-        self.user_pref('"network.http.proxy.version", "1.0"')
-        self.user_pref('"network.http.proxy.keep-alive", false')
         
         self.user_pref('"startup.homepage_override_url", "' + self.test_url + '"')
         self.user_pref('"browser.startup.homepage", "' + self.test_url + '"')
@@ -94,27 +89,6 @@ class MozillaProfile(object):
         # Disable "do you want to remember this password?"
         self.user_pref('"signon.rememberSignons", false')
         
-        # self.add_js('user_pref("browser.allowpopups", true);')
-        # self.add_js('user_pref("browser.cache.disk.enable", false);')
-        # self.add_js('user_pref("browser.cache.memory.enable", false);')
-        # self.add_js('user_pref("browser.link.open_external", 2);')
-        # self.add_js('user_pref("browser.link.open_newwindow", 2);')
-        # self.add_js('user_pref("browser.shell.checkDefaultBrowser", false);')
-        # self.add_js('user_pref("dom.disable_open_during_load", false);')
-        # self.add_js('user_pref("extensions.lastAppVersion", "2.0");')
-        # self.add_js('user_pref("network.http.phishy-userpass-length", 255);')
-        # self.add_js('user_pref("network.proxy.type", 2);')
-        # self.add_js('user_pref("security.warn_entering_secure", false);')
-        # self.add_js('user_pref("security.warn_entering_secure.show_once", false);')
-        # self.add_js('user_pref("security.warn_entering_weak", false);')
-        # self.add_js('user_pref("security.warn_entering_weak.show_once", false);')
-        # self.add_js('user_pref("security.warn_leaving_secure", false);')
-        # self.add_js('user_pref("security.warn_leaving_secure.show_once", false);')
-        # self.add_js('user_pref("security.warn_submit_insecure", false);')
-        # self.add_js('user_pref("security.warn_submit_insecure.show_once", false);')
-        # self.add_js('user_pref("security.warn_viewing_mixed", false);')
-        # self.add_js('user_pref("security.warn_viewing_mixed.show_once", false);')
-        # self.add_js('user_pref("signon.rememberSignons", false);')
         
     def user_pref(self, string):
         self.prefs_js_f.write('user_pref(' + string + ');\n')

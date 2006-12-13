@@ -17,9 +17,9 @@ import time
 import windmill.server
 from threading import Thread
  
-def setup_browser():
-    profile = windmill.server.browser.MozillaProfile()
-    browser = windmill.server.browser.MozillaBrowser(profile)
+def setup_firefox():
+    profile = windmill.browser.firefox.MozillaProfile()
+    browser = windmill.browser.firefox.MozillaBrowser(profile)
     browser.open()
     return browser
     

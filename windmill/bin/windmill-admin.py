@@ -58,6 +58,8 @@ def runserver():
 def shell():
     httpd, httpd_thread, loggers = runserver()
 
+    import windmill
+
     if hasattr(windmill.tools.dev_environment, 'IPyShell'):
         import IPython
         shell = IPython.Shell.IPShell(user_ns=locals(), shell_class=windmill.tools.dev_environment.IPyShell)

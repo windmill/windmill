@@ -21,7 +21,6 @@ import jsonrpc, xmlrpc, logger
 import windmill
 
 CORE_PATH = os.path.dirname(sys.modules['windmill'].__file__)+'/js'
-print CORE_PATH
 PORT = 4444
 
 # wsgiref.utils.is_hop_by_hop doesn't pick up proxy-connection so we need to write our own
@@ -44,7 +43,8 @@ class WindmillServApplication(object):
     def handler(self, environ, start_response):
         """Application to serve out windmill provided"""
         url = urlparse(environ['PATH_INFO'])
-        serve_file = url[2].replace('/windmill-serv/', '')
+        split_url = url.path.split('/windmill-serv/', '')
+        serve_file = split_url[2]
         
         #Open file
         try:
@@ -213,16 +213,20 @@ class WindmillProxyApplication(object):
             return ['<H1>Could not connect</H1>']
 
         response = connection.getresponse()
-    
-        # Return the proper wsgi response
-        response_body = response.read()
+
         hopped_headers = response.getheaders()
         headers = copy.copy(hopped_headers)
         for header in hopped_headers:
             if is_hop_by_hop(header[0]):
                 headers.remove(header)
+        
         start_response(response.status.__str__()+' '+response.reason, headers)
+    
+    
+        # Return the proper wsgi response
+        response_body = response.read()
         return [response_body]
+        
     
     def __call__(self, environ, start_response):
         return self.handler(environ, start_response)

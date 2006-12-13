@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+import time
+
 try:
     import IPython
     import __builtin__
@@ -71,6 +73,8 @@ try:
                     self.write('\n')
                     while self.httpd_thread.isAlive() is True:
                         self.httpd.server_stop()
+                        self.httpd.socket.close()
+                        time.sleep(1)
                     self.exit()
                 except bdb.BdbQuit:
                     warn('The Python debugger has exited with a BdbQuit exception.\n'
