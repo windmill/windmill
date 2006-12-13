@@ -30,8 +30,8 @@ function Load(){
     //This is because there is still some code expecting this to exist
     selenium = new Selenium(windmillBot);
     
-    tabContainer = document.getElementById("tab1").parentNode;
-	tabContainer.style.border = "0px";
+    //tabContainer = document.getElementById("tab1").parentNode;
+	//tabContainer.style.border = "0px";
     
     //alert("blah");
     //windSel.doClick("xpath=//html/body/div/div/div[5]/div/div[3]/a");
@@ -54,4 +54,35 @@ function Run(code){
     //var windmillBot = new BrowserBot(this.window);
     //var windSel = new Selenium(windmillBot);
     //windSel.doRefresh();
+}
+
+function runJS(){
+	var jstext = document.getElementById("jsrunner");
+	result = Run(jstext.value);
+	var resultsDiv = document.getElementById("tab4");
+	
+	if (result == true){
+		resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + 'Success';
+	}
+	else{
+		resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + 'No Response';
+	}
+	
+	/*example's of code that can be input:
+	windmill.doClick("xpath=//html/body/div/div/div[5]/div/div[3]/a");
+	
+	//Cosmo login page
+	windmill.doType("id=loginDialogUsernameInput", "test");
+	windmill.doType("id=loginDialogPasswordInput", "test");
+	
+	//Clicking on links, however there is a problem still with the server accessing some dialogs in cosmo
+	windmill.doClick("link=Click here to create one.");
+	windmill.doClick("link=Create an Account");
+	
+	*/
+}
+
+function clearJS(){
+	var jstext = document.getElementById("jsrunner");
+	jstext.value = "";
 }

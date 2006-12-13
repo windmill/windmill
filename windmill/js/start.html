@@ -19,74 +19,86 @@ Copyright 2006, Open Source Applications Foundation
 	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 	<title>Windmill Testing UI</title>
 
-	<link rel="stylesheet" type="text/css" href="js/css/windmill.css"/>
-	<link rel="stylesheet" type="text/css" href="js/tabs/tab.css" />
-	<script language="JavaScript" type="text/javascript" src="js/sel/lib/cssQuery/cssQuery-p.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/sel/scripts/selenium-browserdetect.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/sel/scripts/selenium-browserbot.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/sel/scripts/find_matching_child.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/sel/scripts/htmlutils.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/sel/scripts/selenium-api.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/sel/scripts/selenium-logging.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/sel/xpath/misc.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/sel/xpath/dom.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/sel/xpath/xpath.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/sel/scripts/user-extensions.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/jsobj/windmill-exec.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/jsobj/timing.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/tabs/tab.js"></script>
-	<script language="JavaScript" type="text/javascript" src="js/tabs/browserdetect.js"></script>
-
-
-
+	<link rel="stylesheet" type="text/css" href="css/windmill.css"/>
+	<link rel="stylesheet" type="text/css" href="tabs/tab.css" />
+	<script language="JavaScript" type="text/javascript" src="sel/lib/cssQuery/cssQuery-p.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/selenium-browserdetect.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/selenium-browserbot.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/find_matching_child.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/htmlutils.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/selenium-api.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/selenium-logging.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/xpath/misc.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/xpath/dom.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/xpath/xpath.js"></script>
+	<script language="JavaScript" type="text/javascript" src="sel/scripts/user-extensions.js"></script>
+	<script language="JavaScript" type="text/javascript" src="jsobj/windmill-exec.js"></script>
+	<script language="JavaScript" type="text/javascript" src="jsobj/timing.js"></script>
+	<script language="JavaScript" type="text/javascript" src="tabs/tab.js"></script>
+	<script language="JavaScript" type="text/javascript" src="tabs/browserdetect.js"></script>
+	
+	
+	
 </head>
 		
 	<body onLoad="Load();">
 
-<div id="wrapper">
-<div id="tabgroup" class="TabStyleContainer"></div>
-
-	<a id="tab1" style="display:none;">
+		<div id="tab1" style="display:none;">
 		<img src="img/logo.jpg">
-		<div id="welcome">Welcome to <b>Windmill</b>, 
-			<br><br>Here is the link to the wiki page, the latest version, any other kind of introduction information. </div>	
-	</a>
-	<a id="tab2" style="display:none;">
-			<iframe class="frameid" name="testSuiteFrame" id="testSuiteFrame" scrolling=no src="/windmill-serv/options.html"></iframe>
-			</a>
-	</a>
-	<a id="tab3" style="display:none;">
-		<div id="performancediv"></div>
-	</a>
-	<a id="tab4" style="display:none;">
-		<div id="resultsdiv"></div>
-	</a>
-	<a id="tab5" style="display:none;">
-		<div id="RC">
-		RC options, close browser after rest, turn off loop grabbing requests, logging server, etc
+		Welcome to <b>Windmill</b>, 
+						<br><br>Here is the link to the wiki page, the latest version, any other kind of introduction information.
 		</div>
-	</a>
-	<a id="tab6" style="display:none;">
-		<div id="Info">
-		Probably links to different wiki docs
+		
+		<div id="tab2" style="display:none;">
+				<div style="font-size:10px;font-family:  'Lucida Grande', Geneva, sans-serif; ">
+					<b>Javascript Runner</b> 
+				</div>
+
+				<div style="font-size:10px;font-family:  'Lucida Grande', Geneva, sans-serif; ">
+					<TEXTAREA id="jsrunner" NAME="runner" ROWS="4" COLS="70"></TEXTAREA>
+					<br>Example Command: windmill.doClick("link=Create an Account");
+				</div>
+
+				<div>
+					<input type="button" id="runJSButton" value="Run" onClick="javascript:runJS();">
+					<input type="button" id="clearButton" value="Clear" onClick="javascript:clearJS();">
+				</div>
 		</div>
-	</a>
+		
+		<div id="tab3" style="display:none;">
+			
+		</div>
+		
+		<div id="tab4" style="display:none;">
+			 
+		</div>
+		<div id="tab5" style="display:none;">
+			RC options, close browser after rest, turn off loop grabbing requests, logging server, etc
+		</div>
+		<div id="tab6" style="display:none;">
+			Probably links to different wiki docs
+		</div>
+
+<div id="wrapper">
+
+	<div id="tabgroup" class="TabStyleContainer"></div>
 
 </div>
-<script type="text/javascript">
-tabs = new TabGroup('tabgroup');
-tabs.add('tab1', 'Windmill');
-tabs.add('tab2', 'Runner');
-tabs.add('tab3', 'Perf');
-tabs.add('tab4', 'Log');
-tabs.add('tab5', 'RC');
-tabs.add('tab6', 'Info');
 
-tabs.draw();
-tabs.focus('tab1');
 
-</script>
+	<script type="text/javascript">
+	tabs = new TabGroup('tabgroup');
+	tabs.add('tab1', 'Windmill');
+	tabs.add('tab2', 'Runner');
+	tabs.add('tab3', 'Performance');
+	tabs.add('tab4', 'Results');
+	tabs.add('tab5', 'RC');
+	tabs.add('tab6', 'Info');
 
+	tabs.draw();
+	tabs.focus('tab1');
+
+	</script>
 	
 	<div id="ctrldiv">
 		<IFRAME class="frameid" id="testFrame" name="testFrame" target="_self" SRC="/windmill-serv/control.html" scrolling=no></iframe>

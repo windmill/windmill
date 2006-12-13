@@ -5,6 +5,13 @@
  * More information see the README file
  */
  
+
+ body, p, li {
+
+ font-size: 9pt;
+ }
+
+ 
 div.TabStyleTabList
 {
 margin: 0px;
@@ -20,8 +27,8 @@ border-bottom: 1px solid #fff;
 background-color: #fff;
 margin-left: 5px;
 padding: 3px;
-font-size: 10px;
-font-family: sans-serif;
+font-size: 9px;
+
 }
 
 .TabStyleTabActive a {
@@ -40,13 +47,13 @@ border-bottom: 1px solid #ccc;
 background-color: #eee;
 margin-left: 5px;
 padding: 3px;
-font-size: 10px;
-font-family: sans-serif;
+font-size: 9px;
+
+
 }
 
 div.TabStyleTabNormal a {
 display: normal;
-color: #00f;
 text-decoration: none;
 }
 

@@ -44,7 +44,7 @@ function TimeObj() {
 
         var time = (curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec);
     	time_started = time;
-    	
+	
     }
 
     //Storing end time used for performance computation
@@ -63,7 +63,7 @@ function TimeObj() {
     
     //Write to the log div
     this.write = function(){
-         var performanceDiv = parent.document.getElementById("performancediv");
+         var performanceDiv = parent.document.getElementById("tab3");
          performanceDiv.innerHTML = performanceDiv.innerHTML + "<br>Starting " + identifier + " : " + time_started;
          performanceDiv.innerHTML = performanceDiv.innerHTML + "<br>Ending " + identifier + " : " + time_ended;
          this.calculate_time();

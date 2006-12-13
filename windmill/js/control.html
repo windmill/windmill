@@ -13,22 +13,30 @@ Copyright 2006, Open Source Applications Foundation
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<script type="text/javascript">
-	var djConfig = {isDebug: true , debugAtAllCosts: false };
-</script>
-
-<script type="text/javascript" src="./dojo/dojo.js"></script>
-<script type="text/javascript">
-	dojo.require("dojo.widget.Button");
-</script>
 
 <style type="text/css">
-.dojoButton {
-		font-size: medium;
-	}
-	
-</style>
+.buttonElem {
+  font-size:11px;
+  color:#333399;
+  border:1px solid #6666aa;
+  height:24px;
+  padding:0px;
+  padding-left:8px;
+  padding-right:8px;
+  cursor:pointer;
+}
 
+.buttonElemSm {
+  font-size:9px;
+  color:#333399;
+  border:1px solid #6666aa;
+  height:18px;
+  padding:0px;
+  padding-left:8px;
+  padding-right:8px;
+  cursor:pointer;
+}
+</style>
 
 <script type="text/javascript">
 function expand(){
@@ -38,8 +46,8 @@ function expand(){
 	
     
 	if (wrapperDiv.style.visibility == "visible"){
-		pageDiv.style.height="96%";
-		pageDiv.style.top="4%";
+		pageDiv.style.height="93%";
+		pageDiv.style.top="7%";
 		wrapperDiv.style.visibility = "hidden";
 	}
 	else{
@@ -53,6 +61,4 @@ function expand(){
 
 </script>
 
-<button dojoType="Button" id="expandButton" onclick='javascript:expand();'>
-Windmill Toggle
-</button>
+<input class="buttonElemSm" type="button" id="runJSButton" value="Windmill Toggle" onclick='javascript:expand();'>

@@ -1,6 +1,6 @@
 body, html
 {	
-	color: #000000;
+
 	font-size: 13px;
 	margin: 0px;
 	padding: 0px;
@@ -13,6 +13,11 @@ body, html
     margin: 0 0 0 0;
 
 }
+a:link { text-decoration : none; color : #6699cc; border: 0px;} 
+a:active { text-decoration : underline; color : #6699cc; border: 0px;} 
+a:visited { text-decoration : none; color : #6699cc; border: 0px;} 
+a:hover { text-decoration : underline; color : #336699; border: 0px; cursor: pointer; }
+
 
 .frameid {
 	left:0px;

@@ -9,13 +9,28 @@
  * Version 1.1 - Functions for Post-Drawing Manipulation
  */
 
-function TabFocus(event)
+/*function TabFocus(event)
 {
 	if (!event) event = window.event;
 	evtTarget = (browser.isIE5up) ? event.srcElement : event.target;
 	evtTarget.tab.group.focus(evtTarget.tab.id);
 
 	return false;
+}*/
+
+function TabFocus(e) 
+{ 
+    var targ; 
+    
+    if (!e) var e = window.event; 
+    if (e.target) targ = e.target; 
+    else if (e.srcElement) targ = e.srcElement; 
+    
+    if (targ.nodeType == 3) // defeat Safari bug 
+        targ = targ.parentNode; 
+        targ.tab.group.focus(targ.tab.id); 
+        
+        return false; 
 }
 
 function Tab(group, id, title)
