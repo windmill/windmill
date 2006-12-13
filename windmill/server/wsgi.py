@@ -43,8 +43,8 @@ class WindmillServApplication(object):
     def handler(self, environ, start_response):
         """Application to serve out windmill provided"""
         url = urlparse(environ['PATH_INFO'])
-        split_url = url.path.split('/windmill-serv/', '')
-        serve_file = split_url[2]
+        split_url = url.path.split('/windmill-serv/')
+        serve_file = split_url[1]
         
         #Open file
         try:
