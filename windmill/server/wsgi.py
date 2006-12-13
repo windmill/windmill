@@ -321,7 +321,7 @@ class ThreadedWSGIServer(SocketServer.ThreadingTCPServer):
 class WindmillHandler(WSGIRequestHandler):
     
     def log_message(self, format, *args):
-        self.logger.info("%s - - [%s] %s\n" %
+        self.logger.info("%s - - [%s] %s" %
                          (self.address_string(),
                           self.log_date_time_string(),
                           format%args))

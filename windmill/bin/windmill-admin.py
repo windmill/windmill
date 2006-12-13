@@ -45,18 +45,26 @@ def start_browser():
     
     
 def runserver():
-    import windmill.bin.run_server
-    HTTPD, HTTPD_THREAD, loggers = windmill.bin.run_server.main()
+    import windmill
     
     if len(sys.argv) > 2:
         if sys.argv[2] == 'daemon':
-            HTTPD_THREAD.setDaemon(True)
-    
-    return HTTPD, HTTPD_THREAD, loggers
-    
+            httpd, httpd_thread, loggers = windmill.bin.run_server.run_threaded()
+            httpd_thread.setDaemon(True)
+    else:
+        httpd, loggers = windmill.bin.run_server.setup_server()
+        try:
+            httpd.serve_until()
+        except KeyboardInterrupt:
+            while httpd.is_alive() is True:
+                httpd.server_stop()
+                httpd.socket.close()
+                time.sleep(1)
+            sys.exit()
+            
     
 def shell():
-    httpd, httpd_thread, loggers = runserver()
+    httpd, httpd_thread, loggers = windmill.bin.run_server.run_threaded()
 
     import windmill
 
