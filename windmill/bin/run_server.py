@@ -18,7 +18,7 @@ from threading import Thread
 
 def setup_server(console_level=logging.INFO):
     """Setup the server and return httpd and loggers"""
-    windmill.server.logger.setup_root_logger(console_level=console_level)
+    console_handler = windmill.server.logger.setup_root_logger(console_level=console_level)
     
     # Set loggers for each necessary area
     
@@ -30,17 +30,17 @@ def setup_server(console_level=logging.INFO):
                'browser': windmill.server.logger.setup_individual_logger('browser')}
                
     httpd = windmill.server.wsgi.make_windmill_server(server_loggers=loggers['server'])
-    return httpd, loggers
+    return httpd, loggers, console_handler
 
 def run_threaded(console_level=logging.INFO):
     """Run the server with various values"""
 
-    httpd, loggers = setup_server(console_level)
+    httpd, loggers, console_handler = setup_server(console_level)
 
     httpd_thread = Thread(target=httpd.serve_until)
     httpd_thread.start()
     time.sleep(1)
-    return httpd, httpd_thread, loggers
+    return httpd, httpd_thread, loggers, console_handler
     
 
     

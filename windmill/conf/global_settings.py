@@ -12,4 +12,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+import logging
+
 TEST_URL = 'http://www.google.com'
+
+SERVER_HTTP_PORT = 4444
+SERVER_HTTPS_PORT = 4433
+
+CONSOLE_LOG_LEVEL = logging.INFO
+FILE_LOG_LEVEL = logging.INFO

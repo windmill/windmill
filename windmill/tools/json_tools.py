@@ -1,71 +1,103 @@
 import time
-import httplib, urllib
+import httplib, urllib, copy
 from urlparse import urlparse
 import xmlrpclib
+import simplejson
+import logging
 
-class ServerProxy(xmlrpclib.ServerProxy):
-    """uri [,options] -> a logical connection to an XML-RPC server
+__version__ = str(0.1)
 
-    uri is the connection point on the server, given as
-    scheme://host/target.
+logger = logging.getLogger('tools.jsonrpc_client')
 
-    The standard implementation always supports the "http" scheme.  If
-    SSL socket support is available (Python 2.0), it also supports
-    "https".
+class _Method(object):
+    
+    def __init__(self, call, name):
+        self.call = call
+        self.name = name
+    
+    def __call__(self, *args, **kwargs):
+        request = {}
+        request['version'] = '1.1'
+        request['method'] = self.name
+        if len(kwargs) is not 0:
+            params = copy.copy(kwargs)
+            index = 0
+            for arg in args:
+                params[str(index)] = arg
+                index = index + 1
+        elif len(args) is not 0:
+            params = copy.copy(args)
+        else:
+            params = None
+        request['params'] = params
+        logger.debug('Created python request object %s' % str(request))
+        return self.call(simplejson.dumps(request))
+        
+    def __getattr__(self, name):
+        return _Method(self.call, "%s.%s" % (self.name, name))
+        
+class JSONRPCTransport:
 
-    If the target part and the slash preceding it are both omitted,
-    "/RPC2" is assumed.
+    def __init__(self, uri, proxy_uri=None):
+        
+        if proxy_uri is not None:
+            self.connection_url = urlparse(proxy_uri)
+            self.request_path = uri
+        else:
+            self.connection_url = urlparse(uri)
+            self.request_path = self.connection_url.path
+            
+    headers = {'User-Agent':'jsonrpclib',
+               'Content-Type':'application/json',
+               'Accept':'application/json'}
+            
+    def request(self, request_body):
+        
+        if self.connection_url.scheme == 'http':
+            if self.connection_url == '':
+                port = 80
+            else:
+                port = self.connection_url.port 
+            connection = httplib.HTTPConnection(self.connection_url.hostname+':'+str(port))
+        elif self.connection_url.scheme == 'https':
+            if self.connection_url == '':
+                port = 443
+            else:
+                port = self.connection_url.port
+            connection = httplib.HTTPSConnection(self.connection_url.hostname+':'+str(port))
+        else:
+            raise Exception, 'unsupported transport'
+            
+        connection.request('POST', self.request_path, body=request_body, headers=self.headers)
+        self.response = connection.getresponse()
+        if self.response.status == 200:
+            return self.response.read()
+        else:
+            return self.response.status
+        
 
-    The following options can be given as keyword arguments:
-
-        transport: a transport factory
-        encoding: the request encoding (default is UTF-8)
-
-    All 8-bit strings passed to the server proxy are assumed to use
-    the given encoding.
+class ServerProxy(object):
+    """Blah
     """
 
-    def __init__(self, uri, transport=None, encoding=None, verbose=0,
-                 allow_none=0, use_datetime=0):
-        # establish a "logical" server connection
-
-        # get the url
-        import urllib
-        type, uri = urllib.splittype(uri)
-        if type not in ("http", "https"):
-            raise IOError, "unsupported JSON-RPC protocol"
-        self.__host, self.__handler = urllib.splithost(uri)
-        if not self.__handler:
-            self.__handler = "/RPC2"
-
+    def __init__(self, uri=None, transport=None):
+        """Initialization"""
+        if uri is None and transport is None:
+            raise Exception, 'either uri or transport needs to be specified'
+        
         if transport is None:
-            if type == "https":
-                transport = xmlrpclib.SafeTransport(use_datetime=use_datetime)
-            else:
-                transport = xmlrpclib.Transport(use_datetime=use_datetime)
+            transport = JSONRPCTransport(uri)
         self.__transport = transport
 
-        self.__encoding = encoding
-        self.__verbose = verbose
-        self.__allow_none = allow_none
-
-    def __request(self, methodname, params):
+    def __request(self, request):
         # call a method on the remote server
-
-        request = simplejson.dumps(params, methodname, encoding=self.__encoding,
-                        allow_none=self.__allow_none)
-
-        response = self.__transport.request(
-            self.__host,
-            self.__handler,
-            request,
-            verbose=self.__verbose
-            )
-
-        if len(response) == 1:
-            response = response[0]
-
-        return response
+        
+        response = self.__transport.request(request)
+        logger.debug('got response from __transport :: %s' % response)
+        if type(response) is not int:
+            return simplejson.loads(response)
+        else:
+            logger.error('Recieved status code %s' % response)
 
     def __repr__(self):
         return (
@@ -77,5 +109,5 @@ class ServerProxy(xmlrpclib.ServerProxy):
 
     def __getattr__(self, name):
         # magic method dispatcher
-        return xmlrpclib._Method(self.__request, name)
+        return _Method(self.__request, name)
 

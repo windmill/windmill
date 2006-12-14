@@ -13,3 +13,21 @@
 #   limitations under the License.
 
 import dev_environment, json_tools, server_tools
+
+def make_xmlrpc_client():
+    import windmill
+    import xmlrpclib
+    proxy = windmill.tools.server_tools.ProxiedTransport('localhost:4444')
+    xmlrpc_client = xmlrpclib.ServerProxy(windmill.settings['TEST_URL']+'/windmill-xmlrpc/',transport=proxy)
+    return xmlrpc_client        
+    
+def make_jsonrpc_client():
+    import windmill
+    proxy = windmill.tools.json_tools.JSONRPCTransport(uri=windmill.settings['TEST_URL']+'/windmill-jsonrpc/', proxy_uri='http://localhost:4444')
+    jsonrpc_client = windmill.tools.json_tools.ServerProxy(transport=proxy)
+    return jsonrpc_client
+    
+def start_browser():
+    import windmill
+    browser = windmill.browser.browser_tools.setup_browser()
+    return browser

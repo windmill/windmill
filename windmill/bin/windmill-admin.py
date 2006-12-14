@@ -16,8 +16,7 @@
 import os, sys
 import windmill
 
-def configure_global_settings(WINDMILL_SETTINGS):
-        
+def configure_global_settings():
     # Get local config
     
     if os.environ.has_key('WINDMILL_CONFIG_FILE'):
@@ -32,27 +31,15 @@ def configure_global_settings(WINDMILL_SETTINGS):
             
     windmill.settings = windmill.conf.configure_settings(local_settings)
     
-        
-def make_xmlrpc_client():
-    proxy = windmill.tools.server_tools.ProxiedTransport('localhost:4444')
-    xmlrpc_client = xmlrpclib.ServerProxy(WINDMILL_SETTINGS['TEST_URL']+'/windmill-xmlrpc/',transport=proxy)
-    return xmlrpc_client        
     
-    
-def start_browser():
-    browser = windmill.browser.browser_tools.setup_browser()
-    return browser
-    
-    
-def runserver():
+def runserver(cmd_options):
     import windmill
     
-    if len(sys.argv) > 2:
-        if sys.argv[2] == 'daemon':
-            httpd, httpd_thread, loggers = windmill.bin.run_server.run_threaded()
-            httpd_thread.setDaemon(True)
+    if cmd_options.has_key('daemon'):
+        httpd, httpd_thread, loggers, console_log_handler = windmill.bin.run_server.run_threaded()
+        httpd_thread.setDaemon(True)
     else:
-        httpd, loggers = windmill.bin.run_server.setup_server()
+        httpd, loggers = windmill.bin.run_server.setup_server(windmill.settings['CONSOLE_LOG_LEVEL'])
         try:
             httpd.serve_until()
         except KeyboardInterrupt:
@@ -61,35 +48,81 @@ def runserver():
                 httpd.socket.close()
                 time.sleep(1)
             sys.exit()
-            
     
-def shell():
-    httpd, httpd_thread, loggers = windmill.bin.run_server.run_threaded()
-
+def shell(cmd_options):
     import windmill
+    if cmd_options['debug'] is True:
+        import pdb
+    
+    httpd, httpd_thread, loggers, console_log_handler = windmill.bin.run_server.run_threaded(windmill.settings['CONSOLE_LOG_LEVEL'])
+    
+    # setup all usefull objects
+    jsonrpc_client = windmill.tools.make_jsonrpc_client()
+    xmlrpc_client = windmill.tools.make_xmlrpc_client()
 
-    if hasattr(windmill.tools.dev_environment, 'IPyShell'):
+    if hasattr(windmill.tools.dev_environment, 'IPyShell') is True and \
+       cmd_options['usecode'] is False:
         import IPython
         shell = IPython.Shell.IPShell(user_ns=locals(), shell_class=windmill.tools.dev_environment.IPyShell)
         shell.IP.httpd = httpd
         shell.IP.httpd_thread = httpd_thread
         shell.mainloop()
     else:
-        import code
-        code.interact(local=locals())    
+        try:
+            import code
+            code.interact(local=locals())    
+        except KeyboardInterrupt:
+            while httpd_thread.isAlive() is True:
+                httpd.server_stop()
+                httpd.socket.close()
+                time.sleep(1)
+            sys.exit()
     
     
-mapping = {'shell':shell, 'runserver':runserver}
+action_mapping = {'shell':shell, 'runserver':runserver}
+
+def loglevel(value):
+    import logging
+    level = getattr(logging, value)
+    windmill.settings['CONSOLE_LOG_LEVEL'] = getattr(logging, value)
+    return level
+    
+def debug(value):
+    import logging
+    windmill.settings['CONSOLE_LOG_LEVEL'] = getattr(logging, 'DEBUG')
+
+cmd_parse_mapping = {'loglevel':loglevel, 'debug':debug}
+
+def parse_commands():
+    
+    action = sys.argv[1]
+    sys.argv.pop(0)
+    sys.argv.pop(0)
+    # Set defaults
+    cmd_options = {'debug':False, 'usecode':False}
+    for option in sys.argv:
+        if option.startswith('http'):
+            windmill.settings.TEST_URL = option
+            key = False
+        elif option.find('=') is not -1:
+            key, value = option.split('=')
+            cmd_options[key] = value
+        else:
+            key = option
+            cmd_options[key] = True
+            
+        if cmd_parse_mapping.has_key(key):
+            cmd_options[key] = cmd_parse_mapping[key](cmd_options[key])
+    
+    return action, cmd_options
+    
 
 if __name__ == "__main__":
- 
-    action = sys.argv[1]
+    import windmill
+    configure_global_settings()
+    action, cmd_options = parse_commands()
     
-    global WINDMILL_SETTINGS
-    WINDMILL_SETTINGS = {}
-    configure_global_settings(WINDMILL_SETTINGS)
-    
-    mapping[action]()
+    action_mapping[action](cmd_options)
     
     
 

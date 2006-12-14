@@ -32,9 +32,11 @@ def setup_root_logger(console_level=logging.NOTSET, file_level=logging.NOTSET,
     console.setFormatter(formatter)
     
     logging.getLogger('').addHandler(console)
+    return console
     
 def setup_individual_logger(name, level=logging.NOTSET):
     
     logger = logging.getLogger(name)
+    logger.setLevel(0)
     return logger
     
