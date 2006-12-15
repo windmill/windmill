@@ -14,6 +14,7 @@
 
 
 import os, sys
+from threading import Thread
 import windmill
 
 def configure_global_settings():
@@ -36,17 +37,16 @@ def runserver(cmd_options):
     import windmill
     
     if cmd_options.has_key('daemon'):
-        httpd, httpd_thread, loggers, console_log_handler = windmill.bin.run_server.run_threaded()
+        httpd, httpd_thread, console_log_handler = windmill.bin.run_server.run_threaded()
         httpd_thread.setDaemon(True)
     else:
-        httpd, loggers = windmill.bin.run_server.setup_server(windmill.settings['CONSOLE_LOG_LEVEL'])
+        httpd, loggers = windmill.bin.run_server.setup_servers(windmill.settings['CONSOLE_LOG_LEVEL'])
         try:
-            httpd.serve_until()
+            httpd_thread = Thread(target=httpd.start)
+            httpd_thread.start()
         except KeyboardInterrupt:
-            while httpd.is_alive() is True:
-                httpd.server_stop()
-                httpd.socket.close()
-                time.sleep(1)
+            while httpd.is_alive():
+                httpd.stop()
             sys.exit()
     
 def shell(cmd_options):
@@ -54,7 +54,7 @@ def shell(cmd_options):
     if cmd_options['debug'] is True:
         import pdb
     
-    httpd, httpd_thread, loggers, console_log_handler = windmill.bin.run_server.run_threaded(windmill.settings['CONSOLE_LOG_LEVEL'])
+    httpd, httpd_thread, console_log_handler = windmill.bin.run_server.run_threaded(windmill.settings['CONSOLE_LOG_LEVEL'])
     
     # setup all usefull objects
     jsonrpc_client = windmill.tools.make_jsonrpc_client()
@@ -66,6 +66,7 @@ def shell(cmd_options):
         shell = IPython.Shell.IPShell(user_ns=locals(), shell_class=windmill.tools.dev_environment.IPyShell)
         shell.IP.httpd = httpd
         shell.IP.httpd_thread = httpd_thread
+
         shell.mainloop()
     else:
         try:
@@ -73,11 +74,9 @@ def shell(cmd_options):
             code.interact(local=locals())    
         except KeyboardInterrupt:
             while httpd_thread.isAlive() is True:
-                httpd.server_stop()
-                httpd.socket.close()
-                time.sleep(1)
+                httpd.stop()
+                time.sleep(.5)
             sys.exit()
-    
     
 action_mapping = {'shell':shell, 'runserver':runserver}
 

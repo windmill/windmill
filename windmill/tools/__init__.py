@@ -29,5 +29,5 @@ def make_jsonrpc_client():
     
 def start_browser():
     import windmill
-    browser = windmill.browser.browser_tools.setup_browser()
+    browser = windmill.browser.browser_tools.setup_firefox()
     return browser

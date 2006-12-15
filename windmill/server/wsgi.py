@@ -15,12 +15,15 @@
 from wsgiref.simple_server import make_server, WSGIRequestHandler
 from wsgiref.util import request_uri
 from urlparse import urlparse, urljoin
-import httplib, os.path, copy, time, socket, logging, sys
+import httplib, os.path, copy, time, socket, logging, sys, traceback
+from StringIO import StringIO
 
 import jsonrpc, xmlrpc, logger
 import windmill
 
-CORE_PATH = os.path.dirname(sys.modules['windmill'].__file__)+'/js'
+import logging
+logger = logging.getLogger('server.wsgi')
+
 PORT = 4444
 
 # wsgiref.utils.is_hop_by_hop doesn't pick up proxy-connection so we need to write our own
@@ -31,27 +34,53 @@ _hoppish = {
     
 def is_hop_by_hop(header):
     return _hoppish.has_key(header.lower())
+    
+def reconstruct_url(environ):
+    
+    # From WSGI spec, PEP 333
+    
+    from urllib import quote
+    url = environ['wsgi.url_scheme']+'://'
+
+    if environ.get('HTTP_HOST'):
+        url += environ['HTTP_HOST']
+    else:
+        url += environ['SERVER_NAME']
+
+        if environ['wsgi.url_scheme'] == 'https':
+            if environ['SERVER_PORT'] != '443':
+               url += ':' + environ['SERVER_PORT']
+        else:
+            if environ['SERVER_PORT'] != '80':
+               url += ':' + environ['SERVER_PORT']
+
+    url += quote(environ.get('SCRIPT_NAME',''))
+    url += quote(environ.get('PATH_INFO',''))
+    if environ.get('QUERY_STRING'):
+        url += '?' + environ['QUERY_STRING']
+        
+    return url
         
 
 class WindmillServApplication(object):
     """Application to serve out windmill provided"""
     
-    def __init__(self, logger, core_path=CORE_PATH):
-        self.path = core_path
+    def __init__(self, logger, js_path):
+        self.path = js_path
         self.logger = logger
     
     def handler(self, environ, start_response):
         """Application to serve out windmill provided"""
-        url = urlparse(environ['PATH_INFO'])
+        url = urlparse(reconstruct_url(environ))
         split_url = url.path.split('/windmill-serv/')
         serve_file = split_url[1]
         
         #Open file
         try:
-            f = open('%s/%s' % (CORE_PATH, serve_file), 'r')
+            f = open('%s/%s' % (self.path, serve_file), 'r')
             self.logger.debug('opened file %s' % serve_file)
         except:
-            self.logger.error('failed to open file %s' % serve_file)
+            self.logger.error('failed to open file %s/%s' % (self.path, serve_file))
             start_response('404 Not found', [('Content-Type', 'text/plain')])
             return ['404 Not Found']
         content_type = self.guess_content_type(environ['PATH_INFO'])
@@ -155,29 +184,22 @@ class WindmillProxyApplication(object):
     
     def __init__(self, logger):
         self.logger = logger
+        
+    ConnectionClass = httplib.HTTPConnection
     
     def handler(self, environ, start_response):
         """Proxy for requests to the actual http server"""
-        if environ['QUERY_STRING'] != '':
-            request = environ['PATH_INFO']+'?'+environ['QUERY_STRING']
-        else:
-            request = environ['PATH_INFO']
-
-        url = urlparse(request)
+        url = urlparse(reconstruct_url(environ))
     
         # Create connection object
-        if url[0] == 'http':
-            try:
-                connection = httplib.HTTPConnection(url[1])
-                # Build path
-                path = request.replace('http://%s' % url[1], '')
-            except:
-                start_response("501 Gateway error", [('Content-Type', 'text/html')])
-                return ['<H1>Could not connect</H1>']
-        else:
-            # We don't currently support SSL or any other scheme
+        try:
+            connection = self.ConnectionClass(url[1])
+            # Build path
+            path = url.geturl().replace('%s://%s' % (url.scheme, url[1]), '')
+        except:
             start_response("501 Gateway error", [('Content-Type', 'text/html')])
-            return ['<H1>Gateway does not support scheme</H1>']
+            return ['<H1>Could not connect</H1>']
+
             
         # Read in request body if it exists    
         body = None
@@ -231,6 +253,9 @@ class WindmillProxyApplication(object):
     def __call__(self, environ, start_response):
         return self.handler(environ, start_response)
     
+class WindmillSSLProxyApplication(WindmillProxyApplication):
+    
+    ConnectionClass = httplib.HTTPSConnection
     
 class WindmillChooserApplication(object):
     """Application to handle choosing the proper application to handle each request"""
@@ -243,7 +268,7 @@ class WindmillChooserApplication(object):
 
     def handler(self, environ, start_response):
         """Windmill app chooser"""
-        self.logger.debug('recieved dispatch request %s' % environ['PATH_INFO'])
+        
         if environ['PATH_INFO'].find('/windmill-serv/') is not -1:
             self.logger.debug('dispatching request %s to WindmillServApplication' % environ['PATH_INFO'])
             return self.windmill_serv_app(environ, start_response)
@@ -254,7 +279,7 @@ class WindmillChooserApplication(object):
             self.logger.debug('dispatching request %s to WindmillXMLRPCApplication' % environ['PATH_INFO'])
             return self.windmill_xmlrpc_app(environ, start_response)
         else:
-            self.logger.debug('dispatching request %s to WindmillProxyApplication' % environ['PATH_INFO'])
+            self.logger.debug('dispatching request %s to WindmillProxyApplication' % reconstruct_url(environ))
             return self.windmill_proxy_app(environ, start_response)
             
     def __call__(self, environ, start_response):
@@ -297,14 +322,14 @@ class ThreadedWSGIServer(SocketServer.ThreadingTCPServer):
         self.application = application
         
         # From here down I implement conditional serving to make it easier to quit when I'm running this in a thread
-    def serve_until(self):
+    def start(self):
         self._run = True
         self._active = True
         while self._run is True:
             self.handle_request()
         self._active = False
     
-    def server_stop(self):
+    def stop(self):
         self._run = False
         #This is a bit of a hack, but we need to make one last connection to make self.handle_request() return
         if self._active is not False:
@@ -317,6 +342,7 @@ class ThreadedWSGIServer(SocketServer.ThreadingTCPServer):
     
     def is_alive(self):
         return self._active 
+
     
 class WindmillHandler(WSGIRequestHandler):
     
@@ -327,9 +353,14 @@ class WindmillHandler(WSGIRequestHandler):
                           format%args))
                           
         
-def make_windmill_server(port=PORT, core_path=CORE_PATH, 
-                         server_loggers=None):
-    windmill_serv_app = WindmillServApplication(logger=logging.getLogger('server.serv'), core_path=core_path)
+def make_windmill_server(http_port=None, js_path=None):
+    
+    if http_port is None:
+        http_port = windmill.settings['SERVER_HTTP_PORT']
+    if js_path is None:
+        js_path = windmill.settings['JS_PATH']
+    
+    windmill_serv_app = WindmillServApplication(logger=logging.getLogger('server.serv'), js_path=js_path)
     windmill_proxy_app = WindmillProxyApplication(logger=logging.getLogger('server.proxy'))
     windmill_xmlrpc_app =  WindmillXMLRPCApplication(logger=logging.getLogger('server.xmlrpc'))
     windmill_jsonrpc_app = WindmillJSONRPCApplication(windmill_xmlrpc_app.xmlrpc_handler,
@@ -338,7 +369,18 @@ def make_windmill_server(port=PORT, core_path=CORE_PATH,
                                                       windmill_xmlrpc_app, windmill_proxy_app,
                                                       logger=logging.getLogger('server.chooser'))
     WindmillHandler.logger = logging.getLogger('server.wsgi_handler')
-    return make_server('', port, windmill_chooser_app, server_class=ThreadedWSGIServer, handler_class=WindmillHandler)
+    
+    
+    try:
+        import cherrypy
+        httpd = cherrypy.wsgi._cpwsgiserver.CherryPyWSGIServer(('', http_port), windmill_chooser_app, server_name='windmill-http')
+    except Exception, e:
+        tb = StringIO()
+        traceback.print_exc(file=tb)
+        logger.warning(tb.getvalue())
+        httpd = make_server('', http_port, windmill_chooser_app, server_class=ThreadedWSGIServer, handler_class=WindmillHandler)
+    
+    return httpd
 
 def main(port=PORT):
     httpd = make_windmill_server()

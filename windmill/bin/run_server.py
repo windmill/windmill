@@ -16,31 +16,22 @@ import windmill.server
 import logging, time
 from threading import Thread
 
-def setup_server(console_level=logging.INFO):
+def setup_servers(console_level=logging.INFO):
     """Setup the server and return httpd and loggers"""
     console_handler = windmill.server.logger.setup_root_logger(console_level=console_level)
-    
-    # Set loggers for each necessary area
-    
-    loggers = {'server':{'proxy':   windmill.server.logger.setup_individual_logger('server.proxy'),
-                         'serv':    windmill.server.logger.setup_individual_logger('server.serv'),
-                         'xmlrpc':  windmill.server.logger.setup_individual_logger('server.xmlrpc'),
-                         'jsonrpc': windmill.server.logger.setup_individual_logger('server.jsonrpc'),
-                         'wsgi':    windmill.server.logger.setup_individual_logger('server.wsgi')},
-               'browser': windmill.server.logger.setup_individual_logger('browser')}
-               
-    httpd = windmill.server.wsgi.make_windmill_server(server_loggers=loggers['server'])
-    return httpd, loggers, console_handler
+    httpd = windmill.server.wsgi.make_windmill_server()
+    return httpd, console_handler
 
 def run_threaded(console_level=logging.INFO):
     """Run the server with various values"""
 
-    httpd, loggers, console_handler = setup_server(console_level)
-
-    httpd_thread = Thread(target=httpd.serve_until)
+    httpd, console_handler = setup_servers(console_level)
+    
+    httpd_thread = Thread(target=httpd.start)
     httpd_thread.start()
+    
     time.sleep(1)
-    return httpd, httpd_thread, loggers, console_handler
+    return httpd, httpd_thread, console_handler
     
 
     
