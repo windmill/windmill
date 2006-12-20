@@ -15,34 +15,18 @@ Copyright 2006, Open Source Applications Foundation
 */
 
 
-//New code called to instantiate a browserbot and a selenium object to call directly
-var windmillBot = null;
-var windSel = null;
-var selenium = null;
-
-
+//Loader function
 function Load(){
-    windmillBot = new BrowserBot(this.window);
-    windmill = new Selenium(windmillBot);
-    timing = new TimeObj();
     
-    
-    //This is because there is still some code expecting this to exist
-    selenium = new Selenium(windmillBot);
-    
-    //tabContainer = document.getElementById("tab1").parentNode;
-	//tabContainer.style.border = "0px";
-    
-    //alert("blah");
-    //windSel.doClick("xpath=//html/body/div/div/div[5]/div/div[3]/a");
-    //windSel.doRefresh();
-    //alert(Selenium.DEFAULT_TIMEOUT);   
-    //Selenium.prototype.doClick("xpath=//html/body/div/div/div[5]/div/div[3]/a");
+    //Instantiate the windmill object
+    Windmill = new windmill_main(browser);
+
 }
+
 //Run function, allows one to call the function and execute code against the page.
 function Run(code){
-    
-    try {
+    var resp = eval(code);
+/*    try {
         var resp = eval(code);
     } 
     catch (error) {
@@ -50,12 +34,13 @@ function Run(code){
     }
     
     return resp;
-    
+    */
     //var windmillBot = new BrowserBot(this.window);
     //var windSel = new Selenium(windmillBot);
     //windSel.doRefresh();
 }
 
+//Run code and manage its result
 function runJS(){
 	var jstext = document.getElementById("jsrunner");
 	result = Run(jstext.value);
@@ -68,20 +53,9 @@ function runJS(){
 		resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + 'No Response';
 	}
 	
-	/*example's of code that can be input:
-	windmill.doClick("xpath=//html/body/div/div/div[5]/div/div[3]/a");
-	
-	//Cosmo login page
-	windmill.doType("id=loginDialogUsernameInput", "test");
-	windmill.doType("id=loginDialogPasswordInput", "test");
-	
-	//Clicking on links, however there is a problem still with the server accessing some dialogs in cosmo
-	windmill.doClick("link=Click here to create one.");
-	windmill.doClick("link=Create an Account");
-	
-	*/
 }
 
+//Clearing runner box
 function clearJS(){
 	var jstext = document.getElementById("jsrunner");
 	jstext.value = "";

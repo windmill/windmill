@@ -16,6 +16,26 @@ function BrowserDetectLite() {
    this.isKonqueror = (ua.indexOf('konqueror') != -1 && !this.isSafari); 
    this.isIcab      = (ua.indexOf('icab') != -1); 
    this.isAol       = (ua.indexOf('aol') != -1); 
+   this.altKeyDown = false;
+   this.controlKeyDown = false;
+   this.shiftKeyDown = false;
+   
+   //Chrome
+   var checkChrome = function() {
+          var loc = window.document.location.href;
+          try {
+              loc = window.top.document.location.href;
+          } catch (e) {
+              // can't see the top (that means we might be chrome, but it's impossible to be sure)
+              this.isChromeDetectable = "no, top location couldn't be read in this window";
+          }
+
+          if (/^chrome:\/\//.test(loc)) {
+              this.isChrome = true;
+          } else {
+              this.isChrome = false;
+          }
+      }
    
    // spoofing and compatible browsers
    this.isIECompatible = ( (ua.indexOf('msie') != -1) && !this.isIE);
@@ -101,4 +121,5 @@ function BrowserDetectLite() {
    
    this.isIE4xMac = (this.isIE4x && this.isMac);
 }
-var browser = new BrowserDetectLite();
+
+    var browser = new BrowserDetectLite();

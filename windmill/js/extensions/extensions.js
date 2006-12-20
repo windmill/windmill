@@ -32,7 +32,7 @@ Copyright 2006, Open Source Applications Foundation
 //	<td>id=eventDivContent__${did}</td>
 //	<td>id=hourDiv4-1200</td>
 //</tr>
-Selenium.prototype.doDragdropDivCosmo = function(origlocator, destlocator) {
+/*Selenium.prototype.doDragdropDivCosmo = function(origlocator, destlocator) {
     
     //Get originating coordinates for the event
     var element = this.page().findElement(origlocator)
@@ -108,10 +108,8 @@ Selenium.prototype.doDragdropDivCosmo = function(origlocator, destlocator) {
     //Mouseup in the final resting place for the event
     triggerMouseEvent(element, 'mouseup',   true, clientFinishX, clientFinishY);
     
-    return true;
-    
 }
-
+*/
 //Author: Adam Christian, Open Source Applications Foundation
 //Email: adam@osafoundation.org
 //
@@ -124,11 +122,12 @@ Selenium.prototype.doDragdropDivCosmo = function(origlocator, destlocator) {
 //
 //When the java script objects in Cosmo are changed, as they were in the merge editing ths code
 //will fix all of the tests. 
+/*
 Selenium.prototype.doStoreId = function(expression, variableName) {
-    /** This command is a synonym for storeExpression.
-     * @param expression the identifier for the ID we want from Cosmo
-     * @param variableName the name of a <a href="#storedVars">variable</a> in which the result is to be stored.
-     */
+    // This command is a synonym for storeExpression.
+     // @param expression the identifier for the ID we want from Cosmo
+    // @param variableName the name of a <a href="#storedVars">variable</a> in which the result is to be stored.
+     //
     //If they want the next
     if (expression == "next"){
         storedVars[variableName] = this.browserbot.getCurrentWindow().cosmo.view.cal.canvas.eventRegistry.getNext().id;
@@ -137,17 +136,5 @@ Selenium.prototype.doStoreId = function(expression, variableName) {
     else{
         storedVars[variableName] =  this.browserbot.getCurrentWindow().cosmo.view.cal.canvas.eventRegistry.getFirst().id;
     }
-    
-    return true;
-}
-
-
-//This will need to be workable if we want to use windmill as a core, but for RC since they will be given 1 cmd at a time
-//Using the python backend pause cmd will work just fine.
-/*
-Selenium.prototype.doPause = function(cmd){
-    setTimeout("eval('" + cmd + "');",4000);
-    return true;
 }
 */
-

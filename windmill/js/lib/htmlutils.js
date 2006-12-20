@@ -121,8 +121,8 @@ String.prototype.startsWith = function(str) {
 function getText(element) {
     var text = "";
 
-    var isRecentFirefox = (browserVersion.isFirefox && browserVersion.firefoxVersion >= "1.5");
-    if (isRecentFirefox || browserVersion.isKonqueror || browserVersion.isSafari || browserVersion.isOpera) {
+    var isRecentFirefox = (Windmill.Browser.isMozilla);
+    if (isRecentFirefox || Windmill.Browser.isKonqueror || Windmill.Browser.isSafari || Windmill.Browser.isOpera) {
         text = getTextContent(element);
     } else if (element.textContent) {
         text = element.textContent;
@@ -180,7 +180,7 @@ function normalizeNewlines(text)
 function normalizeSpaces(text)
 {
     // IE has already done this conversion, so doing it again will remove multiple nbsp
-    if (browserVersion.isIE)
+    if (Windmill.Browser.isIE)
     {
         return text;
     }
@@ -191,7 +191,7 @@ function normalizeSpaces(text)
 
     // Replace &nbsp; with a space
     var nbspPattern = new RegExp(String.fromCharCode(160), "g");
-    if (browserVersion.isSafari) {
+    if (Windmill.Browser.isSafari) {
 	return replaceAll(text, String.fromCharCode(160), " ");
     } else {
 	return text.replace(nbspPattern, " ");
@@ -315,13 +315,13 @@ function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, cont
     clientX = clientX ? clientX : 0;
     clientY = clientY ? clientY : 0;
 
-    LOG.warn("triggerMouseEvent assumes setting screenX and screenY to 0 is ok");
+    //LOG.warn("triggerMouseEvent assumes setting screenX and screenY to 0 is ok");
     var screenX = 0;
     var screenY = 0;
 
     canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
     if (element.fireEvent) {
-        LOG.info("element has fireEvent");
+        //LOG.info("element has fireEvent");
         var evt = createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
         evt.detail = 0;
         evt.button = 1;
@@ -348,22 +348,22 @@ function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, cont
                 // TODO: is there a way to update window.event?
 
                 // work around for http://jira.openqa.org/browse/SEL-280 -- make the event available somewhere:
-                selenium.browserbot.getCurrentWindow().selenium_event = evt;
+                //selenium.browserbot.getCurrentWindow().selenium_event = evt;
             }
             element.fireEvent('on' + eventType, evt);
         }
     }
     else {
-        LOG.info("element doesn't have fireEvent");
+        //LOG.info("element doesn't have fireEvent");
         var evt = document.createEvent('MouseEvents');
         if (evt.initMouseEvent)
         {
-            LOG.info("element has initMouseEvent");
+            //LOG.info("element has initMouseEvent");
             //Safari
             evt.initMouseEvent(eventType, canBubble, true, document.defaultView, 1, screenX, screenY, clientX, clientY, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown, 0, null)
         }
         else {
-        	LOG.warn("element doesn't have initMouseEvent; firing an event which should -- but doesn't -- have other mouse-event related attributes here, as well as controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown");
+        	//LOG.warn("element doesn't have initMouseEvent; firing an event which should -- but doesn't -- have other mouse-event related attributes here, as well as controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown");
             evt.initEvent(eventType, canBubble, true);
             
             evt.shiftKey = shiftKeyDown;
