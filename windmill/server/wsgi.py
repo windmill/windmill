@@ -36,9 +36,7 @@ def is_hop_by_hop(header):
     return _hoppish.has_key(header.lower())
     
 def reconstruct_url(environ):
-    
     # From WSGI spec, PEP 333
-    
     from urllib import quote
     url = environ['wsgi.url_scheme']+'://'
 
@@ -103,9 +101,9 @@ class WindmillServApplication(object):
 class WindmillJSONRPCApplication(object):
     """Application to handle requests to the JSONRPC service"""
     
-    def __init__(self, xmlrpc_dispatcher, logger, jsonrpc_dispatcher=jsonrpc.WSGIJSONRPCDispatcher()):
+    def __init__(self, json_methods_instance, logger):
         """Create windmill jsonrpc dispatcher"""
-        self.jsonrpc_dispatcher = jsonrpc_dispatcher
+        self.jsonrpc_dispatcher = jsonrpc.WSGIJSONRPCDispatcher(instance=json_methods_instance)
         self.logger = logger
     
     def handler(self, environ, start_response):
@@ -120,11 +118,12 @@ class WindmillJSONRPCApplication(object):
 class WindmillXMLRPCApplication(object):
     """Application to handle requests to the XMLRPC service"""
 
-    def __init__(self, logger):
+    def __init__(self, xmlrpc_methods_instance, logger):
         """Create windmill xmlrpc dispatcher"""
-        
-        from xmlrpc import make_windmill_dispatcher        
-        self.dispatcher, self.xmlrpc_handler = make_windmill_dispatcher()
+        from SimpleXMLRPCServer import SimpleXMLRPCDispatcher  
+        self.dispatcher = SimpleXMLRPCDispatcher(allow_none=False, encoding=None)
+        self.dispatcher.register_instance(xmlrpc_methods_instance)
+        self.dispatcher.register_introspection_functions()
         self.logger = logger
 
     def handler(self, environ, start_response):
@@ -359,11 +358,16 @@ def make_windmill_server(http_port=None, js_path=None):
         http_port = windmill.settings['SERVER_HTTP_PORT']
     if js_path is None:
         js_path = windmill.settings['JS_PATH']
+        
+    import convergence
+    queue = convergence.ControllerQueue()
+    xmlrpc_methods_instance = convergence.XMLRPCMethods(queue)
+    jsonrpc_methods_instance = convergence.JSONRPCMethods(queue)
     
     windmill_serv_app = WindmillServApplication(logger=logging.getLogger('server.serv'), js_path=js_path)
     windmill_proxy_app = WindmillProxyApplication(logger=logging.getLogger('server.proxy'))
-    windmill_xmlrpc_app =  WindmillXMLRPCApplication(logger=logging.getLogger('server.xmlrpc'))
-    windmill_jsonrpc_app = WindmillJSONRPCApplication(windmill_xmlrpc_app.xmlrpc_handler,
+    windmill_xmlrpc_app =  WindmillXMLRPCApplication(xmlrpc_methods_instance, logger=logging.getLogger('server.xmlrpc'))
+    windmill_jsonrpc_app = WindmillJSONRPCApplication(jsonrpc_methods_instance,
                                                       logger=logging.getLogger('server.jsonrpc'))
     windmill_chooser_app = WindmillChooserApplication(windmill_serv_app, windmill_jsonrpc_app,
                                                       windmill_xmlrpc_app, windmill_proxy_app,

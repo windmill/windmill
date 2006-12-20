@@ -41,9 +41,11 @@ class JSONRPCDispatcher(object):
         self.name = name
         self.help = help
         self.address = address
+        self.summary = summary
         
         # Store all attributes of class before any methods are added for negative lookup later
-        self.base_attributes = set(dir(self.__dict__))
+        self.base_attributes = set(dir(self))
+        self.base_attributes.add('base_attributes')
         
         # If instance was given during initialization then register it
         if instance is not None:
@@ -51,14 +53,12 @@ class JSONRPCDispatcher(object):
             
         self.__dict__['system.list_methods'] = self.system_list_methods
         self.__dict__['system.describe'] = self.system_describe
-        
-        logger.debug('Dispatcher Dict == %s' % str(self.__dict__))
-            
+                    
     def get_valid_methods(self):
         valid_methods = {}
         for key, value in self.__dict__.items():
-            if not key.startswith('_'):
-                if key in self.base_attributes:
+            if key.startswith('_') is False:
+                if key not in self.base_attributes:
                     valid_methods[key] = value
         return valid_methods
         
@@ -67,7 +67,7 @@ class JSONRPCDispatcher(object):
         for attribute in dir(instance):
             if attribute.startswith('_') is False:
                 # All public attributes
-                self.register_function(getattr(instance, attribute), name=attribute)
+                self.register_method(getattr(instance, attribute), name=attribute)
         
         # Store it in the list for convienience 
         self.instances.append(instance)
@@ -94,7 +94,6 @@ class JSONRPCDispatcher(object):
     def system_list_methods(self):
         """List all the available methods and return a object parsable that conforms to the JSONRPC Service Procedure Description specification"""
         method_list = []
-        print self.get_valid_methods()
         for key, value in self.get_valid_methods().items():
             method = {}
             method['name'] = key
@@ -104,7 +103,7 @@ class JSONRPCDispatcher(object):
         logger.debug('system.list_methods created list %s' % str(method_list))
         return method_list
             
-    def system_describe(self, rpc_request):
+    def system_describe(self):
         """Service description"""
         description = {}
         description['sdversion'] = '1.0'
@@ -114,7 +113,7 @@ class JSONRPCDispatcher(object):
             description['help'] = self.help
         if self.address is not None:
             description['address'] = self.address
-        description['procs'] = self._list_methods()
+        description['procs'] = self.system_list_methods()
         return description
     
     def dispatch(self, json):
@@ -127,7 +126,7 @@ class JSONRPCDispatcher(object):
             return self._dispatch(rpc_request)
         else:
             logger.debug('returning jsonrpc error')
-            return self_encode(result=None, error=JSONRPCError('no such method'), id=rpc_request[u'id'])
+            return self.encode(result=None, error=JSONRPCError('no such method'), id=rpc_request[u'id'])
                 
     def _dispatch(self, rpc_request):
         """Internal dispatcher, handles all the error checking and calling of methods"""
@@ -142,13 +141,14 @@ class JSONRPCDispatcher(object):
         
         try:
             # Account for each type
-            if type(rpc_request[u'params']) is list:
+            if type(rpc_request[u'params']) is list or type(rpc_request[u'params']) is tuple:
                 try:
                     result = self.__dict__[rpc_request[u'method']](*rpc_request[u'params'])
-                except:
-                    # Try converting the last argument to keyword arguments
-                    # Since javascript doesn't support keyword arguments in many cases the keyword arguments are sent in a hash in the last argument
-                    result = self.__dict__[rpc_request[u'method']](*rpc_request[u'params'], **rpc_request[u'params'][-1])
+                except Exception, e:
+                    if type(rpc_request[u'params'][-1]) is dict:
+                        result = self.__dict__[rpc_request[u'method']](*rpc_request[u'params'], **rpc_request[u'params'][-1])
+                    else:
+                        raise Exception, e
             elif type(rpc_request[u'params']) is dict:
                 result = self.__dict__[rpc_request[u'method']](**rpc_request[u'params'])
             elif rpc_request[u'params'] is None:

@@ -50,7 +50,7 @@ def runserver(cmd_options):
             sys.exit()
     
 def shell(cmd_options):
-    import windmill
+    import windmill, simplejson 
     if cmd_options['debug'] is True:
         import pdb
     
