@@ -1,0 +1,77 @@
+/*
+ * Danne Lundqvist
+ * http://www.dotvoid.com
+ *
+ * More information see the README file
+ */
+ 
+
+ body, p, li {
+
+ font-size: 9pt;
+ }
+
+ 
+div.TabStyleTabList
+{
+margin: 0px;
+padding: 0px;
+}
+
+div.TabStyleTabActive
+{
+display: inline;
+height: 20px;
+border: 1px solid #999;
+border-bottom: 1px solid #fff;
+background-color: #fff;
+margin-left: 5px;
+padding: 3px;
+font-size: 9px;
+
+}
+
+.TabStyleTabActive a {
+display: normal;
+text-decoration: none;
+color: #000;
+cursor: default;
+}
+
+div.TabStyleTabNormal
+{
+display: inline;
+height: 20px;
+border: 1px solid #ccc;
+border-bottom: 1px solid #ccc;
+background-color: #eee;
+margin-left: 5px;
+padding: 3px;
+font-size: 9px;
+
+
+}
+
+div.TabStyleTabNormal a {
+display: normal;
+text-decoration: none;
+}
+
+div.TabStyleTabNormal a:hover {
+text-decoration: underline;
+}
+
+div.TabStyleContainer
+{
+margin: 0px;
+padding: 0px;
+}
+
+div.TabStyleContent
+{
+padding: 4px;
+margin: 0px;
+margin-top: 3px !important;
+margin-top: -1px;
+border: 1px solid #ccc;
+}
