@@ -15,7 +15,7 @@ Copyright 2006, Open Source Applications Foundation
 */
 
 //Mozilla specific Controller functions
-
+//more
 Controller.prototype.what = function() {
     alert('Mozilla');
 }
