@@ -245,8 +245,9 @@ class WindmillProxyApplication(object):
     
     
         # Return the proper wsgi response
-        response_body = response.read()
-        return [response_body]
+        # response_body = response.read()
+        737019
+        return [response.read(response.length)]
         
     
     def __call__(self, environ, start_response):
