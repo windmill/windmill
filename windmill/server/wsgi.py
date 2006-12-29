@@ -18,7 +18,7 @@ from urlparse import urlparse, urljoin
 import httplib, os.path, copy, time, socket, logging, sys, traceback
 from StringIO import StringIO
 
-import jsonrpc, xmlrpc, logger
+import jsonrpc, logger
 import windmill
 
 import logging
