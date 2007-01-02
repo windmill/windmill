@@ -378,7 +378,7 @@ def make_windmill_server(http_port=None, js_path=None):
     
     try:
         import cherrypy
-        httpd = cherrypy.wsgi._cpwsgiserver.CherryPyWSGIServer(('', http_port), windmill_chooser_app, server_name='windmill-http')
+        httpd =  cherrypy.wsgiserver.CherryPyWSGIServer(('', http_port), windmill_chooser_app, server_name='windmill-http')
     except Exception, e:
         tb = StringIO()
         traceback.print_exc(file=tb)
