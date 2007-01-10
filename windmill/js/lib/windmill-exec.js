@@ -20,43 +20,8 @@ function Load(){
     
     //Instantiate the windmill object
     Windmill = new windmill_main(browser);
-
-}
-
-//Run function, allows one to call the function and execute code against the page.
-function Run(code){
-    var resp = eval(code);
-/*    try {
-        var resp = eval(code);
-    } 
-    catch (error) {
-        var resp = "Error";
-    }
     
-    return resp;
-    */
-    //var windmillBot = new BrowserBot(this.window);
-    //var windSel = new Selenium(windmillBot);
-    //windSel.doRefresh();
-}
+    //Start XHR loop
+    Windmill.XHR.start_json_loop();
 
-//Run code and manage its result
-function runJS(){
-	var jstext = document.getElementById("jsrunner");
-	result = Run(jstext.value);
-	var resultsDiv = document.getElementById("tab4");
-	
-	if (result == true){
-		resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + 'Success';
-	}
-	else{
-		resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + 'No Response';
-	}
-	
-}
-
-//Clearing runner box
-function clearJS(){
-	var jstext = document.getElementById("jsrunner");
-	jstext.value = "";
 }

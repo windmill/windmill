@@ -28,6 +28,29 @@ function windmill_main(browser) {
     //Setup performance
     this.Performance = new Performance();
     
+    //Init UI functionality
+    this.UI = new UI();
+    
+    //Init XHR and loop stuff
+    this.XHR = new XHR();
+    
+    //Run function, allows one to call the function and execute code against the page.
+    function Run(code){
+        var resp = eval(code);
+    /*    try {
+            var resp = eval(code);
+        } 
+        catch (error) {
+            var resp = "Error";
+        }
+
+        return resp;
+        */
+        //var windmillBot = new BrowserBot(this.window);
+        //var windSel = new Selenium(windmillBot);
+        //windSel.doRefresh();
+    }
+    
 };
 
 

@@ -35,11 +35,13 @@ Copyright 2006, Open Source Applications Foundation
 		}
 		document.write('<script src="', url, '" type="text/javascript"><\/script>');
 	</script>
+	
+	<script type="text/javascript" src="lib/fleegix.js"></script>
 	<script type="text/javascript" src="lib/performance.js"></script>
 	<script type="text/javascript" src="lib/timing.js"></script>
 	<script type="text/javascript" src="lib/log4js.js" ></script>
-
-	
+	<script type="text/javascript" src="lib/UI.js"></script>
+	<script type="text/javascript" src="lib/xhr.js"></script>
 	<script type="text/javascript" src="lib/xpath/misc.js"></script>
 	<script type="text/javascript" src="lib/xpath/dom.js"></script>
 	<script type="text/javascript" src="lib/xpath/xpath.js"></script>
@@ -50,6 +52,8 @@ Copyright 2006, Open Source Applications Foundation
 	
 	<script type="text/javascript" src="ide/tabs/tab.js"></script>
 	<script type="text/javascript" src="extensions/extensions.js"></script>
+
+	
 	
 </head>
 		
@@ -72,8 +76,8 @@ Copyright 2006, Open Source Applications Foundation
 				</div>
 
 				<div>
-					<input type="button" id="runJSButton" value="Run" onClick="javascript:runJS();">
-					<input type="button" id="clearButton" value="Clear" onClick="javascript:clearJS();">
+					<input type="button" id="runJSButton" value="Run" onClick="javascript:Windmill.UI.run_JS();">
+					<input type="button" id="clearButton" value="Clear" onClick="javascript:Windmill.UI.clear_JS();">
 				</div>
 		</div>
 		
@@ -81,12 +85,13 @@ Copyright 2006, Open Source Applications Foundation
 			
 		</div>
 		
-		<div id="tab4" style="display:none;">
-			 
+		<div id="tab4" style="display:none;overflow:auto;height:70px;">
+		
 		</div>
 		
 		<div id="tab5" style="display:none;">
-			RC options, close browser after rest, turn off loop grabbing requests, logging server, etc
+			
+			Status of Action Loop: <input type="button" id="loopButton" value="Pause" onClick="javascript:Windmill.XHR.toggle_pause_json_loop();">
 		</div>
 		
 		<div id="tab6" style="display:none;">
@@ -104,7 +109,7 @@ Copyright 2006, Open Source Applications Foundation
 	tabs.add('tab2', 'Runner');
 	tabs.add('tab3', 'Performance');
 	tabs.add('tab4', 'Results');
-	tabs.add('tab5', 'RC');
+	tabs.add('tab5', 'Loop');
 	tabs.add('tab6', 'Info');
 
 	tabs.draw();

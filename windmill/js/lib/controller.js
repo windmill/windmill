@@ -30,6 +30,9 @@ function Controller() {
     this.general = function() {
         alert('General');
     };
+    this.pause = function(){
+        Windmill.UI.write_result('Pausing')
+    }
     
     this.open = function(url) {
         webappframe = document.getElementById('webapp');
@@ -56,6 +59,7 @@ function Controller() {
     
     //Translates from the way we are passing objects to functions to the lookups
     this.lookup_dispatch = function(param_object){
+        param_object = Windmill.XHR.xhr_response.result.params
         var element;
         //If a link was passed, lookup as link
         if(typeof param_object.link != "undefined") {
