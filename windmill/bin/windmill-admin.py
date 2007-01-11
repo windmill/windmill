@@ -69,7 +69,7 @@ def shell(cmd_options):
     # Convenience callable class for running a text test file.
     class _RunTestFile(object):
         client = jsonrpc_client
-        def __call__(filename):
+        def __call__(self, filename):
             windmill.bin.run_tests.run_test_file(filename, self.client)        
     run_test_file = _RunTestFile()
     
