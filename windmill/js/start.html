@@ -18,7 +18,7 @@ Copyright 2006, Open Source Applications Foundation
 <head>
 	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 	<title>Windmill Testing UI</title>
-
+	
 	<link rel="stylesheet" type="text/css" href="ide/css/windmill.css"/>
 	<link rel="stylesheet" type="text/css" href="ide/tabs/tab.css" />
 
@@ -53,7 +53,13 @@ Copyright 2006, Open Source Applications Foundation
 	<script type="text/javascript" src="ide/tabs/tab.js"></script>
 	<script type="text/javascript" src="extensions/extensions.js"></script>
 
-	
+	<script type="text/javascript">
+        //Borked!!
+ 		var load_timer = new TimeObj();
+		 load_timer.set_name('Loading first page');
+         load_timer.start_time();
+	</script>
+
 	
 </head>
 		
@@ -81,7 +87,7 @@ Copyright 2006, Open Source Applications Foundation
 				</div>
 		</div>
 		
-		<div id="tab3" style="display:none;">
+		<div id="tab3" style="display:none;overflow:auto;height:70px;">
 			
 		</div>
 		
@@ -108,7 +114,7 @@ Copyright 2006, Open Source Applications Foundation
 	tabs.add('tab1', 'Windmill');
 	tabs.add('tab2', 'Runner');
 	tabs.add('tab3', 'Performance');
-	tabs.add('tab4', 'Results');
+	tabs.add('tab4', 'Debug');
 	tabs.add('tab5', 'Loop');
 	tabs.add('tab6', 'Info');
 

@@ -22,6 +22,7 @@ Controller.prototype.what = function() {
 
 //Click function for Mozilla with Chrome
 Controller.prototype.click = function(param_object){
+    
        var element = this.lookup_dispatch(param_object);
        
        element.addEventListener('click', function(evt) {
@@ -39,7 +40,7 @@ Controller.prototype.click = function(param_object){
                document.getElementById('webapp').src = element.parentNode.href;
            }
        }
-       
+     
 };
 
 /**

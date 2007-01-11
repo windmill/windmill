@@ -59,6 +59,13 @@ function UI() {
            
     }
     
+    //Writing to the results tab
+    this.write_performance = function(str){
+        var resultsDiv = document.getElementById("tab3");
+        resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;
+    }
+    
+    //Writing to the performance tab
     this.write_result = function(str){
         var resultsDiv = document.getElementById("tab4");
         resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;

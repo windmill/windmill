@@ -16,7 +16,7 @@ Copyright 2006, Open Source Applications Foundation
 
 function Performance() {
   
-  //Setting up performance timing object
+  //Setting up a performance timing object
   timing = new TimeObj();
   
   

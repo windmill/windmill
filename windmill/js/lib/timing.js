@@ -63,11 +63,15 @@ function TimeObj() {
     
     //Write to the log div
     this.write = function(){
-         var performanceDiv = parent.document.getElementById("tab3");
-         performanceDiv.innerHTML = performanceDiv.innerHTML + "<br>Starting " + identifier + " : " + time_started;
-         performanceDiv.innerHTML = performanceDiv.innerHTML + "<br>Ending " + identifier + " : " + time_ended;
+         var perf_tab = document.getElementById("tab3");
+         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Starting " + this.identifier + " : " + time_started;
+         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Ending " + this.identifier + " : " + time_ended;
          this.calculate_time();
-         performanceDiv.innerHTML = performanceDiv.innerHTML + "<br>Total " + identifier + " : " + run_time;
+         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Total " + this.identifier + " : " + run_time;
+        /* Windmill.UI.write_performance("<br>Starting " + identifier + " : " + time_started);
+         Windmill.UI.write_performance("<br>Ending " + identifier + " : " + time_ended);
+         
+         Windmill.UI.write_performance("<br>Total " + identifier + " : " + run_time);*/
     }
     
 };

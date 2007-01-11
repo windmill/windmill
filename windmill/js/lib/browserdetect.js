@@ -1,9 +1,20 @@
-// Browser Detect Lite  v2.1.4
-// http://www.dithered.com/javascript/browser_detect/index.html
-// modified by Chris Nott (chris@NOSPAMdithered.com - remove NOSPAM)
+/*
+Copyright 2006, Open Source Applications Foundation
 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-function BrowserDetectLite() {
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+function BrowserDetect() {
    var ua = navigator.userAgent.toLowerCase(); 
 
    // browser name
@@ -122,4 +133,4 @@ function BrowserDetectLite() {
    this.isIE4xMac = (this.isIE4x && this.isMac);
 }
 
-    var browser = new BrowserDetectLite();
+    var browser = new BrowserDetect();

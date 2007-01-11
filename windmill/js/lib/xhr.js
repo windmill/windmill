@@ -27,7 +27,6 @@ Copyright 2006, Open Source Applications Foundation
 function XHR() {
     
     this.loop_state = 1;
-    this.xhr_response = null;
     
     //json_call
     this.json_call = function(version, method, params){
@@ -43,28 +42,32 @@ function XHR() {
         
         //If there was a legit json response
         if (Windmill.XHR.xhr_response.error){
-          alert('There was a serious error with json syntax');
+            Windmill.Log.debug("There was a JSON syntax error: '" + Windmill.XHR.xhr_response.error + "'");
         }
         else{
             
-            //Run the action
-            //if (Windmill.XHR.xhr_response.params == undefined){    
-                result = eval ('Windmill.Controller.' + Windmill.XHR.xhr_response.result.method + '( );');
-            //}
-            //else{
-                //alert(Windmill.XHR.resp.result.params);
-                //result = eval ('Windmill.Controller.' + Windmill.XHR.resp.result.method + '(' + Windmill.XHR.xhr_response + ');');
-                //result = eval ('Windmill.Controller.' + Windmill.XHR.resp.result.method + '(true)');
-                
-            //}
+            //Init and start performance
+            var action_timer = new TimeObj();
+            action_timer.set_name(Windmill.XHR.xhr_response.result.method);
+            action_timer.start_time();
             
-            //Make an XHR call to get next action if loop is running
+            //Run the action  
+            try { 
+                //result = eval ('Windmill.Controller.' + Windmill.XHR.xhr_response.result.method + '( );'); 
+                result = Windmill.Controller[Windmill.XHR.xhr_response.result.method](Windmill.XHR.xhr_response.result.params);
+                } 
+            catch (error) { Windmill.Log.debug("Error Executing " + Windmill.XHR.xhr_response.result.method); }
+            
+            //End and store the performance
+            action_timer.end_time();
+            action_timer.write();
+            
+            //If the loop is running make the next request    
             if (Windmill.XHR.loop_state != 0){
                 //Sleep for a few seconds before doing the next xhr call
                 setTimeout("Windmill.XHR.get_next()", 3000);
             }
         }
-
     }
 
     this.get_next = function(){
@@ -87,6 +90,5 @@ function XHR() {
             Windmill.UI.toggle_loop_button_text();
             Windmill.XHR.get_next();
         }
-    }
-    
+    }    
 }
