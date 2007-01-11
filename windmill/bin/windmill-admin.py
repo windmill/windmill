@@ -66,9 +66,18 @@ def shell(cmd_options):
     jsonrpc_client = windmill.tools.make_jsonrpc_client()
     xmlrpc_client = windmill.tools.make_xmlrpc_client()
     
+    # Convenience callable class for running a text test file.
+    class _RunTestFile(object):
+        client = jsonrpc_client
+        def __call__(filename):
+            windmill.bin.run_tests.run_test_file(filename, self.client)        
+    run_test_file = _RunTestFile()
+    
+    # If we have a test file we should add all the tests
     if windmill.settings['TEST_FILE'] is not None:
         windmill.bin.run_tests.run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
 
+    # If ipython is installed and we weren't given the usecode option
     if hasattr(windmill.tools.dev_environment, 'IPyShell') is True and cmd_options['usecode'] is False:
         import IPython
         shell = IPython.Shell.IPShell(user_ns=locals(), shell_class=windmill.tools.dev_environment.IPyShell)
