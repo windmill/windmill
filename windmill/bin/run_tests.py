@@ -20,4 +20,4 @@ def run_test_file(filename, jsonrpc_client):
     test_strings = f.read().splitlines()
     for test in test_strings:
          jsonrpc_client.add_json_test(test)
-         logger.info('Added test\n' % test)
+         logger.info('Added test\n%s' % test)
