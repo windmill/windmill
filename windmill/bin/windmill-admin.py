@@ -1,4 +1,4 @@
-#   Copyright (c) 2006-2007Open Source Applications Foundation
+#   Copyright (c) 2006-2007 Open Source Applications Foundation
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -39,15 +39,27 @@ def runserver(cmd_options):
     if cmd_options.has_key('daemon'):
         httpd, httpd_thread, console_log_handler = windmill.bin.run_server.run_threaded()
         httpd_thread.setDaemon(True)
+        if windmill.settings['TEST_FILE'] is not None:
+            jsonrpc_client = windmill.tools.make_jsonrpc_client()
+            run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
     else:
         httpd, loggers = windmill.bin.run_server.setup_servers(windmill.settings['CONSOLE_LOG_LEVEL'])
         try:
             httpd_thread = Thread(target=httpd.start)
             httpd_thread.start()
+            if windmill.settings['TEST_FILE'] is not None:
+                jsonrpc_client = windmill.tools.make_jsonrpc_client()
+                run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
         except KeyboardInterrupt:
             while httpd.is_alive():
                 httpd.stop()
             sys.exit()
+            
+def run_test_file(filename, jsonrpc_client):
+    f = open(filename)
+    test_strings = f.read().splitlines()
+    for test in test_strings:
+         jsonrpc_client.add_json_test(test)
     
 def shell(cmd_options):
     import windmill, simplejson 
@@ -59,6 +71,9 @@ def shell(cmd_options):
     # setup all usefull objects
     jsonrpc_client = windmill.tools.make_jsonrpc_client()
     xmlrpc_client = windmill.tools.make_xmlrpc_client()
+    
+    if windmill.settings['TEST_FILE'] is not None:
+        run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
 
     if hasattr(windmill.tools.dev_environment, 'IPyShell') is True and \
        cmd_options['usecode'] is False:
@@ -89,8 +104,11 @@ def loglevel(value):
 def debug(value):
     import logging
     windmill.settings['CONSOLE_LOG_LEVEL'] = getattr(logging, 'DEBUG')
+    
+def testfile(value):
+    windmill.settings['TEST_FILE'] = value
 
-cmd_parse_mapping = {'loglevel':loglevel, 'debug':debug}
+cmd_parse_mapping = {'loglevel':loglevel, 'debug':debug, 'testfile':testfile}
 
 def parse_commands():
     
