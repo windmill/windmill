@@ -41,7 +41,7 @@ def runserver(cmd_options):
         httpd_thread.setDaemon(True)
         if windmill.settings['TEST_FILE'] is not None:
             jsonrpc_client = windmill.tools.make_jsonrpc_client()
-            run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
+            windmill.bin.run_tests.run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
     else:
         httpd, loggers = windmill.bin.run_server.setup_servers(windmill.settings['CONSOLE_LOG_LEVEL'])
         try:
@@ -49,17 +49,11 @@ def runserver(cmd_options):
             httpd_thread.start()
             if windmill.settings['TEST_FILE'] is not None:
                 jsonrpc_client = windmill.tools.make_jsonrpc_client()
-                run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
+                windmill.bin.run_tests.run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
         except KeyboardInterrupt:
             while httpd.is_alive():
                 httpd.stop()
             sys.exit()
-            
-def run_test_file(filename, jsonrpc_client):
-    f = open(filename)
-    test_strings = f.read().splitlines()
-    for test in test_strings:
-         jsonrpc_client.add_json_test(test)
     
 def shell(cmd_options):
     import windmill, simplejson 
@@ -73,10 +67,9 @@ def shell(cmd_options):
     xmlrpc_client = windmill.tools.make_xmlrpc_client()
     
     if windmill.settings['TEST_FILE'] is not None:
-        run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
+        windmill.bin.run_tests.run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
 
-    if hasattr(windmill.tools.dev_environment, 'IPyShell') is True and \
-       cmd_options['usecode'] is False:
+    if hasattr(windmill.tools.dev_environment, 'IPyShell') is True and cmd_options['usecode'] is False:
         import IPython
         shell = IPython.Shell.IPShell(user_ns=locals(), shell_class=windmill.tools.dev_environment.IPyShell)
         shell.IP.httpd = httpd

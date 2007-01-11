@@ -12,4 +12,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import run_server, run_tests
+import windmill, logging
+logger = logging.getLogger(__name__)
+
+def run_test_file(filename, jsonrpc_client):
+    f = open(filename)
+    test_strings = f.read().splitlines()
+    for test in test_strings:
+         jsonrpc_client.add_json_test(test)
+         logger.info('Added test\n' % test)
