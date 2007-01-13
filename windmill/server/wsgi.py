@@ -385,6 +385,11 @@ def make_windmill_server(http_port=None, js_path=None):
         traceback.print_exc(file=tb)
         logger.warning(tb.getvalue())
         httpd = make_server('', http_port, windmill_chooser_app, server_class=ThreadedWSGIServer, handler_class=WindmillHandler)
+        
+    httpd.controller_queue = queue
+    httpd.test_resolution_suite = test_resolution_suite
+    httpd.xmlrpc_methods_instance = xmlrpc_methods_instance
+    httpd.jsonrpc_methods_instance = jsonrpc_methods_instance
     
     return httpd
 

@@ -28,6 +28,7 @@ def test_json_tests(setup):
                    u'endtime':u'1994-11-05T13:15:30.56Z'}
     x = client.report(simplejson.dumps(test_report))
     assert x == {'result':None}
-    
+    resolved_test = {'debug': None, u'method': u'click', u'params': {u'id': u'aksjdflkajsdflkjasldkfjl'}, 'result': True, 'version': '0.1'}
+    assert setup['httpd'].test_resolution_suite.resolved_tests.__contains__(resolved_test)
     
     
