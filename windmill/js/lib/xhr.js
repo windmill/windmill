@@ -46,21 +46,25 @@ function XHR() {
         }
         else{
             
-            //Init and start performance
-            var action_timer = new TimeObj();
-            action_timer.set_name(Windmill.XHR.xhr_response.result.method);
-            action_timer.start_time();
+            //Init and start performance but not if the protocol defer
+            if (Windmill.XHR.xhr_response.result.method != 'defer'){
+                var action_timer = new TimeObj();
+                action_timer.set_name(Windmill.XHR.xhr_response.result.method);
+                action_timer.start_time();
+            }
             
             //Run the action  
-            try { 
-                //result = eval ('Windmill.Controller.' + Windmill.XHR.xhr_response.result.method + '( );'); 
-                result = Windmill.Controller[Windmill.XHR.xhr_response.result.method](Windmill.XHR.xhr_response.result.params);
+            try { //result = Windmill.Controller.click(Windmill.XHR.xhr_response.result.params); }
+                result = Windmill.Controller[Windmill.XHR.xhr_response.result.method](Windmill.XHR.xhr_response.result.params); 
+                //eval("result=" + "Windmill.Controller." + Windmill.XHR.xhr_response.result.method + "(" + Windmill.XHR.xhr_response.result.params + ");");
                 } 
-            catch (error) { Windmill.Log.debug("Error Executing " + Windmill.XHR.xhr_response.result.method); }
+            catch (error) {Windmill.Log.debug("Error Executing " + Windmill.XHR.xhr_response.result.method); }
             
             //End and store the performance
-            action_timer.end_time();
-            action_timer.write();
+            if (Windmill.XHR.xhr_response.result.method != 'defer'){
+                action_timer.end_time();
+                action_timer.write();
+            }
             
             //If the loop is running make the next request    
             if (Windmill.XHR.loop_state != 0){

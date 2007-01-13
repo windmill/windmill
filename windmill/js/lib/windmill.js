@@ -35,7 +35,7 @@ function windmill_main(browser) {
     this.XHR = new XHR();
     
     //Run function, allows one to call the function and execute code against the page.
-    function Run(code){
+    this.Run = function(code){
         var resp = eval(code);
     /*    try {
             var resp = eval(code);

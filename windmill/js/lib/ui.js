@@ -30,7 +30,7 @@ function UI() {
     this.run_JS = function(){
         
     	var jstext = document.getElementById("jsrunner");
-    	result = Run(jstext.value);
+    	result = Windmill.Run(jstext.value);
 	
     	if (result == true){
     		Windmill.UI.write_result('Success');
@@ -50,11 +50,11 @@ function UI() {
     //Toggle Pause
     this.toggle_loop_button_text = function(){
         var loop_button = document.getElementById("loopButton");
-        if (loop_button.value == "Pause"){
-            loop_button.value = "Run"
+        if (loop_button.value == "Running.."){
+            loop_button.value = "Paused.."
         }
         else{
-            loop_button.value = "Pause";
+            loop_button.value = "Running..";
         }
            
     }

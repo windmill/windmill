@@ -30,4 +30,5 @@ Controller.prototype.what = function() {
   Controller.prototype.click = function(param_object){
          var element = this.lookup_dispatch(param_object);
          triggerMouseEvent(element, 'click', true);
+         //element.click();
   };

@@ -48,8 +48,8 @@ function Controller() {
     this.general = function() {
         alert('General');
     };
-    this.pause = function(){
-        Windmill.UI.write_result('Pausing')
+    this.defer = function(){
+        Windmill.UI.write_result('Deferring..')
     }
     
     this.open = function(url) {
@@ -94,6 +94,12 @@ function Controller() {
             element = this.findElement("id=" + param_object.id)
         }
         
+        //if jid was passed
+        if(typeof param_object.jsid != "undefined") {
+            eval ("var jsid=" + param_object.jid + ";");
+            element = this.findElement("id=" + jsid);
+        }
+        
         //if name was passed
         if(typeof param_object.name != "undefined") {
             element = this.findElement("name" + param_object.name)
@@ -101,6 +107,47 @@ function Controller() {
         
         return element;
     }
+    
+    //-----Windmill UI Functions-----
+   
+   //Type Function
+   this.type = function(param_object){
+   var element = this.lookup_dispatch(param_object);
+
+         //Get the focus on to the item to be typed in, or selected
+         triggerEvent(element, 'focus', false);
+         triggerEvent(element, 'select', true);
+         
+         //Make sure text fits in the textbox
+         var maxLengthAttr = element.getAttribute("maxLength");
+         var actualValue = param_object.text;
+
+         /*
+         if (maxLengthAttr != null) {
+             var maxLength = parseInt(maxLengthAttr);
+             if (stringValue.length > maxLength) {
+                 //truncate it to fit
+                 actualValue = stringValue.substr(0, maxLength);
+             }
+         }
+         */
+         
+         //Set the value
+         element.value = actualValue;
+         
+         
+         // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
+         //Another wierd chrome thing?
+         triggerEvent(element, 'change', true);
+   }
+       
+    //Wait function
+    this.wait = function(param_object){
+        done = function(){
+            return true;
+        }
+        setTimeout("done()", param_object.seconds);
+    }   
     
     //A big part of the following is adapted from the selenium project browserbot
     //Registers all the ways to do a lookup
@@ -129,6 +176,7 @@ function Controller() {
             if (! locatorFunction) {
                 Windmill.Log.debug("Unrecognised locator type: '" + locatorType + "'");
             }
+    
             return locatorFunction.call(this, locator, inDocument, inWindow);
         };
 
@@ -150,14 +198,14 @@ function Controller() {
     this.findElement = function(locator) {
         var locatorType = 'implicit';
         var locatorString = locator;
-
+        
         // If there is a locator prefix, use the specified strategy
         var result = locator.match(/^([A-Za-z]+)=(.+)/);
         if (result) {
             locatorType = result[1].toLowerCase();
             locatorString = result[2];
         }
-
+        
           var element = this.findElementBy(locatorType, locatorString, this.getDocument(), this.getCurrentWindow().frames[1]);
             if (element != null) {
                 return element;
@@ -347,13 +395,16 @@ function Controller() {
      * begin with "link:".
      */
     this.locateElementByLinkText = function(linkText, inDocument, inWindow) {
+    
         var links = inDocument.getElementsByTagName('a');
+        
         for (var i = 0; i < links.length; i++) {
             var element = links[i];
             if (PatternMatcher.matches(linkText, getText(element))) {
                 return element;
             }
         }
+        
         return null;
     };
     this.locateElementByLinkText.prefix = "link";
@@ -361,30 +412,6 @@ function Controller() {
     //Register all the ways to lookup an element in a list to access dynamically
     this._registerAllLocatorFunctions();  
     
-    //Windmill UI Functions
-    this.type = function(param_object){
-    var element = this.lookup_dispatch(param_object);
-          
-          //Get the focus on to the item to be typed in, or selected
-          triggerEvent(element, 'focus', false);
-          triggerEvent(element, 'select', true);
-          
-          //Make sure text fits in the textbox
-          var maxLengthAttr = element.getAttribute("maxLength");
-          var actualValue = param_object.text;
-          
-          if (maxLengthAttr != null) {
-              var maxLength = parseInt(maxLengthAttr);
-              if (stringValue.length > maxLength) {
-                  //truncate it to fit
-                  actualValue = stringValue.substr(0, maxLength);
-              }
-          }
-          //Set the value
-          element.value = actualValue;
-          // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
-          //Another wierd chrome thing?
-          triggerEvent(element, 'change', true);
-    }
+   
 
 };

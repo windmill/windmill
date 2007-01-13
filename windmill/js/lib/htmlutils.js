@@ -236,10 +236,14 @@ function getInputValue(inputElement) {
 
 /* Fire an event in a browser-compatible manner */
 function triggerEvent(element, eventType, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
+    
     canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
     if (element.fireEvent) {
+        //alert(eventType)
         var evt = createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);        
         element.fireEvent('on' + eventType, evt);
+        //Fix for IE6-- this does work but isn't needed the bug was in the type function
+        //eval("element." + eventType + "();");
     }
     else {
         var evt = document.createEvent('HTMLEvents');
@@ -285,6 +289,7 @@ function triggerKeyEvent(element, eventType, keySequence, canBubble, controlKeyD
     var keycode = getKeyCodeFromKeySequence(keySequence);
     canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
     if (element.fireEvent) {
+        
         var keyEvent = createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
         keyEvent.keyCode = keycode;
         element.fireEvent('on' + eventType, keyEvent);
@@ -314,20 +319,23 @@ function triggerKeyEvent(element, eventType, keySequence, canBubble, controlKeyD
 function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
     clientX = clientX ? clientX : 0;
     clientY = clientY ? clientY : 0;
-
+    
     //LOG.warn("triggerMouseEvent assumes setting screenX and screenY to 0 is ok");
     var screenX = 0;
     var screenY = 0;
 
     canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
+
     if (element.fireEvent) {
+        
         //LOG.info("element has fireEvent");
         var evt = createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
         evt.detail = 0;
         evt.button = 1;
         evt.relatedTarget = null;
         if (!screenX && !screenY && !clientX && !clientY) {
-            element.fireEvent('on' + eventType);
+            element.click();
+            //element.fireEvent('on' + eventType);
         }
         else {
             evt.screenX = screenX;
@@ -350,6 +358,7 @@ function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, cont
                 // work around for http://jira.openqa.org/browse/SEL-280 -- make the event available somewhere:
                 //selenium.browserbot.getCurrentWindow().selenium_event = evt;
             }
+            
             element.fireEvent('on' + eventType, evt);
         }
     }
