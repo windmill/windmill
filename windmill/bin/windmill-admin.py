@@ -16,6 +16,7 @@
 import os, sys
 from threading import Thread
 import windmill
+import logging
 
 def configure_global_settings():
     # Get local config
@@ -73,6 +74,15 @@ def shell(cmd_options):
             windmill.bin.run_tests.run_test_file(filename, self.client)        
     run_test_file = _RunTestFile()
     
+    # Run unittests
+    def unittest():
+        logger = logging.getLogger('unittests')
+        setup_dict = {'httpd':httpd, 'httpd_thread':httpd_thread, 'jsonrpc_client':jsonrpc_client,
+                'xmlrpc_client':xmlrpc_client, 'run_test_file':run_test_file}
+
+        for test in windmill.test.tests:
+            test(setup_dict)
+    
     # If we have a test file we should add all the tests
     if windmill.settings['TEST_FILE'] is not None:
         windmill.bin.run_tests.run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
@@ -94,7 +104,8 @@ def shell(cmd_options):
                 httpd.stop()
                 time.sleep(.5)
             sys.exit()
-    
+                
+                    
 action_mapping = {'shell':shell, 'runserver':runserver}
 
 def loglevel(value):
@@ -134,6 +145,7 @@ def parse_commands():
             cmd_options[key] = cmd_parse_mapping[key](cmd_options[key])
     
     return action, cmd_options
+    
     
 
 if __name__ == "__main__":

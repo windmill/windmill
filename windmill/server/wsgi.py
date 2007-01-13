@@ -362,8 +362,9 @@ def make_windmill_server(http_port=None, js_path=None):
         
     import convergence
     queue = convergence.ControllerQueue()
-    xmlrpc_methods_instance = convergence.XMLRPCMethods(queue)
-    jsonrpc_methods_instance = convergence.JSONRPCMethods(queue)
+    test_resolution_suite = convergence.TestResolutionSuite()
+    xmlrpc_methods_instance = convergence.XMLRPCMethods(queue, test_resolution_suite)
+    jsonrpc_methods_instance = convergence.JSONRPCMethods(queue, test_resolution_suite)
     
     windmill_serv_app = WindmillServApplication(logger=logging.getLogger('server.serv'), js_path=js_path)
     windmill_proxy_app = WindmillProxyApplication(logger=logging.getLogger('server.proxy'))

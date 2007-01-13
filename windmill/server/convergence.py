@@ -17,6 +17,8 @@ server interfaces and the browser's js interface"""
 
 import copy, simplejson, logging
 
+test_results_logger = logging.getLogger('test_results')
+
 class ControllerQueue(object):
     
     def __init__(self):
@@ -47,13 +49,37 @@ class ControllerQueue(object):
             
 callback = {'version':'0.1'}
 
+class TestResolutionSuite(object):
+    """Collection of tests run and results"""
+    def __init__(self):
+        self.unresolved_tests = []
+        self.resolved_tests = []
+        
+    def find_test(self, test_dict):
+        for test in self.unresolved_tests:
+            if test['method'] == test_dict['method'] and test['params'] == test_dict['params']:
+                return test
+        else:
+            return None
+
+    def resolve_test(self, result, test_dict, debug=None):
+        test = self.find_test(test_dict)
+        if test is not None:
+            test['result'] = result
+            test['debug'] = debug
+            self.resolved_tests.append(self.unresolved_tests.pop(self.unresolved_tests.index(test)))
+            
+    def add_test(self, test):
+        self.unresolved_tests.append(test)
+        
         
 class JSONRPCMethods(object):
     
-    def __init__(self, queue):
+    def __init__(self, queue, test_resolution_suite):
         """Assign _queue to class"""
         self._queue = queue
         self._logger = logging.getLogger('jsonrpc_methods_instance')
+        self._test_resolution_suite = test_resolution_suite
         
     def next_action(self):
         """The next action for the browser to execute"""
@@ -67,12 +93,27 @@ class JSONRPCMethods(object):
             action.update({'method':'defer'})
             return action
             
+    def report(self, json):
+        """Report fass/fail and status"""
+        report = simplejson.loads(json)
+        if report.has_key('status'):
+            self._status = report['status']
+        elif report.has_key('test'):
+            if report.has_key('debug'):
+                self._test_resolution_suite.resolve_test(report['result'], report['test'], report['debug'])
+            else:
+                self._test_resolution_suite.resolve_test(report['result'], report['test'])
+        else:
+            self._logger.error('Report object does not adhere to 0.1 specification. Does not contain key "status" or key "test"')
+        
+            
     def add_json_test(self, json):
         """Add test from json object with 'method' and 'params' defined"""
         test = copy.copy(callback)
         test.update(simplejson.loads(json))
         self._logger.debug('Adding command object %s' % str(test))
         self._queue.add_test(test)    
+        self._test_resolution_suite.add_test(test)
         
     def add_json_command(self, json):
         """Add command from json object with 'method' and 'params' defined"""
@@ -90,16 +131,18 @@ class JSONRPCMethods(object):
         
 class XMLRPCMethods(object):
             
-    def __init__(self, queue):
+    def __init__(self, queue, test_resolution_suite):
         """Assign _queue to class"""
         self._queue = queue
         self._logger = logging.getLogger('jsonrpc_methods_instance')
+        self._test_resolution_suite = test_resolution_suite
             
     def add_json_test(self, json):
         """Add test from json object with 'method' and 'params' defined"""
         test = copy.copy(callback)
         test.update(simplejson.loads(json))
         self._queue.add_test(test)    
+        self._test_resolution_suite.add_test(test) 
         
     def add_json_command(self, json):
         """Add command from json object with 'method' and 'params' defined"""

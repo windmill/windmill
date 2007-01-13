@@ -12,12 +12,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from dev_tools import browser_tools
- 
-browser = browser_tools.setup_browser():
-    
-browser_tools.teardown_browser(browser):
-            
 
     
         
