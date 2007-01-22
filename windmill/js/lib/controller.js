@@ -31,16 +31,17 @@ Copyright 2006, Open Source Applications Foundation
  *
  */
 
+/*
+ Functionality that works for every browser
+ Mozilla specific functionality abstracted to mozController.js
+ Safari specific functionality abstracted to safController.js
+ IE specific functionality abstracted to ieController.js
 
- //Functionality that works for every browser
- //Mozilla specific functionality abstracted to mozController.js
- //Safari specific functionality abstracted to safController.js
- //IE specific functionality abstracted to ieController.js
-
- //The reason for this is that the start page only includes the one corresponding
- //to the current browser, this means that the functionality in the Controller
- //object is only for the current browser, and there is only one copy of the code being
- //loaded into the browser for performance.
+ The reason for this is that the start page only includes the one corresponding
+ to the current browser, this means that the functionality in the Controller
+ object is only for the current browser, and there is only one copy of the code being
+ loaded into the browser for performance.
+ */
  
 function Controller() {
     
@@ -96,13 +97,15 @@ function Controller() {
         
         //if jid was passed
         if(typeof param_object.jsid != "undefined") {
-            eval ("var jsid=" + param_object.jid + ";");
+            var jsid;
+            eval ("jsid=" + param_object.jsid + ";");
+            
             element = this.findElement("id=" + jsid);
         }
         
         //if name was passed
         if(typeof param_object.name != "undefined") {
-            element = this.findElement("name" + param_object.name)
+            element = this.findElement("name=" + param_object.name)
         }        
         
         return element;
@@ -112,8 +115,9 @@ function Controller() {
    
    //Type Function
    this.type = function(param_object){
+   
    var element = this.lookup_dispatch(param_object);
-
+   
          //Get the focus on to the item to be typed in, or selected
          triggerEvent(element, 'focus', false);
          triggerEvent(element, 'select', true);
@@ -176,7 +180,7 @@ function Controller() {
             if (! locatorFunction) {
                 Windmill.Log.debug("Unrecognised locator type: '" + locatorType + "'");
             }
-    
+            
             return locatorFunction.call(this, locator, inDocument, inWindow);
         };
 
@@ -190,7 +194,9 @@ function Controller() {
             if (locator.startsWith('document.')) {
                 return this.locateElementByDomTraversal(locator, inDocument, inWindow);
             }
+           
             return this.locateElementByIdentifier(locator, inDocument, inWindow);
+            
         };
     }
     
@@ -211,12 +217,12 @@ function Controller() {
                 return element;
             }
             
-       /* for (var i = 0; i < this.getCurrentWindow().frames.length; i++) {
+        for (var i = 0; i < this.getCurrentWindow().frames.length; i++) {
             element = this.findElementBy(locatorType, locatorString, this.getCurrentWindow.frames[i].document, this.getCurrentWindow.frames[i]);
             if (element != null) {
                 return element;
             }
-        } */
+        }
 
         // Element was not found by any locator function.
         Windmill.Log.debug("Element " + locator + " not found");
@@ -227,6 +233,7 @@ function Controller() {
      * Find the element with id - can't rely on getElementById, coz it returns by name as well in IE..
      */
     this.locateElementById = function(identifier, inDocument, inWindow) {
+        
         var element = inDocument.getElementById(identifier);
         if (element && element.id === identifier) {
             return element;

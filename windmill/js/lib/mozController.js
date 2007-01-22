@@ -46,12 +46,28 @@ Controller.prototype.click = function(param_object){
      
 };
 
+//Double click for Mozilla
+Controller.prototype.doubleClick = function(param_object) {
+
+ var element = this.lookup_dispatch(param_object);
+ triggerEvent(element, 'focus', false);
+
+ // Trigger the mouse event.
+ triggerMouseEvent(element, 'dblclick', true);
+
+ if (this._windowClosed()) {
+     return;
+ }
+
+ triggerEvent(element, 'blur', false);
+};
+
 /**
  * In non-IE browsers, getElementById() does not search by name.  Instead, we
  * we search separately by id and name.
  */
 Controller.prototype.locateElementByIdentifier = function(identifier, inDocument, inWindow) {
-    return PageBot.prototype.locateElementById(identifier, inDocument, inWindow)
-            || PageBot.prototype.locateElementByName(identifier, inDocument, inWindow)
+    return Windmill.Controller.locateElementById(identifier, inDocument, inWindow)
+            || Windmill.Controller.locateElementByName(identifier, inDocument, inWindow)
             || null;
 };

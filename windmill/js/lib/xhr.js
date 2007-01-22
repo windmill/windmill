@@ -41,7 +41,7 @@ function XHR() {
         Windmill.XHR.xhr_response = eval('(' + str + ')');
         
         //If there was a legit json response
-        if (Windmill.XHR.xhr_response.error){
+        if ( Windmill.XHR.xhr_response.error ){
             Windmill.Log.debug("There was a JSON syntax error: '" + Windmill.XHR.xhr_response.error + "'");
         }
         else{
@@ -58,7 +58,7 @@ function XHR() {
                 result = Windmill.Controller[Windmill.XHR.xhr_response.result.method](Windmill.XHR.xhr_response.result.params); 
                 //eval("result=" + "Windmill.Controller." + Windmill.XHR.xhr_response.result.method + "(" + Windmill.XHR.xhr_response.result.params + ");");
                 } 
-            catch (error) {Windmill.Log.debug("Error Executing " + Windmill.XHR.xhr_response.result.method); }
+            catch (error) { Windmill.Log.debug("Error Executing " + Windmill.XHR.xhr_response.result.method); }
             
             //End and store the performance
             if (Windmill.XHR.xhr_response.result.method != 'defer'){
