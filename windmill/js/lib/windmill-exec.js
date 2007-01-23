@@ -18,13 +18,13 @@ Copyright 2006, Open Source Applications Foundation
 //Loader function
 function Load(){
     //Index page load report
-     load_timer.end_time();
-     load_timer.write();
+     //load_timer.end_time();
+     //load_timer.write();
     
     //Instantiate the windmill object
-    Windmill = new windmill_main(browser);
+    //Windmill = new windmill_main(browser);
     
     //Start XHR loop
-    Windmill.XHR.start_json_loop();
+    //Windmill.XHR.start_json_loop();
 
 }

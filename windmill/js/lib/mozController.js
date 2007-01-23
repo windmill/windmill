@@ -32,12 +32,21 @@ Controller.prototype.click = function(param_object){
        // Trigger the event.
        triggerMouseEvent(element, 'click', true);
        
+       
        //Apparently there is some annoying issue with chrome..and this fixes it. Concept from selenium browerbot.
        if (!Windmill.Browser.isChrome && !preventDefault) {
            if (element.href) {
                document.getElementById('webapp').src = element.href;
+               //if the url is calling JS then its ajax and we don't need to wait for any full page load.. hopefully.
+               if (element.href.indexOf('javascript:', 0) == -1){
+                    Windmill.XHR.loop_state = 0;
+                }
            } else if (element.parentNode.href){
                document.getElementById('webapp').src = element.parentNode.href;
+               
+               if (element.href.indexOf('javascript:', 0) == -1){
+                    Windmill.XHR.loop_state = 0;
+               }
            }
            else{
                

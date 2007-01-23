@@ -51,7 +51,8 @@ function UI() {
     this.toggle_loop_button_text = function(){
         var loop_button = document.getElementById("loopButton");
         if (loop_button.value == "Running.."){
-            loop_button.value = "Paused.."
+            loop_button.value = "Paused..";
+            
         }
         else{
             loop_button.value = "Running..";
@@ -70,5 +71,7 @@ function UI() {
         var resultsDiv = document.getElementById("tab4");
         resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;
     }
+    
+
 
 }

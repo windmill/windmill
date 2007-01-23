@@ -55,9 +55,9 @@ Copyright 2006, Open Source Applications Foundation
 
 	<script type="text/javascript">
         //Borked!!
- 		var load_timer = new TimeObj();
-		 load_timer.set_name('Loading first page');
-         load_timer.start_time();
+ 		//var load_timer = new TimeObj();
+		 //load_timer.set_name('Loading first page');
+         //load_timer.start_time();
 	</script>
 
 	
@@ -129,7 +129,7 @@ Copyright 2006, Open Source Applications Foundation
 	</div>
 
 	<div id="pagediv">
-		<IFRAME class="frameid" id="webapp" name="webapp" target="_self" frameborder=0 SRC="/"></iframe>
+		<IFRAME class="frameid" id="webapp" name="webapp" onload="javascript:Windmill.Controller.continue_loop();" target="_self" frameborder=0 SRC="/"></iframe>
 	</div>
 	
 	

@@ -46,16 +46,21 @@ Copyright 2006, Open Source Applications Foundation
 function Controller() {
     
 
-    this.general = function() {
-        alert('General');
-    };
     this.defer = function(){
         Windmill.UI.write_result('Deferring..')
     }
+
+    this.continue_loop = function(){
+        Windmill.XHR.loop_state = 1;
+        Windmill.XHR.start_json_loop();
+    }
     
-    this.open = function(url) {
+    this.open = function(param_object) {
         webappframe = document.getElementById('webapp');
-        webappframe.src = url;
+        webappframe.src = param_object.url;
+        
+        //Turn off loop until the onload for the iframe restarts it
+        Windmill.XHR.loop_state = 0;
     }
     
     //Helper Functions for dealing with the window

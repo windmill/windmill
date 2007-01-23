@@ -31,6 +31,10 @@ Controller.prototype.what = function() {
          var element = this.lookup_dispatch(param_object);
          triggerMouseEvent(element, 'click', true);
          //element.click();
+         
+         if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
+             Windmill.XHR.loop_state = 0;
+         }
   };
   
   //double click for ie, needs to be tested
@@ -39,3 +43,4 @@ Controller.prototype.what = function() {
          triggerMouseEvent(element, 'dblclick', true);
          //element.click();
   };
+ 

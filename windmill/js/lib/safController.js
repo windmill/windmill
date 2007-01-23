@@ -33,4 +33,8 @@ Controller.prototype.locateElementByIdentifier = function(identifier, inDocument
 Controller.prototype.click = function(param_object){
        var element = this.lookup_dispatch(param_object);
        triggerMouseEvent(element, 'click', true);
+       
+       if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
+           Windmill.XHR.loop_state = 0;
+       }
 };
