@@ -21,11 +21,24 @@ Copyright 2006, Open Source Applications Foundation
 //to a destination time/day using the Cosmo UI objects to calculate and compensate for
 //The relative DIV offsets
 //
-
+    //Since the div names are a concatonation of their hash key and a prepending string
+    //I will just recreate that before I actually look up the dom element, then click
+    //the appropriate element
     
-    Controller.prototype.dragEvent = function(param_object){
+    Controller.prototype.click_lozenge =function(param_object){
+        var hash_key;
+        eval ("hash_key=" + param_object.jsid + ";");
+        param_object.id = "eventDivContent__"+ hash_key;
+        delete param_object.jsid;
+        //Since id comes before jsid in the lookup order
+        //we don't need to reset it, now go ahead and click it!
+        this.doubleClick(param_object);
+        
+    }
+    
+    Controller.prototype.drag_event = function(param_object){
         //Get originating coordinates for the event
-        var element = Windmill.Controller.findElement("id=" + param_object.orig)
+        var element = this.lookup_dispatch(param_object.origional);
         var eStartXY = getClientXY(element)
         var eStartX = eStartXY[0];
         var eStartY = eStartXY[1];
@@ -34,19 +47,19 @@ Copyright 2006, Open Source Applications Foundation
         triggerMouseEvent(element, 'mousedown', true, eStartX, eStartY);
 
         //Calculate the start drag using the x and y calendar offsets
-        var eStartX = (eStartX + this.browserbot.getCurrentWindow().Cal.dragElem.clickOffsetX);
-        var eStartY = (eStartY + this.browserbot.getCurrentWindow().Cal.dragElem.clickOffsetY);
-
+        var eStartX = (eStartX + parent.frames[1].Cal.dragElem.clickOffsetX);
+        var eStartY = (eStartY + parent.frames[1].Cal.dragElem.clickOffsetY);
+        
         //Get destination div x,y coordinates
-        var destelement = Windmill.Controller.findElement("id=" + param_object.dest)
+        var destelement = this.lookup_dispatch(param_object.destination);
         var dStartXY = getClientXY(destelement)
 
         //Adjust for offsets, the offsets were both still off by increments of 150 and 50, so I correct this here.
         //(There is probably a better way to do this, but this was the best hack I could make work reliably.)
         //This breaks when the X value when the browser canvas is significantly shrunk because the dest div size shrinks
         //This will be fixed after the merge code is given to QA
-        var dStartX = (dStartXY[0] + this.browserbot.getCurrentWindow().Cal.dragElem.clickOffsetX - 100 - this.browserbot.getCurrentWindow().cosmo.view.cal.canvas.dayUnitWidth);
-        var dStartY = (dStartXY[1] + this.browserbot.getCurrentWindow().Cal.dragElem.clickOffsetY - 50);
+        var dStartX = (dStartXY[0] + parent.frames[1].Cal.dragElem.clickOffsetX - 100 - parent.frames[1].cosmo.view.cal.canvas.dayUnitWidth);
+        var dStartY = (dStartXY[1] + parent.frames[1].Cal.dragElem.clickOffsetY - 50);
         //this.browserbot.getCurrentWindow().cosmo.view.cal.canvas.dayUnitWidth
 
         //Calculate the actual distance the x and y needs to move

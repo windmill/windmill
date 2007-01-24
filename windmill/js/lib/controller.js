@@ -45,6 +45,7 @@ Copyright 2006, Open Source Applications Foundation
  
 function Controller() {
     
+    this.optionLocatorFactory = new OptionLocatorFactory();
 
     this.defer = function(){
         Windmill.UI.write_result('Deferring..')
@@ -104,7 +105,6 @@ function Controller() {
         if(typeof param_object.jsid != "undefined") {
             var jsid;
             eval ("jsid=" + param_object.jsid + ";");
-            
             element = this.findElement("id=" + jsid);
         }
         
@@ -112,7 +112,7 @@ function Controller() {
         if(typeof param_object.name != "undefined") {
             element = this.findElement("name=" + param_object.name)
         }        
-        
+       
         return element;
     }
     
@@ -157,6 +157,43 @@ function Controller() {
         }
         setTimeout("done()", param_object.seconds);
     }   
+    
+    //Initial stab at selector functionality, taken from selenium-browserbot.js
+    /*
+    * Select the specified option and trigger the relevant events of the element.
+    */
+    this.select = function(param_object) {
+        var element = this.lookup_dispatch(param_object.selectLocator);
+        
+        /*if (!("options" in element)) {
+               //throw new SeleniumError("Specified element is not a Select (has no options)");
+               
+         }*/
+        
+        var locator = this.optionLocatorFactory.fromLocatorString('label=' + param_object.optionLocator);
+        
+        var optionToSelect = locator.findOption(element);
+        
+        triggerEvent(element, 'focus', false);
+        var changed = false;
+        for (var i = 0; i < element.options.length; i++) {
+            var option = element.options[i];
+            if (option.selected && option != optionToSelect) {
+                option.selected = false;
+                changed = true;
+            }
+            else if (!option.selected && option == optionToSelect) {
+                option.selected = true;
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            triggerEvent(element, 'change', true);
+        }
+    }
+
+   
     
     //A big part of the following is adapted from the selenium project browserbot
     //Registers all the ways to do a lookup
@@ -423,7 +460,140 @@ function Controller() {
     
     //Register all the ways to lookup an element in a list to access dynamically
     this._registerAllLocatorFunctions();  
-    
-   
 
 };
+
+/**
+ *  Factory for creating "Option Locators".
+ *  An OptionLocator is an object for dealing with Select options (e.g. for
+ *  finding a specified option, or asserting that the selected option of 
+ *  Select element matches some condition.
+ *  The type of locator returned by the factory depends on the locator string:
+ *     label=<exp>  (OptionLocatorByLabel)
+ *     value=<exp>  (OptionLocatorByValue)
+ *     index=<exp>  (OptionLocatorByIndex)
+ *     id=<exp>     (OptionLocatorById)
+ *     <exp> (default is OptionLocatorByLabel).
+ */
+function OptionLocatorFactory() {
+}
+
+OptionLocatorFactory.prototype.fromLocatorString = function(locatorString) {
+    var locatorType = 'label';
+    var locatorValue = locatorString;
+    // If there is a locator prefix, use the specified strategy
+    var result = locatorString.match(/^([a-zA-Z]+)=(.*)/);
+    if (result) {
+        locatorType = result[1];
+        locatorValue = result[2];
+    }
+    if (this.optionLocators == undefined) {
+        this.registerOptionLocators();
+    }
+    if (this.optionLocators[locatorType]) {
+        return new this.optionLocators[locatorType](locatorValue);
+    }
+    throw new SeleniumError("Unkown option locator type: " + locatorType);
+};
+
+/**
+ * To allow for easy extension, all of the option locators are found by
+ * searching for all methods of OptionLocatorFactory.prototype that start
+ * with "OptionLocatorBy".
+ * TODO: Consider using the term "Option Specifier" instead of "Option Locator".
+ */
+OptionLocatorFactory.prototype.registerOptionLocators = function() {
+    this.optionLocators={};
+    for (var functionName in this) {
+      var result = /OptionLocatorBy([A-Z].+)$/.exec(functionName);
+      if (result != null) {
+          var locatorName = result[1].lcfirst();
+          this.optionLocators[locatorName] = this[functionName];
+      }
+    }
+};
+
+/**
+ *  OptionLocator for options identified by their labels.
+ */
+OptionLocatorFactory.prototype.OptionLocatorByLabel = function(label) {
+    this.label = label;
+    this.labelMatcher = new PatternMatcher(this.label);
+    this.findOption = function(element) {
+        for (var i = 0; i < element.options.length; i++) {
+            if (this.labelMatcher.matches(element.options[i].text)) {
+                return element.options[i];
+            }
+        }
+        throw new SeleniumError("Option with label '" + this.label + "' not found");
+    };
+
+    this.assertSelected = function(element) {
+        var selectedLabel = element.options[element.selectedIndex].text;
+        Assert.matches(this.label, selectedLabel)
+    };
+};
+
+/**
+ *  OptionLocator for options identified by their values.
+ */
+OptionLocatorFactory.prototype.OptionLocatorByValue = function(value) {
+    this.value = value;
+    this.valueMatcher = new PatternMatcher(this.value);
+    this.findOption = function(element) {
+        for (var i = 0; i < element.options.length; i++) {
+            if (this.valueMatcher.matches(element.options[i].value)) {
+                return element.options[i];
+            }
+        }
+        throw new SeleniumError("Option with value '" + this.value + "' not found");
+    };
+
+    this.assertSelected = function(element) {
+        var selectedValue = element.options[element.selectedIndex].value;
+        Assert.matches(this.value, selectedValue)
+    };
+};
+
+/**
+ *  OptionLocator for options identified by their index.
+ */
+OptionLocatorFactory.prototype.OptionLocatorByIndex = function(index) {
+    this.index = Number(index);
+    if (isNaN(this.index) || this.index < 0) {
+        throw new SeleniumError("Illegal Index: " + index);
+    }
+
+    this.findOption = function(element) {
+        if (element.options.length <= this.index) {
+            throw new SeleniumError("Index out of range.  Only " + element.options.length + " options available");
+        }
+        return element.options[this.index];
+    };
+
+    this.assertSelected = function(element) {
+    	Assert.equals(this.index, element.selectedIndex);
+    };
+};
+
+/**
+ *  OptionLocator for options identified by their id.
+ */
+OptionLocatorFactory.prototype.OptionLocatorById = function(id) {
+    this.id = id;
+    this.idMatcher = new PatternMatcher(this.id);
+    this.findOption = function(element) {
+        for (var i = 0; i < element.options.length; i++) {
+            if (this.idMatcher.matches(element.options[i].id)) {
+                return element.options[i];
+            }
+        }
+        throw new SeleniumError("Option with id '" + this.id + "' not found");
+    };
+
+    this.assertSelected = function(element) {
+        var selectedId = element.options[element.selectedIndex].id;
+        Assert.matches(this.id, selectedId)
+    };
+};
+

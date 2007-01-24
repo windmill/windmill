@@ -38,8 +38,9 @@ function XHR() {
     //callback
     this.my_handler = function(str){
 
+    
         Windmill.XHR.xhr_response = eval('(' + str + ')');
-        
+       
         //If there was a legit json response
         if ( Windmill.XHR.xhr_response.error ){
             Windmill.Log.debug("There was a JSON syntax error: '" + Windmill.XHR.xhr_response.error + "'");

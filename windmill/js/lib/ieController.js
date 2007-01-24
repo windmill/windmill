@@ -40,7 +40,17 @@ Controller.prototype.what = function() {
   //double click for ie, needs to be tested
   Controller.prototype.doubleClick = function(param_object){
          var element = this.lookup_dispatch(param_object);
-         triggerMouseEvent(element, 'dblclick', true);
-         //element.click();
+         
+         triggerEvent(element, 'focus', false);
+
+           // Trigger the mouse event.
+           triggerMouseEvent(element, 'dblclick', true);
+
+           if (this.windowClosed()) {
+               return;
+           }
+
+           triggerEvent(element, 'blur', false);
   };
  
+  

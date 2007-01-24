@@ -334,8 +334,9 @@ function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, cont
         evt.button = 1;
         evt.relatedTarget = null;
         if (!screenX && !screenY && !clientX && !clientY) {
-            element.click();
-            //element.fireEvent('on' + eventType);
+            //element.click();
+            element.fireEvent('on' + eventType);
+            eval("element." + eventType + "();");
         }
         else {
             evt.screenX = screenX;
@@ -363,6 +364,7 @@ function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, cont
         }
     }
     else {
+        
         //LOG.info("element doesn't have fireEvent");
         var evt = document.createEvent('MouseEvents');
         if (evt.initMouseEvent)
@@ -382,6 +384,7 @@ function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, cont
 
         }
         element.dispatchEvent(evt);
+        
     }
 }
 
