@@ -206,14 +206,16 @@ class WindmillProxyApplication(object):
             length = int(environ['CONTENT_LENGTH'])
             body = environ['wsgi.input'].read(length)
             
+            
         # Build headers
         headers = {}
+        self.logger.debug('Environ ; %s' % str(environ))
         for key in environ.keys():
             # Keys that start with HTTP_ are all headers
             if key.startswith('HTTP_'):
                 # This is a hacky way of getting the header names right
                 value = environ[key]
-                key = key.replace('HTTP_', '').swapcase().replace('_', '-')
+                key = key.replace('HTTP_', '', 1).swapcase().replace('_', '-')
                 if is_hop_by_hop(key) is False:
                     headers[key] = value
     
