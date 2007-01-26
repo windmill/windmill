@@ -172,6 +172,9 @@ class JSONRPCDispatcher(object):
             
         if rpc_request.has_key('id'):
             jsonrpc_id = rpc_request[u'id']
+            
+        if result is None and error is None:
+            result = 200
         
         return self._encode(result=result, error=error, jsonrpc_id=jsonrpc_id)
     

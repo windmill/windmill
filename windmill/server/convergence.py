@@ -105,6 +105,7 @@ class JSONRPCMethods(object):
                 self._test_resolution_suite.resolve_test(report['result'], report['test'])
         else:
             self._logger.error('Report object does not adhere to 0.1 specification. Does not contain key "status" or key "test"')
+            raise Exception,  'Report object does not adhere to 0.1 specification. Does not contain key "status" or key "test"' 
         
             
     def add_json_test(self, json):
