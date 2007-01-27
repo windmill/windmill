@@ -24,7 +24,10 @@ Controller.prototype.what = function() {
 Controller.prototype.click = function(param_object){
       
        var element = this.lookup_dispatch(param_object);
-       
+       if (!element){
+              return false;
+        }
+          
        element.addEventListener('click', function(evt) {
            preventDefault = evt.getPreventDefault();
        }, false);
@@ -52,13 +55,20 @@ Controller.prototype.click = function(param_object){
                
            }
        }
+       
+       return true;
      
 };
 
 //Double click for Mozilla
 Controller.prototype.doubleClick = function(param_object) {
 
+ //Look up the dom element, return false if its not there so we can report failure
  var element = this.lookup_dispatch(param_object);
+ if (!element){
+    return false;
+ }
+    
  triggerEvent(element, 'focus', false);
 
  // Trigger the mouse event.
@@ -69,6 +79,8 @@ Controller.prototype.doubleClick = function(param_object) {
  }
 
  triggerEvent(element, 'blur', false);
+ 
+ return true;
 };
 
 /**

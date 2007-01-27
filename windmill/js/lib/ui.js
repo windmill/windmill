@@ -27,16 +27,19 @@ Copyright 2006, Open Source Applications Foundation
 function UI() {
     
     //Run code and manage its result
-    this.run_JS = function(){
+    this.Run = function(){
         
     	var jstext = document.getElementById("jsrunner");
-    	result = Windmill.Run(jstext.value);
-	
+    	var run_obj = eval('(' + jstext.value + ')');
+    	//result = Windmill.Run(jstext.value);
+	    result = Windmill.Controller[run_obj.method](run_obj.params); 
+        
+	    
     	if (result == true){
     		Windmill.UI.write_result('Success');
     	}
     	else{
-            Windmill.UI.write_result('No Response');    	
+            Windmill.UI.write_result('Failure');    	
         }
 	
     }
@@ -60,13 +63,13 @@ function UI() {
            
     }
     
-    //Writing to the results tab
+    //Writing to the performance tab
     this.write_performance = function(str){
         var resultsDiv = document.getElementById("tab3");
         resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;
     }
     
-    //Writing to the performance tab
+    //Writing to the results tab
     this.write_result = function(str){
         var resultsDiv = document.getElementById("tab4");
         resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;

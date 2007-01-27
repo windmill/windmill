@@ -18,6 +18,8 @@ function TimeObj() {
     
     var time_started = '0:0:0:0';
     var time_ended = '0:0:0:0';
+    var start_ms = 0;
+    var end_ms = 0;
     var run_time = '';
     var identifier = '';
     
@@ -28,37 +30,25 @@ function TimeObj() {
     
     //Calculate how long it took
     this.calculate_time = function(){
-        started_array = time_started.split(":");
-        ended_array = time_ended.split(":");
-        run_time = (ended_array[0] - started_array[0]) + ":" + (ended_array[1] - started_array[1])  + ":" + (ended_array[2] - started_array[2]) + ":" + (ended_array[3] - started_array[3]);
+         run_time = end_ms - start_ms;
     }
     
     //Used for users who want to log the time and MS so they can compute how long a test took to run
     this.start_time = function(){
 
         var d = new Date();
-        var curr_hour = d.getHours();
-        var curr_min = d.getMinutes();
-        var curr_sec = d.getSeconds();
-        var curr_msec = d.getMilliseconds();
-
-        var time = (curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec);
-    	time_started = time;
-	
+        start_ms = d.getTime();
+     
+    	time_started = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z'; 
     }
 
     //Storing end time used for performance computation
     this.end_time = function(identifier){
 
         var d = new Date();
-        var curr_hour = d.getHours();
-        var curr_min = d.getMinutes();
-        var curr_sec = d.getSeconds();
-        var curr_msec = d.getMilliseconds();
+        end_ms  = d.getTime();
 
-        var time = (curr_hour + ":" + curr_min + ":" + curr_sec + ":" + curr_msec);
-        time_ended = time;
-
+        time_ended = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z';
     }
     
     //Write to the log div
@@ -66,12 +56,11 @@ function TimeObj() {
          var perf_tab = document.getElementById("tab3");
          perf_tab.innerHTML = perf_tab.innerHTML + "<br>Starting " + this.identifier + " : " + time_started;
          perf_tab.innerHTML = perf_tab.innerHTML + "<br>Ending " + this.identifier + " : " + time_ended;
-         this.calculate_time();
-         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Total " + this.identifier + " : " + run_time + "<br>";
-        /* Windmill.UI.write_performance("<br>Starting " + identifier + " : " + time_started);
-         Windmill.UI.write_performance("<br>Ending " + identifier + " : " + time_ended);
          
-         Windmill.UI.write_performance("<br>Total " + identifier + " : " + run_time);*/
+         this.calculate_time();
+         
+         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Total " + this.identifier + " : " + run_time + " ms <br>";
+
     }
     
 };

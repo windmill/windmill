@@ -30,11 +30,41 @@ Controller.prototype.locateElementByIdentifier = function(identifier, inDocument
             || null;
 };
 
+//Safari Click function
 Controller.prototype.click = function(param_object){
-       var element = this.lookup_dispatch(param_object);
-       triggerMouseEvent(element, 'click', true);
-       
-       if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
-           Windmill.XHR.loop_state = 0;
-       }
+   var element = this.lookup_dispatch(param_object);
+   if (!element){
+       return false;
+   }
+    
+   triggerMouseEvent(element, 'click', true);
+   
+   if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
+       Windmill.XHR.loop_state = 0;
+   }
+   
+   return true;
 };
+
+//Double click for Safari
+Controller.prototype.doubleClick = function(param_object) {
+
+    var element = this.lookup_dispatch(param_object);
+    if (!element){
+           return false;
+    }
+    
+    triggerEvent(element, 'focus', false);
+
+    // Trigger the mouse event.
+    triggerMouseEvent(element, 'dblclick', true);
+
+    if (this._windowClosed()) {
+        return;
+    }
+
+    triggerEvent(element, 'blur', false);
+    
+    return true;
+};
+

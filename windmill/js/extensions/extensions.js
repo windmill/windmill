@@ -32,13 +32,18 @@ Copyright 2006, Open Source Applications Foundation
         delete param_object.jsid;
         //Since id comes before jsid in the lookup order
         //we don't need to reset it, now go ahead and click it!
-        this.doubleClick(param_object);
+        this.click(param_object);
         
     }
     
     Controller.prototype.drag_event = function(param_object){
         //Get originating coordinates for the event
-        var element = this.lookup_dispatch(param_object.origional);
+        var hash_key;
+        eval ("hash_key=" + param_object.original.jsid + ";");
+        param_object.origional.id = "eventDivContent__"+ hash_key;
+        delete param_object.original.jsid;
+        
+        var element = this.lookup_dispatch(param_object.original);
         var eStartXY = getClientXY(element)
         var eStartX = eStartXY[0];
         var eStartY = eStartXY[1];

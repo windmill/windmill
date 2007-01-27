@@ -28,7 +28,12 @@ Controller.prototype.what = function() {
   };
   
   Controller.prototype.click = function(param_object){
+      
          var element = this.lookup_dispatch(param_object);
+         if (!element){
+                return false;
+         }
+            
          triggerMouseEvent(element, 'click', true);
          //element.click();
          
@@ -39,7 +44,11 @@ Controller.prototype.what = function() {
   
   //double click for ie, needs to be tested
   Controller.prototype.doubleClick = function(param_object){
+         
          var element = this.lookup_dispatch(param_object);
+         if (!element){
+                return false;
+         }
          
          triggerEvent(element, 'focus', false);
 

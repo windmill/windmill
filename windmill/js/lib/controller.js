@@ -62,6 +62,7 @@ function Controller() {
         
         //Turn off loop until the onload for the iframe restarts it
         Windmill.XHR.loop_state = 0;
+        return true;
     }
     
     //Helper Functions for dealing with the window
@@ -122,7 +123,9 @@ function Controller() {
    this.type = function(param_object){
    
    var element = this.lookup_dispatch(param_object);
-   
+   if (!element){
+       return false;
+   }
          //Get the focus on to the item to be typed in, or selected
          triggerEvent(element, 'focus', false);
          triggerEvent(element, 'select', true);
@@ -148,6 +151,8 @@ function Controller() {
          // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
          //Another wierd chrome thing?
          triggerEvent(element, 'change', true);
+         
+         return true;
    }
        
     //Wait function
@@ -156,6 +161,8 @@ function Controller() {
             return true;
         }
         setTimeout("done()", param_object.seconds);
+        
+        return true;
     }   
     
     //Initial stab at selector functionality, taken from selenium-browserbot.js
@@ -165,6 +172,10 @@ function Controller() {
     this.select = function(param_object) {
         var element = this.lookup_dispatch(param_object.selectLocator);
         
+        if (!element){
+               return false;
+         }
+           
         /*if (!("options" in element)) {
                //throw new SeleniumError("Specified element is not a Select (has no options)");
                
@@ -191,6 +202,8 @@ function Controller() {
         if (changed) {
             triggerEvent(element, 'change', true);
         }
+        
+        return true;
     }
 
    
@@ -254,13 +267,13 @@ function Controller() {
             locatorString = result[2];
         }
         
-          var element = this.findElementBy(locatorType, locatorString, this.getDocument(), this.getCurrentWindow().frames[1]);
+          var element = this.findElementBy(locatorType, locatorString, this.getDocument(), parent.frames[1]);
             if (element != null) {
                 return element;
             }
             
-        for (var i = 0; i < this.getCurrentWindow().frames.length; i++) {
-            element = this.findElementBy(locatorType, locatorString, this.getCurrentWindow.frames[i].document, this.getCurrentWindow.frames[i]);
+        for (var i = 0; i < parent.frames.length; i++) {
+            element = this.findElementBy(locatorType, locatorString, parent.frames[i].document, parent.frames[i]);
             if (element != null) {
                 return element;
             }
