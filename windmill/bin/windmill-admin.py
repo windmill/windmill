@@ -86,6 +86,11 @@ def shell(cmd_options):
     # If we have a test file we should add all the tests
     if windmill.settings['TEST_FILE'] is not None:
         windmill.bin.run_tests.run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
+        
+    def clear_queue():
+        response = jsonrpc_client.next_action()
+        while response['result']['method'] != 'defer':
+            response = jsonrpc_client.next_action()
 
     # If ipython is installed and we weren't given the usecode option
     if hasattr(windmill.tools.dev_environment, 'IPyShell') is True and cmd_options['usecode'] is False:
