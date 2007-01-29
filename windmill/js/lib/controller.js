@@ -102,7 +102,7 @@ function Controller() {
             element = this.findElement("id=" + param_object.id)
         }
         
-        //if jid was passed
+        //if jsid was passed
         if(typeof param_object.jsid != "undefined") {
             var jsid;
             eval ("jsid=" + param_object.jsid + ";");

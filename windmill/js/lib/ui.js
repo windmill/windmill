@@ -31,10 +31,9 @@ function UI() {
         
     	var jstext = document.getElementById("jsrunner");
     	var run_obj = eval('(' + jstext.value + ')');
-    	//result = Windmill.Run(jstext.value);
+    
 	    result = Windmill.Controller[run_obj.method](run_obj.params); 
         
-	    
     	if (result == true){
     		Windmill.UI.write_result('Success');
     	}
@@ -67,12 +66,14 @@ function UI() {
     this.write_performance = function(str){
         var resultsDiv = document.getElementById("tab3");
         resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;
+        resultsDiv.scrollTop = resultsDiv.scrollHeight;
     }
     
     //Writing to the results tab
     this.write_result = function(str){
         var resultsDiv = document.getElementById("tab4");
         resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;
+        resultsDiv.scrollTop = resultsDiv.scrollHeight;
     }
     
 

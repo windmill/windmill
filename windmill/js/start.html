@@ -67,8 +67,9 @@ Copyright 2006, Open Source Applications Foundation
 
 		<div id="tab1" style="display:none;">
 		<img src="ide/img/logo.jpg">
-		Welcome to <b>Windmill</b>, 
-						<br><br>Here is the link to the wiki page, the latest version, any other kind of introduction information.
+			<div style="position:absolute;left:130px;top:30px;width:450px">Welcome to <b>Windmill</b>!<br><br>
+				Windmill is a web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.
+			</div>
 		</div>
 		
 		<div id="tab2" style="display:none;">
@@ -78,7 +79,7 @@ Copyright 2006, Open Source Applications Foundation
 
 				<div style="font-size:10px;font-family:  'Lucida Grande', Geneva, sans-serif; ">
 					<TEXTAREA id="jsrunner" NAME="runner" ROWS="4" COLS="110"></TEXTAREA>
-					<br>Example Command: windmill.doClick("link=Create an Account");
+					<br>Example Command: {"method": "click", "params": {"link" : "Log in to Cosmo"}}
 				</div>
 
 				<div>
@@ -87,11 +88,11 @@ Copyright 2006, Open Source Applications Foundation
 				</div>
 		</div>
 		
-		<div id="tab3" style="display:none;overflow:auto;height:70px;">
+		<div id="tab3" style="display:none;overflow:auto;height:90px;">
 			
 		</div>
 		
-		<div id="tab4" style="display:none;overflow:auto;height:70px;">
+		<div id="tab4" style="display:none;overflow:auto;height:90px;">
 		
 		</div>
 		
@@ -101,8 +102,8 @@ Copyright 2006, Open Source Applications Foundation
 		</div>
 		
 		<div id="tab6" style="display:none;">
-			<a target="_parent" href="http://windmill.osafoundation.org/trac/wiki/GettingStarted">Getting Started</a><br>
-			<a target="_parent" href="http://windmill.osafoundation.org/trac">Wiki </a>
+			Documentation from Windmill setup, to test writing: <a target="_blank" href="http://windmill.osafoundation.org/trac/wiki/GettingStarted">Getting Started</a><br>
+			Full Windmill WIKI: <a target="_blank" href="http://windmill.osafoundation.org/trac">Wiki </a>
 		</div>
 
 <div id="webui">
@@ -116,8 +117,8 @@ Copyright 2006, Open Source Applications Foundation
 	tabs.add('tab2', 'Console');
 	tabs.add('tab3', 'Performance');
 	tabs.add('tab4', 'Debug');
-	tabs.add('tab5', 'Loop');
-	tabs.add('tab6', 'Info');
+	tabs.add('tab5', 'Action Loop');
+	tabs.add('tab6', 'Docs');
 
 	tabs.draw();
 	tabs.focus('tab1');

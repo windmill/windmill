@@ -25,7 +25,7 @@ Controller.prototype.click = function(param_object){
       
        var element = this.lookup_dispatch(param_object);
        if (!element){
-              return false;
+          return false;
         }
           
        element.addEventListener('click', function(evt) {
@@ -49,12 +49,15 @@ Controller.prototype.click = function(param_object){
                
                if (element.href.indexOf('javascript:', 0) == -1){
                     Windmill.XHR.loop_state = 0;
+                    //element = "true";
                }
            }
            else{
                
            }
        }
+       
+       
        
        return true;
      
