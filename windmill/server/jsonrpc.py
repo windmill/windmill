@@ -151,7 +151,7 @@ class JSONRPCDispatcher(object):
                         raise Exception, e
             elif type(rpc_request[u'params']) is dict:
                 ascii_params = {}
-                [ascii_params.__setitem__(str(key), x[key]) for key in rpc_request[u'params'].keys()]
+                [ascii_params.__setitem__(str(key), rpc_request[u'params'][key]) for key in rpc_request[u'params'].keys()]
                 result = self.__dict__[rpc_request[u'method']](**ascii_params)
             elif rpc_request[u'params'] is None:
                 result = self.__dict__[rpc_request[u'method']]()
