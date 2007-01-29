@@ -93,7 +93,7 @@ class JSONRPCMethods(object):
             action.update({'method':'defer'})
             return action
             
-    def report(self, status=None, test=None, debug=None, result=None):
+    def report(self, status=None, test=None, debug=None, result=None, starttime=None, endtime=None):
         """Report fass/fail and status"""
         if status is not None:
             self._status = status
