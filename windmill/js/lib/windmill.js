@@ -58,6 +58,6 @@ function windmill_main(browser) {
 Windmill = new windmill_main(browser);
 
 //Start XHR loop
-Windmill.XHR.start_json_loop();
+//Windmill.XHR.start_json_loop();
 
 
