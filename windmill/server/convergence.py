@@ -93,16 +93,15 @@ class JSONRPCMethods(object):
             action.update({'method':'defer'})
             return action
             
-    def report(self, status=None, test=None, debug=None, ):
+    def report(self, status=None, test=None, debug=None, result=None):
         """Report fass/fail and status"""
-        report = simplejson.loads(json)
-        if report.has_key('status'):
-            self._status = report['status']
-        elif report.has_key('test'):
-            if report.has_key('debug'):
-                self._test_resolution_suite.resolve_test(report['result'], report['test'], report['debug'])
+        if status is not None:
+            self._status = status
+        elif test is not None:
+            if debug is not None:
+                self._test_resolution_suite.resolve_test(result, test, debug)
             else:
-                self._test_resolution_suite.resolve_test(report['result'], report['test'])
+                self._test_resolution_suite.resolve_test(result, test)
         else:
             self._logger.error('Report object does not adhere to 0.1 specification. Does not contain key "status" or key "test"')
             raise Exception,  'Report object does not adhere to 0.1 specification. Does not contain key "status" or key "test"' 
