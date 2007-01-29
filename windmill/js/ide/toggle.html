@@ -15,6 +15,7 @@ Copyright 2006, Open Source Applications Foundation
 -->
 
 <link rel="stylesheet" type="text/css" href="./css/button.css"/>
+<script type="text/javascript" src="/lib/fleegix.js"></script>
 
 <script type="text/javascript">
 function expand(){
@@ -26,6 +27,7 @@ function expand(){
 	if (webui_div.style.visibility == "visible"){
 		webapp_div.style.height="93%";
 		webapp_div.style.top="7%";
+		//fleegix.fx.fadeout(webui_div);
 		webui_div.style.visibility = "hidden";
 	}
 	else{
@@ -33,6 +35,8 @@ function expand(){
 		webapp_div.style.top="20%";
 		webapp_div.style.height="80%";
 		webui_div.style.visibility = "visible";
+		//fleegix.fx.fadein(webui_div);
+		
 	}
 	
 }

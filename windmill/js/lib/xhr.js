@@ -28,7 +28,7 @@ function XHR() {
     
     //Keep track of the loop state, running or paused
     this.loop_state = 1;
-    
+   
     //json_call
     this.json_call = function(version, method, params){
         this.version = version || null;
@@ -49,6 +49,7 @@ function XHR() {
             
             //Init and start performance but not if the protocol defer
             if (Windmill.XHR.xhr_response.result.method != 'defer'){
+                
                 var action_timer = new TimeObj();
                 action_timer.set_name(Windmill.XHR.xhr_response.result.method);
                 action_timer.start_time();
@@ -56,7 +57,7 @@ function XHR() {
             
             //Run the action  
             try { //result = Windmill.Controller.click(Windmill.XHR.xhr_response.result.params); }
-                result = Windmill.Controller[Windmill.XHR.xhr_response.result.method](Windmill.XHR.xhr_response.result.params); 
+                var result = Windmill.Controller[Windmill.XHR.xhr_response.result.method](Windmill.XHR.xhr_response.result.params); 
                 //eval("result=" + "Windmill.Controller." + Windmill.XHR.xhr_response.result.method + "(" + Windmill.XHR.xhr_response.result.params + ");");
             }
             catch (error) { 
@@ -76,13 +77,13 @@ function XHR() {
                 action_timer.write();
                 
                 //Send the report ***BROKEN*** probably because the backend response to this isn't working yet.. SOON.
-                //Windmill.XHR.send_report(Windmill.XHR.xhr_response.result.method, result, action_timer, str);
-
+                Windmill.XHR.send_report(Windmill.XHR.xhr_response.result.method, result, action_timer);
+                
                 //Write to the result tab
                 Windmill.UI.write_result(Windmill.XHR.xhr_response.result.method + ": " + result);     
     
             }
-            
+
             //If the loop is running make the next request    
             if (Windmill.XHR.loop_state != 0){
                 //Sleep for a few seconds before doing the next xhr call
@@ -96,10 +97,19 @@ function XHR() {
         response = eval('(' + str + ')');
     }
     
+    
     //Send the report
-    this.send_report = function(method, result, timer, str){
-        var json_object = new this.json_call('1.1', 'report', '{"test":'+ str + ',"result":'+ result +', "starttime":"'+ timer.time_started + '", "endtime":"'+ timer.time_ended +' " }');
-        var json_string = fleegix.json.serialize(json_object)
+    this.send_report = function(method, result, timer){
+        var result_string = fleegix.json.serialize(Windmill.XHR.xhr_response.result)
+        //alert(result_string)
+        //alert('{"test":'+ result_string + ',"result":'+ result +', "starttime":"'+ timer.get_start() + '", "endtime":"'+ timer.get_end() +' " }');
+        var object_string = '{"test":'+ result_string + ',"result": '+ result +', "starttime":"'+ timer.get_start() + '", "endtime":"'+ timer.get_end() +'"}';
+        var test_obj = eval('(' + object_string + ')');
+        //var object_string = '{"version": "1.1", "method":"report", "params": ' + result_string +',"result":'+ result +', "starttime":"'+ timer.get_start() + '", "endtime":"'+ timer.get_end() +'" }';
+        var json_object = new this.json_call('1.1', 'report');
+        json_object.params = test_obj;
+        var json_string = fleegix.json.serialize(json_object);
+        //alert (json_string);
         fleegix.xhr.doPost(this.report_handler, '/windmill-jsonrpc/', json_string);
     }
     

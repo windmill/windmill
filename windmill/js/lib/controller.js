@@ -86,7 +86,7 @@ function Controller() {
     //Translates from the way we are passing objects to functions to the lookups
     this.lookup_dispatch = function(param_object){
        
-        var element;
+        var element = null;
         //If a link was passed, lookup as link
         if(typeof param_object.link != "undefined") {
             element = this.findElement("link=" + param_object.link)

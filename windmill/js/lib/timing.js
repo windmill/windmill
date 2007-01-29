@@ -23,6 +23,14 @@ function TimeObj() {
     var run_time = '';
     var identifier = '';
     
+  this.get_start = function(){
+      return time_started;
+  }
+  
+  this.get_end = function(){
+        return time_ended;
+    }
+   
     //Set the identifier 
     this.set_name = function(identifier){
         this.identifier = identifier;
@@ -60,7 +68,10 @@ function TimeObj() {
          this.calculate_time();
          
          perf_tab.innerHTML = perf_tab.innerHTML + "<br>Total " + this.identifier + " : " + run_time + " ms <br>";
-
+         
+         //var time = {};
+         //time.start = time_started;
+         //time.end = time_ended;
     }
     
 };
