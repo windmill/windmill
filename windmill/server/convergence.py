@@ -93,7 +93,7 @@ class JSONRPCMethods(object):
             action.update({'method':'defer'})
             return action
             
-    def report(self, json):
+    def report(self, status=None, test=None, debug=None, ):
         """Report fass/fail and status"""
         report = simplejson.loads(json)
         if report.has_key('status'):

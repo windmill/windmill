@@ -30,6 +30,11 @@ class _Method(object):
         self.name = name
     
     def __call__(self, *args, **kwargs):
+        
+        #
+        # I need to handle keyword arguments per 1.1 spec
+        #
+        
         request = {}
         request['version'] = '1.1'
         request['method'] = self.name

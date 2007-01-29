@@ -236,14 +236,6 @@ class WSGIJSONRPCDispatcher(JSONRPCDispatcher):
             
     def __call__(self, environ, start_response):
         return self.handler(environ, start_response)
-        
-class WindmillJSONRPCHandler(object):
-    
-    def get_next_task(self):
-        pass
-        
-def get_dispatcher():
-    pass
-    
-    
+
+
     
