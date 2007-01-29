@@ -90,7 +90,7 @@ function XHR() {
             //If the loop is running make the next request    
             if (Windmill.XHR.loop_state != 0){
                 //Sleep for a few seconds before doing the next xhr call
-                setTimeout("Windmill.XHR.get_next()", 2000);
+                setTimeout("Windmill.XHR.get_next()", 3500);
             }
         }
     }
