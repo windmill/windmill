@@ -29,6 +29,16 @@ a:hover { text-decoration : underline; color : #336699; border: 0px; cursor: poi
 	
 }
 
+.toggleframeid {
+	left:0px;
+	right:0px;
+	width:100%;
+	height:100%;
+	border:0px;
+	z-index:1;
+	
+}
+
 #webUI{
     height:20px;
     width:100%;
@@ -41,8 +51,11 @@ a:hover { text-decoration : underline; color : #336699; border: 0px; cursor: poi
 #togglediv{
     position:absolute;
     top:0px;
+    width:110px;
+    height:30px;
     left:85%;
     z-index:5001;
+    
 }
 
 #pagediv{
