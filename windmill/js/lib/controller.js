@@ -181,7 +181,7 @@ function Controller() {
                
          }*/
         
-        var locator = this.optionLocatorFactory.fromLocatorString('label=' + param_object.optionLocator);
+        var locator = this.optionLocatorFactory.fromLocatorString('label=' + param_object.option);
         
         var optionToSelect = locator.findOption(element);
         

@@ -46,7 +46,8 @@ function TimeObj() {
 
         var d = new Date();
         start_ms = d.getTime();
-    	time_started = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z'; 
+    	time_started = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() 
+    	+ ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z'; 
     }
 
     //Storing end time used for performance computation
@@ -54,7 +55,8 @@ function TimeObj() {
 
         var d = new Date();
         end_ms  = d.getTime();
-        time_ended = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z';
+        time_ended = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() + ':' 
+        + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z';
     }
     
     //Write to the log div
@@ -63,7 +65,7 @@ function TimeObj() {
          this.calculate_time();
          
          var perf_tab = document.getElementById("tab3");
-         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Starting " + this.identifier + " : " + time_started;
+         perf_tab.innerHTML = perf_tab.innerHTML + "<br><br>Starting " + this.identifier + " : " + time_started;
          perf_tab.innerHTML = perf_tab.innerHTML + "<br>Ending " + this.identifier + " : " + time_ended;
          perf_tab.innerHTML = perf_tab.innerHTML + "<br>Total " + this.identifier + " : " + run_time + " ms";
          perf_tab.scrollTop = perf_tab.scrollHeight;

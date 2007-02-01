@@ -34,30 +34,10 @@ function windmill_main(browser) {
     //Init XHR and loop stuff
     this.XHR = new XHR();
     
-    
-    //Run function, allows one to call the function and execute code against the page.
-   /* this.Run = function(code){
-        var resp = eval(code);
-        try {
-            var resp = eval(code);
-        } 
-        catch (error) {
-            var resp = "Error";
-        }
-        
-        return resp;
-        
-        //var windmillBot = new BrowserBot(this.window);
-        //var windSel = new Selenium(windmillBot);
-        //windSel.doRefresh();
-    }
-  */  
 };
 
 //Instantiate the windmill object, had to move it here because if I do it in the onload I can't call its members in the start.html body
 Windmill = new windmill_main(browser);
 
-//Start XHR loop
-//Windmill.XHR.start_json_loop();
 
 

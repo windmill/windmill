@@ -60,6 +60,8 @@ Controller.prototype.what = function() {
            }
 
            triggerEvent(element, 'blur', false);
+           
+           return true;
   };
  
   

@@ -40,7 +40,7 @@ Copyright 2006, Open Source Applications Foundation
 	<script type="text/javascript" src="lib/performance.js"></script>
 	<script type="text/javascript" src="lib/timing.js"></script>
 	<script type="text/javascript" src="lib/log4js.js" ></script>
-	<script type="text/javascript" src="lib/UI.js"></script>
+	<script type="text/javascript" src="lib/ui.js"></script>
 	<script type="text/javascript" src="lib/xhr.js"></script>
 	<script type="text/javascript" src="lib/xpath/misc.js"></script>
 	<script type="text/javascript" src="lib/xpath/dom.js"></script>
@@ -65,14 +65,14 @@ Copyright 2006, Open Source Applications Foundation
 		
 	<body onLoad="Load();">
 
-		<div id="tab1" style="display:none;">
+		<div id="tab1" style="display:none;overflow:auto;height:120px;">
 		<img src="ide/img/logo.jpg">
 			<div style="position:absolute;left:130px;top:30px;width:450px">Welcome to <b>Windmill</b>!<br><br>
 				Windmill is a web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.
 			</div>
 		</div>
 		
-		<div id="tab2" style="display:none;">
+		<div id="tab2" style="display:none;overflow:auto;height:120px;">
 				<div style="font-size:10px;font-family:  'Lucida Grande', Geneva, sans-serif; ">
 					<b>Console</b> 
 				</div>
@@ -88,20 +88,20 @@ Copyright 2006, Open Source Applications Foundation
 				</div>
 		</div>
 		
-		<div id="tab3" style="display:none;overflow:auto;height:90px;">
+		<div id="tab3" style="display:none;overflow:auto;height:120px;">
 			
 		</div>
 		
-		<div id="tab4" style="display:none;overflow:auto;height:90px;">
+		<div id="tab4" style="display:none;overflow:auto;height:120px;">
 		
 		</div>
 		
-		<div id="tab5" style="display:none;">
+		<div id="tab5" style="display:none;overflow:auto;height:120px;">
 			
 			Status of Action Loop: <input type="button" id="loopButton" value="Running.." onClick="javascript:Windmill.XHR.toggle_pause_json_loop();">
 		</div>
 		
-		<div id="tab6" style="display:none;">
+		<div id="tab6" style="display:none;overflow:auto;height:120px;">
 			Documentation from Windmill setup, to test writing: <a target="_blank" href="http://windmill.osafoundation.org/trac/wiki/GettingStarted">Getting Started</a><br>
 			Full Windmill WIKI: <a target="_blank" href="http://windmill.osafoundation.org/trac">Wiki </a>
 		</div>
