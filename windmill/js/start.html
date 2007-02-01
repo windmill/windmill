@@ -72,7 +72,7 @@ Copyright 2006, Open Source Applications Foundation
 			</div>
 		</div>
 		
-		<div id="tab2" style="display:none;overflow:auto;height:120px;">
+		<div id="tab2" style="z-index:5000;display:none;overflow:auto;height:120px;">
 				<div style="font-size:10px;font-family:  'Lucida Grande', Geneva, sans-serif; ">
 					<b>Console</b> 
 				</div>
@@ -88,26 +88,26 @@ Copyright 2006, Open Source Applications Foundation
 				</div>
 		</div>
 		
-		<div id="tab3" style="display:none;overflow:auto;height:120px;">
+		<div id="tab3" style="z-index:5000;display:none;overflow:auto;height:120px;">
 			
 		</div>
 		
-		<div id="tab4" style="display:none;overflow:auto;height:120px;">
+		<div id="tab4" style="z-index:5000;display:none;overflow:auto;height:120px;">
 		
 		</div>
 		
-		<div id="tab5" style="display:none;overflow:auto;height:120px;">
+		<div id="tab5" style="z-index:5000;display:none;overflow:auto;height:120px;">
 			
 			Status of Action Loop: <input type="button" id="loopButton" value="Running.." onClick="javascript:Windmill.XHR.toggle_pause_json_loop();">
 		</div>
 		
-		<div id="tab6" style="display:none;overflow:auto;height:120px;">
+		<div id="tab6" style="z-index:5000;display:none;overflow:auto;height:120px;">
 			Documentation from Windmill setup, to test writing: <a target="_blank" href="http://windmill.osafoundation.org/trac/wiki/GettingStarted">Getting Started</a><br>
 			Full Windmill WIKI: <a target="_blank" href="http://windmill.osafoundation.org/trac">Wiki </a>
 		</div>
 
-<div id="webui">
-	<div id="tabgroup" class="TabStyleContainer"></div>
+<div id="webui" style="z-index:5000;">
+	<div id="tabgroup" style="z-index:5000" class="TabStyleContainer"></div>
 </div>
 
 <script type="text/javascript">
@@ -129,7 +129,7 @@ Copyright 2006, Open Source Applications Foundation
 		<IFRAME class="frameid" id="toggle" name="toggle" target="_self" SRC="/windmill-serv/ide/toggle.html" frameborder=0 scrolling=no></iframe>
 	</div>
 
-	<div id="pagediv">
+	<div id="pagediv" style="z-index:1;">
 		<IFRAME class="frameid" id="webapp" name="webapp" onload="javascript:Windmill.Controller.continue_loop();" target="_self" frameborder=0 SRC="/"></iframe>
 	</div>
 	
