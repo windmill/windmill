@@ -192,9 +192,9 @@ class WindmillProxyApplication(object):
     
         # Create connection object
         try:
-            connection = self.ConnectionClass(url[1])
+            connection = self.ConnectionClass(url.netloc)
             # Build path
-            path = url.geturl().replace('%s://%s' % (url.scheme, url[1]), '')
+            path = url.geturl().replace('%s://%s' % (url.scheme, url.netloc), '')
         except:
             start_response("501 Gateway error", [('Content-Type', 'text/html')])
             return ['<H1>Could not connect</H1>']
