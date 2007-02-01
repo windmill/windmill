@@ -56,6 +56,8 @@ def reconstruct_url(environ):
     url += quote(environ.get('PATH_INFO',''))
     if environ.get('QUERY_STRING'):
         url += '?' + environ['QUERY_STRING']
+    
+    environ['reconstructed_url'] = url
         
     return url
         
@@ -188,7 +190,7 @@ class WindmillProxyApplication(object):
     
     def handler(self, environ, start_response):
         """Proxy for requests to the actual http server"""
-        url = urlparse(reconstruct_url(environ))
+        url = urlparse(environ['reconstructed_url'])
     
         # Create connection object
         try:
@@ -229,6 +231,7 @@ class WindmillProxyApplication(object):
     
         # Make the remote request
         try:
+            self.logger.debug('%s %s %s' % (environ['REQUEST_METHOD'], path, str(headers)))
             connection.request(environ['REQUEST_METHOD'], path, body=body, headers=headers)
         except:
             # We need exception handling in the case the server fails, it's an edge case but I've seen it
@@ -271,14 +274,16 @@ class WindmillChooserApplication(object):
     def handler(self, environ, start_response):
         """Windmill app chooser"""
         
+        reconstruct_url(environ)
+        
         if environ['PATH_INFO'].find('/windmill-serv/') is not -1:
-            self.logger.debug('dispatching request %s to WindmillServApplication' % environ['PATH_INFO'])
+            self.logger.debug('dispatching request %s to WindmillServApplication' % environ['reconstructed_url'])
             return self.windmill_serv_app(environ, start_response)
         elif environ['PATH_INFO'].find('/windmill-jsonrpc/') is not -1:
-            self.logger.debug('dispatching request %s to WindmillJSONRPCApplication' % environ['PATH_INFO'])
+            self.logger.debug('dispatching request %s to WindmillJSONRPCApplication' % environ['reconstructed_url'])
             return self.windmill_jsonrpc_app(environ, start_response)
         elif environ['PATH_INFO'].find('/windmill-xmlrpc/') is not -1:
-            self.logger.debug('dispatching request %s to WindmillXMLRPCApplication' % environ['PATH_INFO'])
+            self.logger.debug('dispatching request %s to WindmillXMLRPCApplication' % environ['reconstructed_url'])
             return self.windmill_xmlrpc_app(environ, start_response)
         else:
             self.logger.debug('dispatching request %s to WindmillProxyApplication' % reconstruct_url(environ))
