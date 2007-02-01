@@ -71,7 +71,8 @@ function XHR() {
             //Then tell the user we did that
             if (result == false){
                 Windmill.XHR.toggle_pause_json_loop();
-                alert("There was an error in the "+Windmill.XHR.xhr_response.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.");
+                //alert("There was an error in the "+Windmill.XHR.xhr_response.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.");
+                Windmill.UI.write_result("There was an error in the "+Windmill.XHR.xhr_response.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.");
             }
             
             //End and store the performance
