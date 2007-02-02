@@ -16,7 +16,7 @@ Copyright 2006, Open Source Applications Foundation
 
 function BrowserDetect() {
    var ua = navigator.userAgent.toLowerCase(); 
-
+   this.current_ua = ua;
    // browser name
    this.isGecko     = (ua.indexOf('gecko') != -1 && ua.indexOf('safari') == -1);
    this.isMozilla   = (this.isGecko && ua.indexOf('gecko/') + 14 == ua.length);

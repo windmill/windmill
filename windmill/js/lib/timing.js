@@ -60,14 +60,20 @@ function TimeObj() {
     }
     
     //Write to the log div
-    this.write = function(){
-         
-         this.calculate_time();
-         
+    this.write = function(parameters){
+         this.calculate_time(); 
          var perf_tab = document.getElementById("tab3");
-         perf_tab.innerHTML = perf_tab.innerHTML + "<br><br>Starting " + this.identifier + " : " + time_started;
-         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Ending " + this.identifier + " : " + time_ended;
-         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Total " + this.identifier + " : " + run_time + " ms";
+        
+        if(!parameters){
+            perf_tab.innerHTML = perf_tab.innerHTML + "<br>Executing: " + this.identifier;
+        }
+        else{
+          perf_tab.innerHTML = perf_tab.innerHTML + "<br>Executing: " + this.identifier + " - Parameters: " + parameters;    
+        }
+               
+         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Starting: " + this.identifier + " : " + time_started;
+         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Ending: " + this.identifier + " : " + time_ended;
+         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Total: " + this.identifier + " : " + run_time + " ms<br>";
          perf_tab.scrollTop = perf_tab.scrollHeight;
     
     }

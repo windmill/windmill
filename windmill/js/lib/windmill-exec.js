@@ -19,6 +19,10 @@ Copyright 2006, Open Source Applications Foundation
 function Load(){
     //Index page load report
      load_timer.end_time();
+     
+     Windmill.UI.write_result("Start UI output session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
+     Windmill.UI.write_performance("Starting UI performance session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
+     
      load_timer.write();
 
 }

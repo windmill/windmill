@@ -78,12 +78,13 @@ function XHR() {
             //End and store the performance
             if (Windmill.XHR.xhr_response.result.method != 'defer'){
                 action_timer.end_time();
-                action_timer.write();
+                
+                var to_write = fleegix.json.serialize(Windmill.XHR.xhr_response.result);
+                action_timer.write(to_write);
                 
                 //Send the report
                 Windmill.XHR.send_report(Windmill.XHR.xhr_response.result.method, result, action_timer);
-                
-                var to_write = fleegix.json.serialize(Windmill.XHR.xhr_response.result);
+               
                 //Write to the result tab
                 Windmill.UI.write_result("<br>Action: <b>" + Windmill.XHR.xhr_response.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: " + result);     
     

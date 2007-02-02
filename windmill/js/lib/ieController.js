@@ -40,6 +40,8 @@ Controller.prototype.what = function() {
          if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
              Windmill.XHR.loop_state = 0;
          }
+         
+         return true;
   };
   
   //double click for ie, needs to be tested
@@ -55,9 +57,9 @@ Controller.prototype.what = function() {
            // Trigger the mouse event.
            triggerMouseEvent(element, 'dblclick', true);
 
-           if (this.windowClosed()) {
+         /*  if (this.windowClosed()) {
                return;
-           }
+           }*/
 
            triggerEvent(element, 'blur', false);
            

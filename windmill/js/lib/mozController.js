@@ -40,6 +40,7 @@ Controller.prototype.click = function(param_object){
        if (!Windmill.Browser.isChrome && !preventDefault) {
            if (element.href) {
                document.getElementById('webapp').src = element.href;
+               
                //if the url is calling JS then its ajax and we don't need to wait for any full page load.. hopefully.
                if (element.href.indexOf('javascript:', 0) == -1){
                     Windmill.XHR.loop_state = 0;

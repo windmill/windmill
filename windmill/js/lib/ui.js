@@ -26,11 +26,38 @@ Copyright 2006, Open Source Applications Foundation
 
 function UI() {
     
+    this.donothing = function(){
+	    return;
+	}
     //Run code and manage its result
     this.Run = function(){
         
     	var jstext = document.getElementById("jsrunner");
-    	var run_obj = eval('(' + jstext.value + ')');
+    	
+    	var command_string = jstext.value;
+    	var array_commands = command_string.split("\n")
+    	//alert(array_commands[0]);
+    	
+    	//This loop works if there are multiple actions on a page
+    	//But if involves page reloads since these are instantly
+    	//dispatched it probably wont wait long enough to get UI elements
+    	//Even with a wait command
+    	for (var i=0;i<array_commands.length;i++)
+        {
+            var run_obj = eval('(' + array_commands[i] + ')');
+
+    	    result = Windmill.Controller[run_obj.method](run_obj.params); 
+            
+            //setTimeout("Windmill.UI.donothing()", 5000);
+            
+        	if (result == true){
+        		Windmill.UI.write_result(run_obj.method + ' Succeeded' );
+        	}
+        	else{
+        		Windmill.UI.write_result(run_obj.method + ' Failed.' );
+            }
+        }
+    	/*var run_obj = eval('(' + jstext.value + ')');
     
 	    result = Windmill.Controller[run_obj.method](run_obj.params); 
         
@@ -39,7 +66,7 @@ function UI() {
     	}
     	else{
             Windmill.UI.write_result('Failure');    	
-        }
+        }*/
 	
     }
 

@@ -59,10 +59,10 @@ Controller.prototype.doubleClick = function(param_object) {
     // Trigger the mouse event.
     triggerMouseEvent(element, 'dblclick', true);
 
-    if (this._windowClosed()) {
+   /* if (this._windowClosed()) {
         return;
     }
-
+*/
     triggerEvent(element, 'blur', false);
     
     return true;
