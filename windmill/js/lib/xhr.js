@@ -63,16 +63,16 @@ function XHR() {
             catch (error) { 
                 //result = false;
                 Windmill.Log.debug("Error Executing " + Windmill.XHR.xhr_response.result.method);
-                Windmill.UI.write_result('Error: Non DOM error running '+ Windmill.XHR.xhr_response.result.method);
+                Windmill.UI.write_result('<br>Error: Non DOM error running '+ Windmill.XHR.xhr_response.result.method);
                 
             }
             
             //If we have a false result we need to freeze the loop
             //Then tell the user we did that
             if (result == false){
-                Windmill.XHR.toggle_pause_json_loop();
                 //alert("There was an error in the "+Windmill.XHR.xhr_response.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.");
                 Windmill.UI.write_result("There was an error in the "+Windmill.XHR.xhr_response.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.");
+                Windmill.XHR.toggle_pause_json_loop();
             }
             
             //End and store the performance
@@ -83,8 +83,9 @@ function XHR() {
                 //Send the report
                 Windmill.XHR.send_report(Windmill.XHR.xhr_response.result.method, result, action_timer);
                 
+                var to_write = fleegix.json.serialize(Windmill.XHR.xhr_response.result);
                 //Write to the result tab
-                Windmill.UI.write_result(Windmill.XHR.xhr_response.result.method + ": " + result);     
+                Windmill.UI.write_result("<br>Action: <b>" + Windmill.XHR.xhr_response.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: " + result);     
     
             }
 

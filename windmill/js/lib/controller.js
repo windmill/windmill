@@ -48,7 +48,7 @@ function Controller() {
     this.optionLocatorFactory = new OptionLocatorFactory();
 
     this.defer = function(){
-        Windmill.UI.write_result('Deferring..')
+        //Windmill.UI.write_result('Deferring..')
     }
 
     this.continue_loop = function(){
@@ -170,7 +170,7 @@ function Controller() {
     * Select the specified option and trigger the relevant events of the element.
     */
     this.select = function(param_object) {
-        var element = this.lookup_dispatch(param_object.selectLocator);
+        var element = this.lookup_dispatch(param_object);
         
         if (!element){
                return false;
