@@ -65,6 +65,40 @@ function Controller() {
         return true;
     }
     
+    
+    //Currently only does one level below the provided div
+    //To make it more thorough it needs recursion to be implemented later
+    this.verify = function(param_object) { 
+        
+        var n = this.lookup_dispatch(param_object);
+        var validator = param_object.validator;
+        
+        try{
+        if (n.nodeType == 3) { 
+
+                    //If the validator string was found we return true
+                    if (n.nodeValue.indexOf(validator, 0) != -1){
+                        return true;
+                    }           
+                }
+        
+
+             else{  
+                for(var m = n.firstChild; m != null; m = m.nextSibling) {
+                    
+                    //alert(m.nodeValue);
+                    //If the validator string was found we return true
+                    if (m.nodeValue.indexOf(validator, 0) != -1){
+                        return true;
+                    }
+                }
+        }
+    }
+    catch(error){return false;}
+   }      
+    
+  
+    
     //Helper Functions for dealing with the window
     this.getDocument = function() {
         return this.getCurrentWindow().frames[1].document;
