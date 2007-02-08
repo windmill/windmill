@@ -48,6 +48,7 @@ function Controller() {
     this.optionLocatorFactory = new OptionLocatorFactory();
 
     this.defer = function(){
+        //We may want to somehow display that the loop is being deferred but right now it was too messy in output.
         //Windmill.UI.write_result('Deferring..')
     }
 
@@ -540,7 +541,9 @@ OptionLocatorFactory.prototype.fromLocatorString = function(locatorString) {
     if (this.optionLocators[locatorType]) {
         return new this.optionLocators[locatorType](locatorValue);
     }
-    throw new SeleniumError("Unkown option locator type: " + locatorType);
+
+      Windmill.Log.debug("Unrecognised locator type: '" + locatorType + "'");
+      
 };
 
 /**
@@ -572,7 +575,9 @@ OptionLocatorFactory.prototype.OptionLocatorByLabel = function(label) {
                 return element.options[i];
             }
         }
-        throw new SeleniumError("Option with label '" + this.label + "' not found");
+        Windmill.Log.debug("Option with label '" + this.label + "' not found");
+        
+   
     };
 
     this.assertSelected = function(element) {
@@ -593,7 +598,9 @@ OptionLocatorFactory.prototype.OptionLocatorByValue = function(value) {
                 return element.options[i];
             }
         }
-        throw new SeleniumError("Option with value '" + this.value + "' not found");
+       
+        Windmill.Log.debug("Option with value '" + this.value + "' not found");
+        
     };
 
     this.assertSelected = function(element) {
@@ -608,12 +615,16 @@ OptionLocatorFactory.prototype.OptionLocatorByValue = function(value) {
 OptionLocatorFactory.prototype.OptionLocatorByIndex = function(index) {
     this.index = Number(index);
     if (isNaN(this.index) || this.index < 0) {
-        throw new SeleniumError("Illegal Index: " + index);
+   
+        Windmill.Log.debug("Illegal Index: " + index);
+    
     }
 
     this.findOption = function(element) {
         if (element.options.length <= this.index) {
-            throw new SeleniumError("Index out of range.  Only " + element.options.length + " options available");
+            
+            Windmill.Log.debug("Index out of range.  Only " + element.options.length + " options available");
+       
         }
         return element.options[this.index];
     };
@@ -635,7 +646,8 @@ OptionLocatorFactory.prototype.OptionLocatorById = function(id) {
                 return element.options[i];
             }
         }
-        throw new SeleniumError("Option with id '" + this.id + "' not found");
+        Windmill.Log.debug("Option with id '" + this.id + "' not found");
+       
     };
 
     this.assertSelected = function(element) {

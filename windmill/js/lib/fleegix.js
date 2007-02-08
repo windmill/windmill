@@ -373,7 +373,7 @@ if(req.handleAll){
 req.handleAll(_4e,req.id);
 }else{
 try{
-if(_4c.status>199&&_4c.status<300){
+if((_4c.status>199&&_4c.status<300)||_4c.status==304){
 if(req.async){
 if(!req.handleSuccess){
 throw ("No response handler defined "+"for this request");
@@ -385,10 +385,16 @@ req.handleSuccess(_4e,req.id);
 return _4e;
 }
 }else{
+if(!_4c.status){
+if(this.debug){
+throw ("XMLHttpRequest HTTP status either zero or not set.");
+}
+}else{
 if(req.handleErr){
 req.handleErr(_4e,req.id);
 }else{
 this.handleErrDefault(_4c);
+}
 }
 }
 }
@@ -414,6 +420,7 @@ this.idleTransporters.push(req.transporterId);
 }
 };
 this.handleErrDefault=function(r){
+console.log(r);
 var _52;
 try{
 _52=window.open("","errorWin");
