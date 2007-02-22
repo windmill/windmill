@@ -291,73 +291,6 @@ class WindmillChooserApplication(object):
             
     def __call__(self, environ, start_response):
         return self.handler(environ, start_response)
-
-
-import SocketServer
-
-class ThreadedWSGIServer(SocketServer.ThreadingTCPServer):
-    """Threaded WSGI Server. Does not inherit from wsgiref.simple_server.WSGIServer because
-    of a static call to BaseHTTPServer.HTTPServer"""
-
-    application = None
-    timeout = 10
-
-    def server_bind(self):
-        """Override server_bind to store the server name."""
-        
-        SocketServer.ThreadingTCPServer.server_bind(self)
-
-        self.server_name = self.server_address[0]
-        self.server_port = self.server_address[1]
-        
-        self.setup_environ()
-
-    def setup_environ(self):
-        # Set up base environment
-        env = self.base_environ = {}
-        env['SERVER_NAME'] = self.server_name
-        env['GATEWAY_INTERFACE'] = 'CGI/1.1'
-        env['SERVER_PORT'] = str(self.server_port)
-        env['REMOTE_HOST']=''
-        env['CONTENT_LENGTH']=''
-        env['SCRIPT_NAME'] = ''
-
-    def get_app(self):
-        return self.application
-
-    def set_app(self,application):
-        self.application = application
-        
-        # From here down I implement conditional serving to make it easier to quit when I'm running this in a thread
-    def start(self):
-        self._run = True
-        self._active = True
-        while self._run is True:
-            self.handle_request()
-        self._active = False
-    
-    def stop(self):
-        self._run = False
-        #This is a bit of a hack, but we need to make one last connection to make self.handle_request() return
-        if self._active is not False:
-            conn = httplib.HTTPConnection(self.server_name, self.server_port)
-            conn.request('GET', '/endingrequest')
-            conn.getresponse()
-        time.sleep(.5)
-        if self.is_alive():
-            raise Exception, 'the server is still alive'
-    
-    def is_alive(self):
-        return self._active 
-
-    
-class WindmillHandler(WSGIRequestHandler):
-    
-    def log_message(self, format, *args):
-        self.logger.info("%s - - [%s] %s" %
-                         (self.address_string(),
-                          self.log_date_time_string(),
-                          format%args))
                           
         
 def make_windmill_server(http_port=None, js_path=None):
@@ -381,18 +314,11 @@ def make_windmill_server(http_port=None, js_path=None):
     windmill_chooser_app = WindmillChooserApplication(windmill_serv_app, windmill_jsonrpc_app,
                                                       windmill_xmlrpc_app, windmill_proxy_app,
                                                       logger=logging.getLogger('server.chooser'))
-    WindmillHandler.logger = logging.getLogger('server.wsgi_handler')
     
     
-    try:
-        import cherrypy
-        httpd =  cherrypy.wsgiserver.CherryPyWSGIServer(('', http_port), windmill_chooser_app, server_name='windmill-http')
-    except Exception, e:
-        tb = StringIO()
-        traceback.print_exc(file=tb)
-        logger.warning(tb.getvalue())
-        httpd = make_server('', http_port, windmill_chooser_app, server_class=ThreadedWSGIServer, handler_class=WindmillHandler)
-        
+    import cherrypy
+    httpd =  cherrypy.wsgiserver.CherryPyWSGIServer(('', http_port), windmill_chooser_app, server_name='windmill-http')
+
     httpd.controller_queue = queue
     httpd.test_resolution_suite = test_resolution_suite
     httpd.xmlrpc_methods_instance = xmlrpc_methods_instance

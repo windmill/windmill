@@ -16,19 +16,16 @@ import simplejson
 from windmill_test_lib import setup_module, teardown_module
 
 def test_add():
-    
     # Add a test
     test_add = {u'method':u'click', u'params':{u'id':u'aksjdflkajsdflkjasldkfjl'}}
     jsonrpc_client.add_json_test(simplejson.dumps(test_add))
     x = jsonrpc_client.next_action()
     assert x == {u'result': {u'version': u'0.1', u'params': {u'id': u'aksjdflkajsdflkjasldkfjl'}, u'method': u'click'}}
     
-def test_report():
-    
-    # Report the test passed
-    test_report = {u'test':test_add, u'result': True, u'starttime':u'1994-11-05T13:15:30.45Z', 
-                   u'endtime':u'1994-11-05T13:15:30.56Z'}
-    x = jsonrpc_client.report(simplejson.dumps(test_report))
+    test_report = {'test':test_add, 'result': True, 'starttime':'1994-11-05T13:15:30.45Z', 
+                   'endtime':'1994-11-05T13:15:30.56Z'}
+            
+    x = jsonrpc_client.report(**test_report)
     assert x == {'result':200}
     resolved_test = {'debug': None, u'method': u'click', u'params': {u'id': u'aksjdflkajsdflkjasldkfjl'}, 'result': True, 'version': '0.1'}
     assert httpd.test_resolution_suite.resolved_tests.__contains__(resolved_test)
