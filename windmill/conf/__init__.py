@@ -23,4 +23,6 @@ def configure_settings(local_settings=object(), windmill_settings={}):
         if not setting.startswith('__'):
             windmill_settings[setting] = getattr(local_settings, setting)
             
+    import windmill
+    windmill.settings = windmill_settings  
     return windmill_settings
