@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #   Copyright (c) 2006-2007 Open Source Applications Foundation
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +13,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-
 import os, sys
-from threading import Thread
+
+WINDMILL_DIR = os.path.abspath(os.path.dirname(sys.modules[__name__].__file__)+'/'+os.path.pardir+'/'+os.path.pardir)
+sys.path.insert(0, WINDMILL_DIR)
+
 import windmill
+
+from threading import Thread
 import logging
 
 def configure_global_settings():
@@ -154,7 +159,8 @@ def parse_commands():
     
 
 if __name__ == "__main__":
-    import windmill
+
+    
     configure_global_settings()
     action, cmd_options = parse_commands()
     
