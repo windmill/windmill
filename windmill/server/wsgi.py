@@ -93,6 +93,8 @@ class WindmillServApplication(object):
             return 'application/x-javascript'
         elif path_info.endswith('.html'):
             return 'text/html'
+        elif path_info.endswith('.css'):
+            return 'text/css'
         else:
             return 'text/plain'
             
