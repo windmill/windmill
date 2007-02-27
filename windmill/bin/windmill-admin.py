@@ -15,7 +15,7 @@
 
 import os, sys
 
-WINDMILL_DIR = os.path.abspath(os.path.dirname(sys.modules[__name__].__file__)+'/'+os.path.pardir+'/'+os.path.pardir)
+WINDMILL_DIR = os.path.abspath(os.path.abspath(sys.modules[__name__].__file__)+'/'+os.path.pardir+'/'+os.path.pardir+'/'+os.path.pardir)
 sys.path.insert(0, WINDMILL_DIR)
 
 import windmill
@@ -92,6 +92,23 @@ def shell(cmd_options):
     if windmill.settings['TEST_FILE'] is not None:
         windmill.bin.run_tests.run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
         
+    if windmill.settings['TEST_DIR'] is not None:
+        # Try to import test_conf
+        sys.path.insert(0, windmill.settings['TEST_DIR'])
+        try:
+            import test_conf
+            test_list = test_conf.test_list
+        except:
+            print 'No test_conf.py for this directory, executing all test in directory'
+            test_list = [test_name for test_name in os.listdir(windmill.settings['TEST_DIR']) if not test_name.startswith('.')]
+        
+        print test_list
+        
+        for test in test_list:
+            run_test_file(windmill.settings['TEST_DIR']+'/'+test)
+            
+        
+        
     def clear_queue():
         response = jsonrpc_client.next_action()
         while response['result']['method'] != 'defer':
@@ -129,9 +146,12 @@ def debug(value):
     windmill.settings['CONSOLE_LOG_LEVEL'] = getattr(logging, 'DEBUG')
     
 def testfile(value):
-    windmill.settings['TEST_FILE'] = value
+    windmill.settings['TEST_FILE'] = os.path.abspath(value)
+    
+def testdir(value):
+    windmill.settings['TEST_DIR'] = os.path.abspath(value)
 
-cmd_parse_mapping = {'loglevel':loglevel, 'debug':debug, 'testfile':testfile}
+cmd_parse_mapping = {'loglevel':loglevel, 'debug':debug, 'testfile':testfile, 'testdir':testdir}
 
 def parse_commands():
     

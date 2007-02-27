@@ -12,16 +12,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import logging, os, sys
+import windmill, logging
+logger = logging.getLogger(__name__)
 
-TEST_URL = 'http://www.google.com'
-
-SERVER_HTTP_PORT = 4444
-
-CONSOLE_LOG_LEVEL = logging.INFO
-FILE_LOG_LEVEL = logging.INFO
-
-JS_PATH = os.path.dirname(sys.modules['windmill'].__file__)+'/js'
-
-TEST_FILE = None
-TEST_DIR = None
+def run_test_file(filename, jsonrpc_client):
+    f = open(filename)
+    test_strings = f.read().splitlines()
+    for test in test_strings:
+         jsonrpc_client.add_json_test(test)
+         logger.info('Added test\n%s' % test)
