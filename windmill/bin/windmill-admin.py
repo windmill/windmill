@@ -100,7 +100,7 @@ def shell(cmd_options):
             test_list = test_conf.test_list
         except:
             print 'No test_conf.py for this directory, executing all test in directory'
-            test_list = [test_name for test_name in os.listdir(windmill.settings['TEST_DIR']) if not test_name.startswith('.')]
+            test_list = [test_name for test_name in os.listdir(windmill.settings['TEST_DIR']) if not test_name.startswith('.') and test_name.endswith('.json')]
         
         print test_list
         
