@@ -44,18 +44,21 @@ function UI() {
     	//Even with a wait command
     	for (var i=0;i<array_commands.length;i++)
         {
-            var run_obj = eval('(' + array_commands[i] + ')');
+            if (array_commands[i]){
+                
+                var run_obj = eval('(' + array_commands[i] + ')');
 
-    	    result = Windmill.Controller[run_obj.method](run_obj.params); 
+        	    result = Windmill.Controller[run_obj.method](run_obj.params); 
             
-            //setTimeout("Windmill.UI.donothing()", 5000);
+                //setTimeout("Windmill.UI.donothing()", 5000);
             
-        	if (result == true){
-        		Windmill.UI.write_result(run_obj.method + '<font color="#69d91f"><b> Succeeded.</b></font>' );
-        	}
-        	else{
-        		Windmill.UI.write_result(run_obj.method + ' <font color="#FF0000">Failed.</font>' );
-            }
+            	if (result == true){
+            		Windmill.UI.write_result(run_obj.method + '<font color="#69d91f"><b> Succeeded.</b></font>' );
+            	}
+            	else{
+            		Windmill.UI.write_result(run_obj.method + ' <font color="#FF0000">Failed.</font>' );
+                }
+            }    
         }
     	/*var run_obj = eval('(' + jstext.value + ')');
     

@@ -14,8 +14,8 @@ Copyright 2006, Open Source Applications Foundation
  limitations under the License.
 -->
 
-<html>
-<head>
+    <html>
+	<head>
 	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 	<title>Windmill Testing UI</title>
 	
@@ -35,7 +35,7 @@ Copyright 2006, Open Source Applications Foundation
 		}
 		document.write('<script src="', url, '" type="text/javascript"><\/script>');
 	</script>
-	
+	<script type="text/javascript" src="lib/firebug/firebug.js"></script>
 	<script type="text/javascript" src="lib/fleegix.js"></script>
 	<script type="text/javascript" src="lib/performance.js"></script>
 	<script type="text/javascript" src="lib/timing.js"></script>
@@ -95,9 +95,7 @@ Copyright 2006, Open Source Applications Foundation
 		<div id="tab4" style="z-index:5000;display:none;overflow:auto;height:120px;">
 		
 		</div>
-		
 		<div id="tab5" style="z-index:5000;display:none;overflow:auto;height:120px;">
-			
 			Status of Action Loop: <input type="button" id="loopButton" value="Running.." onClick="javascript:Windmill.XHR.toggle_pause_json_loop();">
 		</div>
 		
@@ -106,7 +104,7 @@ Copyright 2006, Open Source Applications Foundation
 			Full Windmill WIKI: <a target="_blank" href="http://windmill.osafoundation.org/trac">Wiki </a>
 		</div>
 
-<div id="webui" style="z-index:5000;">
+<div id="webui" style="z-index:5000">
 	<div id="tabgroup" style="z-index:5000" class="TabStyleContainer"></div>
 </div>
 
@@ -129,10 +127,11 @@ Copyright 2006, Open Source Applications Foundation
 		<IFRAME class="toggleframeid" id="toggle" name="toggle" target="_self" SRC="/windmill-serv/ide/toggle.html" frameborder=0 scrolling=no></iframe>
 	</div>
 
-	<div id="pagediv" style="z-index:1;">
+	<div id="pagediv">
 		<IFRAME class="frameid" id="webapp" name="webapp" onload="javascript:Windmill.Controller.continue_loop();" target="_self" frameborder=0 SRC="/"></iframe>
 	</div>
-	
+	<div id="firebug" style="z-index:5000">
+	</div>
 	
 	
 </body>

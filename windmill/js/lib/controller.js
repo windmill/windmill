@@ -80,7 +80,11 @@ function Controller() {
                     //If the validator string was found we return true
                     if (n.nodeValue.indexOf(validator, 0) != -1){
                         return true;
-                    }           
+                    }
+                    //If the validator string was found we return true
+                    if (n.innerHTML.indexOf(validator) != -1){
+                        return true;
+                    }     
                 }
         
 

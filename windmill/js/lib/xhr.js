@@ -66,15 +66,10 @@ function XHR() {
                 //Windmill.UI.write_result('<br>Error: Non DOM error running '+ Windmill.XHR.xhr_response.result.method);
                 
             }
-            
-            //If we have a false result we need to freeze the loop
-            //Then tell the user we did that
+            var color = "69d91f";
             if (result == false){
-                //alert("There was an error in the "+Windmill.XHR.xhr_response.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.");
-                Windmill.UI.write_result("<font color=\"#FF0000\">There was an error in the "+Windmill.XHR.xhr_response.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.</font>");
-                Windmill.XHR.toggle_pause_json_loop();
+                color = "FF0000";
             }
-            
             //End and store the performance
             if (Windmill.XHR.xhr_response.result.method != 'defer'){
                 action_timer.end_time();
@@ -86,10 +81,17 @@ function XHR() {
                 Windmill.XHR.send_report(Windmill.XHR.xhr_response.result.method, result, action_timer);
                
                 //Write to the result tab
-                Windmill.UI.write_result("<br>Action: <b>" + Windmill.XHR.xhr_response.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#69d91f\"><b>" + result + '</b></font>');     
+                Windmill.UI.write_result("<br>Action: <b>" + Windmill.XHR.xhr_response.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=#"+color+"><b>" + result + '</b></font>');     
     
             }
-            
+              //If we have a false result we need to freeze the loop
+                //Then tell the user we did that
+                if (result == false){
+                    //alert("There was an error in the "+Windmill.XHR.xhr_response.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.");
+                    Windmill.UI.write_result("<font color=\"#FF0000\">There was an error in the "+Windmill.XHR.xhr_response.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.</font>");
+                    Windmill.XHR.toggle_pause_json_loop();
+                
+                }
             
 
             //If the loop is running make the next request    
