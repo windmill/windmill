@@ -62,6 +62,20 @@ Controller.prototype.click = function(param_object){
      
 };
 
+//there is a problem with checking via click in safari
+Controller.prototype.check = function(param_object){
+    
+    Windmill.Controller.click(param_object);
+    
+}
+
+//Radio buttons are even WIERDER in safari, not breaking in FF
+Controller.prototype.radio = function(param_object){
+    //var element = this.lookup_dispatch(param_object);
+    Windmill.Controller.click(param_object);
+        
+}
+
 //Double click for Mozilla
 Controller.prototype.doubleClick = function(param_object) {
 

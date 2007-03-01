@@ -30,6 +30,27 @@ Controller.prototype.locateElementByIdentifier = function(identifier, inDocument
             || null;
 };
 
+//there is a problem with checking via click in safari
+Controller.prototype.check = function(param_object){
+    var element = this.lookup_dispatch(param_object);
+    
+    if (element.checked == true){
+        element.checked = false;
+    }
+    else {
+        element.checked = true;
+    }
+    
+}
+
+//Radio buttons are even WIERDER in safari
+Controller.prototype.radio = function(param_object){
+    var element = this.lookup_dispatch(param_object);
+    
+    element.checked = true;
+    
+}
+
 //Safari Click function
 Controller.prototype.click = function(param_object){
    var element = this.lookup_dispatch(param_object);
