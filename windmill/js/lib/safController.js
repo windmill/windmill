@@ -41,6 +41,7 @@ Controller.prototype.check = function(param_object){
         element.checked = true;
     }
     
+    return true;
 }
 
 //Radio buttons are even WIERDER in safari
@@ -49,6 +50,7 @@ Controller.prototype.radio = function(param_object){
     
     element.checked = true;
     
+    return true;
 }
 
 //Safari Click function
