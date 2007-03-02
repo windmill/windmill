@@ -21,7 +21,7 @@ SERVER_HTTP_PORT = 4444
 CONSOLE_LOG_LEVEL = logging.INFO
 FILE_LOG_LEVEL = logging.INFO
 
-JS_PATH = os.path.dirname(sys.modules['windmill'].__file__)+'/js'
+JS_PATH = os.path.dirname(sys.modules['windmill'].__file__)+os.path.sep+'js'
 
 TEST_FILE = None
 TEST_DIR = None

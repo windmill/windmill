@@ -15,7 +15,7 @@
 
 import os, sys
 
-WINDMILL_DIR = os.path.abspath(os.path.abspath(sys.modules[__name__].__file__)+'/'+os.path.pardir+'/'+os.path.pardir+'/'+os.path.pardir)
+WINDMILL_DIR = os.path.abspath(os.path.abspath(sys.modules[__name__].__file__)+os.path.sep+os.path.pardir+os.path.sep+os.path.pardir+os.path.sep+os.path.pardir)
 sys.path.insert(0, WINDMILL_DIR)
 
 import windmill
@@ -105,7 +105,7 @@ def shell(cmd_options):
         print test_list
         
         for test in test_list:
-            run_test_file(windmill.settings['TEST_DIR']+'/'+test)
+            run_test_file(windmill.settings['TEST_DIR']+os.path.sep+test)
             
         
         
