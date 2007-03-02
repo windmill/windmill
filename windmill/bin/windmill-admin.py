@@ -115,23 +115,17 @@ def shell(cmd_options):
             response = jsonrpc_client.next_action()
 
     # If ipython is installed and we weren't given the usecode option
-    if hasattr(windmill.tools.dev_environment, 'IPyShell') is True and cmd_options['usecode'] is False:
-        import IPython
-        shell = IPython.Shell.IPShell(user_ns=locals(), shell_class=windmill.tools.dev_environment.IPyShell)
-        shell.IP.httpd = httpd
-        shell.IP.httpd_thread = httpd_thread
+    try:
+        from IPython.Shell import IPShellEmbed
+        ipshell = IPShellEmbed()
 
-        shell.mainloop()
-    else:
-        try:
-            import code
-            code.interact(local=locals())    
-        except KeyboardInterrupt:
-            while httpd_thread.isAlive() is True:
-                httpd.stop()
-                time.sleep(.5)
-            sys.exit()
-                
+        ipshell(local_ns=locals())
+    except:
+        import code
+        code.interact(local=locals())    
+
+    while httpd_thread.isAlive():
+        httpd.stop()
                     
 action_mapping = {'shell':shell, 'runserver':runserver}
 
