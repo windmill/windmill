@@ -12,8 +12,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from wsgiref.simple_server import make_server, WSGIRequestHandler
-from wsgiref.util import request_uri
 from urlparse import urlparse, urljoin
 import httplib, os.path, copy, time, socket, logging, sys, traceback
 from StringIO import StringIO
