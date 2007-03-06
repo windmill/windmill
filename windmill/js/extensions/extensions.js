@@ -27,95 +27,59 @@ Copyright 2006, Open Source Applications Foundation
     
     Controller.prototype.click_lozenge =function(param_object){
         var hash_key;
+        
         eval ("hash_key=" + param_object.jsid + ";");
-        param_object.id = "eventDivContent__"+ hash_key;
+        param_object.id = "eventDivContent__" + param_object.jsid;
         delete param_object.jsid;
+        
         //Since id comes before jsid in the lookup order
         //we don't need to reset it, now go ahead and click it!
-        this.click(param_object);
-        
+        this.click(param_object);    
     }
     
+    
     Controller.prototype.drag_event = function(param_object){
+        
+        this.whereAmI = function(who,wch){
+            var L=0, R=0;
+            var pa=who;
+            
+            while(pa.parentNode){
+            L+= ( pa.offsetLeft)? pa.offsetLeft: 0;
+            R+= (pa.offsetTop)? pa.offsetTop: 0;
+
+            if(pa==document.body || wch===false)break;
+            pa= pa.parentNode;
+
+            }
+            var A=[L,R];
+            return(wch===1 || wch=== 2)? A[wch]: A;
+        }
+        
         //Get originating coordinates for the event
         var hash_key;
         eval ("hash_key=" + param_object.original.jsid + ";");
-        param_object.origional.id = "eventDivContent__"+ hash_key;
+        param_object.original.id = "eventDivContent__"+ hash_key;
         delete param_object.original.jsid;
-        
+                
         var element = this.lookup_dispatch(param_object.original);
-        var eStartXY = getClientXY(element)
-        var eStartX = eStartXY[0];
-        var eStartY = eStartXY[1];
-
-        //Click on it, so the Draggable object is insantiated and becomes accessable via Cal.dragElem
-        triggerMouseEvent(element, 'mousedown', true, eStartX, eStartY);
-
-        //Calculate the start drag using the x and y calendar offsets
-        var eStartX = (eStartX + parent.frames[1].Cal.dragElem.clickOffsetX);
-        var eStartY = (eStartY + parent.frames[1].Cal.dragElem.clickOffsetY);
-        
+        triggerMouseEvent(element, 'mousedown', true);
+       
         //Get destination div x,y coordinates
         var destelement = this.lookup_dispatch(param_object.destination);
-        var dStartXY = getClientXY(destelement)
-
-        //Adjust for offsets, the offsets were both still off by increments of 150 and 50, so I correct this here.
-        //(There is probably a better way to do this, but this was the best hack I could make work reliably.)
-        //This breaks when the X value when the browser canvas is significantly shrunk because the dest div size shrinks
-        //This will be fixed after the merge code is given to QA
-        var dStartX = (dStartXY[0] + parent.frames[1].Cal.dragElem.clickOffsetX - 100 - parent.frames[1].cosmo.view.cal.canvas.dayUnitWidth);
-        var dStartY = (dStartXY[1] + parent.frames[1].Cal.dragElem.clickOffsetY - 50);
-        //this.browserbot.getCurrentWindow().cosmo.view.cal.canvas.dayUnitWidth
-
-        //Calculate the actual distance the x and y needs to move
-        var xVal = Math.abs(dStartX - eStartX);
-        var yVal = Math.abs(dStartY - eStartY);
-
-        //Default both to moving negatively
-        var Xdir = "-";
-        var Ydir = "-";
-
-        //Default the increment direction
-        var movementXincrement = -1;
-        var movementYincrement = -1;
-
-        //Set coordinate pos/neg for X
-        if (dStartX > eStartX) {
-            Xdir = "+";
-            movementXincrement = 1;
-        }
-
-        //Set coordinate pos/neg for Y
-        if (dStartY > eStartY) {
-            Xdir = "+";
-            movementYincrement = 1;
-        }
-
-        //Prepare to move the cursor (starting place)
-        var clientX = eStartX;
-        var clientY = eStartY;
-
-        //Prepare to move to destination
-        var clientFinishX = dStartX;
-        var clientFinishY = dStartY;
-
-           //While loop to actually move the mouse cursor
-           while ((clientX != clientFinishX) || (clientY != clientFinishY)) {
-           	if (clientX != clientFinishX) {
-           		    //Set incremented X coord
-           		    clientX += movementXincrement;
-                }
-           	if (clientY != clientFinishY) {
-           	        //Set incremented Y coord
-           		    clientY += movementYincrement;
-                }
-                //Move the mouse to the new coordinates
-                triggerMouseEvent(element, 'mousemove', true, clientX, clientY);
-            }
-
+        var dStartXY = this.whereAmI(destelement);
+        
+        var pX = dStartXY[0] - parent.frames['webapp'].cosmo.app.dragItem.clickOffsetX;
+        var pY = dStartXY[1] + parent.frames['webapp'].cosmo.app.dragItem.clickOffsetY - Windmill.web_ui_offset;
+        
+        
+        triggerMouseEvent(element, 'mousemove', true, pX, pY);
+        
         //Mouseup in the final resting place for the event
-        triggerMouseEvent(element, 'mouseup',   true, clientFinishX, clientFinishY); 
+        triggerMouseEvent(element, 'mouseup', true, pX, pY); 
     }
+    
+    
 /*Selenium.prototype.doDragdropDivCosmo = function(origlocator, destlocator) {
     
     //Get originating coordinates for the event

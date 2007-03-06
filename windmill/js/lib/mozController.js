@@ -33,8 +33,10 @@ Controller.prototype.click = function(param_object){
        }, false);
 
        // Trigger the event.
+       // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
+       triggerMouseEvent(element, 'mousedown', true);
+       triggerMouseEvent(element, 'mouseup', true);
        triggerMouseEvent(element, 'click', true);
-       
        
        //Apparently there is some annoying issue with chrome..and this fixes it. Concept from selenium browerbot.
        if (!Windmill.Browser.isChrome && !preventDefault) {

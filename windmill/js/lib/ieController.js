@@ -34,8 +34,11 @@ Controller.prototype.what = function() {
                 return false;
          }
             
-         triggerMouseEvent(element, 'click', true);
-         //element.click();
+          // Trigger the event.
+            // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
+            triggerMouseEvent(element, 'mousedown', true);
+            triggerMouseEvent(element, 'mouseup', true);
+            triggerMouseEvent(element, 'click', true);
          
          if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
              Windmill.XHR.loop_state = 0;

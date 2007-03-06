@@ -27,6 +27,7 @@ function expand(){
         webui_div.style.visibility = "hidden";
 		webapp_div.style.height="93%";
 		webapp_div.style.top="7%";
+		parent.Windmill.web_ui_offset = 60;
     }
     
 	if (webui_div.style.visibility == "visible"){
@@ -39,7 +40,8 @@ function expand(){
 		
 	}
 	else{
-		webui_div.style.height="20%";
+		webui_div.style.height="140px";
+		parent.Windmill.web_ui_offset = 140;
 		webapp_div.style.top="20%";
 		webapp_div.style.height="80%";
 		webui_div.style.visibility = "visible";

@@ -40,7 +40,7 @@ a:hover { text-decoration : underline; color : #336699; border: 0px; cursor: poi
 }
 
 #webUI{
-    height:20%;
+    height:140px;
     width:100%;
     visibility:hidden;
     z-index:5000;
