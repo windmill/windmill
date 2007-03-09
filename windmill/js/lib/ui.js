@@ -32,7 +32,7 @@ function UI() {
     //Run code and manage its result
     this.Run = function(){
         
-    	var jstext = document.getElementById("jsrunner");
+    	var jstext = Windmill.Remote.document.getElementById("jsrunner");
     	
     	var command_string = jstext.value;
     	var array_commands = command_string.split("\n")
@@ -75,13 +75,13 @@ function UI() {
 
     //Clearing runner box
     this.clear_JS = function(){
-    	var jstext = document.getElementById("jsrunner");
+    	var jstext = Windmill.Remote.document.getElementById("jsrunner");
     	jstext.value = "";
     }
     
     //Toggle Pause
     this.toggle_loop_button_text = function(){
-        var loop_button = document.getElementById("loopButton");
+        var loop_button = Windmill.Remote.document.getElementById("loopButton");
         if (loop_button.value == "Running.."){
             loop_button.value = "Paused..";
             
@@ -94,14 +94,14 @@ function UI() {
     
     //Writing to the performance tab
     this.write_performance = function(str){
-        var resultsDiv = document.getElementById("tab3");
+        var resultsDiv = Windmill.Remote.document.getElementById("tab3");
         resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;
         resultsDiv.scrollTop = resultsDiv.scrollHeight;
     }
     
     //Writing to the results tab
     this.write_result = function(str){
-        var resultsDiv = document.getElementById("tab4");
+        var resultsDiv = Windmill.Remote.document.getElementById("tab4");
         resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;
         resultsDiv.scrollTop = resultsDiv.scrollHeight;
     }

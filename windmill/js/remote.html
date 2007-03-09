@@ -1,0 +1,77 @@
+  <html>
+	<head>
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+	<title>Windmill Testing UI</title>
+	
+	<link rel="stylesheet" type="text/css" href="ide/css/windmill.css"/>
+	<link rel="stylesheet" type="text/css" href="ide/tabs/tab.css" />
+
+	<script type="text/javascript" src="ide/tabs/tab.js"></script>
+	<script type="text/javascript" src="lib/browserdetect.js"></script>
+	
+
+	
+</head>
+		
+	<body onload="javascript:opener.Windmill.Start();">
+
+		<div id="tab1" style="display:none;overflow:scroll;height:95%;width:98%;">
+		<img src="ide/img/logo.jpg">
+			<div>Welcome to <b>Windmill</b>!<br><br>
+				Windmill is a web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.
+			</div>
+		</div>
+		
+		<div id="tab2" style="display:none;overflow:scroll;height:95%;width:98%;">
+				<div style="font-size:10px;font-family:  'Lucida Grande', Geneva, sans-serif; ">
+					<b>Console</b> 
+				</div>
+
+				<div style="font-size:10px;font-family:  'Lucida Grande', Geneva, sans-serif; ">
+					<TEXTAREA id="jsrunner" NAME="runner" ROWS="15" COLS="45"></TEXTAREA>
+					<br>Example Command: {"method": "click", "params": {"link" : "Log in to Cosmo"}}<br>Multiple commands accepted, one per line.
+				</div>
+
+				<div>
+					<input type="button" id="runJSButton" value="Run" onClick="javascript:opener.Windmill.UI.Run();">
+					<input type="button" id="clearButton" value="Clear" onClick="javascript:opener.Windmill.UI.clear_JS();">
+				</div>
+		</div>
+		
+		<div id="tab3" style="display:none;overflow:scroll;width:98%;height:95%;">
+			
+		</div>
+		
+		<div id="tab4" style="display:none;overflow:scroll;height:95%;width:98%;">
+		
+		</div>
+		<div id="tab5" style="display:none;overflow:scroll;height:95%;width:98%;">
+			Status of Action Loop: <input type="button" id="loopButton" value="Running.." onClick="javascript:opener.Windmill.XHR.toggle_pause_json_loop();">
+		</div>
+		
+		<div id="tab6" style="display:none;overflow:scroll;height:95%;width:98%;">
+			Documentation from Windmill setup, to test writing: <a target="_blank" href="http://windmill.osafoundation.org/trac/wiki/GettingStarted">Getting Started</a><br>
+			Full Windmill WIKI: <a target="_blank" href="http://windmill.osafoundation.org/trac">Wiki </a>
+		</div>
+
+	<div id="tabgroup" class="TabStyleContainer"></div>
+
+
+<script type="text/javascript">
+
+	tabs = new TabGroup('tabgroup');
+	tabs.add('tab1', 'Windmill');
+	tabs.add('tab2', 'Console');
+	tabs.add('tab3', 'Performance');
+	tabs.add('tab4', 'Output');
+	tabs.add('tab5', 'Action Loop');
+	tabs.add('tab6', 'Docs');
+
+	tabs.draw();
+	tabs.focus('tab1');
+
+</script>
+
+</body>
+
+</html>

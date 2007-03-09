@@ -106,7 +106,7 @@ function Controller() {
     
     //Helper Functions for dealing with the window
     this.getDocument = function() {
-        return this.getCurrentWindow().frames[1].document;
+        return this.getCurrentWindow().document;
     }
 
     this.getCurrentWindow = function() {

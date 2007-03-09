@@ -9,14 +9,14 @@
  * Version 1.1 - Functions for Post-Drawing Manipulation
  */
 
-/*function TabFocus(event)
+function TabFocus(event)
 {
 	if (!event) event = window.event;
 	evtTarget = (browser.isIE5up) ? event.srcElement : event.target;
 	evtTarget.tab.group.focus(evtTarget.tab.id);
 
 	return false;
-}*/
+}
 
 function TabFocus(e) 
 { 

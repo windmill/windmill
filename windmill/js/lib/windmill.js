@@ -34,7 +34,17 @@ function windmill_main(browser) {
     //Init XHR and loop stuff
     this.XHR = new XHR();
     
-    this.web_ui_offset = 60;
+    this.TestingApp = parent.frames['webapp'];
+        
+    this.Start = function(){
+        //Index page load report
+          load_timer.end_time();
+
+          Windmill.UI.write_result("Start UI output session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
+          Windmill.UI.write_performance("Starting UI performance session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
+          load_timer.write();
+    }
+    
 };
 
 //Instantiate the windmill object, had to move it here because if I do it in the onload I can't call its members in the start.html body

@@ -17,11 +17,11 @@ Copyright 2006, Open Source Applications Foundation
 
 //Loader function
 function Load(){
-    //Index page load report
-     load_timer.end_time();
-     
-     Windmill.UI.write_result("Start UI output session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
-     Windmill.UI.write_performance("Starting UI performance session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
-     load_timer.write();
+    try{
+        Windmill.Remote = window.open('remote.html','Windmill Rmote','width=450,height=500,toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');    
+    }
+    catch (e) {
+        alert("You have to enable popups to allow the Windmill Remote to function properly.");
+    }
 
 }

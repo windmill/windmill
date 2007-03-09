@@ -16,119 +16,50 @@ Copyright 2006, Open Source Applications Foundation
 
     <html>
 	<head>
+		<script type="text/javascript" src="lib/browserdetect.js"></script>
+		<script type="text/javascript" src="lib/controller.js"></script>
+		<script type="text/javascript">
+			var url = 'lib/mozController.js';
+
+			if (browser.isIE){
+				url = 'lib/ieController.js';
+			}
+			else if(browser.isSafari){
+				url = 'lib/safController.js';
+			}
+			document.write('<script src="', url, '" type="text/javascript"><\/script>');
+		</script>
+		<script type="text/javascript" src="lib/firebug/firebug.js"></script>
+		<script type="text/javascript" src="lib/fleegix.js"></script>
+		<script type="text/javascript" src="lib/performance.js"></script>
+		<script type="text/javascript" src="lib/timing.js"></script>
+		<script type="text/javascript" src="lib/log4js.js" ></script>
+		<script type="text/javascript" src="lib/ui.js"></script>
+		<script type="text/javascript" src="lib/xhr.js"></script>
+		<script type="text/javascript" src="lib/xpath/misc.js"></script>
+		<script type="text/javascript" src="lib/xpath/dom.js"></script>
+		<script type="text/javascript" src="lib/xpath/xpath.js"></script>
+
+		<script type="text/javascript" src="lib/windmill.js"></script>
+		<script type="text/javascript" src="lib/htmlutils.js"></script>
+		<script type="text/javascript" src="lib/windmill-exec.js"></script>
+
+		<script type="text/javascript" src="extensions/extensions.js"></script>
+
+		<script type="text/javascript">
+	        //Borked!!
+	 		var load_timer = new TimeObj();
+			 load_timer.set_name('Loading first page');
+	         load_timer.start_time();
+		</script>
+	</head>
 	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-	<title>Windmill Testing UI</title>
+	<title>Windmill </title>
 	
-	<link rel="stylesheet" type="text/css" href="ide/css/windmill.css"/>
-	<link rel="stylesheet" type="text/css" href="ide/tabs/tab.css" />
-
-	<script type="text/javascript" src="lib/browserdetect.js"></script>
-	<script type="text/javascript" src="lib/controller.js"></script>
-	<script type="text/javascript">
-		var url = 'lib/mozController.js';
-		
-		if (browser.isIE){
-			url = 'lib/ieController.js';
-		}
-		else if(browser.isSafari){
-			url = 'lib/safController.js';
-		}
-		document.write('<script src="', url, '" type="text/javascript"><\/script>');
-	</script>
-	<script type="text/javascript" src="lib/firebug/firebug.js"></script>
-	<script type="text/javascript" src="lib/fleegix.js"></script>
-	<script type="text/javascript" src="lib/performance.js"></script>
-	<script type="text/javascript" src="lib/timing.js"></script>
-	<script type="text/javascript" src="lib/log4js.js" ></script>
-	<script type="text/javascript" src="lib/ui.js"></script>
-	<script type="text/javascript" src="lib/xhr.js"></script>
-	<script type="text/javascript" src="lib/xpath/misc.js"></script>
-	<script type="text/javascript" src="lib/xpath/dom.js"></script>
-	<script type="text/javascript" src="lib/xpath/xpath.js"></script>
+	<body onload="javascript:Load()">
 	
-	<script type="text/javascript" src="lib/windmill.js"></script>
-	<script type="text/javascript" src="lib/htmlutils.js"></script>
-	<script type="text/javascript" src="lib/windmill-exec.js"></script>
-	
-	<script type="text/javascript" src="ide/tabs/tab.js"></script>
-	<script type="text/javascript" src="extensions/extensions.js"></script>
-
-	<script type="text/javascript">
-        //Borked!!
- 		var load_timer = new TimeObj();
-		 load_timer.set_name('Loading first page');
-         load_timer.start_time();
-	</script>
-
-	
-</head>
-		
-	<body onLoad="Load();">
-
-		<div id="tab1" style="z-index:5000;display:none;overflow:auto;height:120px;">
-		<img src="ide/img/logo.jpg">
-			<div style="position:absolute;left:130px;top:30px;width:450px">Welcome to <b>Windmill</b>!<br><br>
-				Windmill is a web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.
-			</div>
-		</div>
-		
-		<div id="tab2" style="z-index:5000;display:none;overflow:auto;height:135px;">
-				<div style="font-size:10px;font-family:  'Lucida Grande', Geneva, sans-serif; ">
-					<b>Console</b> 
-				</div>
-
-				<div style="font-size:10px;font-family:  'Lucida Grande', Geneva, sans-serif; ">
-					<TEXTAREA id="jsrunner" NAME="runner" ROWS="4" COLS="110"></TEXTAREA>
-					<br>Example Command: {"method": "click", "params": {"link" : "Log in to Cosmo"}}<br>Multiple commands accepted, one per line.
-				</div>
-
-				<div>
-					<input type="button" id="runJSButton" value="Run" onClick="javascript:Windmill.UI.Run();">
-					<input type="button" id="clearButton" value="Clear" onClick="javascript:Windmill.UI.clear_JS();">
-				</div>
-		</div>
-		
-		<div id="tab3" style="z-index:5000;display:none;overflow:auto;height:120px;">
-			
-		</div>
-		
-		<div id="tab4" style="z-index:5000;display:none;overflow:auto;height:120px;">
-		
-		</div>
-		<div id="tab5" style="z-index:5000;display:none;overflow:auto;height:120px;">
-			Status of Action Loop: <input type="button" id="loopButton" value="Running.." onClick="javascript:Windmill.XHR.toggle_pause_json_loop();">
-		</div>
-		
-		<div id="tab6" style="z-index:5000;display:none;overflow:auto;height:120px;">
-			Documentation from Windmill setup, to test writing: <a target="_blank" href="http://windmill.osafoundation.org/trac/wiki/GettingStarted">Getting Started</a><br>
-			Full Windmill WIKI: <a target="_blank" href="http://windmill.osafoundation.org/trac">Wiki </a>
-		</div>
-
-<div id="webui" style="z-index:5000">
-	<div id="tabgroup" style="z-index:5000" class="TabStyleContainer"></div>
-</div>
-
-<script type="text/javascript">
-
-	tabs = new TabGroup('tabgroup');
-	tabs.add('tab1', 'Windmill');
-	tabs.add('tab2', 'Console');
-	tabs.add('tab3', 'Performance');
-	tabs.add('tab4', 'Output');
-	tabs.add('tab5', 'Action Loop');
-	tabs.add('tab6', 'Docs');
-
-	tabs.draw();
-	tabs.focus('tab1');
-
-</script>
-	
-	<div id="togglediv">
-		<IFRAME class="toggleframeid" id="toggle" name="toggle" target="_self" SRC="/windmill-serv/ide/toggle.html" frameborder=0 scrolling=no></iframe>
-	</div>
-
 	<div id="pagediv">
-		<IFRAME class="frameid" id="webapp" name="webapp" onload="javascript:Windmill.Controller.continue_loop();" target="_self" frameborder=0 SRC="/"></iframe>
+		<IFRAME  style="width:100%;height:100%;" id="webapp" name="webapp" onload="javascript:Windmill.Controller.continue_loop();" target="_self" frameborder=0 SRC="/"></iframe>
 	</div>
 	
 	
