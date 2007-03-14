@@ -49,12 +49,12 @@ function Controller() {
 
     this.defer = function(){
         //We may want to somehow display that the loop is being deferred but right now it was too messy in output.
-        //Windmill.UI.write_result('Deferring..')
+        //Windmill.UI.writeResult('Deferring..')
     }
 
     this.continue_loop = function(){
-        Windmill.XHR.loop_state = 1;
-        Windmill.XHR.start_json_loop();
+        Windmill.XHR.loopState = 1;
+        Windmill.XHR.startJsonLoop();
     }
     
     this.open = function(param_object) {
@@ -62,7 +62,7 @@ function Controller() {
         webappframe.src = param_object.url;
         
         //Turn off loop until the onload for the iframe restarts it
-        Windmill.XHR.loop_state = 0;
+        Windmill.XHR.loopState = 0;
         return true;
     }
     

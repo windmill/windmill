@@ -16,52 +16,52 @@ Copyright 2006, Open Source Applications Foundation
 
 function TimeObj() {
     
-    var time_started = '0:0:0:0';
-    var time_ended = '0:0:0:0';
-    var start_ms = 0;
-    var end_ms = 0;
-    var run_time = '';
+    var timeStarted = '0:0:0:0';
+    var timeEnded = '0:0:0:0';
+    var startMS = 0;
+    var endMS = 0;
+    var runTime = '';
     var identifier = '';
     
-  this.get_start = function(){
-      return time_started;
+  this.getStart = function(){
+      return timeStarted;
   }
   
-  this.get_end = function(){
-        return time_ended;
+  this.getEnd = function(){
+        return timeEnded;
     }
    
     //Set the identifier 
-    this.set_name = function(identifier){
+    this.setName = function(identifier){
         this.identifier = identifier;
     }
     
     //Calculate how long it took
-    this.calculate_time = function(){
-         run_time = end_ms - start_ms;
+    this.calculateTime = function(){
+         runTime = endMS - startMS;
     }
     
     //Used for users who want to log the time and MS so they can compute how long a test took to run
-    this.start_time = function(){
+    this.startTime = function(){
 
         var d = new Date();
-        start_ms = d.getTime();
-    	time_started = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() 
+        startMS = d.getTime();
+    	timeStarted = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() 
     	+ ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z'; 
     }
 
     //Storing end time used for performance computation
-    this.end_time = function(identifier){
+    this.endTime = function(identifier){
 
         var d = new Date();
-        end_ms  = d.getTime();
-        time_ended = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() + ':' 
+        endMS  = d.getTime();
+        timeEnded = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() + ':' 
         + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z';
     }
     
     //Write to the log div
     this.write = function(parameters){
-         this.calculate_time(); 
+         this.calculateTime(); 
          var perf_tab = Windmill.Remote.document.getElementById("tab3");
         
         if(!parameters){
@@ -71,9 +71,9 @@ function TimeObj() {
           perf_tab.innerHTML = perf_tab.innerHTML + "<br>Executing: " + this.identifier + " - Parameters: " + parameters;    
         }
                
-         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Starting: " + this.identifier + " : " + time_started;
-         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Ending: " + this.identifier + " : " + time_ended;
-         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Total: " + this.identifier + " : " + run_time + " ms<br>";
+         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Starting: " + this.identifier + " : " + timeStarted;
+         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Ending: " + this.identifier + " : " + timeEnded;
+         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Total: " + this.identifier + " : " + runTime + " ms<br>";
          perf_tab.scrollTop = perf_tab.scrollHeight;
     
     }

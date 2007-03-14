@@ -41,7 +41,7 @@ Controller.prototype.what = function() {
             triggerMouseEvent(element, 'click', true);
          
          if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
-             Windmill.XHR.loop_state = 0;
+             Windmill.XHR.loopState = 0;
          }
          
          return true;

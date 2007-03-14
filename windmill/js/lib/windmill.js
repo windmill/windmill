@@ -14,7 +14,7 @@ Copyright 2006, Open Source Applications Foundation
  limitations under the License.
 */
 
-function windmill_main(browser) {
+function windmillObject(browser) {
     
     this.Browser = browser;
     
@@ -38,17 +38,17 @@ function windmill_main(browser) {
         
     this.Start = function(){
         //Index page load report
-          load_timer.end_time();
+          load_timer.endTime();
 
-          Windmill.UI.write_result("Start UI output session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
-          Windmill.UI.write_performance("Starting UI performance session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
+          Windmill.UI.writeResult("Start UI output session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
+          Windmill.UI.writePerformance("Starting UI performance session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
           load_timer.write();
     }
     
 };
 
 //Instantiate the windmill object, had to move it here because if I do it in the onload I can't call its members in the start.html body
-Windmill = new windmill_main(browser);
+Windmill = new windmillObject(browser);
 
 
 

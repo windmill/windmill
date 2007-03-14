@@ -27,7 +27,7 @@ Copyright 2006, Open Source Applications Foundation
 function XHR() {
     
     //Keep track of the loop state, running or paused
-    this.loop_state = 1;
+    this.loopState = 1;
    
     //json_call
     this.json_call = function(version, method, params){
@@ -37,33 +37,33 @@ function XHR() {
     }
 
     //action callback
-    this.action_handler = function(str){
+    this.actionHandler = function(str){
 
-        Windmill.XHR.xhr_response = eval('(' + str + ')');
+        Windmill.XHR.xhrResponse = eval('(' + str + ')');
        
         //If there was a legit json response
-        if ( Windmill.XHR.xhr_response.error ){
-            Windmill.Log.debug("There was a JSON syntax error: '" + Windmill.XHR.xhr_response.error + "'");
+        if ( Windmill.XHR.xhrResponse.error ){
+            Windmill.Log.debug("There was a JSON syntax error: '" + Windmill.XHR.xhrResponse.error + "'");
         }
         else{
             
             //Init and start performance but not if the protocol defer
-            if (Windmill.XHR.xhr_response.result.method != 'defer'){
+            if (Windmill.XHR.xhrResponse.result.method != 'defer'){
                 
                 var action_timer = new TimeObj();
-                action_timer.set_name(Windmill.XHR.xhr_response.result.method);
-                action_timer.start_time();
+                action_timer.setName(Windmill.XHR.xhrResponse.result.method);
+                action_timer.startTime();
             }
             
             //Run the action  
-            try { //result = Windmill.Controller.click(Windmill.XHR.xhr_response.result.params); }
-                var result = Windmill.Controller[Windmill.XHR.xhr_response.result.method](Windmill.XHR.xhr_response.result.params); 
-                //eval("result=" + "Windmill.Controller." + Windmill.XHR.xhr_response.result.method + "(" + Windmill.XHR.xhr_response.result.params + ");");
+            try { //result = Windmill.Controller.click(Windmill.XHR.xhrResponse.result.params); }
+                var result = Windmill.Controller[Windmill.XHR.xhrResponse.result.method](Windmill.XHR.xhrResponse.result.params); 
+                //eval("result=" + "Windmill.Controller." + Windmill.XHR.xhrResponse.result.method + "(" + Windmill.XHR.xhrResponse.result.params + ");");
             }
             catch (error) { 
                 result = true;
-                //Windmill.Log.debug("Error Executing " + Windmill.XHR.xhr_response.result.method);
-                //Windmill.UI.write_result('<br>Error: Non DOM error running '+ Windmill.XHR.xhr_response.result.method);
+                //Windmill.Log.debug("Error Executing " + Windmill.XHR.xhrResponse.result.method);
+                //Windmill.UI.writeResult('<br>Error: Non DOM error running '+ Windmill.XHR.xhrResponse.result.method);
                 
             }
             var color = "69d91f";
@@ -71,55 +71,55 @@ function XHR() {
                 color = "FF0000";
             }
             //End and store the performance
-            if (Windmill.XHR.xhr_response.result.method != 'defer'){
-                action_timer.end_time();
+            if (Windmill.XHR.xhrResponse.result.method != 'defer'){
+                action_timer.endTime();
                 
-                var to_write = fleegix.json.serialize(Windmill.XHR.xhr_response.result);
+                var to_write = fleegix.json.serialize(Windmill.XHR.xhrResponse.result);
                 action_timer.write(to_write);
                 
                 //Send the report
-                Windmill.XHR.send_report(Windmill.XHR.xhr_response.result.method, result, action_timer);
+                Windmill.XHR.sendReport(Windmill.XHR.xhrResponse.result.method, result, action_timer);
                
                 //Write to the result tab
-                Windmill.UI.write_result("<br>Action: <b>" + Windmill.XHR.xhr_response.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=#"+color+"><b>" + result + '</b></font>');     
+                Windmill.UI.writeResult("<br>Action: <b>" + Windmill.XHR.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=#"+color+"><b>" + result + '</b></font>');     
     
             }
               //If we have a false result we need to freeze the loop
                 //Then tell the user we did that
                 if (result == false){
-                    //alert("There was an error in the "+Windmill.XHR.xhr_response.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.");
-                    Windmill.UI.write_result("<font color=\"#FF0000\">There was an error in the "+Windmill.XHR.xhr_response.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.</font>");
-                    Windmill.XHR.toggle_pause_json_loop();
+                    //alert("There was an error in the "+Windmill.XHR.xhrResponse.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.");
+                    Windmill.UI.writeResult("<font color=\"#FF0000\">There was an error in the "+Windmill.XHR.xhrResponse.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.</font>");
+                    Windmill.XHR.togglePauseJsonLoop();
                 
                 }
             
 
             //If the loop is running make the next request    
-            if (Windmill.XHR.loop_state != 0){
+            if (Windmill.XHR.loopState != 0){
                 //Sleep for a few seconds before doing the next xhr call
-                setTimeout("Windmill.XHR.get_next()", 2000);
+                setTimeout("Windmill.XHR.getNext()", 2000);
             }
         }
     }
     
     //Make sure we get back a confirmation
-    this.report_handler = function(str){
+    this.reportHandler = function(str){
         response = eval('(' + str + ')');
         
         if (!response.result == 200){
-            Windmill.UI.write_result('Error: Report receiving non 200 response.');
+            Windmill.UI.writeResult('Error: Report receiving non 200 response.');
         }
     }
     
     
     //Send the report
-    this.send_report = function(method, result, timer){
+    this.sendReport = function(method, result, timer){
         
         //Get the result into a string
-        var result_string = fleegix.json.serialize(Windmill.XHR.xhr_response.result)
+        var result_string = fleegix.json.serialize(Windmill.XHR.xhrResponse.result)
         
         //Append the results of the test run
-        var object_string = '{"test":'+ result_string + ',"result": '+ result +', "starttime":"'+ timer.get_start() + '", "endtime":"'+ timer.get_end() +'"}';
+        var object_string = '{"test":'+ result_string + ',"result": '+ result +', "starttime":"'+ timer.getStart() + '", "endtime":"'+ timer.getEnd() +'"}';
         
         //Turn this into an object
         var test_obj = eval('(' + object_string + ')');
@@ -134,31 +134,31 @@ function XHR() {
         var json_string = fleegix.json.serialize(json_object);
        
         //Actually send the report
-        fleegix.xhr.doPost(this.report_handler, '/windmill-jsonrpc/', json_string);
+        fleegix.xhr.doPost(this.reportHandler, '/windmill-jsonrpc/', json_string);
     }
     
     //Get the next action from the server
-    this.get_next = function(){
+    this.getNext = function(){
         var json_object = new this.json_call('1.1', 'next_action');
         var json_string = fleegix.json.serialize(json_object)
-        fleegix.xhr.doPost(this.action_handler, '/windmill-jsonrpc/', json_string);
+        fleegix.xhr.doPost(this.actionHandler, '/windmill-jsonrpc/', json_string);
     }
     
     //Start the json loop running
-    this.start_json_loop = function(){
-        this.get_next();
+    this.startJsonLoop = function(){
+        this.getNext();
     }
     
     //Handle the toggle of the loop paused/running
-    this.toggle_pause_json_loop = function(){
-        if (this.loop_state == 1){
-            this.loop_state = 0;
-            Windmill.UI.toggle_loop_button_text();
+    this.togglePauseJsonLoop = function(){
+        if (this.loopState == 1){
+            this.loopState = 0;
+            Windmill.UI.toggleLoopButtonText();
         }
         else {
-            this.loop_state = 1;
-            Windmill.UI.toggle_loop_button_text();
-            Windmill.XHR.get_next();
+            this.loopState = 1;
+            Windmill.UI.toggleLoopButtonText();
+            Windmill.XHR.getNext();
         }
     }    
 }

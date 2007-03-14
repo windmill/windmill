@@ -53,10 +53,10 @@ function UI() {
                 //setTimeout("Windmill.UI.donothing()", 5000);
             
             	if (result == true){
-            		Windmill.UI.write_result(run_obj.method + '<font color="#69d91f"><b> Succeeded.</b></font>' );
+            		Windmill.UI.writeResult(run_obj.method + '<font color="#69d91f"><b> Succeeded.</b></font>' );
             	}
             	else{
-            		Windmill.UI.write_result(run_obj.method + ' <font color="#FF0000">Failed.</font>' );
+            		Windmill.UI.writeResult(run_obj.method + ' <font color="#FF0000">Failed.</font>' );
                 }
             }    
         }
@@ -65,42 +65,42 @@ function UI() {
 	    result = Windmill.Controller[run_obj.method](run_obj.params); 
         
     	if (result == true){
-    		Windmill.UI.write_result('Success');
+    		Windmill.UI.writeResult('Success');
     	}
     	else{
-            Windmill.UI.write_result('Failure');    	
+            Windmill.UI.writeResult('Failure');    	
         }*/
 	
     }
 
     //Clearing runner box
-    this.clear_JS = function(){
+    this.clearJs = function(){
     	var jstext = Windmill.Remote.document.getElementById("jsrunner");
     	jstext.value = "";
     }
     
     //Toggle Pause
-    this.toggle_loop_button_text = function(){
-        var loop_button = Windmill.Remote.document.getElementById("loopButton");
-        if (loop_button.value == "Running.."){
-            loop_button.value = "Paused..";
+    this.toggleLoopButtonText = function(){
+        var loopButton = Windmill.Remote.document.getElementById("loopButton");
+        if (loopButton.value == "Running.."){
+            loopButton.value = "Paused..";
             
         }
         else{
-            loop_button.value = "Running..";
+            loopButton.value = "Running..";
         }
            
     }
     
     //Writing to the performance tab
-    this.write_performance = function(str){
+    this.writePerformance = function(str){
         var resultsDiv = Windmill.Remote.document.getElementById("tab3");
         resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;
         resultsDiv.scrollTop = resultsDiv.scrollHeight;
     }
     
     //Writing to the results tab
-    this.write_result = function(str){
+    this.writeResult = function(str){
         var resultsDiv = Windmill.Remote.document.getElementById("tab4");
         resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;
         resultsDiv.scrollTop = resultsDiv.scrollHeight;
