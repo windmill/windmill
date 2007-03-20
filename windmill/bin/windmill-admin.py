@@ -15,7 +15,7 @@
 
 import os, sys
 
-WINDMILL_DIR = os.path.abspath(os.path.abspath(sys.modules[__name__].__file__)+os.path.sep+os.path.pardir+os.path.sep+os.path.pardir+os.path.sep+os.path.pardir)
+WINDMILL_DIR = os.path.abspath(os.path.expanduser(sys.modules[__name__].__file__)+os.path.sep+os.path.pardir+os.path.sep+os.path.pardir+os.path.sep+os.path.pardir)
 sys.path.insert(0, WINDMILL_DIR)
 
 import windmill
@@ -27,9 +27,9 @@ def configure_global_settings():
     # Get local config
     
     if os.environ.has_key('WINDMILL_CONFIG_FILE'):
-        sys.path.insert(0, os.path.dirname(os.path.abspath(os.environ['WINDMILL_CONFIG_FILE'])))
-        local_settings = __import__(os.path.basename(os.path.abspath(os.environ['WINDMILL_CONFIG_FILE'])))
-        sys.path.remove(os.path.dirname(os.path.abspath(os.environ['WINDMILL_CONFIG_FILE'])))
+        sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.expanduser(os.environ['WINDMILL_CONFIG_FILE']))))
+        local_settings = __import__(os.path.abspath(os.path.basename(os.path.expanduser(os.environ['WINDMILL_CONFIG_FILE']))))
+        sys.path.remove(os.path.abspath(os.path.dirname(os.path.expanduser(os.environ['WINDMILL_CONFIG_FILE']))))
     else:
         try:
             import windmill_settings as local_settings
@@ -140,10 +140,10 @@ def debug(value):
     windmill.settings['CONSOLE_LOG_LEVEL'] = getattr(logging, 'DEBUG')
     
 def testfile(value):
-    windmill.settings['TEST_FILE'] = os.path.abspath(value)
+    windmill.settings['TEST_FILE'] = os.path.abspath(os.path.expanduser(value))
     
 def testdir(value):
-    windmill.settings['TEST_DIR'] = os.path.abspath(value)
+    windmill.settings['TEST_DIR'] = os.path.abspath(os.path.expanduser(value))
 
 cmd_parse_mapping = {'loglevel':loglevel, 'debug':debug, 'testfile':testfile, 'testdir':testdir}
 
