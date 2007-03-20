@@ -34,7 +34,8 @@ function windmillObject(browser) {
     //Init XHR and loop stuff
     this.XHR = new XHR();
     
-    this.TestingApp = parent.frames['webapp'];
+    //The app your testing
+     this.TestingApp = parent.frames['webapp'];
         
     this.Start = function(){
         //Index page load report

@@ -17,6 +17,9 @@ Copyright 2006, Open Source Applications Foundation
 
 //Loader function
 function Load(){
+        //The app your testing
+       Windmill.TestingApp = parent.frames['webapp'];
+       
     try{
         Windmill.Remote = window.open('remote.html','Windmill Rmote','width=450,height=500,toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');    
     }

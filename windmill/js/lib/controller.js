@@ -245,6 +245,54 @@ function Controller() {
         return true;
     }
 
+    //Drag Drop functionality allowing functions passed to calculate cursor offsets
+    Controller.prototype.dragDrop = function(param_object){
+        
+       
+         var p = param_object;
+         var hash_key;
+         
+         eval ("hash_key=" + p.dragged.jsid + ";");
+         p.dragged.id = "eventDivContent__"+ hash_key;
+         delete p.dragged.jsid;
+                 
+                function getPos(elem, evType) {
+                         // param_object.mouseDownPos or param_obj.mouseUpPos
+                         var t = evType + 'Pos';
+                         var res = [];
+                         // Explicit function for getting XY of both
+                         // start and end position for drag  start 
+                         // to be calculated from the initial pos of the
+                         // dragged, and end to be calculated from the
+                         // position of the destination
+                         if (p[t]) {
+                             var f = eval(p[t]);
+                             res = f(elem);
+                         }
+                         // Otherwise naively assume top/left XY for both
+                         // start (dragged) and end (destination)
+                         else {
+                                res = [elem.offsetLeft, elem.offsetTop];
+                         }
+           
+                        return res;
+                    }
+                    
+        
+            var dragged = this.lookup_dispatch(p.dragged);
+            var dest = this.lookup_dispatch(p.destination);
+            var mouseDownPos = getPos(dragged, 'mouseDown');
+            var mouseUpPos = getPos(dest, 'mouseUp');
+        
+            var webApp = parent.frames['webapp'];
+            triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
+            triggerMouseEvent(dragged, 'mousedown', true);
+            triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
+            triggerMouseEvent(dragged, 'mouseup', true);
+            triggerMouseEvent(dragged, 'click', true);
+            
+            return true;
+    }
    
     
     //A big part of the following is adapted from the selenium project browserbot

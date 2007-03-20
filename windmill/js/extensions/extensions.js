@@ -5,7 +5,7 @@ Copyright 2006, Open Source Applications Foundation
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+     http://www.apache.org/licenses/LICENSE2.0
 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,164 +25,74 @@ Copyright 2006, Open Source Applications Foundation
     //I will just recreate that before I actually look up the dom element, then click
     //the appropriate element
     
-    Controller.prototype.click_lozenge =function(param_object){
+    Controller.prototype.clickLozenge =function(param_object){
         var hash_key;
         
         eval ("hash_key=" + param_object.jsid + ";");
-        param_object.id = "eventDivContent__" + param_object.jsid;
+        //hash_key = eval('('+ param_object.jsid + ')');
+        param_object.id = "eventDivContent__" + hash_key;
         delete param_object.jsid;
         
         //Since id comes before jsid in the lookup order
         //we don't need to reset it, now go ahead and click it!
-        this.click(param_object);    
+        return this.click(param_object);    
     }
     
     
-    Controller.prototype.drag_event = function(param_object){
+    Controller.prototype.cosmoDragDrop = function(param_object){
         
-        this.whereAmI = function(who,wch){
-            var L=0, R=0;
-            var pa=who;
+       
+         var p = param_object;
+         var hash_key;
+         
+         eval ("hash_key=" + p.dragged.jsid + ";");
+         p.dragged.id = "eventDivContent__"+ hash_key;
+         delete p.dragged.jsid;
+                 
+                function getPos(elem, evType) {
+                         // param_object.mouseDownPos or param_obj.mouseUpPos
+                         var t = evType + 'Pos';
+                         var res = [];
+                         // Explicit function for getting XY of both
+                         // start and end position for drag  start 
+                         // to be calculated from the initial pos of the
+                         // dragged, and end to be calculated from the
+                         // position of the destination
+                         if (p[t]) {
+                             var f = eval(p[t]);
+                             res = f(elem);
+                         }
+                         // Otherwise naively assume top/left XY for both
+                         // start (dragged) and end (destination)
+                         else {
+                                res = [elem.offsetLeft, elem.offsetTop];
+                         }
+           
+                        return res;
+                    }
+                    
+        
+            var dragged = this.lookup_dispatch(p.dragged);
+            var dest = this.lookup_dispatch(p.destination);
+            //var mouseDownPos = getPos(dragged, 'mouseDown');
+            //var mouseUpPos = getPos(dest, 'mouseUp');
+        
+            var webApp = parent.frames['webapp'];
+            var mouseDownX = dragged.parentNode.offsetLeft + (webApp.LEFT_SIDEBAR_WIDTH + webApp.HOUR_LISTING_WIDTH + 2) + 12; 
+            var mouseDownY = dragged.parentNode.offsetTop - (webApp.cosmo.view.cal.canvas.getTimedCanvasScrollTop() - webApp.TOP_MENU_HEIGHT) + 12;
+        
+            var webApp = parent.frames['webapp'];
+            var mouseUpX = dest.parentNode.offsetLeft + (webApp.LEFT_SIDEBAR_WIDTH + webApp.HOUR_LISTING_WIDTH + 2) + 12; 
+            var mouseUpY = dest.offsetTop - (webApp.cosmo.view.cal.canvas.getTimedCanvasScrollTop() - webApp.TOP_MENU_HEIGHT) + 12; 
             
-            while(pa.parentNode){
-            L+= ( pa.offsetLeft)? pa.offsetLeft: 0;
-            R+= (pa.offsetTop)? pa.offsetTop: 0;
-
-            if(pa==document.body || wch===false)break;
-            pa= pa.parentNode;
-
-            }
-            var A=[L,R];
-            return(wch===1 || wch=== 2)? A[wch]: A;
-        }
-        
-        //Get originating coordinates for the event
-        var hash_key;
-        eval ("hash_key=" + param_object.original.jsid + ";");
-        param_object.original.id = "eventDivContent__"+ hash_key;
-        delete param_object.original.jsid;
-                
-        var element = this.lookup_dispatch(param_object.original);
-        triggerMouseEvent(element, 'mousedown', true);
-       
-        //Get destination div x,y coordinates
-        var destelement = this.lookup_dispatch(param_object.destination);
-        var dStartXY = this.whereAmI(destelement);
-        
-        var pX = dStartXY[0] - parent.frames['webapp'].cosmo.app.dragItem.clickOffsetX;
-        var pY = dStartXY[1] + parent.frames['webapp'].cosmo.app.dragItem.clickOffsetY - Windmill.web_ui_offset;
-        
-        
-        triggerMouseEvent(element, 'mousemove', true, pX, pY);
-        
-        //Mouseup in the final resting place for the event
-        triggerMouseEvent(element, 'mouseup', true, pX, pY); 
+            var webApp = parent.frames['webapp'];
+            triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownX, mouseDownY);
+            triggerMouseEvent(dragged, 'mousedown', true);
+            triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpX, mouseUpY);
+            triggerMouseEvent(dragged, 'mouseup', true);
+            triggerMouseEvent(dragged, 'click', true);
+            
+            return true;
     }
     
     
-/*Selenium.prototype.doDragdropDivCosmo = function(origlocator, destlocator) {
-    
-    //Get originating coordinates for the event
-    var element = this.page().findElement(origlocator)
-    var eStartXY = getClientXY(element)
-    var eStartX = eStartXY[0];
-    var eStartY = eStartXY[1];
-    
-    //Click on it, so the Draggable object is insantiated and becomes accessable via Cal.dragElem
-    triggerMouseEvent(element, 'mousedown', true, eStartX, eStartY);
-
-    //Calculate the start drag using the x and y calendar offsets
-    var eStartX = (eStartX + this.browserbot.getCurrentWindow().Cal.dragElem.clickOffsetX);
-    var eStartY = (eStartY + this.browserbot.getCurrentWindow().Cal.dragElem.clickOffsetY);
-    
-    //Get destination div x,y coordinates
-    var destelement = this.page().findElement(destlocator)
-    var dStartXY = getClientXY(destelement)
-    
-    //Adjust for offsets, the offsets were both still off by increments of 150 and 50, so I correct this here.
-    //(There is probably a better way to do this, but this was the best hack I could make work reliably.)
-    //This breaks when the X value when the browser canvas is significantly shrunk because the dest div size shrinks
-    //This will be fixed after the merge code is given to QA
-    var dStartX = (dStartXY[0] + this.browserbot.getCurrentWindow().Cal.dragElem.clickOffsetX - 100 - this.browserbot.getCurrentWindow().cosmo.view.cal.canvas.dayUnitWidth);
-    var dStartY = (dStartXY[1] + this.browserbot.getCurrentWindow().Cal.dragElem.clickOffsetY - 50);
-    //this.browserbot.getCurrentWindow().cosmo.view.cal.canvas.dayUnitWidth
-    
-    //Calculate the actual distance the x and y needs to move
-    var xVal = Math.abs(dStartX - eStartX);
-    var yVal = Math.abs(dStartY - eStartY);
-    
-    //Default both to moving negatively
-    var Xdir = "-";
-    var Ydir = "-";
-    
-    //Default the increment direction
-    var movementXincrement = -1;
-    var movementYincrement = -1;
-    
-    //Set coordinate pos/neg for X
-    if (dStartX > eStartX) {
-        Xdir = "+";
-        movementXincrement = 1;
-    }
-    
-    //Set coordinate pos/neg for Y
-    if (dStartY > eStartY) {
-        Xdir = "+";
-        movementYincrement = 1;
-    }
-    
-    //Prepare to move the cursor (starting place)
-    var clientX = eStartX;
-    var clientY = eStartY;
-    
-    //Prepare to move to destination
-    var clientFinishX = dStartX;
-    var clientFinishY = dStartY;
-       
-       //While loop to actually move the mouse cursor
-       while ((clientX != clientFinishX) || (clientY != clientFinishY)) {
-       	if (clientX != clientFinishX) {
-       		    //Set incremented X coord
-       		    clientX += movementXincrement;
-            }
-       	if (clientY != clientFinishY) {
-       	        //Set incremented Y coord
-       		    clientY += movementYincrement;
-            }
-            //Move the mouse to the new coordinates
-            triggerMouseEvent(element, 'mousemove', true, clientX, clientY);
-        }
-        
-    //Mouseup in the final resting place for the event
-    triggerMouseEvent(element, 'mouseup',   true, clientFinishX, clientFinishY);
-    
-}
-*/
-//Author: Adam Christian, Open Source Applications Foundation
-//Email: adam@osafoundation.org
-//
-//Description: The following is the equivalent of a wrapper, this allows me to use:
-//<tr>
-//	<td>storeId</td>
-//	<td>first</td>
-//	<td>did</td>
-//</tr>
-//
-//When the java script objects in Cosmo are changed, as they were in the merge editing ths code
-//will fix all of the tests. 
-/*
-Selenium.prototype.doStoreId = function(expression, variableName) {
-    // This command is a synonym for storeExpression.
-     // @param expression the identifier for the ID we want from Cosmo
-    // @param variableName the name of a <a href="#storedVars">variable</a> in which the result is to be stored.
-     //
-    //If they want the next
-    if (expression == "next"){
-        storedVars[variableName] = this.browserbot.getCurrentWindow().cosmo.view.cal.canvas.eventRegistry.getNext().id;
-    }
-    //Default to the first, more cases could be added
-    else{
-        storedVars[variableName] =  this.browserbot.getCurrentWindow().cosmo.view.cal.canvas.eventRegistry.getFirst().id;
-    }
-}
-*/
