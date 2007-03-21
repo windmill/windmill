@@ -13,7 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import os, sys
+import os, sys, time
 
 WINDMILL_DIR = os.path.abspath(os.path.expanduser(sys.modules[__name__].__file__)+os.path.sep+os.path.pardir+os.path.sep+os.path.pardir+os.path.sep+os.path.pardir)
 sys.path.insert(0, WINDMILL_DIR)
@@ -135,6 +135,8 @@ def shell(cmd_options):
     except:
         import code
         code.interact(local=locals())    
+        
+    time.sleep(1)
 
     for controller in windmill.settings['controllers']:
         controller.stop()

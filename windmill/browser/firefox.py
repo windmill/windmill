@@ -20,8 +20,8 @@ import os, shutil, subprocess, time
 os.environ['MOZ_NO_REMOTE'] = str(1)
 PROXY_PORT = windmill.settings['SERVER_HTTP_PORT']
 DEFAULT_TEST_URL = windmill.settings['TEST_URL']+'/windmill-serv/start.html'
-MOZILLA_PROFILE_PATH=os.path.abspath("/tmp")
-MOZILLA_DEFAUlT_PROFILE=os.path.abspath('/Applications/Firefox.app/Contents/MacOS/defaults/profile/')
+MOZILLA_PROFILE_PATH = windmill.settings['MOZILLA_PROFILE_PATH']
+MOZILLA_DEFAUlT_PROFILE = windmill.settings['MOZILLA_DEFAUlT_PROFILE']
 
 class MozillaProfile(object):
     
@@ -33,16 +33,17 @@ class MozillaProfile(object):
         self.proxy_port = proxy_port
         self.test_url = test_url
         
-        self.profile_path = os.path.abspath(path + '/windmill_profile/')
+        self.profile_path = path
         
-        if os.path.exists(self.profile_path) is True:
-            shutil.rmtree(self.profile_path)
+        if windmill.settings['MOZILLA_CREATE_NEW_PROFILE']:
+            if os.path.exists(self.profile_path) is True:
+                shutil.rmtree(self.profile_path)
         
-        shutil.copytree(default_profile, self.profile_path)
+            shutil.copytree(default_profile, self.profile_path)
         
-        self.prefs_js_filename = self.profile_path + '/prefs.js'
-        self.prefs_js_f = open( self.prefs_js_filename, 'w')
-        self.initial_prefs()
+            self.prefs_js_filename = self.profile_path + '/prefs.js'
+            self.prefs_js_f = open( self.prefs_js_filename, 'w')
+            self.initial_prefs()
     
     def initial_prefs(self):
         """Initial prefs population, separated form __init__ for ease of subclassing"""
@@ -105,7 +106,7 @@ class MozillaProfile(object):
         shutil.rmtree(self.profile_path)
         
             
-MOZILLA_BINARY = '/Applications/Firefox.app/Contents/MacOS/firefox-bin'  
+MOZILLA_BINARY = windmill.settings['MOZILLA_BINARY']
         
         
 class MozillaBrowser(object):
@@ -138,7 +139,6 @@ class MozillaBrowser(object):
             
     def kill(self, signal):
         
-        print "killing %s with %s" % (self.p_id, signal)
         os.kill(self.p_id, signal)
         try:
             os.kill(self.p_id, 0)
