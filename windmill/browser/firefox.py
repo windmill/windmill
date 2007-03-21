@@ -21,11 +21,11 @@ os.environ['MOZ_NO_REMOTE'] = str(1)
 PROXY_PORT = windmill.settings['SERVER_HTTP_PORT']
 DEFAULT_TEST_URL = windmill.settings['TEST_URL']+'/windmill-serv/start.html'
 MOZILLA_PROFILE_PATH = windmill.settings['MOZILLA_PROFILE_PATH']
-MOZILLA_DEFAUlT_PROFILE = windmill.settings['MOZILLA_DEFAUlT_PROFILE']
+MOZILLA_DEFAULT_PROFILE = windmill.settings['MOZILLA_DEFAULT_PROFILE']
 
 class MozillaProfile(object):
     
-    def __init__(self, path=MOZILLA_PROFILE_PATH, default_profile=MOZILLA_DEFAUlT_PROFILE,
+    def __init__(self, path=MOZILLA_PROFILE_PATH, default_profile=MOZILLA_DEFAULT_PROFILE,
                   proxy_port=PROXY_PORT, test_url=DEFAULT_TEST_URL):
         """Create profile dir, and populate it"""
         
