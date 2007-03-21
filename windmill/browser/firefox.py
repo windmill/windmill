@@ -60,6 +60,7 @@ class MozillaProfile(object):
         # Configure local proxy
         self.user_pref('"network.proxy.http", "%s"' % self.proxy_host)
         self.user_pref('"network.proxy.http_port", %s' % str(self.proxy_port))
+        self.user_pref('"network.proxy.no_proxies_on", ""')
         self.user_pref('"network.proxy.type", 1')
         
         self.user_pref('"network.http.max-connections", 40')
