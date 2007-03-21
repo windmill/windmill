@@ -92,21 +92,26 @@ def shell(cmd_options):
     if windmill.settings['TEST_FILE'] is not None:
         windmill.bin.run_tests.run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
         
-    if windmill.settings['TEST_DIR'] is not None:
+    def run_test_dir(directory):
         # Try to import test_conf
-        sys.path.insert(0, windmill.settings['TEST_DIR'])
+        sys.path.insert(0, os.path.abspath(directory))
         try:
             import test_conf
             test_list = test_conf.test_list
         except:
             print 'No test_conf.py for this directory, executing all test in directory'
-            test_list = [test_name for test_name in os.listdir(windmill.settings['TEST_DIR']) if not test_name.startswith('.') and test_name.endswith('.json')]
+            test_list = [test_name for test_name in os.listdir(os.path.abspath(directory)) if not test_name.startswith('.') and test_name.endswith('.json')]
         
         print test_list
         
         for test in test_list:
-            run_test_file(windmill.settings['TEST_DIR']+os.path.sep+test)
-            
+            run_test_file(os.path.abspath(directory)+os.path.sep+test)
+    
+    def run_given_test_dir():
+        run_test_dir(windmill.settings['TEST_DIR'])   
+        
+    if windmill.settings['TEST_DIR'] is not None:
+        run_given_test_dir() 
         
         
     def clear_queue():
