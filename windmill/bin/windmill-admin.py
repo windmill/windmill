@@ -28,7 +28,7 @@ def configure_global_settings():
     
     if os.environ.has_key('WINDMILL_CONFIG_FILE'):
         sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.expanduser(os.environ['WINDMILL_CONFIG_FILE']))))
-        local_settings = __import__(os.path.abspath(os.path.basename(os.path.expanduser(os.environ['WINDMILL_CONFIG_FILE']))))
+        local_settings = __import__(os.path.basename(os.environ['WINDMILL_CONFIG_FILE'].split('.')[0]))
         sys.path.remove(os.path.abspath(os.path.dirname(os.path.expanduser(os.environ['WINDMILL_CONFIG_FILE']))))
     else:
         try:
