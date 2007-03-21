@@ -15,7 +15,6 @@
 import global_settings
 
 def configure_settings(local_settings=object(), windmill_settings={}):
-    print dir(local_settings)
     """Override global settings with any locals and configure the windmill_settings dict."""
     for setting in dir(global_settings):
         if not setting.startswith('__'):
