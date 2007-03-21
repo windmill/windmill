@@ -12,4 +12,15 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import browser_tools, firefox
+import windmill
+import webbrowser
+
+windmill.browser_registry = {}
+
+def get_firefox_controller():
+    
+    import firefox
+    profile = firefox.MozillaProfile()
+    
+    browser = firefox.MozillaBrowser(profile)
+    return browser

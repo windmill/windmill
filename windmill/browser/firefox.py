@@ -13,22 +13,23 @@
 #   limitations under the License.
 
 import webbrowser
-import os, shutil, subprocess
+import windmill
+import exceptions
+import os, shutil, subprocess, time
 
 os.environ['MOZ_NO_REMOTE'] = str(1)
-PROXY_HOST = 'localhost'
-PROXY_PORT = 4444
-DEFAULT_TEST_URL = 'http://www.google.com/windmill-serv/start.html'
+PROXY_PORT = windmill.settings['SERVER_HTTP_PORT']
+DEFAULT_TEST_URL = windmill.settings['TEST_URL']+'/windmill-serv/start.html'
 MOZILLA_PROFILE_PATH=os.path.abspath("/tmp")
 MOZILLA_DEFAUlT_PROFILE=os.path.abspath('/Applications/Firefox.app/Contents/MacOS/defaults/profile/')
 
 class MozillaProfile(object):
     
     def __init__(self, path=MOZILLA_PROFILE_PATH, default_profile=MOZILLA_DEFAUlT_PROFILE,
-                  proxy_host=PROXY_HOST, proxy_port=PROXY_PORT, test_url=DEFAULT_TEST_URL):
+                  proxy_port=PROXY_PORT, test_url=DEFAULT_TEST_URL):
         """Create profile dir, and populate it"""
         
-        self.proxy_host = proxy_host
+        self.proxy_host = 'localhost'
         self.proxy_port = proxy_port
         self.test_url = test_url
         
@@ -39,7 +40,8 @@ class MozillaProfile(object):
         
         shutil.copytree(default_profile, self.profile_path)
         
-        self.prefs_js_f = open(self.profile_path + '/prefs.js', 'w')
+        self.prefs_js_filename = self.profile_path + '/prefs.js'
+        self.prefs_js_f = open( self.prefs_js_filename, 'w')
         self.initial_prefs()
     
     def initial_prefs(self):
@@ -102,7 +104,7 @@ class MozillaProfile(object):
         shutil.rmtree(self.profile_path)
         
             
-MOZILLA_BINARY = '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
+MOZILLA_BINARY = '/Applications/Firefox.app/Contents/MacOS/firefox-bin'  
         
         
 class MozillaBrowser(object):
@@ -113,7 +115,7 @@ class MozillaBrowser(object):
         self.mozilla_bin = mozilla_bin
         self.p_id = None
         
-    def open(self, url=None):
+    def start(self, url=None):
         
         if url is None:
             url = self.profile.test_url
@@ -130,13 +132,25 @@ class MozillaBrowser(object):
         try:
             os.kill(self.p_id, 0)
             return True
-        except:
+        except exceptions.OSError:
             return False
             
-    def kill(self, signal=2):
+    def kill(self, signal):
         
+        print "killing %s with %s" % (self.p_id, signal)
         os.kill(self.p_id, signal)
+        try:
+            os.kill(self.p_id, 0)
+            os.kill(self.p_id+1, signal)
+        except:
+            pass
         
+    def stop(self):
+        import signal
+        
+        self.kill(signal=signal.SIGTERM)
+
+            
 if __name__ == "__main__":
     
     print 'Starting Profile'

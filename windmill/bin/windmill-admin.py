@@ -113,6 +113,13 @@ def shell(cmd_options):
         response = jsonrpc_client.next_action()
         while response['result']['method'] != 'defer':
             response = jsonrpc_client.next_action()
+            
+    windmill.settings['controllers'] = []
+            
+    def start_firefox():
+        controller = windmill.browser.get_firefox_controller()
+        controller.start()
+        windmill.settings['controllers'].append(controller) 
 
     # If ipython is installed and we weren't given the usecode option
     try:
@@ -124,8 +131,12 @@ def shell(cmd_options):
         import code
         code.interact(local=locals())    
 
+    for controller in windmill.settings['controllers']:
+        controller.stop()
+
     while httpd_thread.isAlive():
-        httpd.stop()
+        httpd.stop()        
+    
                     
 action_mapping = {'shell':shell, 'runserver':runserver}
 
