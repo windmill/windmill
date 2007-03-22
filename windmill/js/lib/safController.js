@@ -32,7 +32,7 @@ Controller.prototype.locateElementByIdentifier = function(identifier, inDocument
 
 //there is a problem with checking via click in safari
 Controller.prototype.check = function(param_object){
-    var element = this.lookup_dispatch(param_object);
+    var element = this.lookupDispatch(param_object);
     
     if (element.checked == true){
         element.checked = false;
@@ -46,7 +46,7 @@ Controller.prototype.check = function(param_object){
 
 //Radio buttons are even WIERDER in safari
 Controller.prototype.radio = function(param_object){
-    var element = this.lookup_dispatch(param_object);
+    var element = this.lookupDispatch(param_object);
     
     element.checked = true;
     
@@ -55,7 +55,7 @@ Controller.prototype.radio = function(param_object){
 
 //Safari Click function
 Controller.prototype.click = function(param_object){
-   var element = this.lookup_dispatch(param_object);
+   var element = this.lookupDispatch(param_object);
    if (!element){
        return false;
    }
@@ -76,7 +76,7 @@ Controller.prototype.click = function(param_object){
 //Double click for Safari
 Controller.prototype.doubleClick = function(param_object) {
 
-    var element = this.lookup_dispatch(param_object);
+    var element = this.lookupDispatch(param_object);
     if (!element){
            return false;
     }

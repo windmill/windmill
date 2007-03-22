@@ -72,8 +72,8 @@ Copyright 2006, Open Source Applications Foundation
                     }
                     
         
-            var dragged = this.lookup_dispatch(p.dragged);
-            var dest = this.lookup_dispatch(p.destination);
+            var dragged = this.lookupDispatch(p.dragged);
+            var dest = this.lookupDispatch(p.destination);
             //var mouseDownPos = getPos(dragged, 'mouseDown');
             //var mouseUpPos = getPos(dest, 'mouseUp');
         

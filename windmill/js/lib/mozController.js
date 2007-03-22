@@ -23,7 +23,7 @@ Controller.prototype.what = function() {
 //Click function for Mozilla with Chrome
 Controller.prototype.click = function(param_object){
       
-       var element = this.lookup_dispatch(param_object);
+       var element = this.lookupDispatch(param_object);
        if (!element){
           return false;
         }
@@ -81,7 +81,7 @@ Controller.prototype.radio = function(param_object){
 Controller.prototype.doubleClick = function(param_object) {
 
  //Look up the dom element, return false if its not there so we can report failure
- var element = this.lookup_dispatch(param_object);
+ var element = this.lookupDispatch(param_object);
  if (!element){
     return false;
  }

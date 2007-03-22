@@ -29,7 +29,7 @@ Controller.prototype.what = function() {
   
   Controller.prototype.click = function(param_object){
       
-         var element = this.lookup_dispatch(param_object);
+         var element = this.lookupDispatch(param_object);
          if (!element){
                 return false;
          }
@@ -56,7 +56,7 @@ Controller.prototype.what = function() {
 
   //Radio buttons are even WIERDER in safari, not breaking in FF
   Controller.prototype.radio = function(param_object){
-      //var element = this.lookup_dispatch(param_object);
+      //var element = this.lookupDispatch(param_object);
       return Windmill.Controller.click(param_object);
 
   }
@@ -64,7 +64,7 @@ Controller.prototype.what = function() {
   //double click for ie, needs to be tested
   Controller.prototype.doubleClick = function(param_object){
          
-         var element = this.lookup_dispatch(param_object);
+         var element = this.lookupDispatch(param_object);
          if (!element){
                 return false;
          }

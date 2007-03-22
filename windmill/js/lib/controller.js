@@ -51,12 +51,14 @@ function Controller() {
         //We may want to somehow display that the loop is being deferred but right now it was too messy in output.
         //Windmill.UI.writeResult('Deferring..')
     }
-
-    this.continue_loop = function(){
+    
+    //After a page is done loading, continue the loop
+    this.continueLoop = function(){
         Windmill.XHR.loopState = 1;
         Windmill.XHR.startJsonLoop();
     }
     
+    //open an url in the webapp iframe
     this.open = function(param_object) {
         webappframe = document.getElementById('webapp');
         webappframe.src = param_object.url;
@@ -66,12 +68,22 @@ function Controller() {
         return true;
     }
     
+    //Keeping the suites running 
+    this.setOptions = function(param_object){
+        
+        if(typeof param_object.stopOnFailure != "undefined") {
+            Windmill.stopOnFailure = param_object.stopOnFailure;
+        }
+        if(typeof param_object.showRemote != "undefined") {
+            Windmill.showRemote = param_object.showRemote;
+        }
+    }
     
     //Currently only does one level below the provided div
     //To make it more thorough it needs recursion to be implemented later
     this.verify = function(param_object) { 
         
-        var n = this.lookup_dispatch(param_object);
+        var n = this.lookupDispatch(param_object);
         var validator = param_object.validator;
         
         try{
@@ -123,7 +135,7 @@ function Controller() {
     }
     
     //Translates from the way we are passing objects to functions to the lookups
-    this.lookup_dispatch = function(param_object){
+    this.lookupDispatch = function(param_object){
        
         var element = null;
         //If a link was passed, lookup as link
@@ -161,7 +173,7 @@ function Controller() {
    //Type Function
    this.type = function(param_object){
    
-   var element = this.lookup_dispatch(param_object);
+   var element = this.lookupDispatch(param_object);
    if (!element){
        return false;
    }
@@ -199,7 +211,7 @@ function Controller() {
         done = function(){
             return true;
         }
-        setTimeout("done()", param_object.seconds);
+        setTimeout("done()", param_object.milliseconds);
         
         return true;
     }   
@@ -209,7 +221,7 @@ function Controller() {
     * Select the specified option and trigger the relevant events of the element.
     */
     this.select = function(param_object) {
-        var element = this.lookup_dispatch(param_object);
+        var element = this.lookupDispatch(param_object);
         
         if (!element){
                return false;
@@ -279,8 +291,8 @@ function Controller() {
                     }
                     
         
-            var dragged = this.lookup_dispatch(p.dragged);
-            var dest = this.lookup_dispatch(p.destination);
+            var dragged = this.lookupDispatch(p.dragged);
+            var dest = this.lookupDispatch(p.destination);
             var mouseDownPos = getPos(dragged, 'mouseDown');
             var mouseUpPos = getPos(dest, 'mouseUp');
         

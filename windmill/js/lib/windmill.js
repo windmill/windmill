@@ -46,6 +46,10 @@ function windmillObject(browser) {
           load_timer.write();
     }
     
+    //Windmill Options to be set
+    this.stopOnFailure = true;
+    this.showRemote = true;
+    
 };
 
 //Instantiate the windmill object, had to move it here because if I do it in the onload I can't call its members in the start.html body
