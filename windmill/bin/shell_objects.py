@@ -32,6 +32,7 @@ def start_firefox():
     controller = windmill.browser.get_firefox_controller()
     controller.start()
     windmill.settings['controllers'].append(controller)
+    return controller
     
 def run_test_file(filename):
     f = open(filename)
@@ -49,9 +50,7 @@ def run_test_dir(directory):
     except:
         print 'No test_conf.py for this directory, executing all test in directory'
         test_list = [test_name for test_name in os.listdir(os.path.abspath(directory)) if not test_name.startswith('.') and test_name.endswith('.json')]
-    
-    print test_list
-    
+        
     for test in test_list:
         run_test_file(os.path.abspath(directory)+os.path.sep+test)
 

@@ -52,6 +52,24 @@ class TestDir(object):
     def __call__(self, value):
         windmill.settings['TEST_DIR'] = os.path.abspath(os.path.expanduser(value))
         
+class GeneralBoolSettingToTrue(object):
+    """Base class for setting a generic value to True"""
+    def __call__(self):
+        windmill.settings[self.setting] = True
+        
+class GeneralBoolSettingToFalse(object):
+    """Base class for setting a generic value to False"""
+    def __call__(self):
+        windmill.settings[self.setting] = False
+        
+class StartFirefox(GeneralBoolSettingToTrue):
+    option_names = ('m', 'firefox')
+    setting = 'START_FIREFOX'
+    
+class ContinueOnFailure(GeneralBoolSettingToTrue):
+    option_names = ('c', 'continueonfailure')
+    setting = 'CONTINUE_ON_FAILURE'
+        
 def process_module(module):
     """Process this modules option list"""
     options_dict = {}

@@ -16,6 +16,7 @@
 server interfaces and the browser's js interface"""
 
 import copy, simplejson, logging
+import windmill
 
 test_results_logger = logging.getLogger('test_results')
 
@@ -51,6 +52,8 @@ callback = {'version':'0.1'}
 
 class TestResolutionSuite(object):
     """Collection of tests run and results"""
+    result_processor = None
+    
     def __init__(self):
         self.unresolved_tests = []
         self.resolved_tests = []
@@ -68,6 +71,17 @@ class TestResolutionSuite(object):
             test['result'] = result
             test['debug'] = debug
             self.resolved_tests.append(self.unresolved_tests.pop(self.unresolved_tests.index(test)))
+            
+            if result is False:
+                test_results_logger.error('Test Failue in test %s' % test)
+            elif result is True:
+                test_results_logger.debug('Test Success in test %s' % test)
+            
+            if self.result_processor is not None:
+                if test['result'] is False:
+                    self.result_processor.failure(test)
+                elif test['result'] is True:
+                    self.result_processor.success(test)
             
     def add_test(self, test):
         self.unresolved_tests.append(test)
@@ -115,7 +129,7 @@ class JSONRPCMethods(object):
         self._queue.add_test(test)    
         self._test_resolution_suite.add_test(test)
         
-    def add_json_command(self, json):
+    def add_json_command(self, json):    
         """Add command from json object with 'method' and 'params' defined"""
         command = copy.copy(callback)
         command.update(simplejson.loads(json))
@@ -142,6 +156,7 @@ class XMLRPCMethods(object):
         test = copy.copy(callback)
         test.update(simplejson.loads(json))
         self._queue.add_test(test)    
+        print self._queue.test_queue 
         self._test_resolution_suite.add_test(test) 
         
     def add_json_command(self, json):

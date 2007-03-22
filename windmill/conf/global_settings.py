@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import logging, os, sys
+import logging, os, sys, tempfile, shutil
 
 PLATFORM = sys.platform
 
@@ -29,10 +29,21 @@ TEST_FILE = None
 TEST_DIR = None
 EXIT_ON_DONE = False
 
+START_FIREFOX = False
+
+CONTINUE_ON_FAILURE = False
+
 # Browser prefs
+
+# Mozilla prefs
+MOZILLA_PROFILE_PATH = tempfile.mkdtemp()
+if MOZILLA_PROFILE_PATH.find('-') is not -1:
+    shutil.rmtree(MOZILLA_PROFILE_PATH)
+    MOZILLA_PROFILE_PATH = tempfile.mkdtemp()
+MOZILLA_CREATE_NEW_PROFILE = True
+MOZILLA_REMOVE_PROFILE_ON_EXIT = True
+
 if sys.platform == 'darwin':
-    MOZILLA_PROFILE_PATH = "/tmp/mozilla-profile"
-    MOZILLA_CREATE_NEW_PROFILE = True
     if os.path.isdir(os.path.expanduser('~/Applications/Firefox.app/')):
         MOZILLA_DEFAULT_PROFILE = os.path.expanduser('~/Applications/Firefox.app/Contents/MacOS/defaults/profile/')
         MOZILLA_BINARY = os.path.expanduser('~/Applications/Firefox.app/Contents/MacOS/firefox-bin')  

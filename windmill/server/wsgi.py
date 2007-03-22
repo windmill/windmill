@@ -326,13 +326,3 @@ def make_windmill_server(http_port=None, js_path=None):
     
     return httpd
 
-def main(port=PORT):
-    httpd = make_windmill_server()
-    print "Serving HTTP on port %s..." % port
-
-    # Respond to requests until process is killed
-    httpd.serve_forever()
-    
-if __name__ == "__main__":
-    
-    main()

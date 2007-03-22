@@ -14,7 +14,8 @@
 
 import windmill
 import logging, time
-import os, sys, inspect
+import os, sys, inspect, shutil
+from datetime import datetime
 from threading import Thread
 
 def process_options(argv_list):
@@ -27,25 +28,41 @@ def process_options(argv_list):
     
     for index in range(len(argv_list)):
         if index <= len(argv_list):
-            if argv_list[index].startswith('--') or not argv_list[index].startswith('-'):
-                value = None
-                if argv_list[index].find('=') is not -1:
-                    name, value = argv_list[index].split('=')
-                    name = name.replace('--', '')
-                else:
-                    name = argv_list[index].replace('--', '')    
-                    
-                if admin_options.options_dict.has_key(name):    
-                    processor = admin_options.options_dict[name]
-                    if value is None:
-                        try:
-                            processor()
-                        except TypeError:
-                            processor(argv_list.pop(index+1))
+            if argv_list[index].startswith('http://'):
+                windmill.settings['TEST_URL'] = argv_list[index]
+            elif not argv_list[index].startswith('-'):
+                if argv_list[index][0].islower():
+                    value = None
+                    if argv_list[index].find('=') is not -1:
+                        name, value = argv_list[index].split('=')
                     else:
-                        processor(value)
-                elif name in action_mapping.keys():
-                    action = action_mapping[name]
+                        name = argv_list[index]
+                    
+                    if admin_options.options_dict.has_key(name):    
+                        processor = admin_options.options_dict[name]
+                        if value is None:
+                            processor()
+                        else:
+                            processor(value)
+                    elif name in action_mapping.keys():
+                        action = action_mapping[name]
+                elif argv_list[index][0].isupper():
+                    value = argv_list[index][0]
+                    if value.find('=') is not -1:
+                        name, value = value.split('=')
+                        windmill.settings[name] = value
+                    else:
+                        if windmill.settings[value] is True:
+                            windmill.settings[value] = False
+                        elif windmill.settings[value] is False:
+                            windmill.settings[value] = True
+                            
+            elif argv_list[index].startswith('-'):
+                options = argv_list[index].replace('-')
+                for option in options:
+                    admin_options.flags_dict[option]()
+              
+            
                     
     if action is None:
         return action_mapping['runserver']
@@ -91,27 +108,37 @@ def setup():
     """Setup server and shell objects"""
     from windmill.bin import admin_lib
 
-    shell_objects = {}
+    shell_objects_dict = {}
 
     httpd, httpd_thread, console_log_handler = admin_lib.run_threaded(windmill.settings['CONSOLE_LOG_LEVEL'])
 
-    shell_objects['httpd'] = httpd
-    shell_objects['httpd_thread'] = httpd_thread
+    shell_objects_dict['httpd'] = httpd
+    shell_objects_dict['httpd_thread'] = httpd_thread
     
-    from windmill.bin import shell_commands
+    from windmill.bin import shell_objects
+    
+    if windmill.settings['CONTINUE_ON_FAILURE'] is not False:
+        jsonrpc_client.add_json_command('{"method": "setOptions", "params": {"stopOnFailure" : "false"}}')
 
     if windmill.settings['TEST_FILE'] is not None:
-         shell_commands.run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
+         shell_objects.run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
 
     if windmill.settings['TEST_DIR'] is not None:
-         shell_commands.run_given_test_dir() 
+         shell_objects.run_given_test_dir() 
+         
+    browser = [setting for setting in windmill.settings.keys() if setting.startswith('START_') and \
+                                                                  windmill.settings[setting] is True]
 
-    import shell_commands
-    for attribute in dir(shell_commands):
-        if callable(getattr(shell_commands, attribute)):
-            shell_objects[attribute] = getattr(shell_commands, attribute)
+    import shell_objects
 
-    return shell_objects
+    if len(browser) is 1:
+        shell_objects_dict['browser'] = getattr(shell_objects, browser[0].lower())()
+
+    for attribute in dir(shell_objects):
+        shell_objects_dict[attribute] = getattr(shell_objects, attribute)
+
+    windmill.settings['shell_objects'] = shell_objects_dict
+    return shell_objects_dict
 
 
 def teardown(shell_objects):
@@ -119,6 +146,9 @@ def teardown(shell_objects):
     for controller in windmill.settings['controllers']:
         controller.stop()
         time.sleep(1)
+        
+    if windmill.settings['MOZILLA_REMOVE_PROFILE_ON_EXIT'] is True:
+        shutil.rmtree(windmill.settings['MOZILLA_PROFILE_PATH'])
 
     while shell_objects['httpd_thread'].isAlive():
         shell_objects['httpd'].stop()
@@ -154,6 +184,45 @@ def shell_action(shell_objects):
         code.interact(local=shell_objects)    
 
     teardown(shell_objects)
+    
+def tinderbox_action(shell_objects):
+    
+    shell_objects['jsonrpc_client'].add_json_command('{"method": "setOptions", "params": {"stopOnFailure" : "false"}}')
+    
+    class ResultsProcessor(object):
+        passed = 0
+        failed = 0
+        def success(self, test):
+            self.passed += 1
+        def failure(self, test):
+            self.failed += 1
+            
+    result_processor = ResultsProcessor()
+    shell_objects['httpd'].test_resolution_suite.result_processor = result_processor
+        
+    try:
+        starttime = datetime.now()
+        while len(shell_objects['httpd'].controller_queue.test_queue) is not 0 or \
+              len(shell_objects['httpd'].controller_queue.command_queue) is not 0:
+            pass
+        
+        print '#TINDERBOX# Testname = FullSuite'  
+        print '#TINDERBOX# Time elapsed = %s' % str (datetime.now() - starttime)
+            
+        if result_processor.failed > 0 or result_processor.passed is 0:
+            result = "FAILED"
+        else:
+            result = "PASSED"
+            
+        print '#TINDERBOX# Status = %s' % result
+        teardown(shell_objects)
+        if result == "FAILED":
+            sys.exit(1)
 
-action_mapping = {'shell':shell_action, 'runserver':runserver_action}
+    except KeyboardInterrupt:
+        teardown(shell_objects)
+        if result == "FAILED":
+            sys.exit(1)
+
+action_mapping = {'shell':shell_action, 'runserver':runserver_action, 'tbox':tinderbox_action}
 

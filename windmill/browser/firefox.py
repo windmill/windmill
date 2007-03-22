@@ -16,6 +16,9 @@ import webbrowser
 import windmill
 import exceptions
 import os, shutil, subprocess, time
+import logging
+
+logger = logging.getLogger(__name__)
 
 os.environ['MOZ_NO_REMOTE'] = str(1)
 PROXY_PORT = windmill.settings['SERVER_HTTP_PORT']
@@ -124,7 +127,7 @@ class MozillaBrowser(object):
         
         self.p_id = subprocess.Popen("%s -profile %s %s" % (self.mozilla_bin, self.profile.profile_path, url), shell=True).pid
         
-        print self.mozilla_bin, '-profile %s' % self.profile.profile_path, url
+        logger.info("%s -profile %s %s" % (self.mozilla_bin, self.profile.profile_path, url))
         
     def is_alive(self):
         
@@ -152,24 +155,3 @@ class MozillaBrowser(object):
         self.kill(signal=signal.SIGTERM)
 
             
-if __name__ == "__main__":
-    
-    print 'Starting Profile'
-    profile = MozillaProfile()
-    print 'Creating browser obj'
-    browser = MozillaBrowser(profile)
-    
-    print 'Opening default browser'
-    browser.open()
-    
-    print 'Is alive?'
-    print browser.is_alive()
-    
-    import time
-    time.sleep(5)
-    
-    if browser.is_alive():
-        print 'killing browser'
-        browser.kill()
-        if browser.is_alive():
-            browser.kill(9)
