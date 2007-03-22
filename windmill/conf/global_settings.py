@@ -27,6 +27,7 @@ JS_PATH = os.path.dirname(sys.modules['windmill'].__file__)+os.path.sep+'js'
 
 TEST_FILE = None
 TEST_DIR = None
+EXIT_ON_DONE = False
 
 # Browser prefs
 if sys.platform == 'darwin':
