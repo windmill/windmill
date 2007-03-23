@@ -77,6 +77,8 @@ function Controller() {
         if(typeof param_object.showRemote != "undefined") {
             Windmill.showRemote = param_object.showRemote;
         }
+        
+        return true;
     }
     
     //Currently only does one level below the provided div

@@ -41,9 +41,11 @@ function windmillObject(browser) {
         //Index page load report
           load_timer.endTime();
 
-          Windmill.UI.writeResult("Start UI output session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
-          Windmill.UI.writePerformance("Starting UI performance session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
+          Windmill.UI.writeResult("<br>Start UI output session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
+          Windmill.UI.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
           load_timer.write();
+          
+          
     }
     
     //Windmill Options to be set

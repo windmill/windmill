@@ -82,12 +82,12 @@ function UI() {
     //Toggle Pause
     this.toggleLoopButtonText = function(){
         var loopButton = Windmill.Remote.document.getElementById("loopButton");
-        if (loopButton.value == "Running.."){
-            loopButton.value = "Paused..";
+        if (loopButton.value == "Loop Stopped"){
+            loopButton.value = "Loop Running";
             
         }
         else{
-            loopButton.value = "Running..";
+            loopButton.value = "Loop Stopped";
         }
            
     }
@@ -95,16 +95,30 @@ function UI() {
     //Writing to the performance tab
     this.writePerformance = function(str){
         var resultsDiv = Windmill.Remote.document.getElementById("tab3");
-        resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;
-        resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        resultsDiv.innerHTML =  str + "<br>" + resultsDiv.innerHTML
+        //resultsDiv.scrollTop = resultsDiv.scrollHeight;
+    }
+    
+    this.writeStatus = function(str){
+        Windmill.Remote.document.getElementById("runningStatus").innerHTML = str;
     }
     
     //Writing to the results tab
     this.writeResult = function(str){
         var resultsDiv = Windmill.Remote.document.getElementById("tab4");
-        resultsDiv.innerHTML = resultsDiv.innerHTML + "<br>" + str;
-        resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        resultsDiv.innerHTML = str + "<br>" + resultsDiv.innerHTML;
+        //resultsDiv.scrollTop = resultsDiv.scrollHeight;
     }
     
+    //Allowing the stopOnFailure switch to be controlled from the UI
+    this.toggleBreak = function(){
+        var breakCheckBox = Windmill.Remote.document.getElementById('toggleBreak');
+        if (breakCheckBox.checked){
+            Windmill.stopOnFailure = true;
+        }
+        else{
+            Windmill.stopOnFailure = false;
+        }
+    }
 
 }

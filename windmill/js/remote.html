@@ -19,7 +19,11 @@
 		<img src="ide/img/logo.jpg">
 			<div>Welcome to <b>Windmill</b>!<br><br>
 				Windmill is a web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.
-			</div>
+			</div><br><br>
+			If tests should have started running but didn't: 
+			<input type="button" id="reload" value="Start" onClick="javascript:opener.Windmill.Controller.continueLoop();">
+			<div id="runningStatus" style="position:absolute;top:300px;left:20px;font-size:18px;color:blue;">Status: Nothing yet..</div>
+			<div id="switchToOutput" style="position:absolute;top:330px;left:240px;font-size:18px;color:blue;"> <input type="button" id="switchButton" value="View Full Output" onClick="javascript:tabs.focus('tab4');"></div>
 		</div>
 		
 		<div id="tab2" style="display:none;overflow:scroll;height:95%;width:98%;">
@@ -46,10 +50,12 @@
 		
 		</div>
 		<div id="tab5" style="display:none;overflow:scroll;height:95%;width:98%;">
-			Status of Action Loop: <input type="button" id="loopButton" value="Running.." onClick="javascript:opener.Windmill.XHR.togglePauseJsonLoop();">
+			Status of Action Loop (Click to Toggle): <input type="button" id="loopButton" value="Running.." onClick="javascript:opener.Windmill.XHR.togglePauseJsonLoop();">
 		</div>
-		
 		<div id="tab6" style="display:none;overflow:scroll;height:95%;width:98%;">
+		Break on failure: <INPUT TYPE=checkbox CHECKED ID='toggleBreak' onclick="opener.Windmill.UI.toggleBreak();">
+		</div>
+		<div id="tab7" style="display:none;overflow:scroll;height:95%;width:98%;">
 			Documentation from Windmill setup, to test writing: <a target="_blank" href="http://windmill.osafoundation.org/trac/wiki/GettingStarted">Getting Started</a><br>
 			Full Windmill WIKI: <a target="_blank" href="http://windmill.osafoundation.org/trac">Wiki </a>
 		</div>
@@ -65,7 +71,8 @@
 	tabs.add('tab3', 'Performance');
 	tabs.add('tab4', 'Output');
 	tabs.add('tab5', 'Action Loop');
-	tabs.add('tab6', 'Docs');
+	tabs.add('tab6', 'Options');
+	tabs.add('tab7', 'Docs');
 
 	tabs.draw();
 	tabs.focus('tab1');

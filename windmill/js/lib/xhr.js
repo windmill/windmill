@@ -47,10 +47,20 @@ function XHR() {
             Windmill.Log.debug("There was a JSON syntax error: '" + Windmill.XHR.xhrResponse.error + "'");
         }
         else{
-
+            
+            if (Windmill.XHR.xhrResponse.result.method != 'defer'){
+                Windmill.UI.writeStatus("Status: Running " + Windmill.XHR.xhrResponse.result.method + "...");   
+            }
+            else{
+                Windmill.UI.writeStatus("Status: Waiting for tests...");
+            }
+            
             //Init and start performance but not if the protocol defer
             if (Windmill.XHR.xhrResponse.result.method != 'defer'){
-
+                
+                //Put on windmill main page that we are running something
+                
+                
                 var action_timer = new TimeObj();
                 action_timer.setName(Windmill.XHR.xhrResponse.result.method);
                 action_timer.startTime();
@@ -73,14 +83,16 @@ function XHR() {
 
                 //if we had an error display in UI
                 if (result == false){
-   
+                    
+                    Windmill.UI.writeResult("<font color=\"#FF0000\">There was an error in the "+Windmill.XHR.xhrResponse.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.</font>");
                     Windmill.UI.writeResult("<br>Action: <b>" + Windmill.XHR.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
                     //alert("There was an error in the "+Windmill.XHR.xhrResponse.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.");
-                    Windmill.UI.writeResult("<font color=\"#FF0000\">There was an error in the "+Windmill.XHR.xhrResponse.result.method+" action, so your execution loop was paused. Goto the 'Action Loop' tab to resume.</font>");
       
                     //if the continue on error flag has been set by the shell.. then we just keep on going
                     if (Windmill.stopOnFailure == true){
                         Windmill.XHR.togglePauseJsonLoop();
+                        Windmill.UI.writeStatus("Status: Paused, error?...");    
+                        
                     }
                 }
 

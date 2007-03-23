@@ -49,7 +49,7 @@ Controller.prototype.click = function(param_object){
                     return true;
                 }
            } 
-        else if (element.parentNode.href){
+     /*   else if (element.parentNode.href){
                document.getElementById('webapp').src = element.parentNode.href;
                
                if (element.href.indexOf('javascript:', 0) == -1){
@@ -57,7 +57,7 @@ Controller.prototype.click = function(param_object){
                     //element = "true";
                     return true;
                }
-           }
+           }*/
        }
  
        return true;

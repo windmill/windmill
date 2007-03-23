@@ -64,17 +64,17 @@ function TimeObj() {
          this.calculateTime(); 
          var perf_tab = Windmill.Remote.document.getElementById("tab3");
         
-        if(!parameters){
-            perf_tab.innerHTML = perf_tab.innerHTML + "<br>Executing: " + this.identifier;
-        }
-        else{
-          perf_tab.innerHTML = perf_tab.innerHTML + "<br>Executing: " + this.identifier + " - Parameters: " + parameters;    
-        }
+         perf_tab.innerHTML = "<br>Total: " + this.identifier + " : " + runTime + " ms<br>" + perf_tab.innerHTML;
+         perf_tab.innerHTML = "<br>Ending: " + this.identifier + " : " + timeEnded + perf_tab.innerHTML;
+         perf_tab.innerHTML = "<br>Starting: " + this.identifier + " : " + timeStarted + perf_tab.innerHTML;
                
-         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Starting: " + this.identifier + " : " + timeStarted;
-         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Ending: " + this.identifier + " : " + timeEnded;
-         perf_tab.innerHTML = perf_tab.innerHTML + "<br>Total: " + this.identifier + " : " + runTime + " ms<br>";
-         perf_tab.scrollTop = perf_tab.scrollHeight;
+         //perf_tab.scrollTop = perf_tab.scrollHeight;
+         if(!parameters){
+             perf_tab.innerHTML =  "<br>Executing: " + this.identifier + perf_tab.innerHTML;
+         }
+         else{
+           perf_tab.innerHTML ="<br>Executing: " + this.identifier + " - Parameters: " + parameters + perf_tab.innerHTML;    
+         }
     
     }
     
