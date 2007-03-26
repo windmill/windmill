@@ -49,7 +49,7 @@ function windmillObject(browser) {
     }
     
     //Windmill Options to be set
-    this.stopOnFailure = true;
+    this.stopOnFailure = false;
     this.showRemote = true;
     
 };
