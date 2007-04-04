@@ -50,10 +50,18 @@ if sys.platform == 'darwin':
     elif os.path.isdir(os.path.expanduser('/Applications/Firefox.app/')):
         MOZILLA_DEFAULT_PROFILE = '/Applications/Firefox.app/Contents/MacOS/defaults/profile/'
         MOZILLA_BINARY = '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
+        
 elif sys.platform == 'linux2':
     if os.path.isfile('/usr/bin/firefox'):
         MOZILLA_BINARY = '/usr/bin/firefox'
     
     if os.path.isdir('/usr/share/firefox/defaults/profile'):
         MOZILLA_DEFAULT_PROFILE = '/usr/share/firefox/defaults/profile'
+
+elif sys.platform == 'cygwin':
+    if os.path.isfile('/cygdrive/c/Program\ Files/Mozilla\ Firefox/firefox.exe'):
+        MOZILLA_BINARY = '/cygdrive/c/Program\ Files/Mozilla\ Firefox/firefox.exe'
+        
+    if os.path.isdir('/cygdrive/c/Program\ Files/Mozilla\ Firefox/defaults/profile'):
+        MOZILLA_DEFAULT_PROFILE = '/cygdrive/c/Program\ Files/Mozilla\ Firefox/defaults/profile'
 
