@@ -145,7 +145,9 @@ class MozillaBrowser(object):
         os.kill(self.p_id, signal)
         try:
             os.kill(self.p_id, 0)
-            os.kill(self.p_id+1, signal)
+            if sys.platform == 'darwin':
+                os.kill(self.p_id+1, signal)
+                os.kill(self.p_id, signal)
         except:
             pass
         
