@@ -15,7 +15,7 @@
 import webbrowser
 import windmill
 import exceptions
-import os, shutil, subprocess, time
+import os, sys, shutil, subprocess, time
 import logging
 
 logger = logging.getLogger(__name__)
@@ -114,20 +114,22 @@ MOZILLA_BINARY = windmill.settings['MOZILLA_BINARY']
         
 class MozillaBrowser(object):
     """MozillaBrowser class, init requires MozillaProfile instance"""
-    def __init__(self, profile, mozilla_bin=MOZILLA_BINARY):
+    def __init__(self, profile, mozilla_bin=MOZILLA_BINARY, start_url=None):
 
         self.profile = profile
         self.mozilla_bin = mozilla_bin
         self.p_id = None
         
-    def start(self, url=None):
+        if sys.platform == 'darwin':
+            self.shell_command = "%s -profile %s %s" % (self.mozilla_bin, self.profile.profile_path, self.profile.test_url)
+        elif sys.platform == 'linux2':
+            self.shell_command = "%s -P %s %s" % (self.mozilla_bin, self.profile.profile_path, self.profile.test_url)
         
-        if url is None:
-            url = self.profile.test_url
+    def start(self):
         
-        self.p_id = subprocess.Popen("%s -profile %s %s" % (self.mozilla_bin, self.profile.profile_path, url), shell=True).pid
+        self.p_id = subprocess.Popen(self.shell_command, shell=True).pid
         
-        logger.info("%s -profile %s %s" % (self.mozilla_bin, self.profile.profile_path, url))
+        logger.info(self.shell_command)
         
     def is_alive(self):
         
