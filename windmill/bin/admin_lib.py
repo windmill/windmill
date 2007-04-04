@@ -121,7 +121,7 @@ def setup():
         jsonrpc_client.add_json_command('{"method": "setOptions", "params": {"stopOnFailure" : false}}')
 
     if windmill.settings['TEST_FILE'] is not None:
-         shell_objects.run_test_file(windmill.settings['TEST_FILE'], jsonrpc_client)
+         shell_objects.run_test_file(windmill.settings['TEST_FILE'], shell_objects.jsonrpc_client)
 
     if windmill.settings['TEST_DIR'] is not None:
          shell_objects.run_given_test_dir() 
@@ -162,8 +162,8 @@ def runserver_action(shell_objects):
             while 1:
                 pass
         else:
-            while len(shell_objects['httpd'].controller_queue.test_queue) is not 0 or \
-                  len(shell_objects['httpd'].controller_queue.command_queue) is not 0:
+            while len(shell_objects['httpd'].controller_queue.test_queue) is not 0 and \
+                  len(shell_objects['httpd'].test_resolution_suite.unresolved_tests) is not 0:
                 pass
             
             teardown(shell_objects)
@@ -202,8 +202,8 @@ def tinderbox_action(shell_objects):
         
     try:
         starttime = datetime.now()
-        while len(shell_objects['httpd'].controller_queue.test_queue) is not 0 or \
-              len(shell_objects['httpd'].controller_queue.command_queue) is not 0:
+        while len(shell_objects['httpd'].controller_queue.test_queue) is not 0 and \
+              len(shell_objects['httpd'].test_resolution_suite.unresolved_tests) is not 0:
             pass
         
         print '#TINDERBOX# Testname = FullSuite'  
