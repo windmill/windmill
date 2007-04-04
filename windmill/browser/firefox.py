@@ -120,10 +120,7 @@ class MozillaBrowser(object):
         self.mozilla_bin = mozilla_bin
         self.p_id = None
         
-        if sys.platform == 'darwin':
-            self.shell_command = "%s -profile %s %s" % (self.mozilla_bin, self.profile.profile_path, self.profile.test_url)
-        elif sys.platform == 'linux2':
-            self.shell_command = "%s -P %s %s" % (self.mozilla_bin, self.profile.profile_path, self.profile.test_url)
+        self.shell_command = "%s -profile %s %s" % (self.mozilla_bin, self.profile.profile_path, self.profile.test_url)
         
     def start(self):
         
