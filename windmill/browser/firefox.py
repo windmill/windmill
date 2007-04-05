@@ -118,16 +118,16 @@ MOZILLA_BINARY = windmill.settings['MOZILLA_BINARY']
         
 class MozillaBrowser(object):
     """MozillaBrowser class, init requires MozillaProfile instance"""
-    def __init__(self, profile, mozilla_bin=MOZILLA_BINARY, start_url=None):
+    def __init__(self, profile, mozilla_bin=MOZILLA_BINARY):
 
         self.profile = profile
         self.mozilla_bin = mozilla_bin
         self.p_id = None
         
         if sys.platform == 'cygwin':
-            self.shell_command = '%s -profile "%s" ' % (self.mozilla_bin, self.profile.profile_path, self.profile.test_url)
+            self.shell_command = '%s -profile "%s" ' % (self.mozilla_bin, self.profile.profile_path)
         else:
-            self.shell_command = "%s -profile %s" % (self.mozilla_bin, self.profile.profile_path, self.profile.test_url)
+            self.shell_command = "%s -profile %s" % (self.mozilla_bin, self.profile.profile_path)
         
     def start(self):
         
