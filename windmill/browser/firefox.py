@@ -48,9 +48,6 @@ class MozillaProfile(object):
             self.prefs_js_f = open( self.prefs_js_filename, 'w')
             self.initial_prefs()
             
-        if sys.platform == 'cygwin':
-            new_path = windmill.settings['MOZILLA_PROFILE_PATH'].replace('/cygdrive/c/', 'C:\\').replace('/', '\\')
-            windmill.settings['MOZILLA_PROFILE_PATH'] = new_path
     
     def initial_prefs(self):
         """Initial prefs population, separated form __init__ for ease of subclassing"""
@@ -125,7 +122,8 @@ class MozillaBrowser(object):
         self.p_id = None
         
         if sys.platform == 'cygwin':
-            self.shell_command = '%s -profile "%s" ' % (self.mozilla_bin, self.profile.profile_path)
+            profile_path = self.profile.profile_path.replace('/cygdrive/c/', 'C:\\').replace('/', '\\')
+            self.shell_command = '%s -profile "%s" ' % (self.mozilla_bin, profile_path)
         else:
             self.shell_command = "%s -profile %s" % (self.mozilla_bin, self.profile.profile_path)
         
