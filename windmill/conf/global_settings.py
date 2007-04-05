@@ -59,9 +59,9 @@ elif sys.platform == 'linux2':
         MOZILLA_DEFAULT_PROFILE = '/usr/share/firefox/defaults/profile'
 
 elif sys.platform == 'cygwin':
-    if os.path.isfile('/cygdrive/c/Program\ Files/Mozilla\ Firefox/firefox.exe'):
-        MOZILLA_BINARY = '/cygdrive/c/Program\ Files/Mozilla\ Firefox/firefox.exe'
+    if os.path.isfile('/cygdrive/c/Program Files/Mozilla Firefox/firefox.exe'):
+        MOZILLA_BINARY = '/cygdrive/c/Program Files/Mozilla Firefox/firefox.exe'
         
-    if os.path.isdir('/cygdrive/c/Program\ Files/Mozilla\ Firefox/defaults/profile'):
-        MOZILLA_DEFAULT_PROFILE = '/cygdrive/c/Program\ Files/Mozilla\ Firefox/defaults/profile'
+    if os.path.isdir('/cygdrive/c/Program Files/Mozilla Firefox/defaults/profile'):
+        MOZILLA_DEFAULT_PROFILE = '/cygdrive/c/Program Files/Mozilla Firefox/defaults/profile'
 
