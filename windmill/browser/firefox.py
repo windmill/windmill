@@ -15,7 +15,8 @@
 import webbrowser
 import windmill
 import exceptions
-import os, sys, shutil, subprocess, time
+import os, sys, shutil, time
+import killableprocess
 import logging
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,13 @@ PROXY_PORT = windmill.settings['SERVER_HTTP_PORT']
 DEFAULT_TEST_URL = windmill.settings['TEST_URL']+'/windmill-serv/start.html'
 MOZILLA_PROFILE_PATH = windmill.settings['MOZILLA_PROFILE_PATH']
 MOZILLA_DEFAULT_PROFILE = windmill.settings['MOZILLA_DEFAULT_PROFILE']
+
+def setpgid_preexec_fn():
+    os.setpgid(0, 0)
+
+def runCommand(cmd):
+    return killableprocess.Popen(cmd, preexec_fn=setpgid_preexec_fn)
+
 
 class MozillaProfile(object):
     
@@ -111,53 +119,51 @@ class MozillaProfile(object):
         
             
 MOZILLA_BINARY = windmill.settings['MOZILLA_BINARY']
-        
-        
+
+def convertPath(linuxPath):
+    sysdrive = os.environ.get('SYSTEMDRIVE')
+    cygdrive = '/cygdrive/%s' % sysdrive.lower().replace(':', '')
+
+    return linuxPath.replace(cygdrive, '%s' % sysdrive).replace('/', '\\')
+
 class MozillaBrowser(object):
     """MozillaBrowser class, init requires MozillaProfile instance"""
     def __init__(self, profile, mozilla_bin=MOZILLA_BINARY):
 
         self.profile = profile
         self.mozilla_bin = mozilla_bin
-        self.p_id = None
+        self.p_handle = None
         
         if sys.platform == 'cygwin':
-            profile_path = self.profile.profile_path.replace('/cygdrive/c/', 'C:\\').replace('/', '\\')
-            self.shell_command = '%s -profile "%s" ' % (self.mozilla_bin, profile_path)
+            profile_path = convertPath(self.profile.profile_path)
         else:
-            self.shell_command = "%s -profile %s" % (self.mozilla_bin, self.profile.profile_path)
-        
+            profile_path = self.profile.profile_path
+
+        self.command = [self.mozilla_bin, '-profile', profile_path]
+
     def start(self):
-        
-        self.p_id = subprocess.Popen(self.shell_command, shell=True).pid
-        
-        logger.info(self.shell_command)
-        
+
+        self.p_handle = runCommand(self.command)
+
+        logger.info(self.command)
+
     def is_alive(self):
-        
-        if self.p_id is None:
+
+        if self.p_handle.poll() is None:
             return False
-        
+
         try:
-            os.kill(self.p_id, 0)
+            self.p_handle.kill(group=True)
             return True
         except exceptions.OSError:
             return False
-            
+
     def kill(self, signal):
-        
-        os.kill(self.p_id, signal)
-        try:
-            os.kill(self.p_id, 0)
-            if sys.platform == 'darwin':
-                os.kill(self.p_id+1, signal)
-                os.kill(self.p_id, signal)
-        except:
-            pass
-        
+
+        self.p_handle.kill(group=True)
+
     def stop(self):
-        import signal
-        
-        self.kill(signal=signal.SIGTERM)
+
+        self.p_handle.kill(group=True)
 
             
