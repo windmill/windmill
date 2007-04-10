@@ -28,18 +28,18 @@ Controller.prototype.what = function() {
   };
   
   Controller.prototype.click = function(param_object){
-      
+        
          var element = this.lookupDispatch(param_object);
          if (!element){
+             
                 return false;
          }
-            
           // Trigger the event.
             // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-            triggerMouseEvent(element, 'mousedown', true);
-            triggerMouseEvent(element, 'mouseup', true);
+            //triggerMouseEvent(element, 'mousedown', true);
+            //triggerMouseEvent(element, 'mouseup', true);
             triggerMouseEvent(element, 'click', true);
-         
+
          if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
              Windmill.XHR.loopState = 0;
          }
@@ -68,19 +68,19 @@ Controller.prototype.what = function() {
          if (!element){
                 return false;
          }
-         
+
          triggerEvent(element, 'focus', false);
 
            // Trigger the mouse event.
+           //triggerMouseEvent(element, 'dblclick', true, clientX, clientY);
            triggerMouseEvent(element, 'dblclick', true);
-
-         /*  if (this.windowClosed()) {
+          
+         /* if (this.windowClosed()) {
                return;
            }*/
-
            triggerEvent(element, 'blur', false);
            
-           return true;
+        return true;
   };
  
   

@@ -8,14 +8,13 @@
 
 	<script type="text/javascript" src="ide/tabs/tab.js"></script>
 	<script type="text/javascript" src="lib/browserdetect.js"></script>
-	
 
 	
 </head>
 		
 	<body onload="javascript:opener.Windmill.Start();">
 
-		<div id="tab1" style="display:none;overflow:scroll;height:95%;width:98%;">
+		<div id="tab1" style="display:none;height:465px;width:445px;">
 		<img src="ide/img/logo.jpg">
 			<div>Welcome to <b>Windmill</b>!<br><br>
 				Windmill is a web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.
@@ -26,13 +25,13 @@
 			<div id="switchToOutput" style="position:absolute;top:330px;left:240px;font-size:18px;color:blue;"> <input type="button" id="switchButton" value="View Full Output" onClick="javascript:tabs.focus('tab4');"></div>
 		</div>
 		
-		<div id="tab2" style="display:none;overflow:scroll;height:95%;width:98%;">
+		<div id="tab2" style="display:none;overflow:scroll;height:465px;width:445px;">
 				<div style="font-size:10px;font-family:  'Lucida Grande', Geneva, sans-serif; ">
 					<b>Console</b> 
 				</div>
 
 				<div style="font-size:10px;font-family:  'Lucida Grande', Geneva, sans-serif; ">
-					<TEXTAREA id="jsrunner" NAME="runner" ROWS="15" COLS="45"></TEXTAREA>
+					<TEXTAREA id="jsrunner" NAME="runner" ROWS="15" COLS="50"></TEXTAREA>
 					<br>Example Command: {"method": "click", "params": {"link" : "Log in to Cosmo"}}<br>Multiple commands accepted, one per line.
 				</div>
 
@@ -42,20 +41,20 @@
 				</div>
 		</div>
 		
-		<div id="tab3" style="display:none;overflow:scroll;width:98%;height:95%;">
+		<div id="tab3" style="display:none;overflow:scroll;height:465px;width:445px;">
 			
 		</div>
 		
-		<div id="tab4" style="display:none;overflow:scroll;height:95%;width:98%;">
+		<div id="tab4" style="display:none;overflow:scroll;height:465px;width:445px">
 		
 		</div>
-		<div id="tab5" style="display:none;overflow:scroll;height:95%;width:98%;">
-			Status of Action Loop (Click to Toggle): <input type="button" id="loopButton" value="Running.." onClick="javascript:opener.Windmill.XHR.togglePauseJsonLoop();">
+		<div id="tab5" style="display:none;overflow:scroll;height:465px;width:445px;">
+			Status of Action Loop (Click to Toggle): <input type="button" id="loopButton" value="Loop Running" onClick="javascript:opener.Windmill.XHR.togglePauseJsonLoop();">
 		</div>
-		<div id="tab6" style="display:none;overflow:scroll;height:95%;width:98%;">
+		<div id="tab6" style="display:none;overflow:scroll;height:465px;width:445px;">
 		Break on failure: <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="opener.Windmill.UI.toggleBreak();">
 		</div>
-		<div id="tab7" style="display:none;overflow:scroll;height:95%;width:98%;">
+		<div id="tab7" style="display:none;overflow:scroll;height:465px;width:445px;">
 			Documentation from Windmill setup, to test writing: <a target="_blank" href="http://windmill.osafoundation.org/trac/wiki/GettingStarted">Getting Started</a><br>
 			Full Windmill WIKI: <a target="_blank" href="http://windmill.osafoundation.org/trac">Wiki </a>
 		</div>

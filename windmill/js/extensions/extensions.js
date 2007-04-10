@@ -90,9 +90,15 @@ Copyright 2006, Open Source Applications Foundation
             triggerMouseEvent(dragged, 'mousedown', true);
             triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpX, mouseUpY);
             triggerMouseEvent(dragged, 'mouseup', true);
-            triggerMouseEvent(dragged, 'click', true);
             
             return true;
     }
     
+    //Getting rid of the problem where alerts can stop tinderbox from working
+    //This simply redirects all of the alert output to the output tab in the remote
+    var alert = function (s) { 
+        
+        Windmill.UI.writeResult("Alert: <b><font color=\"#fff32c\">" + s + "</font></b>");     
+    
+    };
     

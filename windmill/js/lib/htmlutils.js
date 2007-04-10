@@ -273,7 +273,7 @@ function getKeyCodeFromKeySequence(keySequence) {
     if (match != null) {
         return match[0];
     }
-    throw SeleniumError("invalid keySequence");
+    //throw SeleniumError("invalid keySequence");
 }
 
 function createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
@@ -327,7 +327,6 @@ function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, cont
     canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
 
     if (element.fireEvent) {
-        
         //LOG.info("element has fireEvent");
         var evt = createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
         evt.detail = 0;

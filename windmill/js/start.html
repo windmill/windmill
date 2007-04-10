@@ -46,20 +46,27 @@ Copyright 2006, Open Source Applications Foundation
 		<script type="text/javascript" src="extensions/extensions.js"></script>
 
 		<script type="text/javascript">
-	        //Borked!!
-	 		var load_timer = new TimeObj();
+	 		//Timing the load of the first page
+			 var load_timer = new TimeObj();
 			 load_timer.setName('Loading first page');
 	         load_timer.startTime();
+			
+			//Enabling the ability to start out out a page that requires query parameters
+			//By parsing the url they requested and opening it and storing that url
+			//Then when we open write the iframe src we can give it the correct starting src attrib
+			var urlSTR = window.location.href.replace("/windmill-serv/start.html","");
+		   	Windmill.initURL = urlSTR;
+			
 		</script>
 	</head>
 	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-	<title>Windmill </title>
+	<title>Windmill</title>
 	
 	<body onload="javascript:Load()">
 	
-	<div id="pagediv">
-		<IFRAME  style="width:100%;height:100%;" id="webapp" name="webapp" onload="javascript:Windmill.Controller.continueLoop();" target="_self" frameborder=0 SRC="/"></iframe>
-	</div>
+	<script type="text/javascript">
+	document.write("<div id=\"pagediv\"><IFRAME  style=\"width:100%;height:100%;\" id=\"webapp\" name=\"webapp\" onload=\"javascript:Windmill.Controller.continueLoop();\" target=\"_self\" frameborder=0 SRC=\""+Windmill.initURL+"\"></iframe></div>");
+	</script>
 	
 	
 </body>

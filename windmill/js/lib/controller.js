@@ -114,6 +114,7 @@ function Controller() {
         }
     }
     catch(error){return false;}
+    return true;
    }      
     
   
