@@ -47,7 +47,7 @@ if sys.platform == 'darwin':
     if os.path.isdir(os.path.expanduser('~/Applications/Firefox.app/')):
         MOZILLA_DEFAULT_PROFILE = os.path.expanduser('~/Applications/Firefox.app/Contents/MacOS/defaults/profile/')
         MOZILLA_BINARY = os.path.expanduser('~/Applications/Firefox.app/Contents/MacOS/firefox-bin')  
-    elif os.path.isdir(os.path.expanduser('/Applications/Firefox.app/')):
+    elif os.path.isdir('/Applications/Firefox.app/'):
         MOZILLA_DEFAULT_PROFILE = '/Applications/Firefox.app/Contents/MacOS/defaults/profile/'
         MOZILLA_BINARY = '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
         

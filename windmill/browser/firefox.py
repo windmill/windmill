@@ -15,15 +15,23 @@
 import webbrowser
 import windmill
 import exceptions
-import os, sys, shutil, time
+import os, sys, shutil, time, signal
 import killableprocess
 import logging
+import urlparse
 
 logger = logging.getLogger(__name__)
 
 os.environ['MOZ_NO_REMOTE'] = str(1)
 PROXY_PORT = windmill.settings['SERVER_HTTP_PORT']
-DEFAULT_TEST_URL = windmill.settings['TEST_URL']+'/windmill-serv/start.html'
+
+# Deal with queries in urls
+url_split = windmill.settings['TEST_URL'].split('?')
+if len(url_split) > 1:
+    DEFAULT_TEST_URL = url_split[0]+'/windmill-serv/start.html'+'?'+url_split[1]
+else:
+    DEFAULT_TEST_URL = windmill.settings['TEST_URL']+'/windmill-serv/start.html'
+    
 MOZILLA_PROFILE_PATH = windmill.settings['MOZILLA_PROFILE_PATH']
 MOZILLA_DEFAULT_PROFILE = windmill.settings['MOZILLA_DEFAULT_PROFILE']
 
@@ -148,7 +156,7 @@ class MozillaBrowser(object):
         logger.info(self.command)
 
     def is_alive(self):
-
+        
         if self.p_handle.poll() is None:
             return False
 
@@ -158,12 +166,18 @@ class MozillaBrowser(object):
         except exceptions.OSError:
             return False
 
-    def kill(self, signal):
-
-        self.p_handle.kill(group=True)
+    def kill(self, kill_signal):
+        
+        if sys.platform == 'darwin':
+            os.kill(self.p_handle.pid+1, kill_signal)
+        else:
+            self.p_handle.kill(group=True)
 
     def stop(self):
-
-        self.p_handle.kill(group=True)
+        
+        if sys.platform == 'darwin':
+            os.kill(self.p_handle.pid+1, signal.SIGTERM)
+        else:
+            self.p_handle.kill(group=True)
 
             
