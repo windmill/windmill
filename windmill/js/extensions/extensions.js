@@ -97,8 +97,14 @@ Copyright 2006, Open Source Applications Foundation
     //Getting rid of the problem where alerts can stop tinderbox from working
     //This simply redirects all of the alert output to the output tab in the remote
     var alert = function (s) { 
-        
-        Windmill.UI.writeResult("Alert: <b><font color=\"#fff32c\">" + s + "</font></b>");     
-    
+      Windmill.UI.writeResult("Alert: <b><font color=\"#fff32c\">" + s + "</font></b>");     
     };
     
+    //After the app reloads you have to re overwrite the alert function for the TestingApp
+    Controller.prototype.reWriteAlert = function(param_object){
+        Windmill.TestingApp.window.alert = function(s){
+            Windmill.UI.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
+        };
+        
+        return true;
+    }

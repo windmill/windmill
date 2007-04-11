@@ -32,7 +32,6 @@ font-size: 9px;
 }
 
 .TabStyleTabActive a {
-display: normal;
 text-decoration: none;
 color: #000;
 cursor: default;
@@ -53,7 +52,6 @@ font-size: 9px;
 }
 
 div.TabStyleTabNormal a {
-display: normal;
 text-decoration: none;
 }
 
