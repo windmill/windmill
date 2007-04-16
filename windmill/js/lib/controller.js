@@ -309,6 +309,16 @@ function Controller() {
             return true;
     }
    
+    //Directly access mouse events
+    Controller.prototype.mouseDown = function(param_object){
+        var mupElement = this.lookupDispatch(param_object);
+        triggerMouseEvent(mupElement, 'mouseup', true);  
+    }
+    
+    Controller.prototype.mouseUp = function(param_object){
+        var mdnElement = this.lookupDispatch(param_object);
+        triggerMouseEvent(mdnElement, 'mousedown', true);
+    }
     
     //A big part of the following is adapted from the selenium project browserbot
     //Registers all the ways to do a lookup
