@@ -310,14 +310,14 @@ function Controller() {
     }
    
     //Directly access mouse events
-    Controller.prototype.mouseDown = function(param_object){
+    Controller.prototype.mousedown = function(param_object){
         var mupElement = this.lookupDispatch(param_object);
-        triggerMouseEvent(mupElement, 'mouseup', true);  
+        triggerMouseEvent(mupElement, 'mousedown', true);  
     }
     
-    Controller.prototype.mouseUp = function(param_object){
+    Controller.prototype.mouseup = function(param_object){
         var mdnElement = this.lookupDispatch(param_object);
-        triggerMouseEvent(mdnElement, 'mousedown', true);
+        triggerMouseEvent(mdnElement, 'mouseup', true);
     }
     
     //A big part of the following is adapted from the selenium project browserbot
