@@ -23,6 +23,7 @@
 			<input type="button" id="reload" value="Start" onClick="javascript:opener.Windmill.Controller.continueLoop();">
 			<div id="runningStatus" style="position:absolute;top:300px;left:20px;font-size:18px;color:blue;">Status: Nothing yet..</div>
 			<div id="switchToOutput" style="position:absolute;top:330px;left:240px;font-size:18px;color:blue;"> <input type="button" id="switchButton" value="View Full Output" onClick="javascript:tabs.focus('tab4');"></div>
+			
 		</div>
 		
 		<div id="tab2" style="display:none;overflow:scroll;height:465px;width:445px;">
@@ -48,13 +49,36 @@
 		<div id="tab4" style="display:none;overflow:scroll;height:465px;width:445px">
 		
 		</div>
-		<div id="tab5" style="display:none;overflow:scroll;height:465px;width:445px;">
-			Status of Action Loop (Click to Toggle): <input type="button" id="loopButton" value="Loop Running" onClick="javascript:opener.Windmill.XHR.togglePauseJsonLoop();">
+		
+		<div id="tab5" style="display:none;overflow:scroll;height:465px;width:445px">
+			When this is switched on you can mouse over any element on the canvas and this tab will display it's DOM id, and it will be outlined on the web app.
+			<br><br><input type="button" id="toggleDomExpOn" value="Dom Explorer On" onClick="javascript:opener.Windmill.UI.domExplorerOn()">
+			<input type="button" id="toggleDomExpOff" value="Dom Explorer Off" onClick="javascript:opener.Windmill.UI.domExplorerOff()">
+			<br><br>
+			<div id="domExp" style="font:18px arial;color:purple;">
+			</div>
 		</div>
+			
 		<div id="tab6" style="display:none;overflow:scroll;height:465px;width:445px;">
-		Break on failure: <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="opener.Windmill.UI.toggleBreak();">
+			<br>Welcome to the recorder, once it is switched on go ahead and do your interaction with the UI, and Windmill actions will magically be recorded in the box below.
+			<br><br>
+			<input type="button" id="recordOn" value="Record" onClick="javascript:opener.Windmill.UI.recordOn()">
+			<input type="button" id="recordOff" value="Stop" onClick="javascript:opener.Windmill.UI.recordOff()">
+			<br><br>
+			Enable the click listener? <INPUT TYPE=checkbox UNCHECKED ID='clickOn' onclick="opener.Windmill.UI.recordOn();">
+			Enable Drag and Drop Mode? <INPUT TYPE=checkbox UNCHECKED ID='dragOn' onclick="opener.Windmill.UI.recordOn();">
+				
+			<br><br>
+			<b>Windmill Test</b><br><TEXTAREA STYLE="overflow:auto" wrap=off  id="wmTest" ROWS="20" COLS="50"></TEXTAREA>
+			
 		</div>
 		<div id="tab7" style="display:none;overflow:scroll;height:465px;width:445px;">
+		<br>
+		Status of Action Loop (Click to Toggle): <input type="button" id="loopButton" value="Loop Running" onClick="javascript:opener.Windmill.XHR.togglePauseJsonLoop();">
+		<br>	
+		Break on failure: <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="opener.Windmill.UI.toggleBreak();">
+		</div>
+		<div id="tab8" style="display:none;overflow:scroll;height:465px;width:445px;">
 			Documentation from Windmill setup, to test writing: <a target="_blank" href="http://windmill.osafoundation.org/trac/wiki/GettingStarted">Getting Started</a><br>
 			Full Windmill WIKI: <a target="_blank" href="http://windmill.osafoundation.org/trac">Wiki </a>
 		</div>
@@ -69,9 +93,10 @@
 	tabs.add('tab2', 'Console');
 	tabs.add('tab3', 'Performance');
 	tabs.add('tab4', 'Output');
-	tabs.add('tab5', 'Action Loop');
-	tabs.add('tab6', 'Options');
-	tabs.add('tab7', 'Docs');
+	tabs.add('tab5', 'Tools');
+	tabs.add('tab6', 'Recorder');
+	tabs.add('tab7', 'State');
+	tabs.add('tab8', 'Docs');
 
 	tabs.draw();
 	tabs.focus('tab1');

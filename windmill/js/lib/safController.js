@@ -59,13 +59,13 @@ Controller.prototype.click = function(param_object){
    if (!element){
        return false;
    }
-    
-    // Trigger the event.
+      // Trigger the event.
       // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-      triggerMouseEvent(element, 'mousedown', true);
-      triggerMouseEvent(element, 'mouseup', true);
-      triggerMouseEvent(element, 'click', true);
-         
+      Windmill.Events.triggerMouseEvent(element, 'mousedown', true);
+      Windmill.Events.triggerMouseEvent(element, 'mouseup', true);
+      Windmill.Events.triggerMouseEvent(element, 'click', true);
+      
+      
    if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
        Windmill.XHR.loopState = 0;
    }
@@ -81,16 +81,16 @@ Controller.prototype.doubleClick = function(param_object) {
            return false;
     }
     
-    triggerEvent(element, 'focus', false);
+    Windmill.Events.triggerEvent(element, 'focus', false);
 
     // Trigger the mouse event.
-    triggerMouseEvent(element, 'dblclick', true);
+    Windmill.Events.triggerMouseEvent(element, 'dblclick', true);
 
    /* if (this._windowClosed()) {
         return;
     }
 */
-    triggerEvent(element, 'blur', false);
+    Windmill.Events.triggerEvent(element, 'blur', false);
     
     return true;
 };

@@ -181,8 +181,8 @@ function Controller() {
        return false;
    }
          //Get the focus on to the item to be typed in, or selected
-         triggerEvent(element, 'focus', false);
-         triggerEvent(element, 'select', true);
+         Windmill.Events.triggerEvent(element, 'focus', false);
+         Windmill.Events.triggerEvent(element, 'select', true);
          
          //Make sure text fits in the textbox
          var maxLengthAttr = element.getAttribute("maxLength");
@@ -204,7 +204,7 @@ function Controller() {
          
          // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
          //Another wierd chrome thing?
-         triggerEvent(element, 'change', true);
+         Windmill.Events.triggerEvent(element, 'change', true);
          
          return true;
    }
@@ -239,7 +239,7 @@ function Controller() {
         
         var optionToSelect = locator.findOption(element);
         
-        triggerEvent(element, 'focus', false);
+        Windmill.Events.triggerEvent(element, 'focus', false);
         var changed = false;
         for (var i = 0; i < element.options.length; i++) {
             var option = element.options[i];
@@ -254,7 +254,7 @@ function Controller() {
         }
 
         if (changed) {
-            triggerEvent(element, 'change', true);
+            Windmill.Events.triggerEvent(element, 'change', true);
         }
         
         return true;
@@ -268,7 +268,7 @@ function Controller() {
          var hash_key;
          
          eval ("hash_key=" + p.dragged.jsid + ";");
-         p.dragged.id = "eventDivContent__"+ hash_key;
+         p.dragged.id = hash_key;
          delete p.dragged.jsid;
                  
                 function getPos(elem, evType) {
@@ -300,11 +300,11 @@ function Controller() {
             var mouseUpPos = getPos(dest, 'mouseUp');
         
             var webApp = parent.frames['webapp'];
-            triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
-            triggerMouseEvent(dragged, 'mousedown', true);
-            triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
-            triggerMouseEvent(dragged, 'mouseup', true);
-            triggerMouseEvent(dragged, 'click', true);
+            Windmill.Events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
+            Windmill.Events.triggerMouseEvent(dragged, 'mousedown', true);
+            Windmill.Events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
+            Windmill.Events.triggerMouseEvent(dragged, 'mouseup', true);
+            Windmill.Events.triggerMouseEvent(dragged, 'click', true);
             
             return true;
     }
@@ -312,14 +312,26 @@ function Controller() {
     //Directly access mouse events
     Controller.prototype.mousedown = function(param_object){
         var mupElement = this.lookupDispatch(param_object);
-        triggerMouseEvent(mupElement, 'mousedown', true);  
+        Windmill.Events.triggerMouseEvent(mupElement, 'mousedown', true);  
+        
+        return true;
     }
     
     Controller.prototype.mouseup = function(param_object){
         var mdnElement = this.lookupDispatch(param_object);
-        triggerMouseEvent(mdnElement, 'mouseup', true);
+        Windmill.Events.triggerMouseEvent(mdnElement, 'mouseup', true);
+        
+        return true;
     }
-    
+    //After the app reloads you have to re overwrite the alert function for the TestingApp
+    Controller.prototype.reWriteAlert = function(param_object){
+      Windmill.TestingApp.window.alert = function(s){
+          Windmill.UI.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
+      };
+
+        return true;
+    }
+      
     //A big part of the following is adapted from the selenium project browserbot
     //Registers all the ways to do a lookup
     this._registerAllLocatorFunctions = function() {
@@ -526,7 +538,7 @@ function Controller() {
             ) {
         var elements = inDocument.getElementsByTagName(tagName);
         for (var i = 0; i < elements.length; i++) {
-            if (getText(elements[i]) == text) {
+            if (Windmill.Events.getText((elements[i]) == text)) {
                 return elements[i];
             }
         }
@@ -574,7 +586,7 @@ function Controller() {
         
         for (var i = 0; i < links.length; i++) {
             var element = links[i];
-            if (PatternMatcher.matches(linkText, getText(element))) {
+            if (PatternMatcher.matches(linkText, Windmill.Events.getText(element))) {
                 return element;
             }
         }

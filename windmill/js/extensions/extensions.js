@@ -46,7 +46,7 @@ Copyright 2006, Open Source Applications Foundation
          var hash_key;
          
          eval ("hash_key=" + p.dragged.jsid + ";");
-         p.dragged.id = "eventDivContent__"+ hash_key;
+         p.dragged.id = p.dragged.pfx+ hash_key;
          delete p.dragged.jsid;
                  
                 function getPos(elem, evType) {
@@ -86,25 +86,12 @@ Copyright 2006, Open Source Applications Foundation
             var mouseUpY = dest.offsetTop - (webApp.cosmo.view.cal.canvas.getTimedCanvasScrollTop() - webApp.TOP_MENU_HEIGHT) + 12; 
             
             var webApp = parent.frames['webapp'];
-            triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownX, mouseDownY);
-            triggerMouseEvent(dragged, 'mousedown', true);
-            triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpX, mouseUpY);
-            triggerMouseEvent(dragged, 'mouseup', true);
+            Windmill.Events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownX, mouseDownY);
+            Windmill.Events.triggerMouseEvent(dragged, 'mousedown', true);
+            Windmill.Events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpX, mouseUpY);
+            Windmill.Events.triggerMouseEvent(dragged, 'mouseup', true);
             
             return true;
     }
     
-    //Getting rid of the problem where alerts can stop tinderbox from working
-    //This simply redirects all of the alert output to the output tab in the remote
-    var alert = function (s) { 
-      Windmill.UI.writeResult("Alert: <b><font color=\"#fff32c\">" + s + "</font></b>");     
-    };
-    
-    //After the app reloads you have to re overwrite the alert function for the TestingApp
-    Controller.prototype.reWriteAlert = function(param_object){
-        Windmill.TestingApp.window.alert = function(s){
-            Windmill.UI.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
-        };
-        
-        return true;
-    }
+  

@@ -28,6 +28,8 @@ function windmillObject(browser) {
     //Setup performance
     this.Performance = new Performance();
     
+    //Event Launcher Namespace
+    this.Events = new Events();
     //Init UI functionality
     this.UI = new UI();
     

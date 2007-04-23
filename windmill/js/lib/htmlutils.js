@@ -320,7 +320,7 @@ function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, cont
     clientX = clientX ? clientX : 0;
     clientY = clientY ? clientY : 0;
     
-    //LOG.warn("triggerMouseEvent assumes setting screenX and screenY to 0 is ok");
+    //LOG.warn("Windmill.Events.triggerMouseEvent assumes setting screenX and screenY to 0 is ok");
     var screenX = 0;
     var screenY = 0;
 
@@ -328,14 +328,18 @@ function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, cont
 
     if (element.fireEvent) {
         //LOG.info("element has fireEvent");
+       
         var evt = createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
         evt.detail = 0;
         evt.button = 1;
         evt.relatedTarget = null;
         if (!screenX && !screenY && !clientX && !clientY) {
             //element.click();
+            if(eventType == "click"){
+                element.click();
+            }
             element.fireEvent('on' + eventType);
-            eval("element." + eventType + "();");
+            //eval("element." + eventType + "();");
         }
         else {
             evt.screenX = screenX;
@@ -382,8 +386,8 @@ function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, cont
             evt.ctrlKey = controlKeyDown;
 
         }
+        //Used by safari
         element.dispatchEvent(evt);
-        
     }
 }
 

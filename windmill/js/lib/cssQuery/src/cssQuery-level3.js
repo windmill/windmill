@@ -31,8 +31,8 @@ selectors["~"] = function($results, $from, $tagName, $namespace) {
 //  any need explanation.
 
 pseudoClasses["contains"] = function($element, $text) {
-	$text = new RegExp(regEscape(getText($text)));
-	return $text.test(getTextContent($element));
+	$text = new RegExp(regEscape(Windmill.Events.Windmill.Events.getText($text)));
+	return $text.test(Windmill.Events.getText(Content($element));
 };
 
 pseudoClasses["root"] = function($element) {

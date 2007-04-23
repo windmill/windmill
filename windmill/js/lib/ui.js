@@ -120,5 +120,188 @@ function UI() {
             Windmill.stopOnFailure = false;
         }
     }
+    
+    //Display the id in the remote
+    this.setIdInRemote = function(e){
+        //console.log  (e);
+        if(e.target.id != ""){
+            Windmill.Remote.document.getElementById("domExp").innerHTML = "ID: "+ e.target.id;  
+        }
+        else{
+            Windmill.Remote.document.getElementById("domExp").innerHTML = "Name: "+ e.target.nodeName;  
+        }
+        e.target.style.border = "1px solid yellow";
+    }
+    
+    //Reset the border to what it was before the mouse over
+    this.resetBorder = function(e){
+        e.target.style.border = "";
+    }
+    
+    //Set the listeners for the dom explorer
+    this.domExplorerOn = function(){
+        fleegix.event.listen(Windmill.TestingApp.document, 'onmouseover', Windmill.UI, 'setIdInRemote');
+        fleegix.event.listen(Windmill.TestingApp.document, 'onmouseout', Windmill.UI, 'resetBorder');   
+    }
+    
+    //Remove the listeners for the dom explorer
+    this.domExplorerOff = function(){
+           fleegix.event.unlisten(Windmill.TestingApp.document, 'onmouseover', Windmill.UI, 'setIdInRemote');
+           fleegix.event.unlisten(Windmill.TestingApp.document, 'onmouseout', Windmill.UI, 'resetBorder');
+    }
+     
+     this.scrollRecorderTextArea = function() {
+         var obj=Windmill.Remote.document.getElementById("wmTest");
+         obj.scrollTop=obj.scrollHeight;
+     }
+     
+     //write json to the remote from the click events
+     this.writeJsonClicks = function(e){
+         //console.log(e);
+         //alert('now');
+         var locator = '';
+         var locValue = '';
+         if (e.target.id != ""){
+            locator = 'id';
+            locValue = e.target.id;
+         }
+         else if (e.target.name != ""){
+            locator = 'name';
+            locValue = e.target.nodeName;
+         }
+         else if (e.target.innerHTML.match('href') != 'null'){
+            locator = 'link';
+            locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig,"");
+            locValue = locValue.replace("\n", "");
+         }
+         else{
+             locator = 'Couldnt Detect';
+             locValue = 'Couldnt Detect';
+         } 
+         if (locValue != ""){
+            if(e.type == 'dblclick'){
+                Windmill.Remote.document.getElementById("wmTest").value = Windmill.Remote.document.getElementById("wmTest").value + '{"method": "doubleClick", "params":{"'+locator+'": "'+locValue+'"}}\n';
+            }
+            else{
+                 Windmill.Remote.document.getElementById("wmTest").value =  Windmill.Remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
+            }
+            Windmill.UI.scrollRecorderTextArea();
+        }
+     }
+     
+     //Writing json to the remote for the change events
+     this.writeJsonChange = function(e){
+          //console.log(e);
+          
+           var locator = '';
+           var locValue = '';
+           if (e.target.id != ""){
+              locator = 'id';
+              locValue = e.target.id;
+           }
+           else if (e.target.name != ""){
+              locator = 'name';
+              locValue = e.target.nodeName;
+           }
+           else{
+            locator = 'Couldnt Detect';
+            locValue = 'Couldnt Detect';
+           }
+          
+          if (e.target.type == 'textarea'){
+              Windmill.Remote.document.getElementById("wmTest").value =  Windmill.Remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n';  
+          }
+          else if (e.target.type == 'text'){
+              Windmill.Remote.document.getElementById("wmTest").value =  Windmill.Remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n';
+            
+          }
+          else if(e.target.type == 'select-one'){
+              Windmill.Remote.document.getElementById("wmTest").value =  Windmill.Remote.document.getElementById("wmTest").value + '{"method": "select", "params":{"'+locator+'": "'+locValue+'","option": "'+e.target.value+'"}}\n';   
+          }
+          else if(e.target.type == 'radio'){
+              Windmill.Remote.document.getElementById("wmTest").value =  Windmill.Remote.document.getElementById("wmTest").value + '{"method": "radio", "params":{"'+locator+'": "'+locValue+'"}}\n';  
+          }
+          else if(e.target.type == "checkbox"){
+              Windmill.Remote.document.getElementById("wmTest").value =  Windmill.Remote.document.getElementById("wmTest").value + '{"method": "check", "params":{"'+locator+'": "'+locValue+'"}}\n';       
+          }
+          
+          Windmill.UI.scrollRecorderTextArea();
+
+      }
+     
+     this.writeJsonDragDown = function(e){
+        var locator = '';
+        var locValue = '';
+        
+        if (e.target.id != ""){
+            locator = 'id';
+            locValue = e.target.id;
+        }
+        else if (e.target.name != ""){
+            locator = 'name';
+            locValue = e.target.nodeName;
+        }
+        else{
+            locator = 'Couldnt Detect';
+            locValue = 'Couldnt Detect';
+        }
+        //console.log(e);
+        alert(e.clientX);
+        alert(e.clientY);
+        //Windmill.Remote.document.getElementById("wmTest").value =  Windmill.Remote.document.getElementById("wmTest").value + '{"method": "dragDrop", "params": {"dragged" : {"'+locator+'": "'+locValue+'"},'; 
+    }
+     
+     this.writeJsonDragUp = function(e){
+         var locator = '';
+         var locValue = '';
+
+         if (e.target.id != ""){
+             locator = 'id';
+             locValue = e.target.id;
+         }
+         else if (e.target.name != ""){
+             locator = 'name';
+             locValue = e.target.nodeName;
+         }
+         else{
+             locator = 'Couldnt Detect';
+             locValue = 'Couldnt Detect';
+         }
+         //console.log(e);
+         //Windmill.Remote.document.getElementById("wmTest").value =  Windmill.Remote.document.getElementById("wmTest").value + '"destination": {"'+locator+'": "'+locValue+'"}, "mouseDownPos": "Insert your custom dragged function here.", "mouseUpPos": "Insert your custom dest function here." }}\n';
+          
+      }
+     
+     //Turn on the recorder
+     //Since the click event does things like firing twice when a double click goes also
+     //and can be obnoxious im enabling it to be turned off and on with a toggle check box
+     this.recordOn = function(){
+         
+         //Turn off the listeners so that we don't have multiple attached listeners for the same event
+         Windmill.UI.recordOff();
+         
+         if (Windmill.Remote.document.getElementById("dragOn").checked){       
+             fleegix.event.listen(Windmill.TestingApp.document, 'onmousedown', Windmill.UI, 'writeJsonDragDown');
+             fleegix.event.listen(Windmill.TestingApp.document, 'onmouseup', Windmill.UI, 'writeJsonDragUp');
+         }
+         else{
+             fleegix.event.listen(Windmill.TestingApp.document, 'ondblclick', Windmill.UI, 'writeJsonClicks');
+             fleegix.event.listen(Windmill.TestingApp.document, 'onchange', Windmill.UI, 'writeJsonChange');
+         
+             if (Windmill.Remote.document.getElementById("clickOn").checked){    
+                 fleegix.event.listen(Windmill.TestingApp.document, 'onclick', Windmill.UI, 'writeJsonClicks');
+             }
+         }
+     }
+     
+     this.recordOff = function(){
+         fleegix.event.unlisten(Windmill.TestingApp.document, 'ondblclick', Windmill.UI, 'writeJsonClicks');
+         fleegix.event.unlisten(Windmill.TestingApp.document, 'onchange', Windmill.UI, 'writeJsonChange');
+         fleegix.event.unlisten(Windmill.TestingApp.document, 'onclick', Windmill.UI, 'writeJsonClicks');
+         fleegix.event.unlisten(Windmill.TestingApp.document, 'onmousedown', Windmill.UI, 'writeJsonDragDown');
+         fleegix.event.unlisten(Windmill.TestingApp.document, 'onmouseup', Windmill.UI, 'writeJsonDragUp');
+         
+     }
+     
 
 }
