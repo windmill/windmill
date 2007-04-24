@@ -15,7 +15,10 @@
 """This module provides the communication and management between the various 
 server interfaces and the browser's js interface"""
 
-import copy, simplejson, logging
+import copy
+import simplejson
+import logging
+import uuid
 import windmill
 
 test_results_logger = logging.getLogger('test_results')
@@ -55,36 +58,28 @@ class TestResolutionSuite(object):
     result_processor = None
     
     def __init__(self):
-        self.unresolved_tests = []
-        self.resolved_tests = []
-        
-    def find_test(self, test_dict):
-        for test in self.unresolved_tests:
-            if test['method'] == test_dict['method'] and test['params'] == test_dict['params']:
-                return test
-        else:
-            return None
+        self.unresolved_tests = {}
+        self.resolved_tests = {}
 
-    def resolve_test(self, result, test_dict, debug=None):
-        test = self.find_test(test_dict)
-        if test is not None:
-            test['result'] = result
-            test['debug'] = debug
-            self.resolved_tests.append(self.unresolved_tests.pop(self.unresolved_tests.index(test)))
-            
+    def resolve_test(self, result, uuid, debug=None):
+        
+        test = self.unresolved_tests.pop(uuid)
+        test['result'] = result
+        self.resolved_tests[uuid] = test
+                
+        if result is False:
+            test_results_logger.error('Test Failue in test %s' % test)
+        elif result is True:
+            test_results_logger.debug('Test Success in test %s' % test)
+        
+        if self.result_processor is not None:
             if result is False:
-                test_results_logger.error('Test Failue in test %s' % test)
+                self.result_processor.failure(test, debug=debug)
             elif result is True:
-                test_results_logger.debug('Test Success in test %s' % test)
-            
-            if self.result_processor is not None:
-                if test['result'] is False:
-                    self.result_processor.failure(test)
-                elif test['result'] is True:
-                    self.result_processor.success(test)
-            
+                self.result_processor.success(test, debug=debug)
+        
     def add_test(self, test):
-        self.unresolved_tests.append(test)
+        self.unresolved_tests[test['uuid']]
         
         
 class JSONRPCMethods(object):
@@ -107,7 +102,7 @@ class JSONRPCMethods(object):
             action.update({'method':'defer'})
             return action
             
-    def report(self, status=None, test=None, debug=None, result=None, starttime=None, endtime=None):
+    def report(self, status=None, uuid=None, debug=None, result=None, starttime=None, endtime=None):
         """Report fass/fail and status"""
         if status is not None:
             self._status = status
@@ -125,6 +120,7 @@ class JSONRPCMethods(object):
         """Add test from json object with 'method' and 'params' defined"""
         test = copy.copy(callback)
         test.update(simplejson.loads(json))
+        test['uuid'] = str(uuid.uuid1())
         self._logger.debug('Adding command object %s' % str(test))
         self._queue.add_test(test)    
         self._test_resolution_suite.add_test(test)
@@ -133,6 +129,7 @@ class JSONRPCMethods(object):
         """Add command from json object with 'method' and 'params' defined"""
         command = copy.copy(callback)
         command.update(simplejson.loads(json))
+        command['uuid'] = str(uuid.uuid1())
         self._logger.debug('Adding command object %s' % str(command))
         self._queue.add_command(command)
         
@@ -155,6 +152,7 @@ class XMLRPCMethods(object):
         """Add test from json object with 'method' and 'params' defined"""
         test = copy.copy(callback)
         test.update(simplejson.loads(json))
+        test['uuid'] = str(uuid.uuid1())
         self._queue.add_test(test)    
         print self._queue.test_queue 
         self._test_resolution_suite.add_test(test) 
@@ -163,6 +161,7 @@ class XMLRPCMethods(object):
         """Add command from json object with 'method' and 'params' defined"""
         command = copy.copy(callback)
         command.update(simplejson.loads(json))
+        command['uuid'] = str(uuid.uuid1())
         self._queue.add_command(command)
         
     def json_command(self, json):

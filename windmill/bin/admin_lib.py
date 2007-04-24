@@ -192,9 +192,9 @@ def tinderbox_action(shell_objects):
     class ResultsProcessor(object):
         passed = 0
         failed = 0
-        def success(self, test):
+        def success(self, test, debug):
             self.passed += 1
-        def failure(self, test):
+        def failure(self, test, debug):
             self.failed += 1
             
     result_processor = ResultsProcessor()
