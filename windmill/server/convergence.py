@@ -134,7 +134,7 @@ class JSONRPCMethods(object):
             
     def report(self, uuid, result, starttime, endtime, debug=None):
         """Report fass/fail for a test"""
-        self.test_resolution_suite.resolve_test(result, uuid, debug, starttime, endtime)
+        self._test_resolution_suite.resolve_test(result, uuid, debug, starttime, endtime)
         
     def callback_result(self, status, uuid, result):
         self.command_resolution_suite.resolve_command(status, uuid, result)
@@ -268,7 +268,23 @@ class XMLRPCMethods(object):
             pass
             
         return returned_result
-            
+        
+    def __getattr__(self, key):    
+        """Call a method on the controller as if it was a local method"""
+        class ExecuteJSONTestRecursiveAttribute(object):
+            def __init__(self, name, execution_method):
+                self.name = name
+                self.execution_method = execution_method
+            def __call__(self, **kwargs):
+                rpc = {'method':self.name, 'params':kwargs}
+                self.execution_method(simplejson.dumps(rpc))
+            def __getattr__(self, key):
+                return ExecuteJSONTestRecursiveAttribute(self.name+'.'+key, self.execution_method)
+    
+        return ExecuteJSONTestRecursiveAttribute(key, self.execute_json_test)
+    
+    
+        
             
             
             
