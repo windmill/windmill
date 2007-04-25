@@ -14,9 +14,9 @@ Copyright 2006, Open Source Applications Foundation
  limitations under the License.
 */
 
-//Safari specific Controller functions
+//Safari specific controller functions
 
-Controller.prototype.what = function() {
+windmill.controller.what = function() {
     alert('Safari');
 } 
 
@@ -24,15 +24,15 @@ Controller.prototype.what = function() {
  * In non-IE browsers, getElementById() does not search by name.  Instead, we
  * we search separately by id and name.
  */
-Controller.prototype.locateElementByIdentifier = function(identifier, inDocument, inWindow) {
-    return PageBot.prototype.locateElementById(identifier, inDocument, inWindow)
-            || PageBot.prototype.locateElementByName(identifier, inDocument, inWindow)
+windmill.controller.locateElementByIdentifier = function(identifier, inDocument, inWindow) {
+    return PageBot.prototype._locateElementById(identifier, inDocument, inWindow)
+            || PageBot.prototype._locateElementByName(identifier, inDocument, inWindow)
             || null;
 };
 
 //there is a problem with checking via click in safari
-Controller.prototype.check = function(param_object){
-    var element = this.lookupDispatch(param_object);
+windmill.controller.check = function(param_object){
+    var element = this._lookupDispatch(param_object);
     
     if (element.checked == true){
         element.checked = false;
@@ -45,8 +45,8 @@ Controller.prototype.check = function(param_object){
 }
 
 //Radio buttons are even WIERDER in safari
-Controller.prototype.radio = function(param_object){
-    var element = this.lookupDispatch(param_object);
+windmill.controller.radio = function(param_object){
+    var element = this._lookupDispatch(param_object);
     
     element.checked = true;
     
@@ -54,43 +54,43 @@ Controller.prototype.radio = function(param_object){
 }
 
 //Safari Click function
-Controller.prototype.click = function(param_object){
-   var element = this.lookupDispatch(param_object);
+windmill.controller.click = function(param_object){
+   var element = this._lookupDispatch(param_object);
    if (!element){
        return false;
    }
       // Trigger the event.
       // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-      Windmill.Events.triggerMouseEvent(element, 'mousedown', true);
-      Windmill.Events.triggerMouseEvent(element, 'mouseup', true);
-      Windmill.Events.triggerMouseEvent(element, 'click', true);
+      windmill.events.triggerMouseEvent(element, 'mousedown', true);
+      windmill.events.triggerMouseEvent(element, 'mouseup', true);
+      windmill.events.triggerMouseEvent(element, 'click', true);
       
       
    if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
-       Windmill.XHR.loopState = 0;
+       windmill.xhr.loopState = 0;
    }
    
    return true;
 };
 
 //Double click for Safari
-Controller.prototype.doubleClick = function(param_object) {
+windmill.controller.doubleClick = function(param_object) {
 
-    var element = this.lookupDispatch(param_object);
+    var element = this._lookupDispatch(param_object);
     if (!element){
            return false;
     }
     
-    Windmill.Events.triggerEvent(element, 'focus', false);
+    windmill.events.triggerEvent(element, 'focus', false);
 
     // Trigger the mouse event.
-    Windmill.Events.triggerMouseEvent(element, 'dblclick', true);
+    windmill.events.triggerMouseEvent(element, 'dblclick', true);
 
    /* if (this._windowClosed()) {
         return;
     }
 */
-    Windmill.Events.triggerEvent(element, 'blur', false);
+    windmill.events.triggerEvent(element, 'blur', false);
     
     return true;
 };

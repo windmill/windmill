@@ -25,7 +25,7 @@ Copyright 2006, Open Source Applications Foundation
     //I will just recreate that before I actually look up the dom element, then click
     //the appropriate element
     
-    Controller.prototype.clickLozenge =function(param_object){
+    windmill.controller.extensions.clickLozenge =function(param_object){
         var hash_key;
         
         eval ("hash_key=" + param_object.jsid + ";");
@@ -39,7 +39,7 @@ Copyright 2006, Open Source Applications Foundation
     }
     
     
-    Controller.prototype.cosmoDragDrop = function(param_object){
+    windmill.controller.extensions.cosmoDragDrop = function(param_object){
         
        
          var p = param_object;
@@ -72,8 +72,8 @@ Copyright 2006, Open Source Applications Foundation
                     }
                     
         
-            var dragged = this.lookupDispatch(p.dragged);
-            var dest = this.lookupDispatch(p.destination);
+            var dragged = windmill.controller._lookupDispatch(p.dragged);
+            var dest = windmill.controller._lookupDispatch(p.destination);
             //var mouseDownPos = getPos(dragged, 'mouseDown');
             //var mouseUpPos = getPos(dest, 'mouseUp');
         
@@ -86,10 +86,10 @@ Copyright 2006, Open Source Applications Foundation
             var mouseUpY = dest.offsetTop - (webApp.cosmo.view.cal.canvas.getTimedCanvasScrollTop() - webApp.TOP_MENU_HEIGHT) + 12; 
             
             var webApp = parent.frames['webapp'];
-            Windmill.Events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownX, mouseDownY);
-            Windmill.Events.triggerMouseEvent(dragged, 'mousedown', true);
-            Windmill.Events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpX, mouseUpY);
-            Windmill.Events.triggerMouseEvent(dragged, 'mouseup', true);
+            windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownX, mouseDownY);
+            windmill.events.triggerMouseEvent(dragged, 'mousedown', true);
+            windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpX, mouseUpY);
+            windmill.events.triggerMouseEvent(dragged, 'mouseup', true);
             
             return true;
     }

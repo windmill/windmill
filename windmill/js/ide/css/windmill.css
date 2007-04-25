@@ -104,3 +104,10 @@ a:hover { text-decoration : underline; color : #336699; border: 0px; cursor: poi
     z-index:5000;
 
 }
+
+.remoteTabs {
+ display:none;
+ overflow:scroll;
+ height:465px;
+ width:445px;   
+}

@@ -14,16 +14,16 @@ Copyright 2006, Open Source Applications Foundation
  limitations under the License.
 */
 
-//Mozilla specific Controller functions
+//Mozilla specific controller functions
 //more
-Controller.prototype.what = function() {
+windmill.controller.what = function() {
     alert('Mozilla');
 }
 
 //Click function for Mozilla with Chrome
-Controller.prototype.click = function(param_object){
+windmill.controller.click = function(param_object){
       
-       var element = this.lookupDispatch(param_object);
+       var element = this._lookupDispatch(param_object);
        if (!element){
           return false;
         }
@@ -34,18 +34,18 @@ Controller.prototype.click = function(param_object){
 
        // Trigger the event.
        // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-       Windmill.Events.triggerMouseEvent(element, 'mousedown', true);
-       Windmill.Events.triggerMouseEvent(element, 'mouseup', true);
-       Windmill.Events.triggerMouseEvent(element, 'click', true);
+       windmill.events.triggerMouseEvent(element, 'mousedown', true);
+       windmill.events.triggerMouseEvent(element, 'mouseup', true);
+       windmill.events.triggerMouseEvent(element, 'click', true);
        
        //Apparently there is some annoying issue with chrome..and this fixes it. Concept from selenium browerbot.
-       if (!Windmill.Browser.isChrome && !preventDefault) {
+       if (!browser.isChrome && !preventDefault) {
            if (element.href) {
                document.getElementById('webapp').src = element.href;
                
                //if the url is calling JS then its ajax and we don't need to wait for any full page load.. hopefully.
                if (element.href.indexOf('javascript:', 0) == -1){
-                    Windmill.XHR.loopState = 0;
+                    windmill.xhr.loopState = 0;
                     return true;
                 }
            } 
@@ -53,7 +53,7 @@ Controller.prototype.click = function(param_object){
                document.getElementById('webapp').src = element.parentNode.href;
                
                if (element.href.indexOf('javascript:', 0) == -1){
-                    Windmill.XHR.loopState = 0;
+                    windmill.xhr.loopState = 0;
                     //element = "true";
                     return true;
                }
@@ -65,37 +65,37 @@ Controller.prototype.click = function(param_object){
 };
 
 //there is a problem with checking via click in safari
-Controller.prototype.check = function(param_object){
+windmill.controller.check = function(param_object){
     
-    return Windmill.Controller.click(param_object);    
+    return windmill.controller.click(param_object);    
 }
 
 //Radio buttons are even WIERDER in safari, not breaking in FF
-Controller.prototype.radio = function(param_object){
+windmill.controller.radio = function(param_object){
 
-    return Windmill.Controller.click(param_object);
+    return windmill.controller.click(param_object);
         
 }
 
 //Double click for Mozilla
-Controller.prototype.doubleClick = function(param_object) {
+windmill.controller.doubleClick = function(param_object) {
 
  //Look up the dom element, return false if its not there so we can report failure
- var element = this.lookupDispatch(param_object);
+ var element = this._lookupDispatch(param_object);
  if (!element){
     return false;
  }
     
- Windmill.Events.triggerEvent(element, 'focus', false);
+ windmill.events.triggerEvent(element, 'focus', false);
 
  // Trigger the mouse event.
- Windmill.Events.triggerMouseEvent(element, 'dblclick', true);
+ windmill.events.triggerMouseEvent(element, 'dblclick', true);
 
  /*if (this._windowClosed()) {
      return;
  }*/
 
- Windmill.Events.triggerEvent(element, 'blur', false);
+ windmill.events.triggerEvent(element, 'blur', false);
  
  return true;
 };
@@ -104,8 +104,8 @@ Controller.prototype.doubleClick = function(param_object) {
  * In non-IE browsers, getElementById() does not search by name.  Instead, we
  * we search separately by id and name.
  */
-Controller.prototype.locateElementByIdentifier = function(identifier, inDocument, inWindow) {
-    return Windmill.Controller.locateElementById(identifier, inDocument, inWindow)
-            || Windmill.Controller.locateElementByName(identifier, inDocument, inWindow)
+windmill.controller.locateElementByIdentifier = function(identifier, inDocument, inWindow) {
+    return windmill.controller.locateElementById(identifier, inDocument, inWindow)
+            || windmill.controller.locateElementByName(identifier, inDocument, inWindow)
             || null;
 };

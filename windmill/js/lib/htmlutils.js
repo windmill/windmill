@@ -121,8 +121,8 @@ String.prototype.startsWith = function(str) {
 function getText(element) {
     var text = "";
 
-    var isRecentFirefox = (Windmill.Browser.isMozilla);
-    if (isRecentFirefox || Windmill.Browser.isKonqueror || Windmill.Browser.isSafari || Windmill.Browser.isOpera) {
+    var isRecentFirefox = (browser.isMozilla);
+    if (isRecentFirefox || browser.isKonqueror || browser.isSafari || browser.isOpera) {
         text = getTextContent(element);
     } else if (element.textContent) {
         text = element.textContent;
@@ -180,7 +180,7 @@ function normalizeNewlines(text)
 function normalizeSpaces(text)
 {
     // IE has already done this conversion, so doing it again will remove multiple nbsp
-    if (Windmill.Browser.isIE)
+    if (browser.isIE)
     {
         return text;
     }
@@ -191,7 +191,7 @@ function normalizeSpaces(text)
 
     // Replace &nbsp; with a space
     var nbspPattern = new RegExp(String.fromCharCode(160), "g");
-    if (Windmill.Browser.isSafari) {
+    if (browser.isSafari) {
 	return replaceAll(text, String.fromCharCode(160), " ");
     } else {
 	return text.replace(nbspPattern, " ");
@@ -320,7 +320,7 @@ function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, cont
     clientX = clientX ? clientX : 0;
     clientY = clientY ? clientY : 0;
     
-    //LOG.warn("Windmill.Events.triggerMouseEvent assumes setting screenX and screenY to 0 is ok");
+    //LOG.warn("windmill.events.triggerMouseEvent assumes setting screenX and screenY to 0 is ok");
     var screenX = 0;
     var screenY = 0;
 

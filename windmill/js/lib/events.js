@@ -1,15 +1,14 @@
 //All the functionaly relating to launching events in javascript
-//Windmill.Events.*
-
-function Events() {
+//windmill.events.*
+windmill.events = new function (){
     
     // Returns the text in this element
     this.getText = function(element) {
         var text = "";
 
-        var isRecentFirefox = (Windmill.Browser.isMozilla);
-        if (isRecentFirefox || Windmill.Browser.isKonqueror || Windmill.Browser.isSafari || Windmill.Browser.isOpera) {
-            text = Windmill.Events.getTextContent(element);
+        var isRecentFirefox = (browser.isMozilla);
+        if (isRecentFirefox || browser.isKonqueror || browser.isSafari || browser.isOpera) {
+            text = windmill.events.getTextContent(element);
         } else if (element.textContent) {
             text = element.textContent;
         } else if (element.innerText) {
@@ -35,7 +34,7 @@ function Events() {
             var text = "";
             for (var i = 0; i < element.childNodes.length; i++) {
                 var child = element.childNodes.item(i);
-                text += Windmill.Events.getTextContent(child, childrenPreformatted);
+                text += windmill.events.getTextContent(child, childrenPreformatted);
             }
             // Handle block elements that introduce newlines
             // -- From HTML spec:
@@ -68,7 +67,7 @@ function Events() {
         canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
         if (element.fireEvent) {
             //alert(eventType)
-            var evt = Windmill.Events.createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);        
+            var evt = windmill.events.createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);        
             element.fireEvent('on' + eventType, evt);
             //Fix for IE6-- this does work but isn't needed the bug was in the type function
             //eval("element." + eventType + "();");
@@ -91,7 +90,7 @@ function Events() {
         clientX = clientX ? clientX : 0;
         clientY = clientY ? clientY : 0;
 
-        //LOG.warn("Windmill.Events.triggerMouseEvent assumes setting screenX and screenY to 0 is ok");
+        //LOG.warn("windmill.events.triggerMouseEvent assumes setting screenX and screenY to 0 is ok");
         var screenX = 0;
         var screenY = 0;
 
@@ -100,7 +99,7 @@ function Events() {
         if (element.fireEvent) {
             //LOG.info("element has fireEvent");
 
-            var evt = Windmill.Events.createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
+            var evt = windmill.events.createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
             evt.detail = 0;
             evt.button = 1;
             evt.relatedTarget = null;

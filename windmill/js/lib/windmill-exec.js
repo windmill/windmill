@@ -18,12 +18,12 @@ Copyright 2006, Open Source Applications Foundation
 //Loader function
 function Load(){
         //Set the app your testing
-       Windmill.TestingApp = parent.frames['webapp'];
+       windmill.testingApp = parent.frames['webapp'];
            
-       if (Windmill.showRemote == true){           
-           Windmill.Remote = window.open('remote.html','Windmill_Remote','width=450,height=500,toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=no');
+       if (windmill.showRemote == true){           
+           windmill.Remote = window.open('remote.html','windmill_Remote','width=450,height=500,toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=no');
        } 
      
-       setTimeout("Windmill.Controller.continueLoop()", 7000);
+       setTimeout("windmill.controller.continueLoop()", 7000);
        
 }

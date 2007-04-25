@@ -14,15 +14,15 @@ Copyright 2006, Open Source Applications Foundation
  limitations under the License.
 */
 
-function Performance() {
+windmill.performance = new function () {
   
   //Setting up a performance timing object
   timing = new TimeObj();
   
   
   //Setup log4js object
-  this.Log =  new Log4js.getLogger("Performance_log");
-  this.Log.setLevel(Log4js.Level.ALL);
+  //this.Log =  new Log4js.getLogger("Performance_log");
+  //this.Log.setLevel(Log4js.Level.ALL);
     
     //Other performance functionality
     

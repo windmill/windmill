@@ -14,50 +14,42 @@ Copyright 2006, Open Source Applications Foundation
  limitations under the License.
 */
 
-function windmillObject(browser) {
+var windmill = new function () {
+    var browser = null;
     
-    this.Browser = browser;
+    this.init = function (b){
+        browser = b;
+    }
     
-    //Setup log4js object
-    this.Log =  new Log4js.getLogger("windmill_log");
-    this.Log.setLevel(Log4js.Level.ALL);
-    
-    //Setup controller
-    this.Controller = new Controller();
-    
-    //Setup performance
-    this.Performance = new Performance();
-    
-    //Event Launcher Namespace
-    this.Events = new Events();
-    //Init UI functionality
-    this.UI = new UI();
-    
-    //Init XHR and loop stuff
-    this.XHR = new XHR();
+    //So that users can generate a user for the current test randomly
+    //Usually you want one username for the test so you can set it once and leave it for the test
+    //a user can write a method to set overWrite to true if they want to replace it each time %random% is used in a json test
+    this.randomRegistry = new function (){
+        var string = null;
+        var overWrite = false;
+    }
     
     //The app your testing
-     this.TestingApp = parent.frames['webapp'];
+     this.testingApp = parent.frames['webapp'];
         
     this.Start = function(){
         //Index page load report
           load_timer.endTime();
 
-          Windmill.UI.writeResult("<br>Start UI output session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
-          Windmill.UI.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
+          windmill.ui.writeResult("<br>Start UI output session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
+          windmill.ui.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
           load_timer.write();
           
           
     }
     
-    //Windmill Options to be set
+    //windmill Options to be set
     this.stopOnFailure = false;
     this.showRemote = true;
     
 };
 
-//Instantiate the windmill object, had to move it here because if I do it in the onload I can't call its members in the start.html body
-Windmill = new windmillObject(browser);
-
+//Set the browser
+windmill.init(browser);
 
 

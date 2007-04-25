@@ -86,7 +86,7 @@ AttributeSelector.create = function($propertyName, $test, $value) {
 	$attributeSelector.id = this.PREFIX + attributeSelectors.length;
 	$attributeSelector.name = $propertyName;
 	$test = this.tests[$test];
-	$test = $test ? $test(this.getAttribute($propertyName), Windmill.Events.Windmill.Events.getText($value)) : false;
+	$test = $test ? $test(this.getAttribute($propertyName), windmill.events.windmill.events.getText($value)) : false;
 	$attributeSelector.test = new Function("e", "return " + $test);
 	return $attributeSelector;
 };

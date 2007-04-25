@@ -33,59 +33,154 @@ Copyright 2006, Open Source Applications Foundation
 
 /*
  Functionality that works for every browser
- Mozilla specific functionality abstracted to mozController.js
- Safari specific functionality abstracted to safController.js
- IE specific functionality abstracted to ieController.js
+ Mozilla specific functionality abstracted to mozcontroller.js
+ Safari specific functionality abstracted to safcontroller.js
+ IE specific functionality abstracted to iecontroller.js
 
  The reason for this is that the start page only includes the one corresponding
- to the current browser, this means that the functionality in the Controller
+ to the current browser, this means that the functionality in the controller
  object is only for the current browser, and there is only one copy of the code being
  loaded into the browser for performance.
  */
  
-function Controller() {
+windmill.controller = new function () {
     
+    this.extensions = {};
+    this.commands = {};
     this.optionLocatorFactory = new OptionLocatorFactory();
+    
+    /***********************
+    /*Commands
+    /***************/
+    
+    //Give the backend a list of available controller methods
+       this.commands.getControllerMethods = function(){
+           var str = '';
+           for (var i in windmill.controller) { if (i.indexOf('_') == -1){ str += "," + i; } }
+           for (var i in windmill.controller.extensions) {
+                           if (str) { str += ',' }
+                           str += 'extensions.'+i;
+           }
+           for (var i in windmill.controller.extensions) {
+                          if (str) { str += ',' }
+                          str += 'extensions.'+i;
+           }   
+          //Clean up
+          var ca = new Array();
+          ca = str.split(",");
+          ca = ca.reverse();
+          ca.pop();
+          ca.pop();
+          ca = ca.sort();
 
+          //Send to the server
+          var json_object = new windmill.xhr.json_call('1.1', 'command_result');
+          var params_obj = {};
+          params_obj.status = true;
+          params_obj.command = eval('('+'{"method":"getControllerMethods"}'+')');
+          params_obj.result = ca;
+          json_object.params = params_obj;
+          var json_string = fleegix.json.serialize(json_object)
+          fleegix.xhr.doPost(this.defer, '/windmill-jsonrpc/', json_string);
+
+       };
+    
+    //Keeping the suites running 
+    this.commands.setOptions = function(param_object){
+        
+        if(typeof param_object.stopOnFailure != "undefined") {
+            windmill.stopOnFailure = param_object.stopOnFailure;
+        }
+        if(typeof param_object.showRemote != "undefined") {
+            windmill.showRemote = param_object.showRemote;
+        }
+        
+        return true;
+    };
+    
+    //Helper Functions for dealing with the window
+    this._getDocument = function() {
+        return windmill.testingApp.document;
+    }
+
+    this._getCurrentWindow = function() {
+        //return this.browserbot._getCurrentWindow();
+        return parent;
+    }
+
+    this.getTitle = function() {
+        var t = this._getDocument().title;
+        if (typeof(t) == "string") {
+            t = t.trim();
+        }
+        return t;
+    }
+    
     this.defer = function(){
         //We may want to somehow display that the loop is being deferred but right now it was too messy in output.
-        //Windmill.UI.writeResult('Deferring..')
-    }
+        //windmill.ui.writeResult('Deferring..')
+    };
+   
+   //Give the backend a list of available controller methods
+    this.getControllerMethods = function(){
+        var str = '';
+        for (var i in windmill.controller) {
+                     //if (str) { str += ',' }
+                    if (i.indexOf('_') == -1){ str += "," + i; }
+                    //str += (windmill.controller[i] == undefined) ? 
+                     // '"undefined"' : fleegix.json.serialize(windmill.controller[i]); 
+        }
+         for (var i in windmill.controller.extensions) {
+                        if (str) { str += ',' }
+                        str += 'extensions.'+i;
+                        //str += (windmill.controller[i] == undefined) ? 
+                         // '"undefined"' : fleegix.json.serialize(windmill.controller[i]); 
+            }
+       
+       //Clean up
+       var ca = new Array();
+       ca = str.split(",");
+       ca = ca.reverse();
+       ca.pop();
+       ca.pop();
+       ca = ca.sort();
+       
+       //Send to the server
+       var json_object = new windmill.xhr.json_call('1.1', 'command_result');
+       var params_obj = {};
+       params_obj.status = true;
+       params_obj.command = eval('('+'{"method":"getControllerMethods"}'+')');
+       params_obj.result = ca;
+       json_object.params = params_obj;
+       var json_string = fleegix.json.serialize(json_object)
+       fleegix.xhr.doPost(this.defer, '/windmill-jsonrpc/', json_string);
+       
+    };
     
     //After a page is done loading, continue the loop
     this.continueLoop = function(){
-        Windmill.XHR.loopState = 1;
-        Windmill.XHR.startJsonLoop();
-    }
+        windmill.xhr.loopState = 1;
+        windmill.xhr.startJsonLoop();
+    };
     
     //open an url in the webapp iframe
     this.open = function(param_object) {
         webappframe = document.getElementById('webapp');
-        webappframe.src = param_object.url;
+        url = this._handleRandom(param_object.url);
+        
+        webappframe.src = url;
         
         //Turn off loop until the onload for the iframe restarts it
-        Windmill.XHR.loopState = 0;
+        windmill.xhr.loopState = 0;
         return true;
-    }
+    };
     
-    //Keeping the suites running 
-    this.setOptions = function(param_object){
-        
-        if(typeof param_object.stopOnFailure != "undefined") {
-            Windmill.stopOnFailure = param_object.stopOnFailure;
-        }
-        if(typeof param_object.showRemote != "undefined") {
-            Windmill.showRemote = param_object.showRemote;
-        }
-        
-        return true;
-    }
     
     //Currently only does one level below the provided div
     //To make it more thorough it needs recursion to be implemented later
     this.verify = function(param_object) { 
         
-        var n = this.lookupDispatch(param_object);
+        var n = this._lookupDispatch(param_object);
         var validator = param_object.validator;
         
         try{
@@ -115,30 +210,11 @@ function Controller() {
     }
     catch(error){return false;}
     return true;
-   }      
+   };  
     
   
-    
-    //Helper Functions for dealing with the window
-    this.getDocument = function() {
-        return this.getCurrentWindow().document;
-    }
-
-    this.getCurrentWindow = function() {
-        //return this.browserbot.getCurrentWindow();
-        return parent;
-    }
-
-    this.getTitle = function() {
-        var t = this.getDocument().title;
-        if (typeof(t) == "string") {
-            t = t.trim();
-        }
-        return t;
-    }
-    
     //Translates from the way we are passing objects to functions to the lookups
-    this.lookupDispatch = function(param_object){
+    this._lookupDispatch = function(param_object){
        
         var element = null;
         //If a link was passed, lookup as link
@@ -169,26 +245,53 @@ function Controller() {
         }        
        
         return element;
+    };
+    
+    this._randomString = function(){
+    	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+    	var string_length = 8;
+    	var randomstring = '';
+    	for (var i=0; i<string_length; i++) {
+    		var rnum = Math.floor(Math.random() * chars.length);
+    		randomstring += chars.substring(rnum,rnum+1);
+    	}
+    	return randomstring;
     }
     
-    //-----Windmill UI Functions-----
+    //Function to handle the random keyword scenario
+    this._handleRandom = function(actualValue){
+         if (actualValue.indexOf("%random%") != -1){
+             
+             if((windmill.randomRegistry.string == null)){
+                windmill.randomRegistry.string = this._randomString();
+             }
+             if((windmill.randomRegistry.string != null) && (windmill.randomRegistry.overWrite == true)){
+                 windmill.randomRegistry.string = this._randomString();
+             }
+             
+             actualValue = actualValue.replace("%random%", windmill.randomRegistry.string);
+         }
+        
+        return actualValue;
+     }
+    //-----windmill UI Functions-----
    
    //Type Function
    this.type = function(param_object){
    
-   var element = this.lookupDispatch(param_object);
+   var element = this._lookupDispatch(param_object);
    if (!element){
        return false;
    }
          //Get the focus on to the item to be typed in, or selected
-         Windmill.Events.triggerEvent(element, 'focus', false);
-         Windmill.Events.triggerEvent(element, 'select', true);
+         windmill.events.triggerEvent(element, 'focus', false);
+         windmill.events.triggerEvent(element, 'select', true);
          
          //Make sure text fits in the textbox
          var maxLengthAttr = element.getAttribute("maxLength");
          var actualValue = param_object.text;
-
-         /*
+         var stringValue = param_object.text;
+         
          if (maxLengthAttr != null) {
              var maxLength = parseInt(maxLengthAttr);
              if (stringValue.length > maxLength) {
@@ -196,18 +299,18 @@ function Controller() {
                  actualValue = stringValue.substr(0, maxLength);
              }
          }
-         */
+         
+         actualValue = this._handleRandom(actualValue);
          
          //Set the value
          element.value = actualValue;
          
-         
          // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
          //Another wierd chrome thing?
-         Windmill.Events.triggerEvent(element, 'change', true);
+         windmill.events.triggerEvent(element, 'change', true);
          
          return true;
-   }
+   };
        
     //Wait function
     this.wait = function(param_object){
@@ -217,14 +320,14 @@ function Controller() {
         setTimeout("done()", param_object.milliseconds);
         
         return true;
-    }   
+    };
     
     //Initial stab at selector functionality, taken from selenium-browserbot.js
     /*
     * Select the specified option and trigger the relevant events of the element.
     */
     this.select = function(param_object) {
-        var element = this.lookupDispatch(param_object);
+        var element = this._lookupDispatch(param_object);
         
         if (!element){
                return false;
@@ -239,7 +342,7 @@ function Controller() {
         
         var optionToSelect = locator.findOption(element);
         
-        Windmill.Events.triggerEvent(element, 'focus', false);
+        windmill.events.triggerEvent(element, 'focus', false);
         var changed = false;
         for (var i = 0; i < element.options.length; i++) {
             var option = element.options[i];
@@ -254,14 +357,14 @@ function Controller() {
         }
 
         if (changed) {
-            Windmill.Events.triggerEvent(element, 'change', true);
+            windmill.events.triggerEvent(element, 'change', true);
         }
         
         return true;
-    }
+    };
 
     //Drag Drop functionality allowing functions passed to calculate cursor offsets
-    Controller.prototype.dragDrop = function(param_object){
+    this.dragDrop = function(param_object){
         
        
          var p = param_object;
@@ -294,43 +397,44 @@ function Controller() {
                     }
                     
         
-            var dragged = this.lookupDispatch(p.dragged);
-            var dest = this.lookupDispatch(p.destination);
+            var dragged = this._lookupDispatch(p.dragged);
+            var dest = this._lookupDispatch(p.destination);
             var mouseDownPos = getPos(dragged, 'mouseDown');
             var mouseUpPos = getPos(dest, 'mouseUp');
         
             var webApp = parent.frames['webapp'];
-            Windmill.Events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
-            Windmill.Events.triggerMouseEvent(dragged, 'mousedown', true);
-            Windmill.Events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
-            Windmill.Events.triggerMouseEvent(dragged, 'mouseup', true);
-            Windmill.Events.triggerMouseEvent(dragged, 'click', true);
+            windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
+            windmill.events.triggerMouseEvent(dragged, 'mousedown', true);
+            windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
+            windmill.events.triggerMouseEvent(dragged, 'mouseup', true);
+            windmill.events.triggerMouseEvent(dragged, 'click', true);
             
             return true;
-    }
+    };
    
     //Directly access mouse events
-    Controller.prototype.mousedown = function(param_object){
-        var mupElement = this.lookupDispatch(param_object);
-        Windmill.Events.triggerMouseEvent(mupElement, 'mousedown', true);  
+    this.mousedown = function(param_object){
+        var mupElement = this._lookupDispatch(param_object);
+        windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  
         
         return true;
-    }
+    };
     
-    Controller.prototype.mouseup = function(param_object){
-        var mdnElement = this.lookupDispatch(param_object);
-        Windmill.Events.triggerMouseEvent(mdnElement, 'mouseup', true);
+    this.mouseup = function(param_object){
+        var mdnElement = this._lookupDispatch(param_object);
+        windmill.events.triggerMouseEvent(mdnElement, 'mouseup', true);
         
         return true;
-    }
+    };
+    
     //After the app reloads you have to re overwrite the alert function for the TestingApp
-    Controller.prototype.reWriteAlert = function(param_object){
-      Windmill.TestingApp.window.alert = function(s){
-          Windmill.UI.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
+    this.reWriteAlert = function(param_object){
+      windmill.testingApp.window.alert = function(s){
+          windmill.ui.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
       };
 
         return true;
-    }
+    };
       
     //A big part of the following is adapted from the selenium project browserbot
     //Registers all the ways to do a lookup
@@ -349,7 +453,7 @@ function Controller() {
                 var locatorPrefix = locatorFunction.prefix || result[1].toLowerCase();
                 this.locationStrategies[locatorPrefix] = locatorFunction;
             }
-        }
+        };
 
         /**
          * Find a locator based on a prefix.
@@ -357,7 +461,7 @@ function Controller() {
         this.findElementBy = function(locatorType, locator, inDocument, inWindow) {
             var locatorFunction = this.locationStrategies[locatorType];
             if (! locatorFunction) {
-                Windmill.Log.debug("Unrecognised locator type: '" + locatorType + "'");
+                //windmill.Log.debug("Unrecognised locator type: '" + locatorType + "'");
             }
             
             return locatorFunction.call(this, locator, inDocument, inWindow);
@@ -391,7 +495,7 @@ function Controller() {
             locatorString = result[2];
         }
         
-          var element = this.findElementBy(locatorType, locatorString, this.getDocument(), parent.frames[1]);
+          var element = this.findElementBy(locatorType, locatorString, this._getDocument(), parent.frames[1]);
             if (element != null) {
                 return element;
             }
@@ -401,10 +505,10 @@ function Controller() {
             if (element != null) {
                 return element;
             }
-        }
+        };
 
         // Element was not found by any locator function.
-        Windmill.Log.debug("Element " + locator + " not found");
+        ////windmill.Log.debug("Element " + locator + " not found");
     };
 
 
@@ -453,7 +557,7 @@ function Controller() {
         try {
             element = eval(domTraversal);
         } catch (e) {
-            Windmill.Log.debug("dom Traversal, element not found.");
+            //windmill.Log.debug("dom Traversal, element not found.");
         }
 
         if (!element) {
@@ -520,7 +624,7 @@ function Controller() {
     this._findElementByTagNameAndAttributeValue = function(
             inDocument, tagName, attributeName, attributeValue
             ) {
-        if (Windmill.Browser.isIE && attributeName == "class") {
+        if (browser.isIE && attributeName == "class") {
             attributeName = "className";
         }
         var elements = inDocument.getElementsByTagName(tagName);
@@ -538,7 +642,7 @@ function Controller() {
             ) {
         var elements = inDocument.getElementsByTagName(tagName);
         for (var i = 0; i < elements.length; i++) {
-            if (Windmill.Events.getText((elements[i]) == text)) {
+            if (windmill.events.getText((elements[i]) == text)) {
                 return elements[i];
             }
         }
@@ -557,7 +661,7 @@ function Controller() {
 
     this._findElementUsingFullXPath = function(xpath, inDocument, inWindow) {
         // HUGE hack - remove namespace from xpath for IE
-        if (Windmill.Browser.isIE) {
+        if (browser.isIE) {
             xpath = xpath.replace(/x:/g, '')
         }
 
@@ -586,7 +690,7 @@ function Controller() {
         
         for (var i = 0; i < links.length; i++) {
             var element = links[i];
-            if (PatternMatcher.matches(linkText, Windmill.Events.getText(element))) {
+            if (PatternMatcher.matches(linkText, windmill.events.getText(element))) {
                 return element;
             }
         }
@@ -631,7 +735,7 @@ OptionLocatorFactory.prototype.fromLocatorString = function(locatorString) {
         return new this.optionLocators[locatorType](locatorValue);
     }
 
-      Windmill.Log.debug("Unrecognised locator type: '" + locatorType + "'");
+      //windmill.Log.debug("Unrecognised locator type: '" + locatorType + "'");
       
 };
 
@@ -664,7 +768,7 @@ OptionLocatorFactory.prototype.OptionLocatorByLabel = function(label) {
                 return element.options[i];
             }
         }
-        Windmill.Log.debug("Option with label '" + this.label + "' not found");
+        //windmill.Log.debug("Option with label '" + this.label + "' not found");
         
    
     };
@@ -688,7 +792,7 @@ OptionLocatorFactory.prototype.OptionLocatorByValue = function(value) {
             }
         }
        
-        Windmill.Log.debug("Option with value '" + this.value + "' not found");
+        //windmill.Log.debug("Option with value '" + this.value + "' not found");
         
     };
 
@@ -705,14 +809,14 @@ OptionLocatorFactory.prototype.OptionLocatorByIndex = function(index) {
     this.index = Number(index);
     if (isNaN(this.index) || this.index < 0) {
    
-        Windmill.Log.debug("Illegal Index: " + index);
+        //windmill.Log.debug("Illegal Index: " + index);
     
     }
 
     this.findOption = function(element) {
         if (element.options.length <= this.index) {
             
-            Windmill.Log.debug("Index out of range.  Only " + element.options.length + " options available");
+            //windmill.Log.debug("Index out of range.  Only " + element.options.length + " options available");
        
         }
         return element.options[this.index];
@@ -735,7 +839,7 @@ OptionLocatorFactory.prototype.OptionLocatorById = function(id) {
                 return element.options[i];
             }
         }
-        Windmill.Log.debug("Option with id '" + this.id + "' not found");
+        //windmill.Log.debug("Option with id '" + this.id + "' not found");
        
     };
 

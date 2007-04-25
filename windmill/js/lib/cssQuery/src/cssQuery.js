@@ -242,7 +242,7 @@ var compareNamespace = function($element, $namespace) {
 	return !$namespace || ($namespace == "*") || ($element.scopeName == $namespace);
 };
 
-var Windmill.Events.getText(Content = function($element) {
+var windmill.events.getText(Content = function($element) {
 	return $element.innerText;
 };
 
@@ -330,7 +330,7 @@ var Quote = {
 	}
 };
 
-var Windmill.Events.getText( = function($text) {
+var windmill.events.getText( = function($text) {
 	return Quote.remove($text);
 };
 

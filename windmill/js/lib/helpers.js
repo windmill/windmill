@@ -60,7 +60,7 @@ function normalizeNewlines(text)
 function normalizeSpaces(text)
 {
     // IE has already done this conversion, so doing it again will remove multiple nbsp
-    if (Windmill.Browser.isIE)
+    if (browser.isIE)
     {
         return text;
     }
@@ -71,7 +71,7 @@ function normalizeSpaces(text)
 
     // Replace &nbsp; with a space
     var nbspPattern = new RegExp(String.fromCharCode(160), "g");
-    if (Windmill.Browser.isSafari) {
+    if (browser.isSafari) {
 	return replaceAll(text, String.fromCharCode(160), " ");
     } else {
 	return text.replace(nbspPattern, " ");

@@ -14,71 +14,71 @@ Copyright 2006, Open Source Applications Foundation
  limitations under the License.
 */
 
-//Internet Explorer specific Controller functions
+//Internet Explorer specific controller functions
 
-Controller.prototype.what = function() {
+windmill.controller.what = function() {
     alert('Internet Explorer');
 }
 
     /**
    * In IE, getElementById() also searches by name - this is an optimisation for IE.
    */
-  Controller.prototype.locateElementByIdentifer = function(identifier, inDocument, inWindow) {
+  windmill.controller.locateElementByIdentifer = function(identifier, inDocument, inWindow) {
       return inDocument.getElementById(identifier);
   };
   
-  Controller.prototype.click = function(param_object){
+  windmill.controller.click = function(param_object){
         
-         var element = this.lookupDispatch(param_object);
+         var element = this._lookupDispatch(param_object);
          if (!element){
              
                 return false;
          }
           // Trigger the event.
             // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-            //Windmill.Events.triggerMouseEvent(element, 'mousedown', true);
-            //Windmill.Events.triggerMouseEvent(element, 'mouseup', true);
-            Windmill.Events.triggerMouseEvent(element, 'click', true);
+            //windmill.events.triggerMouseEvent(element, 'mousedown', true);
+            //windmill.events.triggerMouseEvent(element, 'mouseup', true);
+            windmill.events.triggerMouseEvent(element, 'click', true);
 
          if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
-             Windmill.XHR.loopState = 0;
+             windmill.xhr.loopState = 0;
          }
          
          return true;
   };
   
   //there is a problem with checking via click in safari
-  Controller.prototype.check = function(param_object){
+  windmill.controller.check = function(param_object){
 
-      return Windmill.Controller.click(param_object);
+      return windmill.controller.click(param_object);
 
   }
 
   //Radio buttons are even WIERDER in safari, not breaking in FF
-  Controller.prototype.radio = function(param_object){
-      //var element = this.lookupDispatch(param_object);
-      return Windmill.Controller.click(param_object);
+  windmill.controller.radio = function(param_object){
+      //var element = this._lookupDispatch(param_object);
+      return windmill.controller.click(param_object);
 
   }
   
   //double click for ie, needs to be tested
-  Controller.prototype.doubleClick = function(param_object){
+  windmill.controller.doubleClick = function(param_object){
          
-         var element = this.lookupDispatch(param_object);
+         var element = this._lookupDispatch(param_object);
          if (!element){
                 return false;
          }
 
-         Windmill.Events.triggerEvent(element, 'focus', false);
+         windmill.events.triggerEvent(element, 'focus', false);
 
            // Trigger the mouse event.
-           //Windmill.Events.triggerMouseEvent(element, 'dblclick', true, clientX, clientY);
-           Windmill.Events.triggerMouseEvent(element, 'dblclick', true);
+           //windmill.events.triggerMouseEvent(element, 'dblclick', true, clientX, clientY);
+           windmill.events.triggerMouseEvent(element, 'dblclick', true);
           
          /* if (this.windowClosed()) {
                return;
            }*/
-           Windmill.Events.triggerEvent(element, 'blur', false);
+           windmill.events.triggerEvent(element, 'blur', false);
            
         return true;
   };

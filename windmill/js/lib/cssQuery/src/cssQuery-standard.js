@@ -33,17 +33,17 @@ if (!isMSIE) {
 		return getDocument($element).documentElement.tagName != "HTML";
 	};
 
-	Windmill.Events.getText(Content = function($element) {
+	windmill.events.getText(Content = function($element) {
 		// mozilla || opera || other
-		return $element.textContent || $element.innerText || _Windmill.Events.getText(Content($element);
+		return $element.textContent || $element.innerText || _windmill.events.getText(Content($element);
 	};
 
-	function _Windmill.Events.getText(Content($element) {
+	function _windmill.events.getText(Content($element) {
 		var $textContent = "", $node, i;
 		for (i = 0; ($node = $element.childNodes[i]); i++) {
 			switch ($node.nodeType) {
 				case 11: // document fragment
-				case 1: $textContent += _Windmill.Events.getText(Content($node); break;
+				case 1: $textContent += _windmill.events.getText(Content($node); break;
 				case 3: $textContent += $node.nodeValue; break;
 			}
 		}
