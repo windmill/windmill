@@ -161,16 +161,11 @@ class JSONRPCDispatcher(object):
                 raise JSONRPCError, 'params not array or object type'
         # Turn python errors into JSONRPC errors
         except JSONRPCError, e:
-            error = e
-            tb = StringIO()
-            traceback.print_exc(file=tb)
-            logger.error(tb.getvalue())
+            logger.exception('JSONRPCError %s' % e)
         except Exception, e:
             error = JSONRPCError('Server Exception :: %s' % e)
             error.type = e.__class__
-            tb = StringIO()
-            traceback.print_exc(file=tb)
-            logger.error(tb.getvalue())
+            logger.exception('JSONRPC Dispatcher excountered exception')
             
         if rpc_request.has_key('id'):
             jsonrpc_id = rpc_request[u'id']
@@ -226,9 +221,7 @@ class WSGIJSONRPCDispatcher(JSONRPCDispatcher):
                                           ('Content-Type', 'application/json')])
                 return [response]
             except Exception, e:
-                tb = StringIO()
-                traceback.print_exc(file=tb)
-                logger.error(tb.getvalue())
+                logger.exception('WSGIJSONRPCDispatcher Dispatcher excountered exception')
                 start_response('500 Internal Server Error', [('Cache-Control','no-cache'), ('Content-Type', 'text/plain')])
                 return ['500 Internal Server Error']
         
