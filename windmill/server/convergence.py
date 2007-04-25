@@ -136,7 +136,7 @@ class JSONRPCMethods(object):
         """Report fass/fail for a test"""
         self._test_resolution_suite.resolve_test(result, uuid, debug, starttime, endtime)
         
-    def callback_result(self, status, uuid, result):
+    def command_result(self, status, uuid, result):
         self.command_resolution_suite.resolve_command(status, uuid, result)
             
     def add_json_test(self, json):
