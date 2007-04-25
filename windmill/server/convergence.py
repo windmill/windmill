@@ -20,6 +20,7 @@ import simplejson
 import logging
 import uuid
 import windmill
+from dateutil.parser import parse as dateutil_parse
 
 test_results_logger = logging.getLogger('test_results')
 
@@ -61,8 +62,10 @@ class TestResolutionSuite(object):
         self.unresolved_tests = {}
         self.resolved_tests = {}
 
-    def resolve_test(self, result, uuid, starttime=None, endtime=None, debug=None):
-        
+    def resolve_test(self, result, uuid, starttime, endtime, debug=None):
+        """Resolve test by uuid"""
+        starttime = dateutil_parse(starttime)
+        endtime = dateutil_parse(endtime)
         test = self.unresolved_tests.pop(uuid)
         test['result'] = result
         test['starttime'] = starttime
@@ -134,7 +137,7 @@ class JSONRPCMethods(object):
             
     def report(self, uuid, result, starttime, endtime, debug=None):
         """Report fass/fail for a test"""
-        self._test_resolution_suite.resolve_test(result, uuid, debug, starttime, endtime)
+        self._test_resolution_suite.resolve_test(result, uuid, starttime, endtime, debug)
         
     def command_result(self, status, uuid, result):
         self.command_resolution_suite.resolve_command(status, uuid, result)
