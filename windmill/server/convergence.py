@@ -140,6 +140,13 @@ class JSONRPCMethods(object):
         
     def command_result(self, status, uuid, result):
         self._command_resolution_suite.resolve_command(status, uuid, result)
+        
+    def status_change(self, status):
+        pass
+    
+    def run_tests(self, tests):
+        for test in tests:
+            self.add_json_test(test)
             
     def add_json_test(self, json):
         """Add test from json object with 'method' and 'params' defined"""

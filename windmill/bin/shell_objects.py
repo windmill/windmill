@@ -37,9 +37,8 @@ def start_firefox():
 def run_test_file(filename):
     f = open(filename)
     test_strings = f.read().splitlines()
-    for test in test_strings:
-         jsonrpc_client.add_json_test(test)
-         logger.info('Added test\n%s' % test)
+    jsonrpc_client.run_tests(test_strings)
+    logger.info('Added tests from %s' % filename)
     
 def run_test_dir(directory):
     # Try to import test_conf
