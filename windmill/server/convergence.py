@@ -97,7 +97,7 @@ class CommandResolutionSuite(object):
         self.resolved_commands ={}
         
     def resolve_command(self, status, uuid, result=None):
-        
+        """Resolve command by uuid"""
         command = self.unresolved_commands.pop(uuid)
         command['status'] = status
         command['result'] = result
@@ -117,7 +117,6 @@ class CommandResolutionSuite(object):
 class JSONRPCMethods(object):
     
     def __init__(self, queue, test_resolution_suite, command_resolution_suite):
-        """Assign _queue to class"""
         self._queue = queue
         self._logger = logging.getLogger('jsonrpc_methods_instance')
         self._test_resolution_suite = test_resolution_suite
@@ -140,7 +139,7 @@ class JSONRPCMethods(object):
         self._test_resolution_suite.resolve_test(result, uuid, starttime, endtime, debug)
         
     def command_result(self, status, uuid, result):
-        self.command_resolution_suite.resolve_command(status, uuid, result)
+        self._command_resolution_suite.resolve_command(status, uuid, result)
             
     def add_json_test(self, json):
         """Add test from json object with 'method' and 'params' defined"""
