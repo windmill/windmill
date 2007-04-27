@@ -22,9 +22,7 @@ jsonrpc_client = windmill.tools.make_jsonrpc_client()
 xmlrpc_client = windmill.tools.make_xmlrpc_client()
 
 def clear_queue():
-    response = jsonrpc_client.next_action()
-    while response['result']['method'] != 'defer':
-        response = jsonrpc_client.next_action()
+    jsonrpc_client.clear_queue()
         
 windmill.settings['controllers'] = []
         
