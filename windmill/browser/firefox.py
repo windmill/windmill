@@ -169,15 +169,19 @@ class MozillaBrowser(object):
     def kill(self, kill_signal):
         
         if sys.platform == 'darwin':
-            os.kill(self.p_handle.pid+1, kill_signal)
+            try:
+                os.kill(self.p_handle.pid+1, kill_signal)
+            except:
+                logger.error('Cannot kill firefox')
         else:
-            self.p_handle.kill(group=True)
+            try:
+                self.p_handle.kill(group=True)
+            except:
+                logger.error('Cannot kill firefox')
 
     def stop(self):
         
-        if sys.platform == 'darwin':
-            os.kill(self.p_handle.pid+1, signal.SIGTERM)
-        else:
-            self.p_handle.kill(group=True)
+        self.kill(signal.SIGTERM)
+        
 
             

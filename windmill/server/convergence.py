@@ -189,7 +189,7 @@ class RPCMethods(object):
 
     def run_tests(self, tests):
         for test in tests:
-            self.add_test_object(test)
+            self.add_test(test)
     
         
 class JSONRPCMethods(RPCMethods):
