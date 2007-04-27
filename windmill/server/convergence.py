@@ -218,11 +218,8 @@ class JSONRPCMethods(RPCMethods):
         
     def clear_queue(self):
         """Clear the server queue"""
-        jsonrpc_client = windmill.tools.make_jsonrpc_client()
-        response = jsonrpc_client.next_action()
-        while response['result']['method'] != 'defer':
-            response = jsonrpc_client.next_action()
-
+        self._queue.command_queue = []
+        self._queue.test_queue = []
         
 class XMLRPCMethods(RPCMethods):
         
