@@ -5,7 +5,7 @@ body, html
 	margin: 0px;
 	padding: 0px;
 	text-align: left;
-	font-family:  'Lucida Grande', Geneva, sans-serif; 
+	font-family:  "Verdana", "Arial", sans-serif; 
     width: 100%;	/* make the body expand to fill the visible window */
     height: 100%;
     overflow: hidden;	/* erase window level scrollbars */

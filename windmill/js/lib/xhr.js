@@ -71,22 +71,20 @@ windmill.xhr = new function () {
                     }
                     else{ result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params); }
                 }
-                catch (error) { result = false; }
+                catch (error) { 
+                    windmill.ui.writeResult("<font color=\"#FF0000\">There was an error in the "+windmill.xhr.xhrResponse.result.method+" action. "+error+"</font>");
+                    windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
+                }
 
-                //End timer and write
+                //End timer and store
                 action_timer.endTime();
                 var to_write = fleegix.json.serialize(windmill.xhr.xhrResponse.result);
-                action_timer.write(to_write);
 
                 //Send the report
                 windmill.xhr.sendReport(windmill.xhr.xhrResponse.result.method, result, action_timer);
 
                 //if we had an error display in UI
                 if (result == false){
-                    
-                    windmill.ui.writeResult("<font color=\"#FF0000\">There was an error in the "+windmill.xhr.xhrResponse.result.method+" action.</font>");
-                    windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
-      
                     //if the continue on error flag has been set by the shell.. then we just keep on going
                     if (windmill.stopOnFailure == true){
                         windmill.xhr.togglePauseJsonLoop();
@@ -98,6 +96,9 @@ windmill.xhr = new function () {
                     //Write to the result tab
                     windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');     
                 }
+                
+                //Do the timer write
+                action_timer.write(to_write);
 
             }
         }

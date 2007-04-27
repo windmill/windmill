@@ -33,7 +33,7 @@ windmill.ui = new function() {
     //Run code and manage its result
     this.Run = function(){
         
-    	var jstext = windmill.Remote.document.getElementById("jsrunner");
+    	var jstext = windmill.remote.document.getElementById("jsrunner");
     	
     	var command_string = jstext.value;
     	var array_commands = command_string.split("\n")
@@ -46,17 +46,20 @@ windmill.ui = new function() {
     	for (var i=0;i<array_commands.length;i++)
         {
             if (array_commands[i]){
-                
+                result = true;
                 var run_obj = eval('(' + array_commands[i] + ')');
-                
-                if (run_obj.method.indexOf('.') != -1){
-                    var mArray = run_obj.method.split(".");
-                    result = windmill.controller[mArray[0]][mArray[1]](run_obj.params);  
+                try{
+                    if (run_obj.method.indexOf('.') != -1){
+                        var mArray = run_obj.method.split(".");
+                        result = windmill.controller[mArray[0]][mArray[1]](run_obj.params); 
+                        }
+                    else{ result = windmill.controller[run_obj.method](run_obj.params); }
                 }
-                else{ result = windmill.controller[run_obj.method](run_obj.params); }
-                            
+                catch (e) {
+                     result = false;
+                     windmill.ui.writeResult(run_obj.method + ' <font color="#FF0000">Method failed, '+ e +'</font>' );
+                 }           
             	if (result == true){ windmill.ui.writeResult(run_obj.method + '<font color="#69d91f"><b> Succeeded.</b></font>' ); }
-            	else{ windmill.ui.writeResult(run_obj.method + ' <font color="#FF0000">Failed.</font>' ); }
             }    
         }
 	
@@ -64,13 +67,13 @@ windmill.ui = new function() {
 
     //Clearing runner box
     this.clearJs = function(){
-    	var jstext = windmill.Remote.document.getElementById("jsrunner");
+    	var jstext = windmill.remote.document.getElementById("jsrunner");
     	jstext.value = "";
     }
     
     //Toggle Pause
     this.toggleLoopButtonText = function(){
-        var loopButton = windmill.Remote.document.getElementById("loopButton");
+        var loopButton = windmill.remote.document.getElementById("loopButton");
         if (loopButton.value == "Loop Stopped"){
             loopButton.value = "Loop Running";
             
@@ -83,25 +86,25 @@ windmill.ui = new function() {
     
     //Writing to the performance tab
     this.writePerformance = function(str){
-        var resultsDiv = windmill.Remote.document.getElementById("tab3");
+        var resultsDiv = windmill.remote.document.getElementById("tab3");
         resultsDiv.innerHTML =  str + "<br>" + resultsDiv.innerHTML
         //resultsDiv.scrollTop = resultsDiv.scrollHeight;
     }
     
     this.writeStatus = function(str){
-        windmill.Remote.document.getElementById("runningStatus").innerHTML = str;
+        windmill.remote.document.getElementById("runningStatus").innerHTML = str;
     }
     
     //Writing to the results tab
     this.writeResult = function(str){
-        var resultsDiv = windmill.Remote.document.getElementById("tab4");
+        var resultsDiv = windmill.remote.document.getElementById("tab4");
         resultsDiv.innerHTML = str + "<br>" + resultsDiv.innerHTML;
         //resultsDiv.scrollTop = resultsDiv.scrollHeight;
     }
     
     //Allowing the stopOnFailure switch to be controlled from the UI
     this.toggleBreak = function(){
-        var breakCheckBox = windmill.Remote.document.getElementById('toggleBreak');
+        var breakCheckBox = windmill.remote.document.getElementById('toggleBreak');
         if (breakCheckBox.checked){
             windmill.stopOnFailure = true;
         }
@@ -114,10 +117,10 @@ windmill.ui = new function() {
     this.setIdInRemote = function(e){
         //console.log  (e);
         if(e.target.id != ""){
-            windmill.Remote.document.getElementById("domExp").innerHTML = "ID: "+ e.target.id;  
+            windmill.remote.document.getElementById("domExp").innerHTML = "ID: "+ e.target.id;  
         }
         else{
-            windmill.Remote.document.getElementById("domExp").innerHTML = "Name: "+ e.target.nodeName;  
+            windmill.remote.document.getElementById("domExp").innerHTML = "Name: "+ e.target.nodeName;  
         }
         e.target.style.border = "1px solid yellow";
     }
@@ -130,8 +133,9 @@ windmill.ui = new function() {
     //Set the listeners for the dom explorer
     this.domExplorerOn = function(){
         //fleegix.event.listen(windmill.testingApp.document, 'onmouseover', windmill.ui, 'setIdInRemote');
-        fleegix.event.listen(windmill.testingApp.document, 'onmouseover', blah);
-        fleegix.event.listen(windmill.testingApp.document, 'onmouseout', windmill.ui, 'resetBorder');   
+        fleegix.event.listen(windmill.testingApp.document, 'onmouseover', windmill.ui, 'setIdInRemote');
+        fleegix.event.listen(windmill.testingApp.document, 'onmouseout', windmill.ui, 'resetBorder');
+        
     }
     
     //Remove the listeners for the dom explorer
@@ -141,7 +145,7 @@ windmill.ui = new function() {
     }
      
      this.scrollRecorderTextArea = function() {
-         var obj=windmill.Remote.document.getElementById("wmTest");
+         var obj=windmill.remote.document.getElementById("wmTest");
          obj.scrollTop=obj.scrollHeight;
      }
      
@@ -170,13 +174,21 @@ windmill.ui = new function() {
          } 
          if (locValue != ""){
             if(e.type == 'dblclick'){
-                windmill.Remote.document.getElementById("wmTest").value = windmill.Remote.document.getElementById("wmTest").value + '{"method": "doubleClick", "params":{"'+locator+'": "'+locValue+'"}}\n';
+                windmill.remote.document.getElementById("wmTest").value = windmill.remote.document.getElementById("wmTest").value + '{"method": "doubleClick", "params":{"'+locator+'": "'+locValue+'"}}\n';
             }
             else{
-                 windmill.Remote.document.getElementById("wmTest").value =  windmill.Remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
-            }
-            windmill.ui.scrollRecorderTextArea();
+                 //console.log(e.target.parentNode);
+                 if (windmill.remote.document.getElementById("clickOn").checked){
+                     windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
+
+                 }
+                 else if ((typeof(e.target.onclick) != "undefined") || (locator == 'link')){
+                    windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
+                }
+          }
         }
+         windmill.ui.scrollRecorderTextArea();
+
      }
      
      //Writing json to the remote for the change events
@@ -199,20 +211,20 @@ windmill.ui = new function() {
            }
           
           if (e.target.type == 'textarea'){
-              windmill.Remote.document.getElementById("wmTest").value =  windmill.Remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n';  
+              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n';  
           }
           else if (e.target.type == 'text'){
-              windmill.Remote.document.getElementById("wmTest").value =  windmill.Remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n';
+              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n';
             
           }
           else if(e.target.type == 'select-one'){
-              windmill.Remote.document.getElementById("wmTest").value =  windmill.Remote.document.getElementById("wmTest").value + '{"method": "select", "params":{"'+locator+'": "'+locValue+'","option": "'+e.target.value+'"}}\n';   
+              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "select", "params":{"'+locator+'": "'+locValue+'","option": "'+e.target.value+'"}}\n';   
           }
           else if(e.target.type == 'radio'){
-              windmill.Remote.document.getElementById("wmTest").value =  windmill.Remote.document.getElementById("wmTest").value + '{"method": "radio", "params":{"'+locator+'": "'+locValue+'"}}\n';  
+              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "radio", "params":{"'+locator+'": "'+locValue+'"}}\n';  
           }
           else if(e.target.type == "checkbox"){
-              windmill.Remote.document.getElementById("wmTest").value =  windmill.Remote.document.getElementById("wmTest").value + '{"method": "check", "params":{"'+locator+'": "'+locValue+'"}}\n';       
+              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "check", "params":{"'+locator+'": "'+locValue+'"}}\n';       
           }
           
           windmill.ui.scrollRecorderTextArea();
@@ -220,44 +232,14 @@ windmill.ui = new function() {
       }
      
      this.writeJsonDragDown = function(e){
-        var locator = '';
-        var locValue = '';
-        
-        if (e.target.id != ""){
-            locator = 'id';
-            locValue = e.target.id;
-        }
-        else if (e.target.name != ""){
-            locator = 'name';
-            locValue = e.target.nodeName;
-        }
-        else{
-            locator = 'Couldnt Detect';
-            locValue = 'Couldnt Detect';
-        }
-        //console.log(e);
+     //console.log(e)
       
-        //windmill.Remote.document.getElementById("wmTest").value =  windmill.Remote.document.getElementById("wmTest").value + '{"method": "dragDrop", "params": {"dragged" : {"'+locator+'": "'+locValue+'"},'; 
+        windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "dragDropXY", "params": {"source" : ['+e.clientX+','+e.clientY+'],'; 
     }
      
-     this.writeJsonDragUp = function(e){
-         var locator = '';
-         var locValue = '';
-
-         if (e.target.id != ""){
-             locator = 'id';
-             locValue = e.target.id;
-         }
-         else if (e.target.name != ""){
-             locator = 'name';
-             locValue = e.target.nodeName;
-         }
-         else{
-             locator = 'Couldnt Detect';
-             locValue = 'Couldnt Detect';
-         }
-         //console.log(e);
-         //windmill.Remote.document.getElementById("wmTest").value =  windmill.Remote.document.getElementById("wmTest").value + '"destination": {"'+locator+'": "'+locValue+'"}, "mouseDownPos": "Insert your custom dragged function here.", "mouseUpPos": "Insert your custom dest function here." }}\n';
+     this.writeJsonDragUp = function(e){        
+     //console.log(e);
+         windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '"destination": ['+e.clientX+','+e.clientY+']}}\n'; 
           
       }
      
@@ -269,17 +251,14 @@ windmill.ui = new function() {
          //Turn off the listeners so that we don't have multiple attached listeners for the same event
          windmill.ui.recordOff();
          
-         if (windmill.Remote.document.getElementById("dragOn").checked){       
+         if (windmill.remote.document.getElementById("dragOn").checked){       
              fleegix.event.listen(windmill.testingApp.document, 'onmousedown', windmill.ui, 'writeJsonDragDown');
              fleegix.event.listen(windmill.testingApp.document, 'onmouseup', windmill.ui, 'writeJsonDragUp');
          }
          else{
              fleegix.event.listen(windmill.testingApp.document, 'ondblclick', windmill.ui, 'writeJsonClicks');
              fleegix.event.listen(windmill.testingApp.document, 'onchange', windmill.ui, 'writeJsonChange');
-         
-             if (windmill.Remote.document.getElementById("clickOn").checked){    
-                 fleegix.event.listen(windmill.testingApp.document, 'onclick', windmill.ui, 'writeJsonClicks');
-             }
+             fleegix.event.listen(windmill.testingApp.document, 'onclick', windmill.ui, 'writeJsonClicks');
          }
      }
      
@@ -289,8 +268,41 @@ windmill.ui = new function() {
          fleegix.event.unlisten(windmill.testingApp.document, 'onclick', windmill.ui, 'writeJsonClicks');
          fleegix.event.unlisten(windmill.testingApp.document, 'onmousedown', windmill.ui, 'writeJsonDragDown');
          fleegix.event.unlisten(windmill.testingApp.document, 'onmouseup', windmill.ui, 'writeJsonDragUp');
-         
      }
+     
+     //Handle key listeners for windmill remote shortcuts
+     this.remoteAttach = function(e){
+         var tabNum = parseInt(windmill.remote.tabs.aid.replace('tab',''));
+         
+         //If they are pressing ctrl and left arrow
+         if ((e.keyCode == 37) && (e.ctrlKey == true)){
+             tabNum = tabNum - 1;
+             if (tabNum == 0){
+                tabNum = 8;
+             }
+             var focusTab = 'tab'+ tabNum;
+             windmill.remote.tabs.focus(focusTab);
+         }
+         //if they are pressing ctrl and right arrow
+         if ((e.keyCode == 39) && (e.ctrlKey == true)){
+             tabNum = tabNum + 1;
+             if (tabNum == 9){
+                tabNum = 1;
+             }
+             var focusTab = 'tab'+ tabNum;
+             windmill.remote.tabs.focus(focusTab);
+         }
+
+     }
+     
+     //Quickly bring the remote to focus
+     this.getRemote = function(e){
+          
+          if ((e.charCode == 96) && (e.ctrlKey == true)){
+                windmill.remote.alert('Here I am!');
+                //windmill.remote.close();
+            }
+    }
      
 
 }

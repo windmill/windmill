@@ -49,112 +49,91 @@ windmill.controller = new function () {
     this.commands = {};
     this.optionLocatorFactory = new OptionLocatorFactory();
     
-    /***********************
-    /*Commands
-    /***************/
     
-    //Give the backend a list of available controller methods
-       this.commands.getControllerMethods = function(){
-           var str = '';
-           for (var i in windmill.controller) { if (i.indexOf('_') == -1){ str += "," + i; } }
-           for (var i in windmill.controller.extensions) {
-                           if (str) { str += ',' }
-                           str += 'extensions.'+i;
-           }
-           for (var i in windmill.controller.extensions) {
-                          if (str) { str += ',' }
-                          str += 'extensions.'+i;
-           }   
-          //Clean up
-          var ca = new Array();
-          ca = str.split(",");
-          ca = ca.reverse();
-          ca.pop();
-          ca.pop();
-          ca = ca.sort();
-
-          //Send to the server
-          var json_object = new windmill.xhr.json_call('1.1', 'command_result');
-          var params_obj = {};
-          params_obj.status = true;
-          params_obj.command = eval('('+'{"method":"getControllerMethods"}'+')');
-          params_obj.result = ca;
-          json_object.params = params_obj;
-          var json_string = fleegix.json.serialize(json_object)
-          fleegix.xhr.doPost(this.defer, '/windmill-jsonrpc/', json_string);
-
-       };
+        /*******************************
+        /* Helper functions, non user facing
+        /* Note: the getControllerMethods command above returns a list of all the user facing functions to the user
+        /* And the ones that start with an underscore are ignored in that list
+        /* So if you are adding functionality for internal use and doesnt map from json please start with _
+        /*******************************/
+        this._getDocument = function() { return windmill.testingApp.document; }
+        this._getCurrentWindow = function() { return parent; }
+        this._getTitle = function() {
+            var t = this._getDocument().title;
+            if (typeof(t) == "string") {
+                t = t.trim();
+            }
+            return t;
+        }
     
-    //Keeping the suites running 
-    this.commands.setOptions = function(param_object){
+        //Translates from the way we are passing objects to functions to the lookups
+        this._lookupDispatch = function(param_object){
+       
+            var element = null;
+            //If a link was passed, lookup as link
+            if(typeof param_object.link != "undefined") {
+                element = this.findElement("link=" + param_object.link)
+            }
         
-        if(typeof param_object.stopOnFailure != "undefined") {
-            windmill.stopOnFailure = param_object.stopOnFailure;
-        }
-        if(typeof param_object.showRemote != "undefined") {
-            windmill.showRemote = param_object.showRemote;
-        }
+            //if xpath was passed, lookup as xpath
+            if(typeof param_object.xpath != "undefined") {
+                element = this.findElement("xpath=" + param_object.xpath)
+            }
         
-        return true;
-    };
+            //if id was passed, do as such
+            if(typeof param_object.id != "undefined") {
+                element = this.findElement("id=" + param_object.id)
+            }
+        
+            //if jsid was passed
+            if(typeof param_object.jsid != "undefined") {
+                var jsid;
+                eval ("jsid=" + param_object.jsid + ";");
+                element = this.findElement("id=" + jsid);
+            }
+        
+            //if name was passed
+            if(typeof param_object.name != "undefined") {
+                element = this.findElement("name=" + param_object.name)
+            }        
+       
+            return element;
+        };
     
-    //Helper Functions for dealing with the window
-    this._getDocument = function() {
-        return windmill.testingApp.document;
-    }
-
-    this._getCurrentWindow = function() {
-        //return this.browserbot._getCurrentWindow();
-        return parent;
-    }
-
-    this.getTitle = function() {
-        var t = this._getDocument().title;
-        if (typeof(t) == "string") {
-            t = t.trim();
+        this._randomString = function(){
+        	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+        	var string_length = 8;
+        	var randomstring = '';
+        	for (var i=0; i<string_length; i++) {
+        		var rnum = Math.floor(Math.random() * chars.length);
+        		randomstring += chars.substring(rnum,rnum+1);
+        	}
+        	return randomstring;
         }
-        return t;
-    }
     
+        //Function to handle the random keyword scenario
+        this._handleRandom = function(actualValue){
+             if (actualValue.indexOf("%random%") != -1){
+             
+                 if((windmill.randomRegistry.string == null)){
+                    windmill.randomRegistry.string = this._randomString();
+                 }
+                 if((windmill.randomRegistry.string != null) && (windmill.randomRegistry.overWrite == true)){
+                     windmill.randomRegistry.string = this._randomString();
+                 }
+             
+                 actualValue = actualValue.replace("%random%", windmill.randomRegistry.string);
+             }
+        
+            return actualValue;
+         }
+    
+    /************************************
+    /* User facing windmill functionality
+    /************************************/
     this.defer = function(){
         //We may want to somehow display that the loop is being deferred but right now it was too messy in output.
         //windmill.ui.writeResult('Deferring..')
-    };
-   
-   //Give the backend a list of available controller methods
-    this.getControllerMethods = function(){
-        var str = '';
-        for (var i in windmill.controller) {
-                     //if (str) { str += ',' }
-                    if (i.indexOf('_') == -1){ str += "," + i; }
-                    //str += (windmill.controller[i] == undefined) ? 
-                     // '"undefined"' : fleegix.json.serialize(windmill.controller[i]); 
-        }
-         for (var i in windmill.controller.extensions) {
-                        if (str) { str += ',' }
-                        str += 'extensions.'+i;
-                        //str += (windmill.controller[i] == undefined) ? 
-                         // '"undefined"' : fleegix.json.serialize(windmill.controller[i]); 
-            }
-       
-       //Clean up
-       var ca = new Array();
-       ca = str.split(",");
-       ca = ca.reverse();
-       ca.pop();
-       ca.pop();
-       ca = ca.sort();
-       
-       //Send to the server
-       var json_object = new windmill.xhr.json_call('1.1', 'command_result');
-       var params_obj = {};
-       params_obj.status = true;
-       params_obj.command = eval('('+'{"method":"getControllerMethods"}'+')');
-       params_obj.result = ca;
-       json_object.params = params_obj;
-       var json_string = fleegix.json.serialize(json_object)
-       fleegix.xhr.doPost(this.defer, '/windmill-jsonrpc/', json_string);
-       
     };
     
     //After a page is done loading, continue the loop
@@ -213,69 +192,6 @@ windmill.controller = new function () {
    };  
     
   
-    //Translates from the way we are passing objects to functions to the lookups
-    this._lookupDispatch = function(param_object){
-       
-        var element = null;
-        //If a link was passed, lookup as link
-        if(typeof param_object.link != "undefined") {
-            element = this.findElement("link=" + param_object.link)
-        }
-        
-        //if xpath was passed, lookup as xpath
-        if(typeof param_object.xpath != "undefined") {
-            element = this.findElement("xpath=" + param_object.xpath)
-        }
-        
-        //if id was passed, do as such
-        if(typeof param_object.id != "undefined") {
-            element = this.findElement("id=" + param_object.id)
-        }
-        
-        //if jsid was passed
-        if(typeof param_object.jsid != "undefined") {
-            var jsid;
-            eval ("jsid=" + param_object.jsid + ";");
-            element = this.findElement("id=" + jsid);
-        }
-        
-        //if name was passed
-        if(typeof param_object.name != "undefined") {
-            element = this.findElement("name=" + param_object.name)
-        }        
-       
-        return element;
-    };
-    
-    this._randomString = function(){
-    	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-    	var string_length = 8;
-    	var randomstring = '';
-    	for (var i=0; i<string_length; i++) {
-    		var rnum = Math.floor(Math.random() * chars.length);
-    		randomstring += chars.substring(rnum,rnum+1);
-    	}
-    	return randomstring;
-    }
-    
-    //Function to handle the random keyword scenario
-    this._handleRandom = function(actualValue){
-         if (actualValue.indexOf("%random%") != -1){
-             
-             if((windmill.randomRegistry.string == null)){
-                windmill.randomRegistry.string = this._randomString();
-             }
-             if((windmill.randomRegistry.string != null) && (windmill.randomRegistry.overWrite == true)){
-                 windmill.randomRegistry.string = this._randomString();
-             }
-             
-             actualValue = actualValue.replace("%random%", windmill.randomRegistry.string);
-         }
-        
-        return actualValue;
-     }
-    //-----windmill UI Functions-----
-   
    //Type Function
    this.type = function(param_object){
    
@@ -411,6 +327,20 @@ windmill.controller = new function () {
             
             return true;
     };
+    
+    //Drag Drop functionality allowing functions passed to calculate cursor offsets
+       this.dragDropXY = function(param_object){
+
+           var p = param_object;
+           var webApp = parent.frames['webapp'];
+           windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.source[0], p.source[1]);
+           windmill.events.triggerMouseEvent(webApp.document.body, 'mousedown', true);
+           windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.destination[0], p.destination[1]);
+           windmill.events.triggerMouseEvent(webApp.document.body, 'mouseup', true);
+           windmill.events.triggerMouseEvent(webApp.document.body, 'click', true);
+
+           return true;
+       };
    
     //Directly access mouse events
     this.mousedown = function(param_object){
@@ -435,7 +365,69 @@ windmill.controller = new function () {
 
         return true;
     };
-      
+    
+    /*******************************************************************************************************
+    /* Commands namespace functions, mostly system specific for the server to inderact with the client
+    /******************************************************************************************************/
+    
+       //Give the backend a list of available controller methods
+       this.commands.getControllerMethods = function(param_object){
+           
+           var str = '';
+           for (var i in windmill.controller) { if (i.indexOf('_') == -1){ str += "," + i; } }
+           for (var i in windmill.controller.extensions) {
+               if (str) { str += ',' }
+               str += 'extensions.'+i;
+           }
+           for (var i in windmill.controller.commands) {
+               if (str) { str += ',' }
+               str += 'commands.'+i;
+           }
+          
+          //Clean up
+          var ca = new Array();
+          ca = str.split(",");
+          ca = ca.reverse();
+          ca.pop();
+          ca.pop();
+          ca.pop();
+          ca.pop();
+          ca = ca.sort();
+
+          //Send to the server
+          var json_object = new windmill.xhr.json_call('1.1', 'command_result');
+          var params_obj = {};
+          params_obj.status = true;
+          params_obj.uuid = '8y9234yywds8733gwfdbsbdf';
+          params_obj.result = ca;
+          json_object.params = params_obj;
+          var json_string = fleegix.json.serialize(json_object)
+          
+          var resp = function(str){
+            return true;
+          }
+          
+          fleegix.xhr.doPost(resp, '/windmill-jsonrpc/', json_string);
+          return true;
+       };
+        
+        //Keeping the suites running 
+        this.commands.setOptions = function(param_object){
+        
+            if(typeof param_object.stopOnFailure != "undefined") {
+                windmill.stopOnFailure = param_object.stopOnFailure;
+            }
+            if(typeof param_object.showRemote != "undefined") {
+                windmill.showRemote = param_object.showRemote;
+            }
+        
+            return true;
+        };
+        
+    /********************************************************************************
+    /* DOM location functionality, all used for various types of lookups in the DOM
+    /*********************************************************************************/
+    
     //A big part of the following is adapted from the selenium project browserbot
     //Registers all the ways to do a lookup
     this._registerAllLocatorFunctions = function() {
@@ -455,9 +447,8 @@ windmill.controller = new function () {
             }
         };
 
-        /**
-         * Find a locator based on a prefix.
-         */
+        
+        //Find a locator based on a prefix.
         this.findElementBy = function(locatorType, locator, inDocument, inWindow) {
             var locatorFunction = this.locationStrategies[locatorType];
             if (! locatorFunction) {
@@ -467,9 +458,8 @@ windmill.controller = new function () {
             return locatorFunction.call(this, locator, inDocument, inWindow);
         };
 
-        /**
-         * The implicit locator, that is used when no prefix is supplied.
-         */
+      
+         // The implicit locator, that is used when no prefix is supplied.
         this.locationStrategies['implicit'] = function(locator, inDocument, inWindow) {
             if (locator.startsWith('//')) {
                 return this.locateElementByXPath(locator, inDocument, inWindow);
@@ -512,9 +502,8 @@ windmill.controller = new function () {
     };
 
 
-    /**
-     * Find the element with id - can't rely on getElementById, coz it returns by name as well in IE..
-     */
+    
+    //Find the element with id - can't rely on getElementById, coz it returns by name as well in IE.. 
     this.locateElementById = function(identifier, inDocument, inWindow) {
         
         var element = inDocument.getElementById(identifier);
@@ -526,10 +515,8 @@ windmill.controller = new function () {
         }
     };
 
-    /**
-     * Find an element by name, refined by (optional) element-filter
-     * expressions.
-     */
+    
+    //Find an element by name, refined by (optional) element-filter expressions.
     this.locateElementByName = function(locator, document, inWindow) {
         var elements = document.getElementsByTagName("*");
 
@@ -547,9 +534,8 @@ windmill.controller = new function () {
         return null;
     };
 
-    /**
-     * Finds an element using by evaluating the specified string.
-     */
+
+    // Finds an element using by evaluating the specified string.
     this.locateElementByDomTraversal = function(domTraversal, document, window) {
 
         var browserbot = this.browserbot;
@@ -568,10 +554,9 @@ windmill.controller = new function () {
     };
     this.locateElementByDomTraversal.prefix = "dom";
 
-    /**
-     * Finds an element identified by the xpath expression. Expressions _must_
-     * begin with "//".
-     */
+    
+     //Finds an element identified by the xpath expression. Expressions _must_
+     //begin with "//".
     this.locateElementByXPath = function(xpath, inDocument, inWindow) {
 
         // Trim any trailing "/": not valid xpath, and remains from attribute

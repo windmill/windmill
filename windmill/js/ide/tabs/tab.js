@@ -93,7 +93,7 @@ function TabGroupTabFocus(id)
 			t.className = 'TabStyleTabActive';
 			this.onTabFocusGained(this.tabs[n].id);
 		}
-		else if (t.className == "TabStyleTabActive")
+		else if (t.className = 'TabStyleTabActive')
 		{
 			t.className = 'TabStyleTabNormal';
 			this.onTabFocusLost(this.tabs[n].id);
@@ -225,8 +225,8 @@ function TabGroup(id)
 	this.removeEx = TabGroupRemoveEx;
 	this.addEx = TabGroupAddEx;
 	this.setTitle=TabGroupTabSetTitle;
-	this.onTabFocusGained=function(id){this.setTabForeground(id,'black');};
-	this.onTabFocusLost=function(id){this.setTabForeground(id,'black');};
+	this.onTabFocusGained=function(id){this.setTabForeground(id,'#448;');};
+	this.onTabFocusLost=function(id){this.setTabForeground(id,'#448;');};
 
 	// Not sure this should exist. Should really be in the css!!!
 	this.setTabForeground=TabGroupTabSetForeground;

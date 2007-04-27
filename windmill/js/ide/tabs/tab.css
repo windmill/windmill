@@ -7,7 +7,6 @@
  
 
  body, p, li {
-
  font-size: 9pt;
  }
 
@@ -20,35 +19,31 @@ padding: 0px;
 
 div.TabStyleTabActive
 {
-display: inline;
-height: 20px;
 border: 1px solid #999;
 border-bottom: 1px solid #fff;
 background-color: #fff;
 margin-left: 5px;
 padding: 3px;
-font-size: 9px;
+font-size: 10px;
+display: inline;
 
 }
 
 .TabStyleTabActive a {
 text-decoration: none;
-color: #000;
+color: #448;
 cursor: default;
 }
 
 div.TabStyleTabNormal
 {
 display: inline;
-height: 20px;
 border: 1px solid #ccc;
 border-bottom: 1px solid #ccc;
-background-color: #eee;
+background-color: #DDE;
 margin-left: 5px;
 padding: 3px;
-font-size: 9px;
-
-
+font-size: 10px;
 }
 
 div.TabStyleTabNormal a {
@@ -72,4 +67,8 @@ margin: 0px;
 margin-top: 3px !important;
 margin-top: -1px;
 border: 1px solid #ccc;
+height:465px;
+width:440px;
+overflow:scroll;
+
 }
