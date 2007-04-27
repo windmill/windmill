@@ -139,6 +139,8 @@ class JSONRPCDispatcher(object):
         if rpc_request[u'params'] is not None and len(rpc_request[u'params']) is 0:
             rpc_request[u'params'] = None
         
+        logged_failure = False
+        
         try:
             # Account for each type
             if type(rpc_request[u'params']) is list or type(rpc_request[u'params']) is tuple:
@@ -148,6 +150,8 @@ class JSONRPCDispatcher(object):
                     if type(rpc_request[u'params'][-1]) is dict:
                         result = self.__dict__[rpc_request[u'method']](*rpc_request[u'params'], **rpc_request[u'params'][-1])
                     else:
+                        logger.exception('JSONRPC Dispatcher encountered exception')
+                        logged_failure = True
                         raise Exception, e
             elif type(rpc_request[u'params']) is dict:
                 ascii_params = {}
@@ -165,7 +169,8 @@ class JSONRPCDispatcher(object):
         except Exception, e:
             error = JSONRPCError('Server Exception :: %s' % e)
             error.type = e.__class__
-            logger.exception('JSONRPC Dispatcher excountered exception')
+            if logged_failure is False:
+                logger.exception('JSONRPC Dispatcher encountered exception')
             
         if rpc_request.has_key('id'):
             jsonrpc_id = rpc_request[u'id']

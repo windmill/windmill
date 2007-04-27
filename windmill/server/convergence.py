@@ -88,7 +88,7 @@ class TestResolutionSuite(object):
             test['result_callback'](result, debug)
         
     def add_test(self, test):
-        self.unresolved_tests[test['uuid']] = test
+        self.unresolved_tests[test['params']['uuid']] = test
         
 class CommandResolutionSuite(object):
     
@@ -96,7 +96,7 @@ class CommandResolutionSuite(object):
         self.unresolved_commands = {}
         self.resolved_commands ={}
         
-    def resolve_command(self, status, uuid, result=None):
+    def resolve_command(self, status, uuid, result):
         """Resolve command by uuid"""
         command = self.unresolved_commands.pop(uuid)
         command['status'] = status
@@ -112,15 +112,82 @@ class CommandResolutionSuite(object):
             command['result_callback'](status, result)
     
     def add_command(self, command):
-        self.unresolved_commands[command['uuid']] = command
+        self.unresolved_commands[command['params']['uuid']] = command
         
-class JSONRPCMethods(object):
+class RPCMethods(object):
     
     def __init__(self, queue, test_resolution_suite, command_resolution_suite):
         self._queue = queue
         self._logger = logging.getLogger('jsonrpc_methods_instance')
         self._test_resolution_suite = test_resolution_suite
         self._command_resolution_suite = command_resolution_suite
+    
+    def add_json_test(self, json):
+        """Add test from json object with 'method' and 'params' defined"""
+        test = copy.copy(callback)
+        test.update(simplejson.loads(json))
+        test['params']['uuid'] = str(uuid.uuid1())
+        self._logger.debug('Adding command object %s' % str(test))
+        self._queue.add_test(test)    
+        self._test_resolution_suite.add_test(test)
+
+    def add_json_command(self, json):    
+        """Add command from json object with 'method' and 'params' defined"""
+        command = copy.copy(callback)
+        command.update(simplejson.loads(json))
+        command['params']['uuid'] = str(uuid.uuid1())
+        self._logger.debug('Adding command object %s' % str(command))
+        self._queue.add_command(command)
+        self._command_resolution_suite.add_command(command)
+
+    def execute_json_command(self, json):
+        """Add command from json object with 'method' and 'params' defined"""
+        command = copy.copy(callback)
+        command.update(simplejson.loads(json))
+        command['params']['uuid'] = str(uuid.uuid1())
+        self._logger.debug('Adding command object %s' % str(command))
+        self._queue.add_command(command)
+
+        returned_result = None
+        def result_callback(status, result):
+            if status is True:
+                returned_result = result
+            else:
+                returned_result = False
+
+        command['result_callback'] = result_callback
+        self._command_resolution_suite.add_command(command)
+
+        while returned_result is None:
+            pass
+
+        return returned_result
+
+    def execute_json_test(self, json):
+        """Add test from json object with 'method' and 'params' defined"""
+        test = copy.copy(callback)
+        test.update(simplejson.loads(json))
+        test['params']['uuid'] = str(uuid.uuid1())
+        self._logger.debug('Adding test object %s' % str(test))
+        self._queue.add_test(test)
+
+        returned_result = None
+        def result_callback(status, result):
+            if status is True:
+                returned_result = result
+            else:
+                returned_result = False
+
+        test['result_callback'] = result_callback
+        self._test_resolution_queue.add_test(test)
+
+        while returned_result is None:
+            pass
+
+        return returned_result
+    
+        
+class JSONRPCMethods(RPCMethods):
         
     def next_action(self):
         """The next action for the browser to execute"""
@@ -147,136 +214,9 @@ class JSONRPCMethods(object):
     def run_tests(self, tests):
         for test in tests:
             self.add_json_test(test)
-            
-    def add_json_test(self, json):
-        """Add test from json object with 'method' and 'params' defined"""
-        test = copy.copy(callback)
-        test.update(simplejson.loads(json))
-        test['uuid'] = str(uuid.uuid1())
-        self._logger.debug('Adding command object %s' % str(test))
-        self._queue.add_test(test)    
-        self._test_resolution_suite.add_test(test)
-        
-    def add_json_command(self, json):    
-        """Add command from json object with 'method' and 'params' defined"""
-        command = copy.copy(callback)
-        command.update(simplejson.loads(json))
-        command['uuid'] = str(uuid.uuid1())
-        self._logger.debug('Adding command object %s' % str(command))
-        self._queue.add_command(command)
-        self._command_resolution_suite.add_command(command)
-        
-    def execute_json_command(self, json):
-        """Add command from json object with 'method' and 'params' defined"""
-        command = copy.copy(callback)
-        command.update(simplejson.loads(json))
-        command['uuid'] = str(uuid.uuid1())
-        self._logger.debug('Adding command object %s' % str(command))
-        self._queue.add_command(command)
-        
-        returned_result = None
-        def result_callback(status, result):
-            if status is True:
-                returned_result = result
-            else:
-                returned_result = False
 
-        command['result_callback'] = result_callback
-        self._command_resolution_suite.add_command(command)
         
-        while returned_result is None:
-            pass
-            
-        return returned_result
-        
-    def execute_json_test(self, json):
-        """Add test from json object with 'method' and 'params' defined"""
-        test = copy.copy(callback)
-        test.update(simplejson.loads(json))
-        test['uuid'] = str(uuid.uuid1())
-        self._logger.debug('Adding test object %s' % str(test))
-        self._queue.add_test(test)
-
-        returned_result = None
-        def result_callback(status, result):
-            if status is True:
-                returned_result = result
-            else:
-                returned_result = False
-
-        test['result_callback'] = result_callback
-        self._test_resolution_queue.add_test(test)
-
-        while returned_result is None:
-            pass
-
-        return returned_result
-        
-class XMLRPCMethods(object):
-            
-    def __init__(self, queue, test_resolution_suite, command_resolution_suite):
-        """Assign _queue to class"""
-        self._queue = queue
-        self._logger = logging.getLogger('jsonrpc_methods_instance')
-        self._test_resolution_suite = test_resolution_suite
-        self._command_resolution_suite = command_resolution_suite
-            
-    def add_json_test(self, json):
-        """Add test from json object with 'method' and 'params' defined"""
-        test = copy.copy(callback)
-        test.update(simplejson.loads(json))
-        test['uuid'] = str(uuid.uuid1())
-        self._queue.add_test(test)    
-        self._test_resolution_suite.add_test(test) 
-        
-    def add_json_command(self, json):
-        """Add command from json object with 'method' and 'params' defined"""
-        command = copy.copy(callback)
-        command.update(simplejson.loads(json))
-        command['uuid'] = str(uuid.uuid1())
-        self._queue.add_command(command)
-        self._command_resolution_suite.add_command(command)
-        
-    def execute_json_command(self, json):
-        """Add command from json object with 'method' and 'params' defined"""
-        command = copy.copy(callback)
-        command.update(simplejson.loads(json))
-        command['uuid'] = str(uuid.uuid1())
-        self._queue.add_command(command)     
-        
-        returned_result = None
-        def result_callback(status, result):
-            if status is True:
-                returned_result = result
-            else:
-                returned_result = False
-                
-        command['result_callback'] = result_callback
-        self._command_resolution_suite.add_command(command)
-            
-        while returned_result is None:
-            pass
-            
-        return returned_result
-        
-    def execute_json_test(self, json):
-        """Add command from json object with 'method' and 'params' defined"""
-        test = copy.copy(callback)
-        test.update(simplejson.loads(json))
-        test['uuid'] = str(uuid.uuid1())
-        self._queue.add_test(test)     
-
-        returned_result = None
-        def result_callback(result, debug):
-            returned_result = result
-
-        test['result_callback'] = result_callback
-        self._test_resolution_queue.add_test(test)
-        
-        while returned_result is None:
-            pass
-            
-        return returned_result
+class XMLRPCMethods(RPCMethods):
         
     def __getattr__(self, key):    
         """Call a method on the controller as if it was a local method"""
