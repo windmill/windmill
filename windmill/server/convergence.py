@@ -216,7 +216,7 @@ class JSONRPCMethods(RPCMethods):
     def status_change(self, status):
         pass
         
-    def clear_queue():
+    def clear_queue(self):
         """Clear the server queue"""
         jsonrpc_client = windmill.tools.make_jsonrpc_client()
         response = jsonrpc_client.next_action()
