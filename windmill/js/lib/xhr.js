@@ -128,7 +128,7 @@ windmill.xhr = new function () {
         var result_string = fleegix.json.serialize(windmill.xhr.xhrResponse.result)
         
         //Append the results of the test run
-        var object_string = '{"result": '+result+',"uuid": "'+ windmill.xhr.xhrResponse.result.uuid +'", "starttime":"'+ timer.getStart() + '", "endtime":"'+ timer.getEnd() +'"}';
+        var object_string = '{"result": '+result+',"uuid": "'+ windmill.xhr.xhrResponse.result.params.uuid +'", "starttime":"'+ timer.getStart() + '", "endtime":"'+ timer.getEnd() +'"}';
         //var object_string = '{"test":'+ result_string + ',"uuid": "", "starttime":"'+ timer.getStart() + '", "endtime":"'+ timer.getEnd() +'"}';
         //Turn this into an object
         //console.log(object_string);
