@@ -80,10 +80,12 @@
 			<br>
 			<div>
 				<input type="button" id="recordOn" value="Record" onClick="javascript:opener.windmill.ui.recordOn();opener.window.focus();">
-				<input type="button" id="recordOff" value="Stop" onClick="javascript:opener.windmill.ui.recordOff()">
+				<input type="button" id="recordOff" value="Stop" onClick="javascript:opener.windmill.ui.recordOff();">
 				<div align=right><input type="button" id="gotoBuilder" value="Add actions with builder" onClick="javascript:tabs.focus('tab7');"></div>	
 			</div>
-			<b>Generated Test</b><br><TEXTAREA STYLE="overflow:auto" wrap=off  id="wmTest" ROWS="17" COLS="50"></TEXTAREA>
+			<b>Generated Test</b><br><TEXTAREA STYLE="overflow:auto" wrap=off  id="wmTest" ROWS="15" COLS="50"></TEXTAREA>
+			<div align=right><input type="button" id="playBack" value="Run Test" onClick="javascript:opener.windmill.ui.sendPlayBack();"></div>	
+
 		</div>
 		<div id="tab7" style="display:none">
 			<strong>Test Builder</strong><br><br>

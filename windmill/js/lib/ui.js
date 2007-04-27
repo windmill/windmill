@@ -303,6 +303,37 @@ windmill.ui = new function() {
                 //windmill.remote.close();
             }
     }
-     
+    
+    //Send the tests to be played back
+    this.sendPlayBack = function (){
+        var testArray = windmill.remote.document.getElementById('wmTest').value.split("\n");
+        if (testArray[testArray.length-1] == ""){ 
+            testArray.pop();
+        }
+        
+        windmill.ui.recordOff();
+          
+          var resp = function(str){
+        
+             var respRun = function(str){
+                 return true;
+             }
+               
+             var json_object = new windmill.xhr.json_call('1.1', 'run_json_tests');
+             var params_obj = {};
+             params_obj.tests = testArray;
+             json_object.params = params_obj;
+             var json_string = fleegix.json.serialize(json_object)
+             fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
+ 
+          }
+          
+          var json_object = new windmill.xhr.json_call('1.1', 'clear_queue');
+          var params_obj = {};
+          json_object.params = params_obj;
+          var json_string = fleegix.json.serialize(json_object)
+          fleegix.xhr.doPost(resp, '/windmill-jsonrpc/', json_string);
+
+    }
 
 }
