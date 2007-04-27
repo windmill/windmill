@@ -37,7 +37,7 @@ def start_firefox():
 def run_test_file(filename):
     f = open(filename)
     test_strings = f.read().splitlines()
-    jsonrpc_client.run_tests(test_strings)
+    jsonrpc_client.run_json_tests(test_strings)
     logger.info('Added tests from %s' % filename)
     
 def run_test_dir(directory):
