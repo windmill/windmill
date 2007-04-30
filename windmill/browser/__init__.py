@@ -24,3 +24,7 @@ def get_firefox_controller():
     
     browser = firefox.MozillaBrowser(profile)
     return browser
+    
+def get_ie_controller():
+    import ie
+    browser = ie.InternetExplorer()
