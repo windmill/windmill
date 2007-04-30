@@ -34,7 +34,7 @@ class InternetExplorer(object):
             try:
                 result = wreg.QueryValueEx(self.reg, key)
                 self.registry_modifications['previous_value'] = result[0]
-            except exceptions.WindowsError,
+            except exceptions.WindowsError:
                 self.registry_modifications['previous_value'] = None
                 wreg.CreateKey(self.reg, key)
         
