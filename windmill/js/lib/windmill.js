@@ -20,7 +20,7 @@ var windmill = new function () {
     this.init = function (b){
         browser = b;
     }
-    
+    this.builder={};
     //So that users can generate a user for the current test randomly
     //Usually you want one username for the test so you can set it once and leave it for the test
     //a user can write a method to set overWrite to true if they want to replace it each time %random% is used in a json test
@@ -40,7 +40,7 @@ var windmill = new function () {
           windmill.ui.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
           load_timer.write();
           
-          fleegix.event.listen(windmill.remote.document, 'onkeypress', windmill.ui, 'remoteAttach');
+          fleegix.event.listen(windmill.remote.document, 'onkeypress', windmill.ui, 'remoteKeyPress');
           fleegix.event.listen(windmill.testingApp.document, 'onkeypress', windmill.ui, 'getRemote');
 
     }

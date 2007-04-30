@@ -3,7 +3,7 @@
 		};
 		
 	
-		function methodSelected() {
+		opener.windmill.builder.methodSelected =function() {
 			var method = $('methodDD').value;
 			
 			//Reset values for when the user changes the actions
@@ -74,7 +74,7 @@
 			//Set the text to reflect whats been selected
 			$('methodName').innerHTML = "How will you be accessing the element you would like to "+method+".";
 		}
-		function getActionString(){
+		opener.windmill.builder.getActionString = function(){
 		    var paramsString = "";
 			
 			
@@ -103,7 +103,7 @@
 		}
 		    
 		//Create the json string
-		function addAction() {
+		opener.windmill.builder.addAction = function() {
 			
 			actionString = getActionString();
 			$('test').value = $('test').value +actionString+"\n";
@@ -118,9 +118,9 @@
 		}
 		
 		//Append action to the recorder
-		function addToRecorder(){
+		opener.windmill.builder.addToRecorder = function(){
 		    
-		    action = getActionString();
+		    action = opener.windmill.builder.getActionString();
 		    $("wmTest").value =  $("wmTest").value + action +'}\n';
         }
 		    

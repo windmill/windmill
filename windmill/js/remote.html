@@ -15,10 +15,15 @@
 	<body onload="javascript:opener.windmill.Start();">
 
 		<div id="tab1" style="display:none">
-			<img src="ide/img/logo.jpg">
-			<div style="width:90%">Welcome to <b>Windmill</b>!<br><br>
-				Windmill is a web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.
+		<table border="0" cellspacing="5" cellpadding="5">
+			<tr><td><img src="ide/img/logo.jpg"></td>
+				<td><div style="font: 10pt arial;"><br><br>
+				<b>Windmill</b> is a web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.
 			</div>
+			</td>
+			</tr>
+		</table>
+			
 			<br><br>
 			<!--If tests should have started running but didn't: 
 			<input type="button" id="reload" value="Start" onClick="javascript:opener.windmill.controller.continueLoop();">-->
@@ -96,7 +101,7 @@
 			<div id="method" style="border:1px solid #aaaaaa;">
 			<table style="font:9pt arial"><tr><td colspan="2" width="100%">
 			<b>Choose the user action you would like to simulate.</b><br><br> 
-			Windmill Method: <SELECT NAME="method" id="methodDD" onchange="methodSelected()">
+			Windmill Method: <SELECT NAME="method" id="methodDD" onchange="opener.windmill.builder.methodSelected()">
 				<OPTION VALUE="">Choose Method</option>
 				<OPTION VALUE="open">open</option>
 				<OPTION VALUE="click">click</option>
@@ -155,8 +160,8 @@
 					</table>
 			</div>
 
-			<input type="submit" value="Add Action to Test" onclick="addAction();">
-					<input type="submit" value="Append Action to Recorder Test" onclick="addToRecorder()">
+			<input type="submit" value="Add Action to Test" onclick="opener.windmill.builder.addAction();">
+					<input type="submit" value="Append Action to Recorder Test" onclick="opener.windmill.builder.addToRecorder()">
 				<div id="messages" style="visibility:hidden;">Action added..</div>	
 				
 				</div>

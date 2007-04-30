@@ -185,6 +185,9 @@ windmill.ui = new function() {
                  else if ((typeof(e.target.onclick) != "undefined") || (locator == 'link')){
                     windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
                 }
+                else if ((typeof(e.target.onclick) != "undefined") || (locator == 'link')){
+                    windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
+                }
           }
         }
          windmill.ui.scrollRecorderTextArea();
@@ -271,8 +274,9 @@ windmill.ui = new function() {
      }
      
      //Handle key listeners for windmill remote shortcuts
-     this.remoteAttach = function(e){
+     this.remoteKeyPress = function(e){
          var tabNum = parseInt(windmill.remote.tabs.aid.replace('tab',''));
+         console.log(e);
          
          //If they are pressing ctrl and left arrow
          if ((e.keyCode == 37) && (e.ctrlKey == true)){
@@ -291,6 +295,20 @@ windmill.ui = new function() {
              }
              var focusTab = 'tab'+ tabNum;
              windmill.remote.tabs.focus(focusTab);
+         }
+         
+         //keyboard shortcut to run your recorded test
+         if ((e.charCode == 114) && (e.ctrlKey == true)){
+             if (windmill.remote.document.getElementById('wmTest').value != ""){
+                windmill.ui.sendPlayBack();
+             }
+         }
+         
+         //ctrl b, gets the action from the builder and adds it to the recorder
+         if ((e.charCode == 98) && (e.ctrlKey == true)){
+            if (windmill.remote.document.getElementById('methodDD').value != ""){
+                windmill.builder.addToRecorder();
+            }    
          }
 
      }
@@ -332,6 +350,7 @@ windmill.ui = new function() {
           var params_obj = {};
           json_object.params = params_obj;
           var json_string = fleegix.json.serialize(json_object)
+          json_string = json_string.replace('\\', '');
           fleegix.xhr.doPost(resp, '/windmill-jsonrpc/', json_string);
 
     }
