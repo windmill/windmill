@@ -3,6 +3,7 @@ import exceptions
 import os, sys, shutil, time, signal
 import killableprocess
 import logging
+from urlparse import urlparse
 
 if sys.platform == "win32" or sys.platform == "cygwin":
     import _winreg as wreg
