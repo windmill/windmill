@@ -28,3 +28,5 @@ def get_firefox_controller():
 def get_ie_controller():
     import ie
     browser = ie.InternetExplorer()
+    
+    return browser
