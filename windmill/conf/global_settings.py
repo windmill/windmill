@@ -68,3 +68,4 @@ elif sys.platform == 'cygwin':
 elif sys.platform == 'win32':
     MOZILLA_BINARY = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
     MOZILLA_DEFAULT_PROFILE = "C:\Program Files\Mozilla Firefox\defaults\profile"
+    IE_BINARY = "C:\\Program Files\\Internet Explorer\\iexpore.exe"
