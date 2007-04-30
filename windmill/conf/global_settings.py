@@ -65,3 +65,6 @@ elif sys.platform == 'cygwin':
     if os.path.isdir('/cygdrive/c/Program Files/Mozilla Firefox/defaults/profile'):
         MOZILLA_DEFAULT_PROFILE = '/cygdrive/c/Program Files/Mozilla Firefox/defaults/profile'
 
+elif sys.platform == 'win32':
+    MOZILLA_BINARY = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+    MOZILLA_DEFAULT_PROFILE = "C:\Program Files\Mozilla Firefox\defaults\profile"

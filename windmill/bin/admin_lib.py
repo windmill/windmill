@@ -148,7 +148,9 @@ def teardown(shell_objects):
         time.sleep(1)
         
     if windmill.settings['MOZILLA_REMOVE_PROFILE_ON_EXIT'] is True:
-        shutil.rmtree(windmill.settings['MOZILLA_PROFILE_PATH'])
+        # Windows holds on to the file handlers for prefs.js indefinitely, we leave tempfiles and let the OS handle cleaning them up at a later time 
+        if sys.platform != "win32":
+            shutil.rmtree(windmill.settings['MOZILLA_PROFILE_PATH'])
 
     while shell_objects['httpd_thread'].isAlive():
         shell_objects['httpd'].stop()
