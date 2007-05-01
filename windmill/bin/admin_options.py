@@ -66,6 +66,10 @@ class StartFirefox(GeneralBoolSettingToTrue):
     option_names = ('m', 'firefox')
     setting = 'START_FIREFOX'
     
+class StartIE(GeneralBoolSettingToTrue):
+    option_names = ('x', 'ie')
+    setting = 'START_IE'
+    
 class ContinueOnFailure(GeneralBoolSettingToTrue):
     option_names = ('c', 'continueonfailure')
     setting = 'CONTINUE_ON_FAILURE'

@@ -32,6 +32,12 @@ def start_firefox():
     windmill.settings['controllers'].append(controller)
     return controller
     
+def start_ie():
+    controller = windmill.browser.get_ie_controller()
+    controller.start()
+    windmill.settings['controllers'].append(controller)
+    return controller
+    
 def run_test_file(filename):
     f = open(filename)
     test_strings = f.read().splitlines()
