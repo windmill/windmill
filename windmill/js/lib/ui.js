@@ -26,10 +26,16 @@ Copyright 2006, Open Source Applications Foundation
 
 
 windmill.ui = new function() {
+        
+    //Needed to keep track of the old border for the dom explorer
+    var domExplorerBorder  = null;
+    //keeping track of the recorder state when a new page is loaded and wipes the document
+    var recordState = false;
     
     this.donothing = function(){
 	    return;
 	}
+	
     //Run code and manage its result
     this.Run = function(){
         
@@ -122,12 +128,13 @@ windmill.ui = new function() {
         else{
             windmill.remote.document.getElementById("domExp").innerHTML = "Name: "+ e.target.nodeName;  
         }
+        windmill.ui.domExplorerBorder = e.target.style.border;
         e.target.style.border = "1px solid yellow";
     }
     
     //Reset the border to what it was before the mouse over
     this.resetBorder = function(e){
-        e.target.style.border = "";
+        e.target.style.border = windmill.ui.domExplorerBorder;
     }
     
     //Set the listeners for the dom explorer
@@ -243,15 +250,16 @@ windmill.ui = new function() {
          windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '"destination": ['+e.clientX+','+e.clientY+']}}\n'; 
           
       }
-     
+   
      //Turn on the recorder
      //Since the click event does things like firing twice when a double click goes also
      //and can be obnoxious im enabling it to be turned off and on with a toggle check box
      this.recordOn = function(){
-         
          //Turn off the listeners so that we don't have multiple attached listeners for the same event
          windmill.ui.recordOff();
          
+         //keep track of the recorder state, for page refreshes
+         windmill.ui.recordState = true;
           
          if (windmill.remote.document.getElementById("dragOn").checked){       
              fleegix.event.listen(windmill.testingApp.document, 'onmousedown', windmill.ui, 'writeJsonDragDown');
@@ -261,10 +269,13 @@ windmill.ui = new function() {
              fleegix.event.listen(windmill.testingApp.document, 'ondblclick', windmill.ui, 'writeJsonClicks');
              fleegix.event.listen(windmill.testingApp.document, 'onchange', windmill.ui, 'writeJsonChange');
              fleegix.event.listen(windmill.testingApp.document, 'onclick', windmill.ui, 'writeJsonClicks');
+             //fleegix.event.listen(windmill.testingApp, 'onclick', windmill.ui, 'go');
          }
      }
      
      this.recordOff = function(){
+         
+         windmill.ui.recordState = false;
          fleegix.event.unlisten(windmill.testingApp.document, 'ondblclick', windmill.ui, 'writeJsonClicks');
          fleegix.event.unlisten(windmill.testingApp.document, 'onchange', windmill.ui, 'writeJsonChange');
          fleegix.event.unlisten(windmill.testingApp.document, 'onclick', windmill.ui, 'writeJsonClicks');
@@ -272,10 +283,15 @@ windmill.ui = new function() {
          fleegix.event.unlisten(windmill.testingApp.document, 'onmouseup', windmill.ui, 'writeJsonDragUp');
      }
      
+     this.setRecState = function(){
+         if (windmill.ui.recordState == true){
+             windmill.ui.recordOn();
+         }
+     }
+     
      //Handle key listeners for windmill remote shortcuts
-     this.remoteKeyPress = function(e){
+     this.remoteKeyDown = function(e){
          var tabNum = parseInt(windmill.remote.tabs.aid.replace('tab',''));
-         console.log(e);
          
          //If they are pressing ctrl and left arrow
          if ((e.keyCode == 37) && (e.ctrlKey == true)){
@@ -297,14 +313,14 @@ windmill.ui = new function() {
          }
          
          //keyboard shortcut to run your recorded test
-         if ((e.charCode == 114) && (e.ctrlKey == true)){
+         if ((e.keyCode == 82) && (e.ctrlKey == true)){
              if (windmill.remote.document.getElementById('wmTest').value != ""){
                 windmill.ui.sendPlayBack();
              }
          }
          
          //ctrl b, gets the action from the builder and adds it to the recorder
-         if ((e.charCode == 98) && (e.ctrlKey == true)){
+         if ((e.keyCode == 66) && (e.ctrlKey == true)){
             if (windmill.remote.document.getElementById('methodDD').value != ""){
                 windmill.builder.addToRecorder();
             }    

@@ -44,8 +44,9 @@ var windmill = new function () {
           windmill.ui.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
           load_timer.write();
           
-          fleegix.event.listen(windmill.remote.document, 'onkeypress', windmill.ui, 'remoteKeyPress');
-          fleegix.event.listen(windmill.testingApp.document, 'onkeypress', windmill.ui, 'getRemote');
+          fleegix.event.listen(windmill.remote.document, 'onkeydown', windmill.ui, 'remoteKeyDown');
+          //fleegix.event.listen(windmill.remote.document, 'onkeypress', windmill.ui, 'remoteKeyPress');
+          fleegix.event.listen(windmill.testingApp.document, 'onkeydown', windmill.ui, 'getRemote');
 
     }
     

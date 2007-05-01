@@ -26,7 +26,7 @@
 			};
 			if (method == 'wait') {
 				$('other').style.display = 'block';
-				$('optionDD').value = "seconds";
+				$('optionDD').value = "milliseconds";
 				
 			};
 			if (method == 'radio') {
@@ -105,7 +105,7 @@
 		//Create the json string
 		opener.windmill.builder.addAction = function() {
 			
-			actionString = getActionString();
+			actionString = opener.windmill.builder.getActionString();
 			$('test').value = $('test').value +actionString+"\n";
 			
 		
