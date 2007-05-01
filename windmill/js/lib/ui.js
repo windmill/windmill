@@ -177,15 +177,13 @@ windmill.ui = new function() {
                 windmill.remote.document.getElementById("wmTest").value = windmill.remote.document.getElementById("wmTest").value + '{"method": "doubleClick", "params":{"'+locator+'": "'+locValue+'"}}\n';
             }
             else{
-                 //console.log(e.target.parentNode);
-                 if (windmill.remote.document.getElementById("clickOn").checked){
+                 //console.log(e.target.parentNode);                 
+                 if (windmill.remote.document.getElementById("clickOn").checked == true){
                      windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
 
                  }
-                 else if ((typeof(e.target.onclick) != "undefined") || (locator == 'link')){
-                    windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
-                }
-                else if ((typeof(e.target.onclick) != "undefined") || (locator == 'link')){
+                 else if ((e.target.onclick != null) || (locator == 'link')){
+                    //alert(typeof(e.target.onclick));
                     windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
                 }
           }
@@ -254,6 +252,7 @@ windmill.ui = new function() {
          //Turn off the listeners so that we don't have multiple attached listeners for the same event
          windmill.ui.recordOff();
          
+          
          if (windmill.remote.document.getElementById("dragOn").checked){       
              fleegix.event.listen(windmill.testingApp.document, 'onmousedown', windmill.ui, 'writeJsonDragDown');
              fleegix.event.listen(windmill.testingApp.document, 'onmouseup', windmill.ui, 'writeJsonDragUp');

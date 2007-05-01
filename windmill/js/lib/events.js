@@ -5,7 +5,7 @@ windmill.events = new function (){
     // Returns the text in this element
     this.getText = function(element) {
         var text = "";
-
+        
         var isRecentFirefox = (browser.isMozilla);
         if (isRecentFirefox || browser.isKonqueror || browser.isSafari || browser.isOpera) {
             text = windmill.events.getTextContent(element);
@@ -15,10 +15,9 @@ windmill.events = new function (){
             text = element.innerText;
         }
 
-        text = normalizeNewlines(text);
-        text = normalizeSpaces(text);
-
-        return text.trim();
+            text = windmill.helpers.normalizeNewlines(text);
+            text = windmill.helpers.normalizeSpaces(text);        
+            return text.trim();
     }
 
     this.getTextContent = function(element, preformatted) {
@@ -30,6 +29,7 @@ windmill.events = new function (){
             return text;
         }
         if (element.nodeType == 1 /*Node.ELEMENT_NODE*/) {
+            
             var childrenPreformatted = preformatted || (element.tagName == "PRE");
             var text = "";
             for (var i = 0; i < element.childNodes.length; i++) {

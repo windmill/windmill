@@ -66,9 +66,9 @@ padding: 4px;
 margin: 0px;
 margin-top: 3px !important;
 margin-top: -1px;
-border: 1px solid #ccc;
-height:465px;
-width:440px;
+height:98%;
+width:99%;
 overflow:scroll;
+position:absolute;
 
 }

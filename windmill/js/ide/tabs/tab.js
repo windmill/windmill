@@ -153,7 +153,7 @@ function TabGroupTabSetForeground(id,c){
 	if (t){
 		var links=t.getElementsByTagName("a");
 		if(links&&links.length>0){
-			links[0].style.color=c
+			links[0].style.color=c;
 		}
 	}
 }
@@ -225,8 +225,8 @@ function TabGroup(id)
 	this.removeEx = TabGroupRemoveEx;
 	this.addEx = TabGroupAddEx;
 	this.setTitle=TabGroupTabSetTitle;
-	this.onTabFocusGained=function(id){this.setTabForeground(id,'#448;');};
-	this.onTabFocusLost=function(id){this.setTabForeground(id,'#448;');};
+	this.onTabFocusGained=function(id){this.setTabForeground(id,'#448');};
+	this.onTabFocusLost=function(id){this.setTabForeground(id,'#448');};
 
 	// Not sure this should exist. Should really be in the css!!!
 	this.setTabForeground=TabGroupTabSetForeground;

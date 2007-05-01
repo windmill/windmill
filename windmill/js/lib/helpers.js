@@ -49,7 +49,7 @@ String.prototype.startsWith = function(str) {
 /**
  * Convert all newlines to \m
  */
-function normalizeNewlines(text)
+windmill.helpers.normalizeNewlines = function(text)
 {
     return text.replace(/\r\n|\r/g, "\n");
 }
@@ -57,7 +57,7 @@ function normalizeNewlines(text)
 /**
  * Replace multiple sequential spaces with a single space, and then convert &nbsp; to space.
  */
-function normalizeSpaces(text)
+windmill.helpers.normalizeSpaces = function(text)
 {
     // IE has already done this conversion, so doing it again will remove multiple nbsp
     if (browser.isIE)
@@ -72,10 +72,17 @@ function normalizeSpaces(text)
     // Replace &nbsp; with a space
     var nbspPattern = new RegExp(String.fromCharCode(160), "g");
     if (browser.isSafari) {
-	return replaceAll(text, String.fromCharCode(160), " ");
+	return windmill.helpers.replaceAll(text, String.fromCharCode(160), " ");
     } else {
 	return text.replace(nbspPattern, " ");
     }
+}
+
+windmill.helpers.replaceAll = function(text, oldText, newText) {
+    while (text.indexOf(oldText) != -1) {
+	text = text.replace(oldText, newText);
+    }
+    return text;
 }
 
 /**

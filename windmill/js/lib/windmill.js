@@ -20,7 +20,11 @@ var windmill = new function () {
     this.init = function (b){
         browser = b;
     }
+    
+    //More namespacing
     this.builder={};
+    this.helpers={};
+    
     //So that users can generate a user for the current test randomly
     //Usually you want one username for the test so you can set it once and leave it for the test
     //a user can write a method to set overWrite to true if they want to replace it each time %random% is used in a json test

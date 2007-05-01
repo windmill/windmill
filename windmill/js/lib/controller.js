@@ -68,7 +68,7 @@ windmill.controller = new function () {
     
         //Translates from the way we are passing objects to functions to the lookups
         this._lookupDispatch = function(param_object){
-       
+
             var element = null;
             //If a link was passed, lookup as link
             if(typeof param_object.link != "undefined") {
@@ -96,7 +96,8 @@ windmill.controller = new function () {
             if(typeof param_object.name != "undefined") {
                 element = this.findElement("name=" + param_object.name)
             }        
-       
+            
+
             return element;
         };
     
@@ -672,14 +673,13 @@ windmill.controller = new function () {
     this.locateElementByLinkText = function(linkText, inDocument, inWindow) {
     
         var links = inDocument.getElementsByTagName('a');
-        
+       
         for (var i = 0; i < links.length; i++) {
             var element = links[i];
             if (PatternMatcher.matches(linkText, windmill.events.getText(element))) {
                 return element;
             }
         }
-        
         return null;
     };
     this.locateElementByLinkText.prefix = "link";
