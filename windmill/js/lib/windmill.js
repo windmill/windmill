@@ -35,7 +35,7 @@ var windmill = new function () {
     
     //The app your testing
      this.testingApp = parent.frames['webapp'];
-        
+    
     this.Start = function(){
         //Index page load report
           load_timer.endTime();
