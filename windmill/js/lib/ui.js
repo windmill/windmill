@@ -168,7 +168,7 @@ windmill.ui = new function() {
          }
          else if (e.target.name != ""){
             locator = 'name';
-            locValue = e.target.nodeName;
+            locValue = e.target.name;
          }
          else if (e.target.innerHTML.match('href') != 'null'){
             locator = 'link';
@@ -189,7 +189,7 @@ windmill.ui = new function() {
                      windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
 
                  }
-                 else if ((e.target.onclick != null) || (locator == 'link')){
+                 else if ((e.target.onclick != null) || (locator == 'link') || (e.target.type == 'image')){
                     //alert(typeof(e.target.onclick));
                     windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
                 }
@@ -222,8 +222,10 @@ windmill.ui = new function() {
               windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n';  
           }
           else if (e.target.type == 'text'){
-              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n';
-            
+              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n'; 
+          }
+          else if (e.target.type == 'password'){
+              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n'; 
           }
           else if(e.target.type == 'select-one'){
               windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "select", "params":{"'+locator+'": "'+locValue+'","option": "'+e.target.value+'"}}\n';   
@@ -261,16 +263,30 @@ windmill.ui = new function() {
          //keep track of the recorder state, for page refreshes
          windmill.ui.recordState = true;
           
-         if (windmill.remote.document.getElementById("dragOn").checked){       
-             fleegix.event.listen(windmill.testingApp.document, 'onmousedown', windmill.ui, 'writeJsonDragDown');
-             fleegix.event.listen(windmill.testingApp.document, 'onmouseup', windmill.ui, 'writeJsonDragUp');
+         fleegix.event.listen(windmill.testingApp.document, 'ondblclick', windmill.ui, 'writeJsonClicks');
+         fleegix.event.listen(windmill.testingApp.document, 'onchange', windmill.ui, 'writeJsonChange');
+         fleegix.event.listen(windmill.testingApp.document, 'onblur', windmill.ui, 'writeJsonChange');
+         fleegix.event.listen(windmill.testingApp.document, 'onclick', windmill.ui, 'writeJsonClicks');
+
+         //We need to set these listeners on all iframes inside the testing app, per bug 32
+         var iframeCount = windmill.testingApp.window.frames.length;
+         var iframeArray = windmill.testingApp.window.frames;
+         
+         for (var i=0;i<iframeCount;i++)
+         {
+             try{
+                 fleegix.event.listen(iframeArray[i], 'ondblclick', windmill.ui, 'writeJsonClicks');
+                 fleegix.event.listen(iframeArray[i], 'onchange', windmill.ui, 'writeJsonChange');
+                 fleegix.event.listen(iframeArray[i], 'onclick', windmill.ui, 'writeJsonClicks');
+                 fleegix.event.listen(iframeArray[i], 'onblur', windmill.ui, 'writeJsonChange');
+
+            }
+            catch(error){             
+                windmill.ui.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);     
+            }
+
          }
-         else{
-             fleegix.event.listen(windmill.testingApp.document, 'ondblclick', windmill.ui, 'writeJsonClicks');
-             fleegix.event.listen(windmill.testingApp.document, 'onchange', windmill.ui, 'writeJsonChange');
-             fleegix.event.listen(windmill.testingApp.document, 'onclick', windmill.ui, 'writeJsonClicks');
-             //fleegix.event.listen(windmill.testingApp, 'onclick', windmill.ui, 'go');
-         }
+         
      }
      
      this.recordOff = function(){
@@ -279,8 +295,30 @@ windmill.ui = new function() {
          fleegix.event.unlisten(windmill.testingApp.document, 'ondblclick', windmill.ui, 'writeJsonClicks');
          fleegix.event.unlisten(windmill.testingApp.document, 'onchange', windmill.ui, 'writeJsonChange');
          fleegix.event.unlisten(windmill.testingApp.document, 'onclick', windmill.ui, 'writeJsonClicks');
-         fleegix.event.unlisten(windmill.testingApp.document, 'onmousedown', windmill.ui, 'writeJsonDragDown');
-         fleegix.event.unlisten(windmill.testingApp.document, 'onmouseup', windmill.ui, 'writeJsonDragUp');
+         fleegix.event.unlisten(windmill.testingApp.document, 'onblur', windmill.ui, 'writeJsonChange');
+
+         //fleegix.event.unlisten(windmill.testingApp.document, 'onmousedown', windmill.ui, 'writeJsonDragDown');
+         //fleegix.event.unlisten(windmill.testingApp.document, 'onmouseup', windmill.ui, 'writeJsonDragUp');
+         
+          //We need to disable these listeners on all iframes inside the testing app, per bug 32
+         var iframeCount = windmill.testingApp.window.frames.length;
+         var iframeArray = windmill.testingApp.window.frames;
+         
+         for (var i=0;i<iframeCount;i++)
+         {
+             try{
+                 fleegix.event.unlisten(iframeArray[i], 'ondblclick', windmill.ui, 'writeJsonClicks');
+                 fleegix.event.unlisten(iframeArray[i], 'onchange', windmill.ui, 'writeJsonChange');
+                 fleegix.event.unlisten(iframeArray[i], 'onclick', windmill.ui, 'writeJsonClicks');
+                 fleegix.event.unlisten(iframeArray[i], 'onblur', windmill.ui, 'writeJsonClicks');
+
+             }
+             catch(error){ 
+                windmill.ui.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);          
+            }
+
+         }
+         
      }
      
      this.setRecState = function(){
