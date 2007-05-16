@@ -144,13 +144,7 @@ def setup():
 def teardown(shell_objects):
 
     for controller in windmill.settings['controllers']:
-        controller.stop()
-        time.sleep(1)
-        
-    if windmill.settings['MOZILLA_REMOVE_PROFILE_ON_EXIT'] is True:
-        # Windows holds on to the file handlers for prefs.js indefinitely, we leave tempfiles and let the OS handle cleaning them up at a later time 
-        if sys.platform != "win32":
-            shutil.rmtree(windmill.settings['MOZILLA_PROFILE_PATH'])
+        del(controller)
 
     while shell_objects['httpd_thread'].isAlive():
         shell_objects['httpd'].stop()

@@ -114,6 +114,26 @@ class CommandResolutionSuite(object):
     def add_command(self, command):
         self.unresolved_commands[command['params']['uuid']] = command
         
+        
+class RecursiveRPC(object):
+
+    def __init__(self, execution_method):
+        self.execution_method = execution_method
+
+    def __getattr__(self, key):    
+        """Call a method on the controller as if it was a local method"""
+        class ExecuteJSONRecursiveAttribute(object):
+            def __init__(self, name, execution_method):
+                self.name = name
+                self.execution_method = execution_method
+            def __call__(self, **kwargs):
+                rpc = {'method':self.name, 'params':kwargs}
+                self.execution_method(rpc)
+            def __getattr__(self, key):
+                return ExecuteRecursiveAttribute(self.name+'.'+key, self.execution_method)
+
+        return ExecuteRecursiveAttribute(key, self.execution_method)
+        
 class RPCMethods(object):
     
     def __init__(self, queue, test_resolution_suite, command_resolution_suite):
@@ -123,6 +143,7 @@ class RPCMethods(object):
         self._command_resolution_suite = command_resolution_suite
         
     def add_object(self, queue_method, resolution_suite, action_object):
+        """Procedue neutral addition method"""
         callback_object = copy.copy(callback)
         callback_object.update(action_object)
         callback_object['params']['uuid'] = str(uuid.uuid1())
@@ -144,9 +165,11 @@ class RPCMethods(object):
         self.add_object(self._queue.add_command, self._command_resolution_suite, action_object)
         
     def add_command(self, command_object):
+        """Add command from object"""
         self.add_object(self._queue.add_command, self._command_resolution_suite, command_object)
         
     def execute_object(self, queue_method, resolution_suite, action_object):
+        """Procedure neutral blocking exeution of a given object."""
         callback_object = copy.copy(callback)
         callback_object.update(action_object)
         callback_object['params']['uuid'] = str(uuid.uuid1())
@@ -168,28 +191,35 @@ class RPCMethods(object):
         return returned_result
 
     def execute_json_command(self, json):
-        """Add command from json object with 'method' and 'params' defined"""
+        """Add command from json object with 'method' and 'params' defined, block until it returns, return the result"""
         action_object = simplejson.loads(json)
         self.execute_object(self._queue.add_command, self._command_resolution_suite, action_object)
 
     def execute_json_test(self, json):
-        """Add test from json object with 'method' and 'params' defined"""
+        """Add test from json object with 'method' and 'params' defined, block until it returns, return the result"""
         action_object = simplejson.loads(json)
         self.execute_object(self._queue.add_test, self._test_resolution_suite, action_object)
         
     def execute_command(self, action_object):
+        """Add command from dict object with 'method' and 'params' defined, block until it returns, return the result"""
         self.execute_object(self._queue.add_command, self._command_resolution_suite, action_object)
         
     def execute_test(self, action_object):
+        """Add test from dict object with 'method' and 'params' defined, block until it returns, return the result"""
         self.execute_object(self._queue.add_test, self._test_resolution_suite, action_object)
         
     def run_json_tests(self, tests):
+        """Run list of json tests"""
         for test in tests:
             self.add_json_test(test)
 
     def run_tests(self, tests):
+        """Run list of tests"""
         for test in tests:
             self.add_test(test)
+            
+    controller = RecursiveRPC(execute_test)
+    command = RecursiveRPC(execute_command)
     
         
 class JSONRPCMethods(RPCMethods):
@@ -222,22 +252,7 @@ class JSONRPCMethods(RPCMethods):
         self._queue.test_queue = []
         
 class XMLRPCMethods(RPCMethods):
-        
-    def __getattr__(self, key):    
-        """Call a method on the controller as if it was a local method"""
-        class ExecuteJSONTestRecursiveAttribute(object):
-            def __init__(self, name, execution_method):
-                self.name = name
-                self.execution_method = execution_method
-            def __call__(self, **kwargs):
-                rpc = {'method':self.name, 'params':kwargs}
-                self.execution_method(simplejson.dumps(rpc))
-            def __getattr__(self, key):
-                return ExecuteJSONTestRecursiveAttribute(self.name+'.'+key, self.execution_method)
-    
-        return ExecuteJSONTestRecursiveAttribute(key, self.execute_json_test)
-    
-    
+    pass
         
             
             

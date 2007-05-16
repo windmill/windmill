@@ -184,5 +184,12 @@ class MozillaBrowser(object):
         
         self.kill(signal.SIGTERM)
         
+    def __del__(self):
+        self.stop()
+
+        if windmill.settings['MOZILLA_REMOVE_PROFILE_ON_EXIT'] is True:
+            # Windows holds on to the file handlers for prefs.js indefinitely, we leave tempfiles and let the OS handle cleaning them up at a later time 
+            if sys.platform != "win32":
+                shutil.rmtree(windmill.settings['MOZILLA_PROFILE_PATH'])
 
             
