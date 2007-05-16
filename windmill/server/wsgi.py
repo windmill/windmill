@@ -13,7 +13,7 @@
 #   limitations under the License.
 
 from urlparse import urlparse, urljoin
-import httplib, os.path, copy, time, socket, logging, sys, traceback
+import httplib, os.path, copy, time, socket, logging, sys, traceback, random
 from StringIO import StringIO
 
 import jsonrpc, logger
@@ -23,6 +23,11 @@ import logging
 logger = logging.getLogger('server.wsgi')
 
 PORT = 4444
+
+START_DST_PORT = 32000
+CURRENT_DST_PORT = [random.randint(32000, 34000)]
+
+LOCAL_IP_ADDRESS = socket.gethostbyname(socket.gethostname())
 
 # wsgiref.utils.is_hop_by_hop doesn't pick up proxy-connection so we need to write our own
 _hoppish = {
@@ -178,15 +183,47 @@ class WindmillXMLRPCApplication(object):
 
     def __call__(self, environ, start_response):
         return self.handler(environ, start_response)    
-
-
+                
+class HTTPConnection(httplib.HTTPConnection):
+    
+    def connect(self):
+        """Connect to the host and port specified in __init__."""
+        msg = "getaddrinfo returns an empty list"
+        for res in socket.getaddrinfo(self.host, self.port, 0,
+                                      socket.SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            try:
+                self.sock = socket.socket(af, socktype, proto)
+                if self.debuglevel > 0:
+                    print "connect: (%s, %s)" % (self.host, self.port)
+                if CURRENT_DST_PORT[0] > START_DST_PORT+20000:
+                    CURRENT_DST_PORT[0] = copy.copy(START_DST_PORT)
+                CURRENT_DST_PORT[0] = CURRENT_DST_PORT[0]+1
+                self.sock.bind((LOCAL_IP_ADDRESS, CURRENT_DST_PORT[0]))
+                self.sock.connect(sa)
+            except socket.error, msg:
+                if self.debuglevel > 0:
+                    print 'connect fail:', (self.host, self.port)
+                if self.sock:
+                    self.sock.close()
+                self.sock = None
+                continue
+            break
+        if not self.sock:
+            raise socket.error, msg
+            
+    def __del__(self):
+        if self.sock is not None:
+            self.sock.close()
+            
+            
 class WindmillProxyApplication(object):
     """Application to handle requests that need to be proxied"""
     
     def __init__(self, logger):
         self.logger = logger
         
-    ConnectionClass = httplib.HTTPConnection
+    ConnectionClass = HTTPConnection
     
     def handler(self, environ, start_response):
         """Proxy for requests to the actual http server"""
@@ -197,8 +234,9 @@ class WindmillProxyApplication(object):
             connection = self.ConnectionClass(url.netloc)
             # Build path
             path = url.geturl().replace('%s://%s' % (url.scheme, url.netloc), '')
-        except:
+        except Exception, e:
             start_response("501 Gateway error", [('Content-Type', 'text/html')])
+            self.logger.exception('Could not Connect')
             return ['<H1>Could not connect</H1>']
 
             
@@ -236,6 +274,7 @@ class WindmillProxyApplication(object):
         except:
             # We need exception handling in the case the server fails, it's an edge case but I've seen it
             start_response("501 Gateway error", [('Content-Type', 'text/html')])
+            self.logger.exception('Could not Connect')
             return ['<H1>Could not connect</H1>']
 
         response = connection.getresponse()
