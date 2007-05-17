@@ -162,18 +162,17 @@ windmill.controller = new function () {
         
         var n = this._lookupDispatch(param_object);
         var validator = param_object.validator;
-        
-        try{
-        if (n.nodeType == 3) { 
+      
+        if (n.nodeType == 1) { 
 
-                    //If the validator string was found we return true
-                    if (n.nodeValue.indexOf(validator, 0) != -1){
-                        return true;
-                    }
                     //If the validator string was found we return true
                     if (n.innerHTML.indexOf(validator) != -1){
                         return true;
-                    }     
+                    }
+                    //If the validator string was found we return true
+                    if (n.value.indexOf(validator) != -1){
+                        return true;
+                    }      
                 }
         
 
@@ -182,14 +181,16 @@ windmill.controller = new function () {
                     
                     //alert(m.nodeValue);
                     //If the validator string was found we return true
-                    if (m.nodeValue.indexOf(validator, 0) != -1){
+                    if (m.value.indexOf(validator, 0) != -1){
+                        return true;
+                    }
+                    if (m.innerHTML.indexOf(validator, 0) != -1){
                         return true;
                     }
                 }
         }
-    }
-    catch(error){return false;}
-    return true;
+    //console.log(false);
+    throw false;
    };  
     
   
