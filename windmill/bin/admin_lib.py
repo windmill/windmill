@@ -142,8 +142,11 @@ def setup():
 
 
 def teardown(shell_objects):
+    
+    shell_objects['clear_queue']()
 
     for controller in windmill.settings['controllers']:
+        controller.stop()
         del(controller)
 
     while shell_objects['httpd_thread'].isAlive():

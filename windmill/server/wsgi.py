@@ -183,6 +183,7 @@ class WindmillXMLRPCApplication(object):
 
     def __call__(self, environ, start_response):
         return self.handler(environ, start_response)    
+                        
                 
 class HTTPConnection(httplib.HTTPConnection):
     
