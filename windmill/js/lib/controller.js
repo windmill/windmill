@@ -431,6 +431,69 @@ windmill.controller = new function () {
     /*********************************************************************************/
     
     //A big part of the following is adapted from the selenium project browserbot
+    
+    // Refine a list of elements using a filter.
+ 
+    this.selectElementsBy = function(filterType, filter, elements) {
+        var filterFunction = this.filterFunctions[filterType];
+        if (! filterFunction) {
+            throw new SeleniumError("Unrecognised element-filter type: '" + filterType + "'");
+        }
+
+        return filterFunction(filter, elements);
+    };
+
+    this.filterFunctions = {};
+
+    this.filterFunctions.name = function(name, elements) {
+        var selectedElements = [];
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i].name === name) {
+                selectedElements.push(elements[i]);
+            }
+        }
+        return selectedElements;
+    };
+
+    this.filterFunctions.value = function(value, elements) {
+        var selectedElements = [];
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i].value === value) {
+                selectedElements.push(elements[i]);
+            }
+        }
+        return selectedElements;
+    };
+
+    this.filterFunctions.index = function(index, elements) {
+        index = Number(index);
+        if (isNaN(index) || index < 0) {
+            //throw new SeleniumError("Illegal Index: " + index);
+            console.log('Error')
+
+        }
+        if (elements.length <= index) {
+            //throw new SeleniumError("Index out of range: " + index);
+            console.log('Error')
+        }
+        return [elements[index]];
+    };
+
+    this.selectElements = function(filterExpr, elements, defaultFilterType) {
+
+        var filterType = (defaultFilterType || 'value');
+
+        // If there is a filter prefix, use the specified strategy
+        var result = filterExpr.match(/^([A-Za-z]+)=(.+)/);
+        if (result) {
+            filterType = result[1].toLowerCase();
+            filterExpr = result[2];
+        }
+
+        return this.selectElementsBy(filterType, filterExpr, elements);
+    };
+
+    
     //Registers all the ways to do a lookup
     this._registerAllLocatorFunctions = function() {
         // TODO - don't do this in the constructor - only needed once ever
@@ -540,7 +603,7 @@ windmill.controller = new function () {
     // Finds an element using by evaluating the specified string.
     this.locateElementByDomTraversal = function(domTraversal, document, window) {
 
-        var browserbot = this.browserbot;
+        //var browserbot = this.browserbot;
         var element = null;
         try {
             element = eval(domTraversal);

@@ -407,5 +407,4 @@ windmill.ui = new function() {
           fleegix.xhr.doPost(resp, '/windmill-jsonrpc/', json_string);
 
     }
-
 }
