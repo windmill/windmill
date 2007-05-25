@@ -59,7 +59,6 @@ windmill/js/lib/xpath/misc.js
 windmill/js/lib/xpath/xpath.js
 windmill/server/__init__.py
 windmill/server/convergence.py
-windmill/server/jsonrpc.py
 windmill/server/logger.py
 windmill/server/wsgi.py
 windmill/test/__init__.py
