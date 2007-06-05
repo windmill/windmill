@@ -41,7 +41,9 @@ def start_ie():
 def run_test_file(filename):
     f = open(filename)
     test_strings = f.read().splitlines()
+    jsonrpc_client.start_suite(filename.split(os.path.sep)[-1])
     jsonrpc_client.run_json_tests(test_strings)
+    jsonrpc_client.stop_suite()
     logger.info('Added tests from %s' % filename)
     
 def run_test_dir(directory):
@@ -52,7 +54,8 @@ def run_test_dir(directory):
         test_list = test_conf.test_list
     except:
         print 'No test_conf.py for this directory, executing all test in directory'
-        test_list = [test_name for test_name in os.listdir(os.path.abspath(directory)) if not test_name.startswith('.') and test_name.endswith('.json')]
+        test_list = [test_name for test_name in os.listdir(os.path.abspath(directory)) if ( 
+                     not test_name.startswith('.') and test_name.endswith('.json') )]
         
     for test in test_list:
         run_test_file(os.path.abspath(directory)+os.path.sep+test)

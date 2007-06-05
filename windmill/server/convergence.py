@@ -61,6 +61,7 @@ class TestResolutionSuite(object):
     def __init__(self):
         self.unresolved_tests = {}
         self.resolved_tests = {}
+        self.current_suite = None
 
     def resolve(self, result, uuid, starttime, endtime, debug=None):
         """Resolve test by uuid"""
@@ -86,8 +87,17 @@ class TestResolutionSuite(object):
                 
         if test.has_key('result_callback'):
             test['result_callback'](result, debug)
+            
+    def start_suite(self, suite_name):
+        self.current_suite = suite_name
         
-    def add(self, test):
+    def stop_suite(self):
+        self.current_suite = None
+        
+    def add(self, test, suite_name=None):
+        if suite_name is None:
+            suite_name = self.current_suite
+        test['suite_name'] = suite_name
         self.unresolved_tests[test['params']['uuid']] = test
         
 class CommandResolutionSuite(object):
@@ -111,7 +121,7 @@ class CommandResolutionSuite(object):
         if command.has_key('result_callback'):
             command['result_callback'](status, result)
     
-    def add(self, command):
+    def add(self, command, suite_name=None):
         self.unresolved_commands[command['params']['uuid']] = command
         
         
@@ -142,22 +152,28 @@ class RPCMethods(object):
         self._test_resolution_suite = test_resolution_suite
         self._command_resolution_suite = command_resolution_suite
         
-    def add_object(self, queue_method, resolution_suite, action_object):
+    def start_suite(self, suite_name):
+        self._test_resolution_suite.start_suite(suite_name)
+    
+    def stop_suite(self):
+        self._test_resolution_suite.stop_suite()
+        
+    def add_object(self, queue_method, resolution_suite, action_object, suite_name=None):
         """Procedue neutral addition method"""
         callback_object = copy.copy(callback)
         callback_object.update(action_object)
         callback_object['params']['uuid'] = str(uuid.uuid1())
         self._logger.debug('Adding object %s' % str(callback_object))
         queue_method(callback_object)    
-        resolution_suite.add(callback_object)
+        resolution_suite.add(callback_object, suite_name)
     
-    def add_json_test(self, json):
+    def add_json_test(self, json, suite_name=None):
         """Add test from json object with 'method' and 'params' defined"""
         action_object = simplejson.loads(json)
-        self.add_object(self._queue.add_test, self._test_resolution_suite, action_object)
+        self.add_object(self._queue.add_test, self._test_resolution_suite, action_object, suite_name)
         
-    def add_test(self, test_object):
-        self.add_object(self._queue.add_test, self._test_resolution_suite, test_object)
+    def add_test(self, test_object, suite_name=None):
+        self.add_object(self._queue.add_test, self._test_resolution_suite, test_object, suite_name)
 
     def add_json_command(self, json):    
         """Add command from json object with 'method' and 'params' defined"""
