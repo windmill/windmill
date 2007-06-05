@@ -33,8 +33,6 @@ PORT = 4444
 
 START_DST_PORT = 32000
 CURRENT_DST_PORT = [random.randint(32000, 34000)]
-
-LOCAL_IP_ADDRESS = socket.gethostbyname(socket.gethostname())
     
 def reconstruct_url(environ):
     # From WSGI spec, PEP 333
@@ -55,7 +53,8 @@ def reconstruct_url(environ):
         url += '?' + environ['QUERY_STRING']
     environ['reconstructed_url'] = url
     return url
-        
+    
+         
 class HTTPConnection(httplib.HTTPConnection):
     
     def connect(self):
@@ -71,7 +70,7 @@ class HTTPConnection(httplib.HTTPConnection):
                 if CURRENT_DST_PORT[0] > START_DST_PORT+20000:
                     CURRENT_DST_PORT[0] = copy.copy(START_DST_PORT)
                 CURRENT_DST_PORT[0] = CURRENT_DST_PORT[0]+1
-                self.sock.bind((LOCAL_IP_ADDRESS, CURRENT_DST_PORT[0]))
+                self.sock.bind((None, CURRENT_DST_PORT[0]))
                 self.sock.connect(sa)
             except socket.error, msg:
                 if self.debuglevel > 0:
@@ -87,11 +86,13 @@ class HTTPConnection(httplib.HTTPConnection):
     def __del__(self):
         if self.sock is not None:
             self.sock.close()
+
+HTTPConnection = httplib.HTTPConnection            
             
 WindmillProxyApplication = wsgi_proxy.WSGIProxyApplication
-WindmillProxyApplication.ConnectionClass = HTTPConnection
-            
-                
+WindmillProxyApplication.ConnectionClass = HTTPConnection            
+
+
 class WindmillChooserApplication(object):
     """Application to handle choosing the proper application to handle each request"""
     def __init__(self, windmill_serv_app, windmill_jsonrpc_app, windmill_xmlrpc_app, windmill_proxy_app):

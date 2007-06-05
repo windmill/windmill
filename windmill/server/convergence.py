@@ -62,7 +62,7 @@ class TestResolutionSuite(object):
         self.unresolved_tests = {}
         self.resolved_tests = {}
 
-    def resolve_test(self, result, uuid, starttime, endtime, debug=None):
+    def resolve(self, result, uuid, starttime, endtime, debug=None):
         """Resolve test by uuid"""
         starttime = dateutil_parse(starttime)
         endtime = dateutil_parse(endtime)
@@ -87,7 +87,7 @@ class TestResolutionSuite(object):
         if test.has_key('result_callback'):
             test['result_callback'](result, debug)
         
-    def add_test(self, test):
+    def add(self, test):
         self.unresolved_tests[test['params']['uuid']] = test
         
 class CommandResolutionSuite(object):
@@ -96,7 +96,7 @@ class CommandResolutionSuite(object):
         self.unresolved_commands = {}
         self.resolved_commands ={}
         
-    def resolve_command(self, status, uuid, result):
+    def resolve(self, status, uuid, result):
         """Resolve command by uuid"""
         command = self.unresolved_commands.pop(uuid)
         command['status'] = status
@@ -111,7 +111,7 @@ class CommandResolutionSuite(object):
         if command.has_key('result_callback'):
             command['result_callback'](status, result)
     
-    def add_command(self, command):
+    def add(self, command):
         self.unresolved_commands[command['params']['uuid']] = command
         
         
@@ -149,7 +149,7 @@ class RPCMethods(object):
         callback_object['params']['uuid'] = str(uuid.uuid1())
         self._logger.debug('Adding object %s' % str(callback_object))
         queue_method(callback_object)    
-        resolution_suite.add_test(callback_object)
+        resolution_suite.add(callback_object)
     
     def add_json_test(self, json):
         """Add test from json object with 'method' and 'params' defined"""
@@ -184,7 +184,7 @@ class RPCMethods(object):
 
         callback_object['result_callback'] = result_callback
         queue_method(callback_object)
-        resolution_suite.add_command(callback_object)
+        resolution_suite.add(callback_object)
 
         while returned_result is None:
             pass
@@ -238,10 +238,10 @@ class JSONRPCMethods(RPCMethods):
             
     def report(self, uuid, result, starttime, endtime, debug=None):
         """Report fass/fail for a test"""
-        self._test_resolution_suite.resolve_test(result, uuid, starttime, endtime, debug)
+        self._test_resolution_suite.resolve(result, uuid, starttime, endtime, debug)
         
     def command_result(self, status, uuid, result):
-        self._command_resolution_suite.resolve_command(status, uuid, result)
+        self._command_resolution_suite.resolve(status, uuid, result)
         
     def status_change(self, status):
         pass
