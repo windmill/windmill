@@ -19,7 +19,7 @@ desc = """Windmill is a tool for testing of all functional web testing."""
 summ = """Windmill is a web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities."""
 
 PACKAGE_NAME = "windmill"
-PACKAGE_VERSION = "0.1.1"
+PACKAGE_VERSION = "0.1.2"
 
 # == Build Section == Handles .app with py2app, .exe with py2exe, and unix binary with scripts option
 # mainscript = ['windmill/bin/windmill-admin.py']
