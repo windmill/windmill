@@ -171,7 +171,6 @@ def runserver_action(shell_objects):
         teardown(shell_objects)
 
 def shell_action(shell_objects):
-
     # If ipython is installed and we weren't given the usecode option
     try:
         from IPython.Shell import IPShellEmbed
@@ -183,6 +182,13 @@ def shell_action(shell_objects):
         code.interact(local=shell_objects)    
 
     teardown(shell_objects)
+    
+def wxui_action(shell_objects):
+    import wxui
+    app = wxui.App()
+    shell_objects['wxui_app'] = app
+    app.MainLoop()
+    
     
 def tinderbox_action(shell_objects):
     
@@ -223,5 +229,5 @@ def tinderbox_action(shell_objects):
         if result == "FAILED":
             sys.exit(1)
 
-action_mapping = {'shell':shell_action, 'runserver':runserver_action, 'tbox':tinderbox_action}
+action_mapping = {'shell':shell_action, 'runserver':runserver_action, 'tbox':tinderbox_action, 'wx':wxui_action}
 
