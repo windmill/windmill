@@ -188,6 +188,7 @@ def wxui_action(shell_objects):
     app = wxui.App()
     shell_objects['wxui_app'] = app
     app.MainLoop()
+    teardown(shell_objects)
     
     
 def tinderbox_action(shell_objects):
