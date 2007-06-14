@@ -4,209 +4,157 @@
 	<title>Windmill IDE</title>
 	
 	<link rel="stylesheet" type="text/css" href="ide/css/windmill.css"/>
-	<link rel="stylesheet" type="text/css" href="ide/tabs/tab.css" />
+    <link href="ide/css/interpreter.css" rel="stylesheet" type="text/css" />
 
-	<script type="text/javascript" src="ide/tabs/tab.js"></script>
+    <script type="text/javascript" src="lib/MochiKit/MochiKit.js"></script>
+    <script type="text/javascript" src="lib/interpreter.js"></script>
 	<script type="text/javascript" src="lib/browserdetect.js"></script>
-	<script type="text/javascript" src="lib/builder.js"></script>
 	<script type="text/javascript" src="lib/fleegix.js"></script>
+    <script type="text/javascript" src="lib/interpreter.js"></script>
+
+	<script type="text/javascript" charset="utf-8">
+		//Setting up shortcuts for the console
+		var windmill = opener.windmill;
+		var testingApp = opener.windmill.testingApp;
+		var $ = function(id) {
+		  return document.getElementById(id);
+		};
+		
+		var closeDialog = function(id){
+			$(id).style.display = 'none';
+			$('gray').style.visibility = 'hidden';
+		};
+		var openDialog = function(id){
+			$(id).style.display = 'block';
+			$('gray').style.visibility = 'visible';
+		};
+		
+		var toggleRec = function(){
+			if ($('record').src.indexOf("ide/img/record.png")  != -1){
+				opener.windmill.ui.recordOn();
+				opener.window.focus();
+				$('record').src = 'ide/img/stoprecord.png';
+			}
+			else{
+				opener.windmill.ui.recordOff();	
+				$('record').src = 'ide/img/record.png';
+			}
+		}
+		var togglePlay = function(){
+			if ($('playback').src.indexOf("ide/img/playback.png")  != -1){
+				opener.windmill.xhr.startJsonLoop();
+				opener.windmill.ui.sendPlayBack();				
+				$('playback').src = 'ide/img/playbackstop.png';
+			}
+			else{
+				$('playback').src = 'ide/img/playback.png';
+			}
+		}
+		var toggleLoop = function(){
+			if ($('loopLink').innerHTML.indexOf('Pause') != -1){
+				$('loopLink').innerHTML = 'Resume Loop';
+				opener.windmill.xhr.togglePauseJsonLoop();
+			}
+			else{
+				$('loopLink').innerHTML = 'Pause Loop';
+				opener.windmill.xhr.togglePauseJsonLoop();
+			}
+			
+		}
+		var toggleExplore = function(){
+			if ($('toggleDomExp').innerHTML == 'DOM Explorer On'){
+				opener.windmill.ui.domExplorerOn();
+				opener.window.focus();
+				$('toggleDomExp').innerHTML = 'DOM Explorer Off';
+			}
+			else {
+				opener.windmill.ui.domExplorerOff();
+				$('toggleDomExp').innerHTML = 'DOM Explorer On';
+			}
+		}
+	</script>
 </head>
 		
-	<body onload="javascript:opener.windmill.Start();">
-
-		<div id="tab1" style="display:none">
-		<table border="0" cellspacing="5" cellpadding="5">
-			<tr><td><img src="ide/img/logo.jpg"></td>
-				<td><div style="font: 10pt arial;"><br><br>
-				<b>Windmill</b> is a web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.
-			</div>
-			</td>
-			</tr>
-		</table>
-			
-			<br><br>
-			<!--If tests should have started running but didn't: 
-			<input type="button" id="reload" value="Start" onClick="javascript:opener.windmill.controller.continueLoop();">-->
-			<br><br>
-			<div id="state">
-				<div id="runningStatus" align=center style="font-size:18px;color:blue;">Status: Nothing yet..</div>
-					<div align=center>
-						<input type="button" id="switchButton" value="View Full Output" onClick="javascript:tabs.focus('tab4');">	
-					</div> 
-				
-			</div>
-			<div style="border:1px solid #aaaaaa;bottom:30px;position:absolute;width:422px">
-				<strong>Windmill State </strong><br><br>
-				Status of Action Loop (Click to Toggle): 
-					<input type="button" id="loopButton" value="Loop Running" onClick="javascript:opener.windmill.xhr.togglePauseJsonLoop();">
-				<br>	
-				Break on failure: <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="opener.windmill.ui.toggleBreak();">
-			</div>
-		</div>
+<body onload="javascript:interpreterManager.initialize();opener.windmill.Start();">
+<div id="main" style="position:absolute;width:100%;height:100%;">
+	<div id="runningStatus" align="center" style="position:absolute;width:196px;height:18px;left:55%;top:1%;font-size:12px arial;color:blue;">Status: Nothing yet..</div>
+	<div id="loopButton" style="position:absolute;width:196px;height:18px;left:65%;top:4%;font-size:12px arial;">
+		<a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Pause Loop</a>
+	</div>
+	<div id="controllers" style="width:100%;height:7%;">
 		
-		<div id="tab2" style="display:none">
-				<strong>JSON Test Console</strong><br>
-				
-				<div style="font-size:10px;font-family:  'Lucida Grande', Geneva, sans-serif; ">
-					<br><TEXTAREA id="jsrunner" NAME="runner" ROWS="20" COLS="50"></TEXTAREA>
-					<br>Example Command: {"method": "click", "params": {"link" : "Log in to Cosmo"}}<br>Multiple commands accepted, one per line.
-				</div>
-				<br>
-				<div>
-					<input type="button" id="runJSButton" value="Run" onClick="javascript:opener.windmill.ui.Run();">
-					&nbsp &nbsp &nbsp &nbsp<input type="button" id="clearButton" value="Clear" onClick="javascript:opener.windmill.ui.clearJs();">
-					&nbsp &nbsp &nbsp &nbsp <input type="button" id="switchButton2" value="View Results" onClick="javascript:tabs.focus('tab4');">
-					
-				</div>
-		</div>
-		<div id="tab3" style="display:none">
-			
-		</div>
-		<div id="tab4" style="display:none">
+		&nbsp<a href="#"><img name='record' id="record" border=no src="ide/img/record.png" onClick="toggleRec();" ></a>
+		&nbsp<a href="#"><img name ='playback' id="playback" border=no src="ide/img/playback.png" onClick="togglePlay();"></a>
 		
-		</div>
-		<div id="tab5" style="display:none">
-			<strong>Tools</strong><br><br>
-			When this is switched on you can mouse over any element on the canvas and this tab will display it's DOM id, and it will be outlined on the web app.
-			<br><br><input type="button" id="toggleDomExpOn" value="DOM Explorer On" onClick="javascript:opener.windmill.ui.domExplorerOn();opener.window.focus();">
-			<input type="button" id="toggleDomExpOff" value="DOM Explorer Off" onClick="javascript:opener.windmill.ui.domExplorerOff()">
-			<br><br>
-			<div id="domExp" style="font:18px arial;color:purple;">
-			</div>
-			<div id="Reload">
-			<strong>Reload Testing App </strong><br><br>
-			Sometimes you want to simply reload your testing app without refreshing the whole browser.. this way your state of the recorder doesn't go away.
-			<input type="button" name="reloadTestingApp" value="Reload" id="reloadTestingApp" onClick="javascript:      opener.windmill.testingApp.window.location.reload();">
+		<div id="domExplore" align="center" style="position:absolute;width:196px;height:30px;left:18%;top:1%">
+			<a href="#" id="toggleDomExp" onClick="javascript:toggleExplore();">DOM Explorer On</a>
+			<div id="domExp" style="font:12px arial;color:purple;">
 			</div>
 		</div>
-			
-		<div id="tab6" style="display:none">
-			<strong>Windmill Recorder</strong><br>
-			<br>Welcome to the recorder, once it is switched on go ahead and do your interaction with the UI, and windmill actions will magically be recorded in the box below.<br><br>
-			<div style="font:10px arial;">
-				<b>Enable absolute click listener?</b> <INPUT TYPE=checkbox UNCHECKED ID='clickOn'>(This picks up every single click event on the app.)<br>
-				<b>Enable Drag and Drop mode</b> <INPUT TYPE=checkbox UNCHECKED ID='dragOn'>(Catches mouseup, mousedown and creates action x,y)
-			</div>
-			<br>
-			<div>
-				<input type="button" id="recordOn" value="Record" onClick="javascript:opener.windmill.ui.recordOn();opener.window.focus();">
-				<input type="button" id="recordOff" value="Stop" onClick="javascript:opener.windmill.ui.recordOff();">
-				<div align=right><input type="button" id="gotoBuilder" value="Add actions with builder" onClick="javascript:tabs.focus('tab7');"></div>	
-			</div>
-			<b>Generated Test</b><br><TEXTAREA STYLE="overflow:auto" wrap=off  id="wmTest" ROWS="13" COLS="50"></TEXTAREA>
-			<div align=right>
-				<input type="button" id="playBack" value="Clear" onClick="javascript:document.getElementById('wmTest').value = '';"> &nbsp
-				<input type="button" id="playBack" value="Run Test" onClick="javascript:opener.windmill.ui.sendPlayBack();">
-			</div>	
+	</div>
+	
+	<div id="ide" style="width:100%;height:88%;border:1px solid #aaa;overflow:auto;">
+	</div>
+	<div id="navigation" style="width:100%;height:5%;">
+		Navigation: 
+		<a href="#" onclick="javascript:openDialog('console')">Console </a> 
+		<a href="#" onclick="javascript:openDialog('output')">Output</a> 
+		<a href="#" onclick="javascript:openDialog('settings')">Settings </a>
+	</div>
+	
+</div>
+<div id="gray" style="position:absolute;width:100%;height:100%;background-color:gray;opacity:.8;z-index:9;visibility:hidden;"></div>
 
+<div id="output" class="dialog">
+		<div align="right">
+			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
+				<tr><td style="width:92%;"><strong>Output</strong></td><td style="font: 9pt arial;">
+					<a href="#" onclick="javascript:closeDialog('output');">Close</a>
+				</td></tr>
+			</table>
 		</div>
-		<div id="tab7" style="display:none">
-			<strong>Test Builder</strong><br><br>
-			
-			<div id="method" style="border:1px solid #aaaaaa;">
-			<table style="font:9pt arial"><tr><td colspan="2" width="100%">
-			<b>Choose the user action you would like to simulate.</b><br><br> 
-			Windmill Method: <SELECT NAME="method" id="methodDD" onchange="opener.windmill.builder.methodSelected()">
-				<OPTION VALUE="">Choose Method</option>
-				<OPTION VALUE="open">open</option>
-				<OPTION VALUE="click">click</option>
-				<OPTION VALUE="wait">wait</option>
-				<OPTION VALUE="radio">radio</option>
-				<OPTION VALUE="check" >check</option>
-				<OPTION VALUE="type" >type</option>
-				<OPTION VALUE="verify" >verify</option>
-				<OPTION VALUE="select" >select</option>
-				<OPTION VALUE="doubleClick" >doubleClick</option>
-				<OPTION VALUE="clickLozenge" >clickLozenge</option>
-				<OPTION VALUE="cosmoDragDrop" >cosmoDragDrop</option>
-				<OPTION VALUE="setOptions" >setOptions</option>
-				<OPTION VALUE="reWriteAlert" >reWriteAlert</option>
-			</SELECT></td>
-			</tr>
+		<br><strong>General Output</strong><br>
+		<div id="tab4" style="height:40%;width:99%;overflow:auto;border:1px dashed black;"></div><br>
+	    <strong>Performance Output</strong><br>
+		<div id="tab3" style="height:40%;width:99%;overflow:auto;border:1px dashed black;"></div>
+</div>
+<div id="console" class="dialog" style="font:12pt arial">
+		<div align="right">
+			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
+				<tr><td style="width:92%;"><strong>Windmill Console</strong></td><td style="font: 9pt arial;">
+					<a href="#" onclick="javascript:closeDialog('console');">Close</a></td></tr>
 			</table>
 		</div>
 		<br>
-		<div id="params">
-			<div id="locator" style="display:none;border:1px solid #aaaaaa;">
-					<table style="font:9pt arial"><tr><td colspan="2" width="100%">
-					<b><div id="methodName"></div></b><br> 
-					DOM Locator: <SELECT id="locatorDD" NAME="locator">
-						<OPTION VALUE="">Choose Locator</option>
-						<OPTION VALUE="id">id</option>
-						<OPTION VALUE="name">name</option>
-						<OPTION VALUE="link">link</option>
-						<OPTION VALUE="xpath">xpath</option>
-						<OPTION VALUE="jsid">jsid</option>
-					</SELECT><br>Value: <input type="text" name="value" value="" size="40" id="optionValue">
-					</td>
-					<td width="350px">
-					 </td>
-					</tr>
-					</table>
-			</div>
-			<br>
+	 <form id="interpreter_form" autocomplete="off">
+	            <div id="interpreter_area">
+	                <div id="interpreter_output"></div>
+	            </div>
+	            <div id="oneline">
+	                <input id="interpreter_text" name="input_text" type="text" class="textbox" size="58" />
+	            </div>
+	            <div id="multiline">
+	                <textarea id="interpreter_textarea" name="input_textarea" type="text" class="textbox" cols="55" rows="4"></textarea>
+	                <br />
+	            </div>
+	        </form>
 
-			<div id="other" style="display:none;border:1px solid #aaaaaa;">
-					<table style="font:9pt arial"><tr><td colspan="2" width="100%">
-					<b>Fill out the required additional parameter.</b>
-					<br><br> Option: <SELECT id="optionDD" NAME="option" >
-						<OPTION VALUE="">Choose Option</option>
-						<OPTION VALUE="url">url</option>
-						<OPTION VALUE="milliseconds">milliseconds</option>
-						<OPTION VALUE="text">text</option>
-						<OPTION VALUE="option">option</option>
-						<OPTION VALUE="validator">validator</option>
-						<OPTION VALUE="destination">destination</option>
-						<OPTION VALUE="stopOnFailure">stopOnFailure</option>
-						<OPTION VALUE="showRemote">showRemote</option>
-					</SELECT><br>Value: <input type="text" name="value" value="" size="40" id="otherValue">
-					<td width="350px"></td>
-					</tr>
-					</table>
-			</div>
-
-			<input type="submit" value="Add Action to Test" onclick="opener.windmill.builder.addAction();">
-					<input type="submit" value="Append Action to Recorder Test" onclick="opener.windmill.builder.addToRecorder()">
-				<div id="messages" style="visibility:hidden;">Action added..</div>	
-				
-				</div>
-				<div style="position:absolute;bottom:30px">
-					<strong>Test Actions</strong><br>
-					<TEXTAREA NAME=test id="test" ROWS=4 COLS=50></TEXTAREA><br><br>
-					<input type="submit" value="Clear Test" onclick="clearTest();"> 
-					<input type="submit" value="Save As" disabled="true" onclick=""> 
-					<input type="submit" value="Copy to Clipboard" disabled="true" onclick="">
-				</div>
+</div>
+<div id="settings" class="dialog">
+		<div align="right">
+			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
+				<tr><td style="width:92%;"><strong>Windmill Settings</strong></td><td style="font: 9pt arial;">
+					<a href="#" onclick="javascript:closeDialog('settings');">Close</a></td></tr>
+			</table>
 		</div>
-		<div id="tab8" style="display:none">
-			<strong>Windmill Documentation and Resources</strong><br><br>
-			<a target="_blank" href="http://windmill.osafoundation.org">Windmill Home Page</a><br>
-			<a target="_blank" href="http://windmill.osafoundation.org/trac/wiki/GettingStarted">Getting Started</a><br>
-			<a target="_blank" href="http://windmill.osafoundation.org/trac">Windmill WIKI</a>
-			<br><br>
-			You can also join our IRC channel #windmill on irc.freenode.net to ask questions, or participate in the project.
-		</div>
+		<br>
+		Break on failure: <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="opener.windmill.ui.toggleBreak();"><br>
+		Suppress Javascript Alerts : <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts' onclick=""><br>
+		Auto Scroll IDE to bottom : <INPUT TYPE=checkbox CHECKED ID='autoScroll' onclick=""><br>
+		Absolute click sensitivity when recording : <INPUT TYPE=checkbox UNCHECKED ID='clickOn' onclick="">
 
-	<div id="tabgroup" class="TabStyleContainer"></div>
-
-
-<script type="text/javascript">
-
-	tabs = new TabGroup('tabgroup');
-	tabs.add('tab1', 'Windmill');
-	tabs.add('tab2', 'Console');
-	tabs.add('tab3', 'Performance');
-	tabs.add('tab4', 'Output');
-	tabs.add('tab5', 'Tools');
-	tabs.add('tab6', 'Recorder');
-	tabs.add('tab7', 'Builder');
-	tabs.add('tab8', 'Docs');
-
-	tabs.draw();
-	tabs.focus('tab1');
-
-</script>
-
+</div>
 </body>
+
 
 </html>

@@ -134,6 +134,7 @@ windmill.ui = new function() {
     
     //Reset the border to what it was before the mouse over
     this.resetBorder = function(e){
+        e.target.style.border = '';
         e.target.style.border = windmill.ui.domExplorerBorder;
     }
     
@@ -147,13 +148,322 @@ windmill.ui = new function() {
     
     //Remove the listeners for the dom explorer
     this.domExplorerOff = function(){
-           fleegix.event.unlisten(windmill.testingApp.document, 'onmouseover', windmill.ui, 'setIdInRemote');
-           fleegix.event.unlisten(windmill.testingApp.document, 'onmouseout', windmill.ui, 'resetBorder');
+         fleegix.event.unlisten(windmill.testingApp.document, 'onmouseover', windmill.ui, 'setIdInRemote');
+         fleegix.event.unlisten(windmill.testingApp.document, 'onmouseout', windmill.ui, 'resetBorder');
     }
      
-     this.scrollRecorderTextArea = function() {
-         var obj=windmill.remote.document.getElementById("wmTest");
+       this.scrollRecorderTextArea = function() {
+         var obj=windmill.remote.$("ide");
          obj.scrollTop=obj.scrollHeight;
+     }
+     
+     this.getContMethodsUI = function(){
+       var str = '';
+           for (var i in windmill.controller) { if (i.indexOf('_') == -1){ str += "," + i; } }
+           for (var i in windmill.controller.extensions) {
+               if (str) { str += ',' }
+               str += 'extensions.'+i;
+           }
+           for (var i in windmill.controller.commands) {
+               if (str) { str += ',' }
+               str += 'commands.'+i;
+           }
+          
+          //Clean up
+          var ca = new Array();
+          ca = str.split(",");
+          ca = ca.reverse();
+          ca.pop();
+          ca.pop();
+          ca.pop();
+          ca.pop();
+          ca = ca.sort();
+          
+          return ca;    
+     }
+     
+     this.constructAction = function(method,locater,locValue,option,optValue){
+         var d = document.createElement('div');
+         var t = document.createElement('table');
+         t.style.position = 'relative';
+         t.style.border = '1px dashed #aaa';
+         t.style.background = 'lightyellow';
+         t.style.width = '100%';
+         t.setAttribute("border", "0");
+         t.setAttribute("cellspacing", "1");
+         t.setAttribute("cellpadding", "0");
+
+         var tr = document.createElement('tr');
+         var td = document.createElement('td');
+         var td0 = document.createElement('td');
+         td0.setAttribute('valign', 'top');
+         var td1 = document.createElement('td');
+         //var td2 = document.createElement('td');
+         
+         //Setup first select
+         var s = document.createElement('select');
+         s.setAttribute('class', 'smalloption');
+         
+         //Setup default method
+         var o = document.createElement('option');
+             o.setAttribute("value", method);
+             
+             o.setAttribute("selected", 'selected');
+             o.innerHTML += method;
+             s.appendChild(o);
+         
+         //Setup an option
+         avm = this.getContMethodsUI();
+         
+         for (x = 0; x < avm.length; x++){
+             
+             var o = document.createElement('option');
+             o.setAttribute("value", avm[x]);
+             o.innerHTML += avm[x];
+             s.appendChild(o);
+         }
+         
+         //Setup second select
+         var s1 = document.createElement('select');
+         s1.setAttribute('class', 'smalloption');
+         
+         //Setup an option
+         //set the default
+         if ((locater != '') && (locater != 'undefined')){
+             var o1 = document.createElement('option');
+             o1.setAttribute("value", locater);
+             o1.setAttribute("selected", "selected");
+
+             o1.innerHTML += locater;
+             s1.appendChild(o1);
+         }
+         
+         var o1 = document.createElement('option');
+         o1.setAttribute("value", "id");
+         o1.innerHTML += 'id';
+         s1.appendChild(o1);
+         
+         var o1 = document.createElement('option');
+         o1.setAttribute("value", "link");
+         o1.innerHTML += 'link';
+         s1.appendChild(o1);
+         
+         var o1 = document.createElement('option');
+         o1.setAttribute("value", "xpath");
+         o1.innerHTML += 'xpath';
+         s1.appendChild(o1);
+         
+         var o1 = document.createElement('option');
+         o1.setAttribute("value", "jsid");
+         o1.innerHTML += 'jsid';
+         s1.appendChild(o1);
+        
+         
+         //Setup third select
+         var s2 = document.createElement('select');
+         s2.setAttribute('class', 'smalloption');
+           if ((option != '') && (option != 'undefined')){
+             var o2 = document.createElement('option');
+             o2.setAttribute("value", option);
+             o2.setAttribute("selected", "selected");
+
+             o2.innerHTML += option;
+             s2.appendChild(o2);
+         }
+         
+         var o2 = document.createElement('option');
+         o2.setAttribute("url", 'url');
+         o2.innerHTML += 'url';
+         s2.appendChild(o2);
+         
+         var o2 = document.createElement('seconds');
+         o2.setAttribute("seconds", 'seconds');
+         o2.innerHTML += 'seconds';
+         s2.appendChild(o2);
+         
+         var o2 = document.createElement('option');
+         o2.setAttribute("text", 'text');
+         o2.innerHTML += 'text';
+         s2.appendChild(o2);
+         
+         var o2 = document.createElement('option');
+         o2.setAttribute("option", 'option');
+         o2.innerHTML += 'option';
+         s2.appendChild(o2);
+         
+         var o2 = document.createElement('option');
+         o2.setAttribute("validator", 'validator');
+         o2.innerHTML += 'validator';
+         s2.appendChild(o2);
+         
+         var o2 = document.createElement('option');
+         o2.setAttribute("destination", 'destination');
+         o2.innerHTML += 'destination';
+         s2.appendChild(o2);
+         
+         var o2 = document.createElement('option');
+         o2.setAttribute("stopOnFailure", 'stopOnFailure');
+         o2.innerHTML += 'stopOnFailure';
+         s2.appendChild(o2);
+         
+         var o2 = document.createElement('option');
+         o2.setAttribute("showRemote", 'showRemote');
+         o2.innerHTML += 'showRemote';
+         s2.appendChild(o2);
+         
+         //Add the option to the select
+         s.appendChild(o);
+         s1.appendChild(o1);
+         s2.appendChild(o2);
+         
+         //add images to td
+         var img1 = document.createElement('img');
+         img1.setAttribute("src", "ide/img/play.png");
+         img1.style.height = '15px';
+         img1.style.width = '15px';
+
+         var img2 = document.createElement('img');
+         img2.setAttribute("src", "ide/img/trash.png");
+         img2.style.height = '15px';
+         img2.style.width = '15px';
+         
+         td.appendChild(img1);
+         td.innerHTML += '<br>';
+         td.appendChild(img2);
+         
+         //Append all the methods
+         td0.appendChild(s);
+         //td0.innerHTML += '<br>';
+         td0.innerHTML += '&nbsp';
+         
+         switch (method){
+            case (method = 'click'):
+                 td0.appendChild(s1);
+                 td0.innerHTML += '&nbsp';
+
+                 var i = document.createElement('input');
+                 i.setAttribute('name', 'locValue');
+                 i.setAttribute('class', 'texta');
+                 i.setAttribute('size', 25);
+                 i.setAttribute('value', locValue);
+                 td0.appendChild(i);
+            break
+            
+            case (method = 'doubleClick'): 
+                 td0.appendChild(s1);
+                 td0.innerHTML += '&nbsp';
+                 
+                 var i = document.createElement('input');
+                 i.setAttribute('name', 'locValue');
+                 i.setAttribute('class', 'texta');
+                 i.setAttribute('size', 25);
+                 i.setAttribute('value', locValue);
+                 td0.appendChild(i);
+            break
+            
+             case (method = 'type'): 
+                 td0.appendChild(s1);
+                 td0.innerHTML += '&nbsp';
+                 
+                 var i = document.createElement('input');
+                 i.setAttribute('name', 'locValue');
+                 i.setAttribute('class', 'texta');
+
+                 i.setAttribute('size', 25);
+                 i.setAttribute('value', locValue);
+                 td0.appendChild(i);
+         
+                 td0.innerHTML += '<br>';
+                 td0.appendChild(s2);
+                 td0.innerHTML += '&nbsp';
+                 
+                 var i = document.createElement('input');
+                 i.setAttribute('name', 'optValue');
+                 i.setAttribute('class', 'texta');
+
+                 i.setAttribute('size', 25);
+                 i.setAttribute('value', optValue);
+                 td0.appendChild(i);
+            break
+            
+             case (method = 'radio'): 
+                 td0.appendChild(s1);
+                 td0.innerHTML += '&nbsp';
+                 var i = document.createElement('input');
+                 i.setAttribute('name', 'locValue');
+                 i.setAttribute('class', 'texta');
+                 i.setAttribute('size', 25);
+                 i.setAttribute('value', locValue);
+                 td0.appendChild(i);
+         
+            break
+            
+             case (method = 'check'): 
+                 td0.appendChild(s1);
+                 td0.innerHTML += '&nbsp';
+                 var i = document.createElement('input');
+                 i.setAttribute('name', 'locValue');
+                 i.setAttribute('class', 'texta');
+                 i.setAttribute('size', 25);
+                 i.setAttribute('value', locValue);
+                 td0.appendChild(i);
+         
+            break
+             case (method = 'select'): 
+       
+                 td0.appendChild(s1);
+                 td0.innerHTML += '&nbsp';
+                 var i = document.createElement('input');
+                 i.setAttribute('name', 'locValue');
+                 i.setAttribute('class', 'texta');
+                 i.setAttribute('size', 25);
+                 i.setAttribute('value', locValue);
+                 td0.appendChild(i);
+         
+                 td0.innerHTML += '<br>';
+                 td0.appendChild(s2);
+                 td0.innerHTML += '&nbsp';
+                 var i = document.createElement('input');
+                 i.setAttribute('name', 'optValue');
+                 i.setAttribute('class', 'texta');
+                 i.setAttribute('size', 25);
+                 i.setAttribute('value', optValue);
+                 td0.appendChild(i);
+            break
+            
+            default:
+                 
+                 td0.appendChild(s1);
+                 td0.innerHTML += '&nbsp';
+                 var i = document.createElement('input');
+                 i.setAttribute('name', 'locValue');
+                 i.setAttribute('class', 'texta');
+                 i.setAttribute('size', 25);
+                 td0.appendChild(i);
+         
+                 td0.innerHTML += '<br>';
+                 td0.appendChild(s2);
+                 td0.innerHTML += '&nbsp';
+                 var i = document.createElement('input');
+                 i.setAttribute('name', 'locValue');
+                 i.setAttribute('class', 'texta');
+                 i.setAttribute('size', 25);
+                 td0.appendChild(i);
+             break
+        }
+         
+         //Add the columns to the row
+         tr.appendChild(td);
+         tr.appendChild(td0);
+         //tr.appendChild(td1);
+         //tr.appendChild(td2);
+         
+         //Add the row to the table
+         t.appendChild(tr);
+         //Append the table to the div
+         d.appendChild(t);
+				
+		 return d;
      }
      
      //write json to the remote from the click events
@@ -181,17 +491,17 @@ windmill.ui = new function() {
          } 
          if (locValue != ""){
             if(e.type == 'dblclick'){
-                windmill.remote.document.getElementById("wmTest").value = windmill.remote.document.getElementById("wmTest").value + '{"method": "doubleClick", "params":{"'+locator+'": "'+locValue+'"}}\n';
+                windmill.remote.$("recordingSuite").appendChild(this.constructAction('doubleClick',locator, locValue));
+
             }
             else{
                  //console.log(e.target.parentNode);                 
-                 if (windmill.remote.document.getElementById("clickOn").checked == true){
-                     windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
+                 if (windmill.remote.$("clickOn").checked == true){
+                     windmill.remote.$("recordingSuite").appendChild(this.constructAction('click',locator, locValue));
 
                  }
                  else if ((e.target.onclick != null) || (locator == 'link') || (e.target.type == 'image')){
-                    //alert(typeof(e.target.onclick));
-                    windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "'+e.type+'", "params":{"'+locator+'": "'+locValue+'"}}\n';
+                    windmill.remote.$("recordingSuite").appendChild(this.constructAction('click',locator, locValue));
                 }
           }
         }
@@ -219,49 +529,53 @@ windmill.ui = new function() {
            }
           
           if (e.target.type == 'textarea'){
-              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n';  
+              windmill.remote.$("recordingSuite").appendChild(this.constructAction('type',locator, locValue, 'text', e.target.value));
+
           }
           else if (e.target.type == 'text'){
-              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n'; 
+              windmill.remote.$("recordingSuite").appendChild(this.constructAction('type',locator, locValue, 'text', e.target.value));
           }
           else if (e.target.type == 'password'){
-              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "type", "params":{"'+locator+'": "'+locValue+'","text": "'+e.target.value+'"}}\n'; 
+              windmill.remote.$("recordingSuite").appendChild(this.constructAction('type',locator, locValue, 'text', e.target.value));
           }
           else if(e.target.type == 'select-one'){
-              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "select", "params":{"'+locator+'": "'+locValue+'","option": "'+e.target.value+'"}}\n';   
+              windmill.remote.$("recordingSuite").appendChild(this.constructAction('select',locator, locValue, 'option', e.target.value));   
           }
           else if(e.target.type == 'radio'){
-              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "radio", "params":{"'+locator+'": "'+locValue+'"}}\n';  
+              windmill.remote.$("recordingSuite").appendChild(this.constructAction('radio',locator, locValue));
           }
           else if(e.target.type == "checkbox"){
-              windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "check", "params":{"'+locator+'": "'+locValue+'"}}\n';       
+              windmill.remote.$("recordingSuite").appendChild(this.constructAction('check',locator, locValue));    
           }
           
           windmill.ui.scrollRecorderTextArea();
 
       }
-     
-     this.writeJsonDragDown = function(e){
-     //console.log(e)
       
-        windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '{"method": "dragDropXY", "params": {"source" : ['+e.clientX+','+e.clientY+'],'; 
-    }
-     
-     this.writeJsonDragUp = function(e){        
-     //console.log(e);
-         windmill.remote.document.getElementById("wmTest").value =  windmill.remote.document.getElementById("wmTest").value + '"destination": ['+e.clientX+','+e.clientY+']}}\n'; 
-          
-      }
-   
-     //Turn on the recorder
+      //Turn on the recorder
      //Since the click event does things like firing twice when a double click goes also
      //and can be obnoxious im enabling it to be turned off and on with a toggle check box
      this.recordOn = function(){
+        
          //Turn off the listeners so that we don't have multiple attached listeners for the same event
          windmill.ui.recordOff();
          
          //keep track of the recorder state, for page refreshes
          windmill.ui.recordState = true;
+         
+         //Need to clear the ide, and stick in a new test suite
+         var suite = windmill.remote.document.getElementById('recordingSuite');
+         if (suite == null){
+             var ide = windmill.remote.document.getElementById('ide');
+             var suite = document.createElement('div');
+             suite.setAttribute("id", 'recordingSuite');
+             suite.style.width = "99%";
+             suite.style.background = "lightblue";
+             suite.style.overflow = 'hidden';
+             suite.style.border = '1px solid black';
+             suite.innerHTML = "<div><table style=\"font:9pt arial;\"><tr><td width=\"95%\"><strong>Suite </strong> recordingSuite</td><td><a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'recordingSuite\')\">[toggle]</a> </td></table></div>";
+             ide.appendChild(suite);
+        }
           
          fleegix.event.listen(windmill.testingApp.document, 'ondblclick', windmill.ui, 'writeJsonClicks');
          fleegix.event.listen(windmill.testingApp.document, 'onchange', windmill.ui, 'writeJsonChange');
@@ -288,6 +602,7 @@ windmill.ui = new function() {
          }
          
      }
+     
      
      this.recordOff = function(){
          
@@ -329,26 +644,6 @@ windmill.ui = new function() {
      
      //Handle key listeners for windmill remote shortcuts
      this.remoteKeyDown = function(e){
-         var tabNum = parseInt(windmill.remote.tabs.aid.replace('tab',''));
-         
-         //If they are pressing ctrl and left arrow
-         if ((e.keyCode == 37) && (e.ctrlKey == true)){
-             tabNum = tabNum - 1;
-             if (tabNum == 0){
-                tabNum = 8;
-             }
-             var focusTab = 'tab'+ tabNum;
-             windmill.remote.tabs.focus(focusTab);
-         }
-         //if they are pressing ctrl and right arrow
-         if ((e.keyCode == 39) && (e.ctrlKey == true)){
-             tabNum = tabNum + 1;
-             if (tabNum == 9){
-                tabNum = 1;
-             }
-             var focusTab = 'tab'+ tabNum;
-             windmill.remote.tabs.focus(focusTab);
-         }
          
          //keyboard shortcut to run your recorded test
          if ((e.keyCode == 82) && (e.ctrlKey == true)){
@@ -367,11 +662,15 @@ windmill.ui = new function() {
      }
      
      //Quickly bring the remote to focus
-     this.getRemote = function(e){
+     this.testingAppKeyListener = function(e){
           
-          if ((e.charCode == 96) && (e.ctrlKey == true)){
+          if ((e.keyCode == 68) && (e.ctrlKey == true)){
+                windmill.remote.alert('Dom Explorer Off');
+                windmill.ui.domExplorerOff();
+            }
+            if ((e.keyCode == 82) && (e.ctrlKey == true)){
                 windmill.remote.alert('Here I am!');
-                //windmill.remote.close();
+               
             }
     }
     
@@ -407,4 +706,5 @@ windmill.ui = new function() {
           fleegix.xhr.doPost(resp, '/windmill-jsonrpc/', json_string);
 
     }
+    
 }

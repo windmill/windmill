@@ -14,6 +14,7 @@ windmill/bin/admin_lib.py
 windmill/bin/admin_options.py
 windmill/bin/shell_objects.py
 windmill/bin/windmill-admin.py
+windmill/bin/wxui/__init__.py
 windmill/browser/__init__.py
 windmill/browser/firefox.py
 windmill/browser/ie.py

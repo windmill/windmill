@@ -46,7 +46,7 @@ var windmill = new function () {
           
           fleegix.event.listen(windmill.remote.document, 'onkeydown', windmill.ui, 'remoteKeyDown');
           //fleegix.event.listen(windmill.remote.document, 'onkeypress', windmill.ui, 'remoteKeyPress');
-          fleegix.event.listen(windmill.testingApp.document, 'onkeydown', windmill.ui, 'getRemote');
+          fleegix.event.listen(window.document, 'onkeydown', windmill.ui, 'testingAppKeyListener');
 
     }
     

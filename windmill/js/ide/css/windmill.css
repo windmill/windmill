@@ -1,7 +1,7 @@
 body, html
 {	
 
-	font-size: 13px;
+	font-size: 11px;
 	margin: 0px;
 	padding: 0px;
 	text-align: left;
@@ -13,7 +13,7 @@ body, html
     margin: 0 0 0 0;
 
 }
-a:link { text-decoration : none; color : #6699cc; border: 0px;} 
+a:link { text-decoration : underline; color : #6699cc; border: 0px;} 
 a:active { text-decoration : underline; color : #6699cc; border: 0px;} 
 a:visited { text-decoration : none; color : #6699cc; border: 0px;} 
 a:hover { text-decoration : underline; color : #336699; border: 0px; cursor: pointer; }
@@ -105,9 +105,28 @@ a:hover { text-decoration : underline; color : #336699; border: 0px; cursor: poi
 
 }
 
+.dialog {
+ position:absolute;background-color:white;left:10%;width:80%;height:80%;top:8%;display:none;border:1px solid black;z-index:10;   
+}
+
 .remoteTabs {
  display:none;
  overflow:scroll;
  height:465px;
  width:445px;   
+}
+
+
+.texta {
+ font-size: 10px;
+ background-color: #D7E5F2;
+ color: #102132;
+ border: 1px solid #284279; 
+}
+
+.smalloption {
+ font-size: 10px;
+background-color: #D7E5F2;
+ color: #102132;
+ border: 1px solid #284279; 
 }

@@ -37,6 +37,13 @@ windmill.xhr = new function () {
     }
 
     
+     this.toggleCollapse = function(id){
+        if (windmill.remote.document.getElementById(id).style.height == '18px'){
+            windmill.remote.document.getElementById(id).style.height = '';
+        }
+        else{ windmill.remote.document.getElementById(id).style.height = '18px'; }            
+    }
+    
     //action callback
     this.actionHandler = function(str){
 
@@ -60,7 +67,40 @@ windmill.xhr = new function () {
                 var action_timer = new TimeObj();
                 action_timer.setName(windmill.xhr.xhrResponse.result.method);
                 action_timer.startTime();
-
+                
+                //Build UI
+                var suite = windmill.remote.document.getElementById(windmill.xhr.xhrResponse.result.suite_name);
+                if (suite == null){
+                     var ide = windmill.remote.document.getElementById('ide');
+                     var suite = document.createElement('div');
+                     suite.setAttribute("id", windmill.xhr.xhrResponse.result.suite_name);
+                     suite.style.width = "99%";
+                     suite.style.background = "lightblue";
+                     suite.style.overflow = 'hidden';
+                     suite.style.border = '1px solid black';
+                     suite.innerHTML = "<div><table style=\"font:9pt arial;\"><tr><td width=\"95%\"><strong>Suite -</strong> " + windmill.xhr.xhrResponse.result.suite_name+"</td><td><a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a> </td></table></div>";
+                     ide.appendChild(suite);
+                }
+                
+                var action = document.createElement('div');
+                action.setAttribute("id",windmill.xhr.xhrResponse.result.params.uuid);
+                action.style.width = "100%";
+                action.style.height = "26px";
+                action.style.background = "lightyellow";
+                action.style.paddingTop = "2px";
+                //action.style.border = '1px solid black';
+                action.innerHTML = "<strong>"+windmill.xhr.xhrResponse.result.method + "</strong><div style=\'font:8pt arial;\'> Params:" + fleegix.json.serialize(windmill.xhr.xhrResponse.result.params) +"</div>";
+                
+                var suite = windmill.remote.document.getElementById(windmill.xhr.xhrResponse.result.suite_name);
+                suite.appendChild(action);
+                //suite.appendChild(this.constructAction(windmill.xhr.xhrResponse.result.method,locator, locValue));
+                var ide = windmill.remote.document.getElementById('ide');
+                
+                //If the settings box is checked, scroll to the bottom
+                if ( windmill.remote.document.getElementById('autoScroll').checked == true){
+                    ide.scrollTop = ide.scrollHeight;
+                }
+             
                 //Run the action
                 //If its a user extension.. run it
                 try {
@@ -74,6 +114,8 @@ windmill.xhr = new function () {
                 catch (error) { 
                     windmill.ui.writeResult("<font color=\"#FF0000\">There was an error in the "+windmill.xhr.xhrResponse.result.method+" action. "+error+"</font>");
                     windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
+                    action.style.background = '#FF9692';
+
                 }
 
                 //End timer and store
@@ -85,6 +127,7 @@ windmill.xhr = new function () {
 
                 //if we had an error display in UI
                 if (result == false){
+                    action.style.background = '#FF9692';
                     //if the continue on error flag has been set by the shell.. then we just keep on going
                     if (windmill.stopOnFailure == true){
                         windmill.xhr.togglePauseJsonLoop();
@@ -95,6 +138,8 @@ windmill.xhr = new function () {
                 else{
                     //Write to the result tab
                     windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');     
+                    action.style.background = '#C7FFCC';
+
                 }
                 
                 //Do the timer write
