@@ -185,7 +185,7 @@ def shell_action(shell_objects):
     
 def wxui_action(shell_objects):
     import wxui
-    app = wxui.App()
+    app = wxui.App(shell_objects)
     shell_objects['wxui_app'] = app
     app.MainLoop()
     teardown(shell_objects)

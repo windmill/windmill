@@ -19,8 +19,10 @@ from wx.py.crust import CrustFrame
 class Frame(wx.Frame):
     """Frame that displays the Main window"""
 
-    def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='WindyMill'):
+    def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, 
+                 title='WindyMill', shell_objects=None):
 
+        self.shell_objects = shell_objects
         ##initialize the frame
         wx.Frame.__init__(self, parent, id, title, pos)
 
@@ -74,7 +76,7 @@ class Frame(wx.Frame):
         shellTab.SetSizer(shellTabSizer)
 
         #create the shell frame
-        shellFrame = wx.py.shell.Shell(shellTab)
+        shellFrame = wx.py.shell.Shell(shellTab, locals=self.shell_objects)
         bottomButtonSizer = wx.BoxSizer(wx.HORIZONTAL)
         bottomButtonSizer.SetMinSize((shellTab.GetSize()[0], 0))
         #create the start and stop button
@@ -94,21 +96,29 @@ class Frame(wx.Frame):
 
         #create the output tab
         output = wx.TextCtrl(self.book, -1, "...Output Goes Here...\n", style=wx.TE_MULTILINE|wx.TE_READONLY)
+        
+        # self.shell_objects['wxoutput'] = output
+        
+        # import logging
+        # logging.getLogger().addHandler(logging.StreamHandler(strm=output_stream))
+        
         self.book.AddPage(output, 'Output')
-
-
 
         ##set up the the interactive shell in the first tab.
 
-        self.Thaw()	        
+        self.Thaw()
         self.SendSizeEvent()
 
 
 class App(wx.App):
     """Application class."""
 
+    def __init__(self, shell_objects, *args, **kwargs):
+        self.shell_objects = shell_objects
+        wx.App.__init__(self, *args, **kwargs)
+
     def OnInit(self):
-        self.frame = Frame()
+        self.frame = Frame(shell_objects=self.shell_objects)
         self.frame.Show()
         self.SetTopWindow(self.frame)
         return True

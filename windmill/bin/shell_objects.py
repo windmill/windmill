@@ -21,6 +21,9 @@ logger = logging.getLogger(__name__)
 jsonrpc_client = windmill.tools.make_jsonrpc_client()
 xmlrpc_client = windmill.tools.make_xmlrpc_client()
 
+from StringIO import StringIO
+test_stream_object = StringIO()
+
 def clear_queue():
     jsonrpc_client.clear_queue()
         

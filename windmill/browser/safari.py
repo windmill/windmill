@@ -4,7 +4,7 @@ import pexpect
 #import windmill
 
 PORT = 44 #windmill.settings['SERVER_HTTP_PORT']
-SUDO_PASS = 'vulga00'
+SUDO_PASS = None
 
 def ipfw_configure_global_proxy():
 
@@ -34,21 +34,12 @@ def ipfw_remove_transparent_proxy():
 			cmd =  'echo "spawn sudo ipfw delete 00017 \n\rexpect \"Password:\" \n\rsend \"%s\" " | expect' % SUDO_PASS
 			commands.getoutput(cmd)
 			cmd = 'sudo ipfw delete'
-			assert commands.getoutput(cmd) == ''
+			assert commands.getoutput(cmd) == ''			
 			
 class Safari(object):
 	
 	def __init__(self, safari_binary, test_url):
 		
-		self.safari_binary = SAFARI_BINARY
-		self.test_url = TEST_URL
-		
+		self.safari_binary = safari_binary
+		self.test_url = test_url
 
-	
-	
-
-	
-	
-if __name__ == "__main__":
-	
-	configure_global_proxy()
