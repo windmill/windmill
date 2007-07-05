@@ -14,60 +14,84 @@
 
 import wx
 import wx.lib.flatnotebook as fnb
+import logging
+import sys
 from wx.py.crust import CrustFrame
+from StringIO import StringIO
 
 class Frame(wx.Frame):
     """Frame that displays the Main window"""
 
-    def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, 
-                 title='WindyMill', shell_objects=None):
+    def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='WindyMill', shell_objects = None):
 
         self.shell_objects = shell_objects
+
         ##initialize the frame
         wx.Frame.__init__(self, parent, id, title, pos)
 
         #Call function to create menu items
-        self.CreateMenu()
+        self.createMenu()
 
-        ##Call function to setup the tabbed menus
-        self.CreateTabs()
+        #Call function to setup the tabbed menus
+        self.createTabs()
 
-        self.SetupListener()
+        #Call funciton to setup the logging for the ui
+        self.setupListener()
 
-    def SetupListener(self):
+        ##bind the import objects
+        self.Bind(wx.EVT_CLOSE, self.OnCloseWindow)
+
+
+    def setupListener(self):
         """Sets up the listener to the logger"""
+        #Create a stream handler that will subscribe to all the data in the system
+        self.logHandler = logging.StreamHandler(strm=self.programOutput)
+        self.theLogger = logging.getLogger().addHandler(self.logHandler)
 
-
-
-    def CreateMenu(self):
+    def createMenu(self):
         """Creates the menu system"""
 
         menuBar = wx.MenuBar()
 
         ##setup the file menu
         fileMenu = wx.Menu()
-        fileMenu.Append(wx.NewId(), "&Open", "Open whatever")
-        fileMenu.Append(wx.NewId(), "E&xit", "Exit Windmill")
+        fileMenu.Append(wx.NewId(), "Run &Test", "Select a test to run.")
+        fileMenu.Append(wx.NewId(), "Run &Suite", "Select a suite to run.")
+        fileMenu.Append(wx.NewId(), "&Preference", "")
+        exit = fileMenu.Append(wx.NewId(), "E&xit", "Exit Windmill")
+
+        self.Bind(wx.EVT_MENU, self.OnCloseWindow, exit)
 
         ##setup the options menu
         optionsMenu = wx.Menu()
 
+        ##setup the Help menu
+        helpMenu = wx.Menu()
+        helpMenu.Append(wx.NewId(), "Windmill", "Link to website")
+        helpMenu.Append(wx.NewId(), "About", "About windmill")
+
         ##Add menu items to the menu bar
         menuBar.Append(fileMenu, "&File")
         menuBar.Append(optionsMenu, "O&ptions")
+        menuBar.Append(helpMenu, "&Help")
 
         self.SetMenuBar(menuBar)
 
-    def CreateTabs(self):
+    def createTabs(self):
         """Creates and lays out the tab menu appropriately"""
 
         ##initialize a notebook widget
-        self.book = fnb.FlatNotebook(self, wx.ID_ANY, style=fnb.FNB_NODRAG)
+        self.book = fnb.FlatNotebook(self, wx.ID_ANY, style=fnb.FNB_NODRAG|fnb.FNB_NO_NAV_BUTTONS|fnb.FNB_NO_X_BUTTON)
 
         # Add some pages to the second notebook
         self.Freeze()
 
-        ##setup the tab contain the shell and other components
+        self.appSizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(self.appSizer)
+
+        self.appSizer.Add(self.book, 1, wx.EXPAND)
+
+        ##setup the tab contain the shell
         shellTab = wx.Panel(self, -1)
 
         #define that the tabSizer for this panel be used.
@@ -77,48 +101,76 @@ class Frame(wx.Frame):
 
         #create the shell frame
         shellFrame = wx.py.shell.Shell(shellTab, locals=self.shell_objects)
-        bottomButtonSizer = wx.BoxSizer(wx.HORIZONTAL)
-        bottomButtonSizer.SetMinSize((shellTab.GetSize()[0], 0))
-        #create the start and stop button
-        startButton = wx.Button(shellTab, id=-1, label="IE", size = (60, 40))
-        stopButton = wx.Button(shellTab, id=-1, label="FF", size = (60, 40))
 
-        bottomButtonSizer.Add(startButton, 0, wx.ALIGN_CENTER)
-        bottomButtonSizer.AddSpacer((40,0))
-        bottomButtonSizer.Add(stopButton, 0, wx.ALIGN_CENTER)    
-        #add the shell to the sizer
-        shellTabSizer.Add(shellFrame, 3, wx.EXPAND)        
-
-        shellTabSizer.Add(bottomButtonSizer, 1, wx.FIXED_MINSIZE |wx.ALIGN_CENTER_HORIZONTAL)
+        #add the shell frame to the shellTab sizer
+        shellTabSizer.Add(shellFrame, 1, wx.EXPAND)        
 
         #add the tab setup to the book
         self.book.AddPage(shellTab, "Shell-Out")
 
         #create the output tab
-        output = wx.TextCtrl(self.book, -1, "...Output Goes Here...\n", style=wx.TE_MULTILINE|wx.TE_READONLY)
-        
-        # self.shell_objects['wxoutput'] = output
-        
-        # import logging
-        # logging.getLogger().addHandler(logging.StreamHandler(strm=output_stream))
-        
-        self.book.AddPage(output, 'Output')
+        self.programOutput = WindmillTextCtrl(self.book, -1, "", style=wx.TE_MULTILINE|wx.TE_READONLY|wx.HSCROLL)
+        self.book.AddPage(self.programOutput, 'Output', select=False)
 
-        ##set up the the interactive shell in the first tab.
+        ##create a panel to hold the buttons
+        buttonPanel = wx.Panel(self, -1)
 
-        self.Thaw()
+        self.appSizer.Add(buttonPanel, 0, wx.EXPAND)
+
+        ##create a new sizer to handle the buttons on the button panel at bottom of screen
+        bottomButtonSizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        #assign the button sizer to the button panel a the botton of the screen
+        buttonPanel.SetSizer(bottomButtonSizer)
+
+        #create the browser buttons
+        firstBrowserButton = wx.Button(buttonPanel, id=-1, label="FF", size = (60, 40))
+        #secondBrowserButton = wx.Button(buttonPanel, id=-1, label="IE", size = (60, 40))
+        self.Bind(wx.EVT_BUTTON, self.OnFFButtonClick, firstBrowserButton)
+
+        #Add spacer in front for center purposes
+        bottomButtonSizer.AddStretchSpacer(1)
+
+        bottomButtonSizer.Add(firstBrowserButton, 1, wx.CENTER) 
+        #bottomButtonSizer.Add(secondBrowserButton, 1, wx.ALIGN_CENTRE)         
+
+        #Add Another spacer after for center purposes
+        bottomButtonSizer.AddStretchSpacer(1)
+
+        self.Thaw()	        
         self.SendSizeEvent()
 
+    def OnFFButtonClick(self, event):
+        self.shell_objects['start_firefox']()
+
+    def OnCloseWindow(self, event):
+        #should probably manually stop logging to prevent output errors
+        print "Removing the log handler"
+        logging.getLogger().removeHandler(self.logHandler)
+        print "Shutdown the logger"
+        logging.shutdown()
+        print "Clean up wx controls and windows"
+        self.Destroy()
+
+
+class WindmillTextCtrl(wx.TextCtrl, StringIO):
+    def __init__(self, *args, **kwargs):
+        wx.TextCtrl.__init__(self, *args, **kwargs)
+        StringIO.__init__(self)
 
 class App(wx.App):
     """Application class."""
+    def __init__(self, shell_objects = None, redirect=False, *args, **kwargs):
 
-    def __init__(self, shell_objects, *args, **kwargs):
         self.shell_objects = shell_objects
-        wx.App.__init__(self, *args, **kwargs)
+        wx.App.__init__(self, redirect, *args, **kwargs)
 
     def OnInit(self):
         self.frame = Frame(shell_objects=self.shell_objects)
         self.frame.Show()
         self.SetTopWindow(self.frame)
         return True
+
+if __name__ == '__main__':
+    app = App()
+    app.MainLoop()

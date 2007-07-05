@@ -138,7 +138,7 @@ class RecursiveRPC(object):
                 self.execution_method = execution_method
             def __call__(self, **kwargs):
                 rpc = {'method':self.name, 'params':kwargs}
-                self.execution_method(rpc)
+                return self.execution_method(rpc)
             def __getattr__(self, key):
                 return ExecuteRecursiveAttribute(self.name+'.'+key, self.execution_method)
 
@@ -154,9 +154,11 @@ class RPCMethods(object):
         
     def start_suite(self, suite_name):
         self._test_resolution_suite.start_suite(suite_name)
+        return 200
     
     def stop_suite(self):
         self._test_resolution_suite.stop_suite()
+        return 200
         
     def add_object(self, queue_method, resolution_suite, action_object, suite_name=None):
         """Procedue neutral addition method"""
@@ -166,23 +168,28 @@ class RPCMethods(object):
         self._logger.debug('Adding object %s' % str(callback_object))
         queue_method(callback_object)    
         resolution_suite.add(callback_object, suite_name)
+        return 200
     
     def add_json_test(self, json, suite_name=None):
         """Add test from json object with 'method' and 'params' defined"""
         action_object = simplejson.loads(json)
         self.add_object(self._queue.add_test, self._test_resolution_suite, action_object, suite_name)
+        return 200
         
     def add_test(self, test_object, suite_name=None):
         self.add_object(self._queue.add_test, self._test_resolution_suite, test_object, suite_name)
+        return 200
 
     def add_json_command(self, json):    
         """Add command from json object with 'method' and 'params' defined"""
         action_object = simplejson.loads(json)
         self.add_object(self._queue.add_command, self._command_resolution_suite, action_object)
+        return 200
         
     def add_command(self, command_object):
         """Add command from object"""
         self.add_object(self._queue.add_command, self._command_resolution_suite, command_object)
+        return 200
         
     def execute_object(self, queue_method, resolution_suite, action_object):
         """Procedure neutral blocking exeution of a given object."""
@@ -209,33 +216,36 @@ class RPCMethods(object):
     def execute_json_command(self, json):
         """Add command from json object with 'method' and 'params' defined, block until it returns, return the result"""
         action_object = simplejson.loads(json)
-        self.execute_object(self._queue.add_command, self._command_resolution_suite, action_object)
+        return self.execute_object(self._queue.add_command, self._command_resolution_suite, action_object)
 
     def execute_json_test(self, json):
         """Add test from json object with 'method' and 'params' defined, block until it returns, return the result"""
         action_object = simplejson.loads(json)
-        self.execute_object(self._queue.add_test, self._test_resolution_suite, action_object)
+        return self.execute_object(self._queue.add_test, self._test_resolution_suite, action_object)
         
     def execute_command(self, action_object):
         """Add command from dict object with 'method' and 'params' defined, block until it returns, return the result"""
-        self.execute_object(self._queue.add_command, self._command_resolution_suite, action_object)
+        return self.execute_object(self._queue.add_command, self._command_resolution_suite, action_object)
         
     def execute_test(self, action_object):
         """Add test from dict object with 'method' and 'params' defined, block until it returns, return the result"""
-        self.execute_object(self._queue.add_test, self._test_resolution_suite, action_object)
+        return self.execute_object(self._queue.add_test, self._test_resolution_suite, action_object)
         
     def run_json_tests(self, tests):
         """Run list of json tests"""
         for test in tests:
             self.add_json_test(test)
+        return 200
 
     def run_tests(self, tests):
         """Run list of tests"""
         for test in tests:
             self.add_test(test)
+        return 200
             
     controller = RecursiveRPC(execute_test)
     command = RecursiveRPC(execute_command)
+    #test = Test()
     
         
 class JSONRPCMethods(RPCMethods):

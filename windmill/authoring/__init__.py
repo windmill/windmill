@@ -16,16 +16,15 @@ import windmill
 import xmlrpclib
 import new
 
-RPC_URL = 'http://localhost:'+windmill.settings['SERVER_HTTP_PORT']+'/windmill-xmlrpc/'
-
-class Controller(object):
+class WindmillTestClient(object):
     
-    method_proxy = xmlrpclib.ServerProxy(RPC_URL)
     _enable_unittest = False
     enable_assertions = True
         
     def __init__(self):
         """Assign all available attributes to instance so they are easily introspected"""        
+        
+        self.method_proxy = windmill.tools.make_xmlrpc_client()
         
         class ExecuteTest(object):
             def __init__(self, method_proxy, command_name):
@@ -41,9 +40,35 @@ class Controller(object):
             def __call__(self, *args, **kwargs):
                 getattr(self.method_proxy, self.command_name)(*args, **kwargs)
                 
-                
-        for attribute in self.method_proxy.getControllerMethods():
+        class Nothing(object):
+            pass
+        
+        def set_sub_controller_action(base, type_string, attribute_name):
+            """Attach a controller action to the base client in a proper heirarchy"""
+            if not hasattr(base, type_string) and type_string is not None: 
+                setattr(base, type_string, Nothing())
+            if type_string == None:
+                setattr(base.controller, attribute_name, ExecuteTest(self.method_proxy, attribute_name))
+            elif type_string == 'command':
+                setattr(base.command, attribute_name, ExecuteCommand(self.method_proxy, attribute_name))
+            else:
+                print "I'm confused!!!!!!!!!!!!!!!!"
+        
+        for attribute in self.method_proxy.command.getControllerMethods():
             if attribute.find('.') is -1:
+                set_sub_controller_action(self, None, attribute)
+            else:
+                attribute_list = attribute.split('.')
+                if attribute_list[0] == 'command':
+                    set_sub_controller(self, 'command', attribute_list[1])
+                else:
+                    if not hasattr(self, attribute_list[0]): 
+                        setattr(self, attribute_list[0], Nothing())
+                    if len(attribute_list) > 2:
+                        set_sub_controller(getattr(self, attribute_list[0]), attribute_list[1], attribute_list[2])
+                    if len(attribute_list) is 2:
+                       set_sub_controller(getattr(self, attribute_list[0]), None, attribute_list[1]) 
+        
                 
                 
     

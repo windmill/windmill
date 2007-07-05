@@ -22,6 +22,7 @@ class LogLevel(object):
     def __call__(self, value):
         level = getattr(logging, value)
         windmill.settings['CONSOLE_LOG_LEVEL'] = getattr(logging, value)
+        
         return level
         
 class ExitOnDone(object):

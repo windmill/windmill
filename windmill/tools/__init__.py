@@ -18,7 +18,7 @@ def make_xmlrpc_client():
     import windmill
     import xmlrpclib
     proxy = windmill.tools.server_tools.ProxiedTransport('localhost:4444')
-    xmlrpc_client = xmlrpclib.ServerProxy(windmill.settings['TEST_URL']+'/windmill-xmlrpc/',transport=proxy)
+    xmlrpc_client = xmlrpclib.ServerProxy(windmill.settings['TEST_URL']+'/windmill-xmlrpc/',transport=proxy, allow_none=True)
     return xmlrpc_client        
     
 def make_jsonrpc_client():

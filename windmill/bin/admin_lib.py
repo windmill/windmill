@@ -72,7 +72,8 @@ def process_options(argv_list):
 
 def setup_servers(console_level=logging.INFO):
     """Setup the server and return httpd and loggers"""
-    console_handler = windmill.server.logger.setup_root_logger(console_level=console_level)
+    console_handler = logging.getLogger().handlers[0]
+    console_handler.setLevel(console_level)
     httpd = windmill.server.wsgi.make_windmill_server()
     return httpd, console_handler
 
@@ -89,6 +90,14 @@ def run_threaded(console_level=logging.INFO):
 
 def configure_global_settings():
     # Get local config
+    
+    logging.getLogger().setLevel(0)
+    
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+    console.setFormatter(formatter)
+    logging.getLogger().addHandler(console)
 
     if os.environ.has_key('WINDMILL_CONFIG_FILE'):
         sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.expanduser(os.environ['WINDMILL_CONFIG_FILE']))))
