@@ -15,10 +15,10 @@
 """This module provides the communication and management between the various 
 server interfaces and the browser's js interface"""
 
-import copy
+import copy, os 
 import simplejson
 import logging
-import uuid
+from uuid import uuid1
 import windmill
 from dateutil.parser import parse as dateutil_parse
 
@@ -59,20 +59,20 @@ class TestResolutionSuite(object):
     result_processor = None
     
     def __init__(self):
-        self.unresolved_tests = {}
-        self.resolved_tests = {}
+        self.unresolved = {}
+        self.resolved = {}
         self.current_suite = None
 
     def resolve(self, result, uuid, starttime, endtime, debug=None):
         """Resolve test by uuid"""
         starttime = dateutil_parse(starttime)
         endtime = dateutil_parse(endtime)
-        test = self.unresolved_tests.pop(uuid)
+        test = self.unresolved.pop(uuid)
         test['result'] = result
         test['starttime'] = starttime
         test['endtime'] = endtime
         test['totaltime'] = endtime - starttime
-        self.resolved_tests[uuid] = test
+        self.resolved[uuid] = test
                 
         if result is False:
             test_results_logger.error('Test Failue in test %s' % test)
@@ -98,20 +98,20 @@ class TestResolutionSuite(object):
         if suite_name is None:
             suite_name = self.current_suite
         test['suite_name'] = suite_name
-        self.unresolved_tests[test['params']['uuid']] = test
+        self.unresolved[test['params']['uuid']] = test
         
 class CommandResolutionSuite(object):
     
     def __init__(self):
-        self.unresolved_commands = {}
-        self.resolved_commands ={}
+        self.unresolved = {}
+        self.resolved ={}
         
     def resolve(self, status, uuid, result):
         """Resolve command by uuid"""
-        command = self.unresolved_commands.pop(uuid)
+        command = self.unresolved.pop(uuid)
         command['status'] = status
         command['result'] = result
-        self.resolved_commands[uuid] = command
+        self.resolved[uuid] = command
         
         if status is False:
             test_results_logger.error('Command Failure in command %s' % command)
@@ -122,7 +122,7 @@ class CommandResolutionSuite(object):
             command['result_callback'](status, result)
     
     def add(self, command, suite_name=None):
-        self.unresolved_commands[command['params']['uuid']] = command
+        self.unresolved[command['params']['uuid']] = command
         
         
 class RecursiveRPC(object):
@@ -164,11 +164,12 @@ class RPCMethods(object):
         """Procedue neutral addition method"""
         callback_object = copy.copy(callback)
         callback_object.update(action_object)
-        callback_object['params']['uuid'] = str(uuid.uuid1())
+        uuid = str(uuid1())
+        callback_object['params']['uuid'] = str(uuid1())
         self._logger.debug('Adding object %s' % str(callback_object))
         queue_method(callback_object)    
         resolution_suite.add(callback_object, suite_name)
-        return 200
+        return uuid
     
     def add_json_test(self, json, suite_name=None):
         """Add test from json object with 'method' and 'params' defined"""
@@ -193,25 +194,12 @@ class RPCMethods(object):
         
     def execute_object(self, queue_method, resolution_suite, action_object):
         """Procedure neutral blocking exeution of a given object."""
-        callback_object = copy.copy(callback)
-        callback_object.update(action_object)
-        callback_object['params']['uuid'] = str(uuid.uuid1())
-        self._logger.debug('Adding command object %s' % str(callback_object))
+        uuid = self.add_object(queue_method, resolution_suite, action_object)
 
-        returned_result = None
-        def result_callback(status, result):
-            if status is True:
-                returned_result = result
-            else:
-                returned_result = False
-
-        callback_object['result_callback'] = result_callback
-        queue_method(callback_object)
-        resolution_suite.add(callback_object)
-
-        while returned_result is None:
+        while not resolution_suite.resolved.get(uuid):
             pass
-        return returned_result
+        
+        return resolution_suite.resolved.get(uuid)
 
     def execute_json_command(self, json):
         """Add command from json object with 'method' and 'params' defined, block until it returns, return the result"""
@@ -242,10 +230,6 @@ class RPCMethods(object):
         for test in tests:
             self.add_test(test)
         return 200
-            
-    controller = RecursiveRPC(execute_test)
-    command = RecursiveRPC(execute_command)
-    #test = Test()
     
         
 class JSONRPCMethods(RPCMethods):
@@ -271,6 +255,17 @@ class JSONRPCMethods(RPCMethods):
         
     def status_change(self, status):
         pass
+        
+    def create_json_save_file(self, tests):
+        filename = str(uuid1())+'.json.txt'
+        f = open(os.path.join(windmill.settings['JS_PATH'], 'saves', filename), 'w')
+        for test in tests:
+            f.write(simplejson.dumps(test))
+            f.write('\n')
+        f.flush()
+        f.close()
+        return '%s/windmill-serv/saves/%s' % (windmill.settings['TEST_URL'], filename)
+        
         
     def clear_queue(self):
         """Clear the server queue"""
