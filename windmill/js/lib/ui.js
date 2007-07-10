@@ -330,8 +330,8 @@ windmill.ui = new function() {
              t.appendChild(r);
             }
             
-           //action.appendChild(t);
-           action.innerHTML = t.innerHTML;
+           action.appendChild(t);
+           //action.innerHTML = t.innerHTML;
            return action; 
      }
      
