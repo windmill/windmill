@@ -15,10 +15,10 @@ Copyright 2006, Open Source Applications Foundation
 */
 
 var windmill = new function () {
-    var browser = null;
+    this.browser = null;
     
     this.init = function (b){
-        browser = b;
+        this.browser = b;
     }
     
     //More namespacing

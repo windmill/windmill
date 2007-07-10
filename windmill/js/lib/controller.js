@@ -49,7 +49,6 @@ windmill.controller = new function () {
     this.commands = {};
     this.optionLocatorFactory = new OptionLocatorFactory();
     
-    
         /*******************************
         /* Helper functions, non user facing
         /* Note: the getControllerMethods command above returns a list of all the user facing functions to the user
@@ -376,7 +375,6 @@ windmill.controller = new function () {
     
        //Give the backend a list of available controller methods
        this.commands.getControllerMethods = function (param_object){
-           
            var str = '';
            for (var i in windmill.controller) { if (i.indexOf('_') == -1){ str += "," + i; } }
            for (var i in windmill.controller.extensions) {
@@ -406,7 +404,7 @@ windmill.controller = new function () {
           params_obj.result = ca;
           json_object.params = params_obj;
           var json_string = fleegix.json.serialize(json_object)
-          
+    
           var resp = function(str){
             return true;
           }

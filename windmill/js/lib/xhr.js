@@ -48,7 +48,6 @@ windmill.xhr = new function () {
     this.actionHandler = function(str){
 
         windmill.xhr.xhrResponse = eval('(' + str + ')');
-
         //If there was a legit json response
         if ( windmill.xhr.xhrResponse.error ){
             //windmill.Log.debug("There was a JSON syntax error: '" + windmill.xhr.xhrResponse.error + "'");
@@ -68,36 +67,37 @@ windmill.xhr = new function () {
                 action_timer.setName(windmill.xhr.xhrResponse.result.method);
                 action_timer.startTime();
                 
-                //Build UI
-                var suite = windmill.remote.document.getElementById(windmill.xhr.xhrResponse.result.suite_name);
-                if (suite == null){
-                     var ide = windmill.remote.document.getElementById('ide');
-                     var suite = document.createElement('div');
-                     suite.id = windmill.xhr.xhrResponse.result.suite_name;
-                     suite.style.width = "99%";
-                     suite.style.background = "lightblue";
-                     suite.style.overflow = 'hidden';
-                     suite.style.border = '1px solid black';
-                     suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
-                        windmill.xhr.xhrResponse.result.suite_name+"</td><td><span align=\"right\" style='top:0px;float:right;'>"+
-                        "<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
-                         "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+
-                         windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table></div>";
-                     ide.appendChild(suite);
+                //Build UI if there is a suite name
+                if ( typeof(windmill.xhr.xhrResponse.result.suite_name) != 'undefined'){
+                    var suite = windmill.remote.$(windmill.xhr.xhrResponse.result.suite_name);
+                    if (suite == null){
+                         var ide = windmill.remote.$('ide');
+                         var suite = document.createElement('div');
+                         suite.id = windmill.xhr.xhrResponse.result.suite_name;
+                         suite.style.width = "99%";
+                         suite.style.background = "lightblue";
+                         suite.style.overflow = 'hidden';
+                         suite.style.border = '1px solid black';
+                         suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
+                            windmill.xhr.xhrResponse.result.suite_name+"</td><td><span align=\"right\" style='top:0px;float:right;'>"+
+                            "<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
+                             "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+
+                             windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table></div>";
+                         ide.appendChild(suite);
+                    }
+                
+                   var action = windmill.ui.buildAction(windmill.xhr.xhrResponse.result.method,windmill.xhr.xhrResponse.result.params);
+                
+                    var suite = windmill.remote.$(windmill.xhr.xhrResponse.result.suite_name);
+                    suite.appendChild(action);
+                    var ide = windmill.remote.$('ide');
+                
+                    //If the settings box is checked, scroll to the bottom
+                    if ( windmill.remote.document.getElementById('autoScroll').checked == true){
+                        ide.scrollTop = ide.scrollHeight;
+                    }
                 }
                 
-               var action = windmill.ui.buildAction(windmill.xhr.xhrResponse.result.method,windmill.xhr.xhrResponse.result.params);
-                
-                var suite = windmill.remote.document.getElementById(windmill.xhr.xhrResponse.result.suite_name);
-                suite.appendChild(action);
-                //suite.appendChild(this.constructAction(windmill.xhr.xhrResponse.result.method,locator, locValue));
-                var ide = windmill.remote.document.getElementById('ide');
-                
-                //If the settings box is checked, scroll to the bottom
-                if ( windmill.remote.document.getElementById('autoScroll').checked == true){
-                    ide.scrollTop = ide.scrollHeight;
-                }
-             
                 //Run the action
                 //If its a user extension.. run it
                 try {

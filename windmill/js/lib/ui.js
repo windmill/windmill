@@ -161,7 +161,7 @@ windmill.ui = new function() {
          }
 
          //var action = this.constructAction(method,'','',windmill.registry.methods[method].option,parms[windmill.registry.methods[method].option]);
-         var action = document.createElement('div');
+         var action = windmill.remote.document.createElement('div');
          if (typeof(params.uuid) == 'undefined'){
           var date = new Date();
           action.id = date.getTime();
@@ -171,6 +171,7 @@ windmill.ui = new function() {
          action.style.border = '1px dashed #aaa';
          action.style.background = 'lightyellow';
          action.style.width = '100%';
+         //action.style.height = '50px';
          
          //We need a table to format this
          var t = document.createElement('table');
@@ -329,7 +330,8 @@ windmill.ui = new function() {
              t.appendChild(r);
             }
             
-           action.appendChild(t);
+           //action.appendChild(t);
+           action.innerHTML = t.innerHTML;
            return action; 
      }
      
@@ -404,7 +406,6 @@ windmill.ui = new function() {
             
             if(e.type == 'dblclick'){
                 windmill.remote.$("recordingSuite"+windmill.ui.recordSuiteNum).appendChild(this.buildAction('doubleClick', params));
-
             }
             else{
                  //console.log(e.target.parentNode);                 
@@ -425,6 +426,7 @@ windmill.ui = new function() {
      //Writing json to the remote for the change events
      this.writeJsonChange = function(e){
           //console.log(e);
+          
             if( windmill.ui.recordState == false){
                 return;
             }
@@ -542,7 +544,7 @@ windmill.ui = new function() {
      
      this.addAction = function(){
        var suite = windmill.ui.getSuite();
-       suite.appendChild(windmill.ui.buildAction(null,{})); 
+       windmill.remote.$(suite.id).appendChild(windmill.ui.buildAction(null,{})); 
      }
      this.getSuite = function(){
          var suite = windmill.remote.$('recordingSuite'+windmill.ui.recordSuiteNum);
@@ -558,7 +560,7 @@ windmill.ui = new function() {
              "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+suite.id+
              "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+suite.id+
              "\')\">[toggle]</a></span></td></tr></table></div>";
-             ide.appendChild(suite);
+             windmill.remote.$('ide').appendChild(suite);
         }
         return suite;
      }
