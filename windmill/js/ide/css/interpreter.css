@@ -4,6 +4,14 @@ h1 {
     text-align: center;
 }
 
+.data {
+ font-family: Monaco, "lucida console", Courier;
+    font-size: 9px;
+}
+.error {
+ font-family: Monaco, "lucida console", Courier;
+    font-size: 9px;
+}
 textarea.textbox {
     font-family: Monaco, "lucida console", Courier;
     border: 1px solid #CCCCCC;
@@ -25,7 +33,7 @@ input.textbox {
     border: 1px solid #CCCCCC;
     padding: 2px 4px;
     margin-top: .3em;
-    width: 348px;
+    width: 92%;
     height: 250px;
     overflow: auto;
 }

@@ -19,19 +19,19 @@
 // functions that really better homes.
 
 function classCreate() {
-    return function() {
+    return function () {
       this.initialize.apply(this, arguments);
     }
 }
 
-function objectExtend(destination, source) {
+function objectExtend (destination, source) {
   for (var property in source) {
     destination[property] = source[property];
   }
   return destination;
 }
 
-function $() {
+function $ () {
   var results = [], element;
   for (var i = 0; i < arguments.length; i++) {
     element = arguments[i];
@@ -42,7 +42,7 @@ function $() {
   return results.length < 2 ? results[0] : results;
 }
 
-function $A(iterable) {
+function $A (iterable) {
   if (!iterable) return [];
   if (iterable.toArray) {
     return iterable.toArray();
@@ -54,36 +54,36 @@ function $A(iterable) {
   }
 }
 
-function fnBind() {
+function fnBind () {
   var args = $A(arguments), __method = args.shift(), object = args.shift();
   return function() {
     return __method.apply(object, args.concat($A(arguments)));
   }
 }
 
-function fnBindAsEventListener(fn, object) {
+function fnBindAsEventListener (fn, object) {
   var __method = fn;
   return function(event) {
     return __method.call(object, event || window.event);
   }
 }
 
-function removeClassName(element, name) {
+function removeClassName (element, name) {
     var re = new RegExp("\\b" + name + "\\b", "g");
     element.className = element.className.replace(re, "");
 }
 
-function addClassName(element, name) {
+function addClassName (element, name) {
     element.className = element.className + ' ' + name;
 }
 
-function elementSetStyle(element, style) {
+function elementSetStyle (element, style) {
     for (var name in style) {
       element.style[name] = style[name];
     }
 }
 
-function elementGetStyle(element, style) {
+function elementGetStyle (element, style) {
     var value = element.style[style];
     if (!value) {
       if (document.defaultView && document.defaultView.getComputedStyle) {
@@ -118,7 +118,7 @@ String.prototype.startsWith = function(str) {
 };
 
 // Returns the text in this element
-function getText(element) {
+function getText (element) {
     var text = "";
 
     var isRecentFirefox = (browser.isMozilla);
@@ -136,7 +136,7 @@ function getText(element) {
     return text.trim();
 }
 
-function getTextContent(element, preformatted) {
+function getTextContent (element, preformatted) {
     if (element.nodeType == 3 /*Node.TEXT_NODE*/) {
         var text = element.data;
         if (!preformatted) {
@@ -169,7 +169,7 @@ function getTextContent(element, preformatted) {
 /**
  * Convert all newlines to \m
  */
-function normalizeNewlines(text)
+function normalizeNewlines (text)
 {
     return text.replace(/\r\n|\r/g, "\n");
 }
@@ -177,7 +177,7 @@ function normalizeNewlines(text)
 /**
  * Replace multiple sequential spaces with a single space, and then convert &nbsp; to space.
  */
-function normalizeSpaces(text)
+function normalizeSpaces (text)
 {
     // IE has already done this conversion, so doing it again will remove multiple nbsp
     if (browser.isIE)
@@ -198,7 +198,7 @@ function normalizeSpaces(text)
     }
 }
 
-function replaceAll(text, oldText, newText) {
+function replaceAll (text, oldText, newText) {
     while (text.indexOf(oldText) != -1) {
 	text = text.replace(oldText, newText);
     }
@@ -206,7 +206,7 @@ function replaceAll(text, oldText, newText) {
 }
 
 
-function xmlDecode(text) {
+function xmlDecode (text) {
     text = text.replace(/&quot;/g, '"');
     text = text.replace(/&apos;/g, "'");
     text = text.replace(/&lt;/g, "<");
@@ -216,7 +216,7 @@ function xmlDecode(text) {
 }
 
 // Sets the text in this element
-function setText(element, text) {
+function setText (element, text) {
     if (element.textContent) {
         element.textContent = text;
     } else if (element.innerText) {
@@ -225,7 +225,7 @@ function setText(element, text) {
 }
 
 // Get the value of an <input> element
-function getInputValue(inputElement) {
+function getInputValue (inputElement) {
     if (inputElement.type.toUpperCase() == 'CHECKBOX' ||
         inputElement.type.toUpperCase() == 'RADIO')
     {
@@ -235,7 +235,7 @@ function getInputValue(inputElement) {
 }
 
 /* Fire an event in a browser-compatible manner */
-function triggerEvent(element, eventType, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
+function triggerEvent (element, eventType, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
     
     canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
     if (element.fireEvent) {
@@ -258,7 +258,7 @@ function triggerEvent(element, eventType, canBubble, controlKeyDown, altKeyDown,
     }
 }
 
-function getKeyCodeFromKeySequence(keySequence) {
+function getKeyCodeFromKeySequence (keySequence) {
     var match = /^\\(\d{1,3})$/.exec(keySequence);
     if (match != null) {
         return match[1];
@@ -273,10 +273,10 @@ function getKeyCodeFromKeySequence(keySequence) {
     if (match != null) {
         return match[0];
     }
-    //throw SeleniumError("invalid keySequence");
+    //throw WindmillError("invalid keySequence");
 }
 
-function createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
+function createEventObject (element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
      var evt = element.ownerDocument.createEventObject();
      evt.shiftKey = shiftKeyDown;
      evt.metaKey = metaKeyDown;
@@ -285,7 +285,7 @@ function createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, me
      return evt;
 }
 
-function triggerKeyEvent(element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
+function triggerKeyEvent (element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
     var keycode = getKeyCodeFromKeySequence(keySequence);
     canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
     if (element.fireEvent) {
@@ -316,7 +316,7 @@ function triggerKeyEvent(element, eventType, keySequence, canBubble, controlKeyD
 }
 
 /* Fire a mouse event in a browser-compatible manner */
-function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
+function triggerMouseEvent (element, eventType, canBubble, clientX, clientY, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
     clientX = clientX ? clientX : 0;
     clientY = clientY ? clientY : 0;
     
@@ -391,7 +391,7 @@ function triggerMouseEvent(element, eventType, canBubble, clientX, clientY, cont
     }
 }
 
-function removeLoadListener(element, command) {
+function removeLoadListener (element, command) {
     LOG.info('Removing loadListenter for ' + element + ', ' + command);
     if (window.removeEventListener)
         element.removeEventListener("load", command, true);
@@ -399,7 +399,7 @@ function removeLoadListener(element, command) {
         element.detachEvent("onload", command);
 }
 
-function addLoadListener(element, command) {
+function addLoadListener (element, command) {
     LOG.info('Adding loadListenter for ' + element + ', ' + command);
     if (window.addEventListener && !browserVersion.isOpera)
         element.addEventListener("load", command, true);
@@ -411,7 +411,7 @@ function addLoadListener(element, command) {
  * Override the broken getFunctionName() method from JsUnit
  * This file must be loaded _after_ the jsunitCore.js
  */
-function getFunctionName(aFunction) {
+function getFunctionName (aFunction) {
     var regexpResult = aFunction.toString().match(/function (\w*)/);
     if (regexpResult && regexpResult[1]) {
         return regexpResult[1];
@@ -419,7 +419,7 @@ function getFunctionName(aFunction) {
     return 'anonymous';
 }
 
-function getDocumentBase(doc) {
+function getDocumentBase (doc) {
     var bases = document.getElementsByTagName("base");
     if (bases && bases.length && bases[0].href) {
         return bases[0].href;
@@ -427,7 +427,7 @@ function getDocumentBase(doc) {
     return "";
 }
 
-function describe(object, delimiter) {
+function describe (object, delimiter) {
     var props = new Array();
     for (var prop in object) {
         props.push(prop + " -> " + object[prop]);
@@ -435,12 +435,12 @@ function describe(object, delimiter) {
     return props.join(delimiter || '\n');
 }
 
-var PatternMatcher = function(pattern) {
+var PatternMatcher = function (pattern) {
     this.selectStrategy(pattern);
 };
 PatternMatcher.prototype = {
 
-    selectStrategy: function(pattern) {
+    selectStrategy: function (pattern) {
         this.pattern = pattern;
         var strategyName = 'glob';
         // by default
@@ -454,13 +454,13 @@ PatternMatcher.prototype = {
         }
         var matchStrategy = PatternMatcher.strategies[strategyName];
         if (!matchStrategy) {
-            throw new SeleniumError("cannot find PatternMatcher.strategies." + strategyName);
+            throw new WindmillError("cannot find PatternMatcher.strategies." + strategyName);
         }
         this.strategy = matchStrategy;
         this.matcher = new matchStrategy(pattern);
     },
 
-    matches: function(actual) {
+    matches: function (actual) {
         return this.matcher.matches(actual + '');
         // Note: appending an empty string avoids a Konqueror bug
     }
@@ -470,7 +470,7 @@ PatternMatcher.prototype = {
 /**
  * A "static" convenience method for easy matching
  */
-PatternMatcher.matches = function(pattern, actual) {
+PatternMatcher.matches = function (pattern, actual) {
     return new PatternMatcher(pattern).matches(actual);
 };
 
@@ -479,7 +479,7 @@ PatternMatcher.strategies = {
 /**
  * Exact matching, e.g. "exact:***"
  */
-    exact: function(expected) {
+    exact: function (expected) {
         this.expected = expected;
         this.matches = function(actual) {
             return actual == this.expected;
@@ -489,14 +489,14 @@ PatternMatcher.strategies = {
 /**
  * Match by regular expression, e.g. "regexp:^[0-9]+$"
  */
-    regexp: function(regexpString) {
+    regexp: function (regexpString) {
         this.regexp = new RegExp(regexpString);
         this.matches = function(actual) {
             return this.regexp.test(actual);
         };
     },
 
-    regex: function(regexpString) {
+    regex: function (regexpString) {
         this.regexp = new RegExp(regexpString);
         this.matches = function(actual) {
             return this.regexp.test(actual);
@@ -514,7 +514,7 @@ PatternMatcher.strategies = {
  * the functional needs of the *TextPresent ops more efficiently
  * and so avoid running into this IE6 freeze.
  */
-    globContains: function(globString) {
+    globContains: function (globString) {
         this.regexp = new RegExp(PatternMatcher.regexpFromGlobContains(globString));
         this.matches = function(actual) {
             return this.regexp.test(actual);
@@ -525,7 +525,7 @@ PatternMatcher.strategies = {
 /**
  * "glob" (aka "wildmat") patterns, e.g. "glob:one,two,*"
  */
-    glob: function(globString) {
+    glob: function (globString) {
         this.regexp = new RegExp(PatternMatcher.regexpFromGlob(globString));
         this.matches = function(actual) {
             return this.regexp.test(actual);
@@ -534,7 +534,7 @@ PatternMatcher.strategies = {
 
 };
 
-PatternMatcher.convertGlobMetaCharsToRegexpMetaChars = function(glob) {
+PatternMatcher.convertGlobMetaCharsToRegexpMetaChars = function (glob) {
     var re = glob;
     re = re.replace(/([.^$+(){}\[\]\\|])/g, "\\$1");
     re = re.replace(/\?/g, "(.|[\r\n])");
@@ -542,11 +542,11 @@ PatternMatcher.convertGlobMetaCharsToRegexpMetaChars = function(glob) {
     return re;
 };
 
-PatternMatcher.regexpFromGlobContains = function(globContains) {
+PatternMatcher.regexpFromGlobContains = function (globContains) {
     return PatternMatcher.convertGlobMetaCharsToRegexpMetaChars(globContains);
 };
 
-PatternMatcher.regexpFromGlob = function(glob) {
+PatternMatcher.regexpFromGlob = function (glob) {
     return "^" + PatternMatcher.convertGlobMetaCharsToRegexpMetaChars(glob) + "$";
 };
 
@@ -598,7 +598,7 @@ var Assert = {
 };
 
 // Preprocess the arguments to allow for an optional comment.
-function AssertionArguments(args) {
+function AssertionArguments (args) {
     if (args.length == 2) {
         this.comment = "";
         this.expected = args[0];
@@ -610,16 +610,16 @@ function AssertionArguments(args) {
     }
 }
 
-function AssertionFailedError(message) {
+function AssertionFailedError (message) {
     this.isAssertionFailedError = true;
-    this.isSeleniumError = true;
+    this.isWindmillError = true;
     this.message = message;
     this.failureMessage = message;
 }
 
-function SeleniumError(message) {
+function WindmillError (message) {
     var error = new Error(message);
-    error.isSeleniumError = true;
+    error.isWindmillError = true;
     return error;
 }
 
@@ -656,8 +656,8 @@ function o2s(obj) {
 
 var seenReadyStateWarning = false;
 
-function openSeparateApplicationWindow(url) {
-    // resize the Selenium window itself
+function openSeparateApplicationWindow (url) {
+    // resize the Windmill window itself
     window.resizeTo(1200, 500);
     window.moveTo(window.screenX, 0);
 
@@ -682,7 +682,7 @@ function openSeparateApplicationWindow(url) {
 
 
     if (window.document.readyState == null && !seenReadyStateWarning) {
-        alert("Beware!  Mozilla bug 300992 means that we can't always reliably detect when a new page has loaded.  Install the Selenium IDE extension or the readyState extension available from selenium.openqa.org to make page load detection more reliable.");
+        alert("Beware!  Mozilla bug 300992 means that we can't always reliably detect when a new page has loaded.  Install the Windmill IDE extension or the readyState extension available from selenium.openqa.org to make page load detection more reliable.");
         seenReadyStateWarning = true;
     }
 
@@ -716,7 +716,7 @@ objectExtend(URLConfiguration.prototype, {
     },
 
     _extractArgs: function() {
-        var str = SeleniumHTARunner.commandLine;
+        var str = WindmillHTARunner.commandLine;
         if (str == null || str == "") return new Array();
         var matches = str.match(/(?:\"([^\"]+)\"|(?!\"([^\"]+)\")(\S+))/g);
         // We either want non quote stuff ([^"]+) surrounded by quotes

@@ -24,7 +24,8 @@ Copyright 2006, Open Source Applications Foundation
     //Since the div names are a concatonation of their hash key and a prepending string
     //I will just recreate that before I actually look up the dom element, then click
     //the appropriate element
-    
+    windmill.controller.open.req = "blah";
+
     windmill.controller.extensions.clickLozenge =function(param_object){
         var hash_key;
         
@@ -71,9 +72,12 @@ Copyright 2006, Open Source Applications Foundation
                         return res;
                     }
                     
-        
+            
             var dragged = windmill.controller._lookupDispatch(p.dragged);
             var dest = windmill.controller._lookupDispatch(p.destination);
+            if (!dragged || !dest){
+              return false;
+            }
             //var mouseDownPos = getPos(dragged, 'mouseDown');
             //var mouseUpPos = getPos(dest, 'mouseUp');
         

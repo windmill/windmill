@@ -3,7 +3,7 @@
 windmill.events = new function (){
     
     // Returns the text in this element
-    this.getText = function(element) {
+    this.getText = function (element) {
         var text = "";
         
         var isRecentFirefox = (browser.isMozilla);
@@ -20,7 +20,7 @@ windmill.events = new function (){
             return text.trim();
     }
 
-    this.getTextContent = function(element, preformatted) {
+    this.getTextContent = function (element, preformatted) {
         if (element.nodeType == 3 /*Node.TEXT_NODE*/) {
             var text = element.data;
             if (!preformatted) {
@@ -52,7 +52,7 @@ windmill.events = new function (){
     }
 
 
-    this.createEventObject = function(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
+    this.createEventObject = function (element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
          var evt = element.ownerDocument.createEventObject();
          evt.shiftKey = shiftKeyDown;
          evt.metaKey = metaKeyDown;
@@ -62,7 +62,7 @@ windmill.events = new function (){
     }
     
     /* Fire an event in a browser-compatible manner */
-    this.triggerEvent = function(element, eventType, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
+    this.triggerEvent = function (element, eventType, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
 
         canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
         if (element.fireEvent) {
@@ -86,7 +86,7 @@ windmill.events = new function (){
     }
     
     /* Fire a mouse event in a browser-compatible manner */
-    this.triggerMouseEvent = function(element, eventType, canBubble, clientX, clientY, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
+    this.triggerMouseEvent = function (element, eventType, canBubble, clientX, clientY, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
         clientX = clientX ? clientX : 0;
         clientY = clientY ? clientY : 0;
 

@@ -1,3 +1,7 @@
+var $ = function(id) {
+		  return document.getElementById(id);
+};
+
 var PatternMatcher = function(pattern) {
     this.selectStrategy(pattern);
 };
@@ -17,7 +21,7 @@ PatternMatcher.prototype = {
         }
         var matchStrategy = PatternMatcher.strategies[strategyName];
         if (!matchStrategy) {
-            throw new SeleniumError("cannot find PatternMatcher.strategies." + strategyName);
+            throw new WindmillError("cannot find PatternMatcher.strategies." + strategyName);
         }
         this.strategy = matchStrategy;
         this.matcher = new matchStrategy(pattern);
@@ -230,7 +234,7 @@ function AssertionArguments(args) {
 
 function AssertionFailedError(message) {
     this.isAssertionFailedError = true;
-    //this.isSeleniumError = true;
+    //this.isWindmillError = true;
     this.message = message;
     this.failureMessage = message;
 }

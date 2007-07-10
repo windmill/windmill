@@ -11,7 +11,7 @@ InterpreterManager.prototype.initialize = function () {
     connect("interpreter_text", "onkeyup", this.keyUp);
     connect("interpreter_textarea", "onkeydown", this.areaKeyDown);
     connect("interpreter_form", "onsubmit", this.submit);
-    getElement("interpreter_text").focus();
+    //getElement("interpreter_text").focus();
 
     this.banner();
     this.lines = [];

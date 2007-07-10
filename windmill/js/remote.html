@@ -36,7 +36,7 @@
 				$('record').src = 'ide/img/stoprecord.png';
 			}
 			else{
-				opener.windmill.ui.recordOff();	
+				opener.windmill.ui.recordOff();
 				$('record').src = 'ide/img/record.png';
 			}
 		}
@@ -63,6 +63,7 @@
 		}
 		var toggleExplore = function(){
 			if ($('toggleDomExp').innerHTML == 'DOM Explorer On'){
+				$('domExp').innerHTML = '';
 				opener.windmill.ui.domExplorerOn();
 				opener.window.focus();
 				$('toggleDomExp').innerHTML = 'DOM Explorer Off';
@@ -70,6 +71,7 @@
 			else {
 				opener.windmill.ui.domExplorerOff();
 				$('toggleDomExp').innerHTML = 'DOM Explorer On';
+				$('domExp').innerHTML = '';
 			}
 		}
 	</script>
@@ -78,10 +80,8 @@
 <body onload="javascript:interpreterManager.initialize();opener.windmill.Start();">
 <div id="main" style="position:absolute;width:100%;height:100%;">
 	<div id="runningStatus" align="center" style="position:absolute;width:196px;height:18px;left:55%;top:1%;font-size:12px arial;color:blue;">Status: Nothing yet..</div>
-	<div id="loopButton" style="position:absolute;width:196px;height:18px;left:65%;top:4%;font-size:12px arial;">
-		<a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Pause Loop</a>
-	</div>
-	<div id="controllers" style="width:100%;height:7%;">
+
+	<div id="controllers" style="width:100%;height:40px">
 		
 		&nbsp<a href="#"><img name='record' id="record" border=no src="ide/img/record.png" onClick="toggleRec();" ></a>
 		&nbsp<a href="#"><img name ='playback' id="playback" border=no src="ide/img/playback.png" onClick="togglePlay();"></a>
@@ -95,11 +95,15 @@
 	
 	<div id="ide" style="width:100%;height:88%;border:1px solid #aaa;overflow:auto;">
 	</div>
-	<div id="navigation" style="width:100%;height:5%;">
-		Navigation: 
-		<a href="#" onclick="javascript:openDialog('console')">Console </a> 
-		<a href="#" onclick="javascript:openDialog('output')">Output</a> 
-		<a href="#" onclick="javascript:openDialog('settings')">Settings </a>
+	<div id="navigation" align=center style="height:5%;">
+		<span>Navigation: 
+		<a href="#" onclick="javascript:openDialog('console')">Console</a>&nbsp 
+		<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
+		<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
+		</span>
+		<span>IDE: <a href="#" onclick="opener.windmill.ui.recordSuiteNum++;windmill.ui.getSuite();">New Suite</a>&nbsp
+			<a href="#" onclick="windmill.ui.addAction();">New Action</a>&nbsp | &nbsp
+		<a href="#" onclick="javascript:windmill.ui.clearIDE()">Clear IDE</a>&nbsp
 	</div>
 	
 </div>
@@ -131,10 +135,11 @@
 	                <div id="interpreter_output"></div>
 	            </div>
 	            <div id="oneline">
-	                <input id="interpreter_text" name="input_text" type="text" class="textbox" size="58" />
+	                <input style="width:80%;height:5%" id="interpreter_text" name="input_text" type="text" class="textbox" size="58" />
 	            </div>
 	            <div id="multiline">
-	                <textarea id="interpreter_textarea" name="input_textarea" type="text" class="textbox" cols="55" rows="4"></textarea>
+	            <textarea style="width:80%;height:10%;" id="interpreter_textarea" name="input_textarea" type="text" class="textbox" cols="55" rows="4">
+	            </textarea>
 	                <br />
 	            </div>
 	        </form>
@@ -152,6 +157,10 @@
 		Suppress Javascript Alerts : <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts' onclick=""><br>
 		Auto Scroll IDE to bottom : <INPUT TYPE=checkbox CHECKED ID='autoScroll' onclick=""><br>
 		Absolute click sensitivity when recording : <INPUT TYPE=checkbox UNCHECKED ID='clickOn' onclick="">
+		<br>
+		<br><div id="loopButton" style="font:18px arial;">
+		<a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Pause Loop</a>
+	</div>
 
 </div>
 </body>

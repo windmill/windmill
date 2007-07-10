@@ -73,23 +73,20 @@ windmill.xhr = new function () {
                 if (suite == null){
                      var ide = windmill.remote.document.getElementById('ide');
                      var suite = document.createElement('div');
-                     suite.setAttribute("id", windmill.xhr.xhrResponse.result.suite_name);
+                     suite.id = windmill.xhr.xhrResponse.result.suite_name;
                      suite.style.width = "99%";
                      suite.style.background = "lightblue";
                      suite.style.overflow = 'hidden';
                      suite.style.border = '1px solid black';
-                     suite.innerHTML = "<div><table style=\"font:9pt arial;\"><tr><td width=\"95%\"><strong>Suite -</strong> " + windmill.xhr.xhrResponse.result.suite_name+"</td><td><a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a> </td></table></div>";
+                     suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
+                        windmill.xhr.xhrResponse.result.suite_name+"</td><td><span align=\"right\" style='top:0px;float:right;'>"+
+                        "<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
+                         "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+
+                         windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table></div>";
                      ide.appendChild(suite);
                 }
                 
-                var action = document.createElement('div');
-                action.setAttribute("id",windmill.xhr.xhrResponse.result.params.uuid);
-                action.style.width = "100%";
-                action.style.height = "26px";
-                action.style.background = "lightyellow";
-                action.style.paddingTop = "2px";
-                //action.style.border = '1px solid black';
-                action.innerHTML = "<strong>"+windmill.xhr.xhrResponse.result.method + "</strong><div style=\'font:8pt arial;\'> Params:" + fleegix.json.serialize(windmill.xhr.xhrResponse.result.params) +"</div>";
+               var action = windmill.ui.buildAction(windmill.xhr.xhrResponse.result.method,windmill.xhr.xhrResponse.result.params);
                 
                 var suite = windmill.remote.document.getElementById(windmill.xhr.xhrResponse.result.suite_name);
                 suite.appendChild(action);
@@ -112,8 +109,10 @@ windmill.xhr = new function () {
                     else{ result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params); }
                 }
                 catch (error) { 
-                    windmill.ui.writeResult("<font color=\"#FF0000\">There was an error in the "+windmill.xhr.xhrResponse.result.method+" action. "+error+"</font>");
-                    windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
+                    windmill.ui.writeResult("<font color=\"#FF0000\">There was an error in the "+
+                    windmill.xhr.xhrResponse.result.method+" action. "+error+"</font>");
+                    windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + 
+                    "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
                     action.style.background = '#FF9692';
 
                 }

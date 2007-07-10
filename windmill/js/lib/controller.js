@@ -56,7 +56,7 @@ windmill.controller = new function () {
         /* And the ones that start with an underscore are ignored in that list
         /* So if you are adding functionality for internal use and doesnt map from json please start with _
         /*******************************/
-        this._getDocument = function() { return windmill.testingApp.document; }
+        this._getDocument = function () { return windmill.testingApp.document; }
         this._getCurrentWindow = function() { return parent; }
         this._getTitle = function() {
             var t = this._getDocument().title;
@@ -67,7 +67,7 @@ windmill.controller = new function () {
         }
     
         //Translates from the way we are passing objects to functions to the lookups
-        this._lookupDispatch = function(param_object){
+        this._lookupDispatch = function (param_object){
 
             var element = null;
             //If a link was passed, lookup as link
@@ -101,7 +101,7 @@ windmill.controller = new function () {
             return element;
         };
     
-        this._randomString = function(){
+        this._randomString = function (){
         	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
         	var string_length = 8;
         	var randomstring = '';
@@ -113,7 +113,7 @@ windmill.controller = new function () {
         }
     
         //Function to handle the random keyword scenario
-        this._handleRandom = function(actualValue){
+        this._handleRandom = function (actualValue){
              if (actualValue.indexOf("%random%") != -1){
              
                  if((windmill.randomRegistry.string == null)){
@@ -132,19 +132,21 @@ windmill.controller = new function () {
     /************************************
     /* User facing windmill functionality
     /************************************/
-    this.defer = function(){
+    this.defer = function (){
         //We may want to somehow display that the loop is being deferred but right now it was too messy in output.
         //windmill.ui.writeResult('Deferring..')
     };
     
     //After a page is done loading, continue the loop
-    this.continueLoop = function(){
+    this.continueLoop = function (){
         windmill.xhr.loopState = 1;
         windmill.xhr.startJsonLoop();
     };
     
     //open an url in the webapp iframe
-    this.open = function(param_object) {
+    this.open = function (param_object) {
+        
+        
         webappframe = document.getElementById('webapp');
         url = this._handleRandom(param_object.url);
         
@@ -158,7 +160,7 @@ windmill.controller = new function () {
     
     //Currently only does one level below the provided div
     //To make it more thorough it needs recursion to be implemented later
-    this.verify = function(param_object) { 
+    this.verify = function (param_object) { 
         
         var n = this._lookupDispatch(param_object);
         var validator = param_object.validator;
@@ -195,7 +197,7 @@ windmill.controller = new function () {
     
   
    //Type Function
-   this.type = function(param_object){
+   this.type = function (param_object){
    
    var element = this._lookupDispatch(param_object);
    if (!element){
@@ -231,7 +233,7 @@ windmill.controller = new function () {
    };
        
     //Wait function
-    this.wait = function(param_object){
+    this.wait = function (param_object){
         done = function(){
             return true;
         }
@@ -244,7 +246,7 @@ windmill.controller = new function () {
     /*
     * Select the specified option and trigger the relevant events of the element.
     */
-    this.select = function(param_object) {
+    this.select = function (param_object) {
         var element = this._lookupDispatch(param_object);
         
         if (!element){
@@ -252,7 +254,7 @@ windmill.controller = new function () {
          }
            
         /*if (!("options" in element)) {
-               //throw new SeleniumError("Specified element is not a Select (has no options)");
+               //throw new WindmillError("Specified element is not a Select (has no options)");
                
          }*/
         
@@ -282,7 +284,7 @@ windmill.controller = new function () {
     };
 
     //Drag Drop functionality allowing functions passed to calculate cursor offsets
-    this.dragDrop = function(param_object){
+    this.dragDrop = function (param_object){
         
        
          var p = param_object;
@@ -331,7 +333,7 @@ windmill.controller = new function () {
     };
     
     //Drag Drop functionality allowing functions passed to calculate cursor offsets
-       this.dragDropXY = function(param_object){
+       this.dragDropXY = function (param_object){
 
            var p = param_object;
            var webApp = parent.frames['webapp'];
@@ -345,14 +347,14 @@ windmill.controller = new function () {
        };
    
     //Directly access mouse events
-    this.mousedown = function(param_object){
+    this.mousedown = function (param_object){
         var mupElement = this._lookupDispatch(param_object);
         windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  
         
         return true;
     };
     
-    this.mouseup = function(param_object){
+    this.mouseup = function (param_object){
         var mdnElement = this._lookupDispatch(param_object);
         windmill.events.triggerMouseEvent(mdnElement, 'mouseup', true);
         
@@ -373,7 +375,7 @@ windmill.controller = new function () {
     /******************************************************************************************************/
     
        //Give the backend a list of available controller methods
-       this.commands.getControllerMethods = function(param_object){
+       this.commands.getControllerMethods = function (param_object){
            
            var str = '';
            for (var i in windmill.controller) { if (i.indexOf('_') == -1){ str += "," + i; } }
@@ -400,7 +402,7 @@ windmill.controller = new function () {
           var json_object = new windmill.xhr.json_call('1.1', 'command_result');
           var params_obj = {};
           params_obj.status = true;
-          params_obj.uuid = '8y9234yywds8733gwfdbsbdf';
+          params_obj.uuid = param_object.uuid;
           params_obj.result = ca;
           json_object.params = params_obj;
           var json_string = fleegix.json.serialize(json_object)
@@ -414,7 +416,7 @@ windmill.controller = new function () {
        };
         
         //Keeping the suites running 
-        this.commands.setOptions = function(param_object){
+        this.commands.setOptions = function (param_object){
         
             if(typeof param_object.stopOnFailure != "undefined") {
                 windmill.stopOnFailure = param_object.stopOnFailure;
@@ -434,10 +436,10 @@ windmill.controller = new function () {
     
     // Refine a list of elements using a filter.
  
-    this.selectElementsBy = function(filterType, filter, elements) {
+    this.selectElementsBy = function (filterType, filter, elements) {
         var filterFunction = this.filterFunctions[filterType];
         if (! filterFunction) {
-            throw new SeleniumError("Unrecognised element-filter type: '" + filterType + "'");
+            throw new WindmillError("Unrecognised element-filter type: '" + filterType + "'");
         }
 
         return filterFunction(filter, elements);
@@ -445,7 +447,7 @@ windmill.controller = new function () {
 
     this.filterFunctions = {};
 
-    this.filterFunctions.name = function(name, elements) {
+    this.filterFunctions.name = function (name, elements) {
         var selectedElements = [];
         for (var i = 0; i < elements.length; i++) {
             if (elements[i].name === name) {
@@ -455,7 +457,7 @@ windmill.controller = new function () {
         return selectedElements;
     };
 
-    this.filterFunctions.value = function(value, elements) {
+    this.filterFunctions.value = function (value, elements) {
         var selectedElements = [];
         for (var i = 0; i < elements.length; i++) {
             if (elements[i].value === value) {
@@ -465,21 +467,21 @@ windmill.controller = new function () {
         return selectedElements;
     };
 
-    this.filterFunctions.index = function(index, elements) {
+    this.filterFunctions.index = function (index, elements) {
         index = Number(index);
         if (isNaN(index) || index < 0) {
-            //throw new SeleniumError("Illegal Index: " + index);
+            //throw new WindmillError("Illegal Index: " + index);
             console.log('Error')
 
         }
         if (elements.length <= index) {
-            //throw new SeleniumError("Index out of range: " + index);
+            //throw new WindmillError("Index out of range: " + index);
             console.log('Error')
         }
         return [elements[index]];
     };
 
-    this.selectElements = function(filterExpr, elements, defaultFilterType) {
+    this.selectElements = function (filterExpr, elements, defaultFilterType) {
 
         var filterType = (defaultFilterType || 'value');
 
@@ -495,7 +497,7 @@ windmill.controller = new function () {
 
     
     //Registers all the ways to do a lookup
-    this._registerAllLocatorFunctions = function() {
+    this._registerAllLocatorFunctions = function () {
         // TODO - don't do this in the constructor - only needed once ever
         this.locationStrategies = {};
         for (var functionName in this) {
@@ -514,7 +516,7 @@ windmill.controller = new function () {
 
         
         //Find a locator based on a prefix.
-        this.findElementBy = function(locatorType, locator, inDocument, inWindow) {
+        this.findElementBy = function (locatorType, locator, inDocument, inWindow) {
             var locatorFunction = this.locationStrategies[locatorType];
             if (! locatorFunction) {
                 //windmill.Log.debug("Unrecognised locator type: '" + locatorType + "'");
@@ -539,7 +541,7 @@ windmill.controller = new function () {
     }
     
     //All Element Lookup functionality, based on selenium browserbot code
-    this.findElement = function(locator) {
+    this.findElement = function (locator) {
         var locatorType = 'implicit';
         var locatorString = locator;
         
@@ -569,7 +571,7 @@ windmill.controller = new function () {
 
     
     //Find the element with id - can't rely on getElementById, coz it returns by name as well in IE.. 
-    this.locateElementById = function(identifier, inDocument, inWindow) {
+    this.locateElementById = function (identifier, inDocument, inWindow) {
         
         var element = inDocument.getElementById(identifier);
         if (element && element.id === identifier) {
@@ -582,7 +584,7 @@ windmill.controller = new function () {
 
     
     //Find an element by name, refined by (optional) element-filter expressions.
-    this.locateElementByName = function(locator, document, inWindow) {
+    this.locateElementByName = function (locator, document, inWindow) {
         var elements = document.getElementsByTagName("*");
 
         var filters = locator.split(' ');
@@ -601,7 +603,7 @@ windmill.controller = new function () {
 
 
     // Finds an element using by evaluating the specified string.
-    this.locateElementByDomTraversal = function(domTraversal, document, window) {
+    this.locateElementByDomTraversal = function (domTraversal, document, window) {
 
         //var browserbot = this.browserbot;
         var element = null;
@@ -622,7 +624,7 @@ windmill.controller = new function () {
     
      //Finds an element identified by the xpath expression. Expressions _must_
      //begin with "//".
-    this.locateElementByXPath = function(xpath, inDocument, inWindow) {
+    this.locateElementByXPath = function (xpath, inDocument, inWindow) {
 
         // Trim any trailing "/": not valid xpath, and remains from attribute
         // locator.
@@ -671,7 +673,7 @@ windmill.controller = new function () {
         return this._findElementUsingFullXPath(xpath, inDocument);
     };
 
-    this._findElementByTagNameAndAttributeValue = function(
+    this._findElementByTagNameAndAttributeValue = function (
             inDocument, tagName, attributeName, attributeValue
             ) {
         if (browser.isIE && attributeName == "class") {
@@ -687,7 +689,7 @@ windmill.controller = new function () {
         return null;
     };
 
-    this._findElementByTagNameAndText = function(
+    this._findElementByTagNameAndText = function (
             inDocument, tagName, text
             ) {
         var elements = inDocument.getElementsByTagName(tagName);
@@ -699,7 +701,7 @@ windmill.controller = new function () {
         return null;
     };
 
-    this._namespaceResolver = function(prefix) {
+    this._namespaceResolver = function (prefix) {
         if (prefix == 'html' || prefix == 'xhtml' || prefix == 'x') {
             return 'http://www.w3.org/1999/xhtml';
         } else if (prefix == 'mathml') {
@@ -709,7 +711,7 @@ windmill.controller = new function () {
         }
     }
 
-    this._findElementUsingFullXPath = function(xpath, inDocument, inWindow) {
+    this._findElementUsingFullXPath = function (xpath, inDocument, inWindow) {
         // HUGE hack - remove namespace from xpath for IE
         if (browser.isIE) {
             xpath = xpath.replace(/x:/g, '')
@@ -734,7 +736,7 @@ windmill.controller = new function () {
      * Finds a link element with text matching the expression supplied. Expressions must
      * begin with "link:".
      */
-    this.locateElementByLinkText = function(linkText, inDocument, inWindow) {
+    this.locateElementByLinkText = function (linkText, inDocument, inWindow) {
     
         var links = inDocument.getElementsByTagName('a');
        
@@ -765,10 +767,10 @@ windmill.controller = new function () {
  *     id=<exp>     (OptionLocatorById)
  *     <exp> (default is OptionLocatorByLabel).
  */
-function OptionLocatorFactory() {
+function OptionLocatorFactory () {
 }
 
-OptionLocatorFactory.prototype.fromLocatorString = function(locatorString) {
+OptionLocatorFactory.prototype.fromLocatorString = function (locatorString) {
     var locatorType = 'label';
     var locatorValue = locatorString;
     // If there is a locator prefix, use the specified strategy
@@ -794,7 +796,7 @@ OptionLocatorFactory.prototype.fromLocatorString = function(locatorString) {
  * with "OptionLocatorBy".
  * TODO: Consider using the term "Option Specifier" instead of "Option Locator".
  */
-OptionLocatorFactory.prototype.registerOptionLocators = function() {
+OptionLocatorFactory.prototype.registerOptionLocators = function () {
     this.optionLocators={};
     for (var functionName in this) {
       var result = /OptionLocatorBy([A-Z].+)$/.exec(functionName);
@@ -808,7 +810,7 @@ OptionLocatorFactory.prototype.registerOptionLocators = function() {
 /**
  *  OptionLocator for options identified by their labels.
  */
-OptionLocatorFactory.prototype.OptionLocatorByLabel = function(label) {
+OptionLocatorFactory.prototype.OptionLocatorByLabel = function (label) {
     this.label = label;
     this.labelMatcher = new PatternMatcher(this.label);
     this.findOption = function(element) {
@@ -822,7 +824,7 @@ OptionLocatorFactory.prototype.OptionLocatorByLabel = function(label) {
    
     };
 
-    this.assertSelected = function(element) {
+    this.assertSelected = function (element) {
         var selectedLabel = element.options[element.selectedIndex].text;
         Assert.matches(this.label, selectedLabel)
     };
@@ -831,7 +833,7 @@ OptionLocatorFactory.prototype.OptionLocatorByLabel = function(label) {
 /**
  *  OptionLocator for options identified by their values.
  */
-OptionLocatorFactory.prototype.OptionLocatorByValue = function(value) {
+OptionLocatorFactory.prototype.OptionLocatorByValue = function (value) {
     this.value = value;
     this.valueMatcher = new PatternMatcher(this.value);
     this.findOption = function(element) {
@@ -845,7 +847,7 @@ OptionLocatorFactory.prototype.OptionLocatorByValue = function(value) {
         
     };
 
-    this.assertSelected = function(element) {
+    this.assertSelected = function (element) {
         var selectedValue = element.options[element.selectedIndex].value;
         Assert.matches(this.value, selectedValue)
     };
@@ -854,7 +856,7 @@ OptionLocatorFactory.prototype.OptionLocatorByValue = function(value) {
 /**
  *  OptionLocator for options identified by their index.
  */
-OptionLocatorFactory.prototype.OptionLocatorByIndex = function(index) {
+OptionLocatorFactory.prototype.OptionLocatorByIndex = function (index) {
     this.index = Number(index);
     if (isNaN(this.index) || this.index < 0) {
    
@@ -862,7 +864,7 @@ OptionLocatorFactory.prototype.OptionLocatorByIndex = function(index) {
     
     }
 
-    this.findOption = function(element) {
+    this.findOption = function (element) {
         if (element.options.length <= this.index) {
             
             //windmill.Log.debug("Index out of range.  Only " + element.options.length + " options available");
@@ -871,7 +873,7 @@ OptionLocatorFactory.prototype.OptionLocatorByIndex = function(index) {
         return element.options[this.index];
     };
 
-    this.assertSelected = function(element) {
+    this.assertSelected = function (element) {
     	Assert.equals(this.index, element.selectedIndex);
     };
 };
@@ -879,7 +881,7 @@ OptionLocatorFactory.prototype.OptionLocatorByIndex = function(index) {
 /**
  *  OptionLocator for options identified by their id.
  */
-OptionLocatorFactory.prototype.OptionLocatorById = function(id) {
+OptionLocatorFactory.prototype.OptionLocatorById = function (id) {
     this.id = id;
     this.idMatcher = new PatternMatcher(this.id);
     this.findOption = function(element) {
@@ -892,7 +894,7 @@ OptionLocatorFactory.prototype.OptionLocatorById = function(id) {
        
     };
 
-    this.assertSelected = function(element) {
+    this.assertSelected = function (element) {
         var selectedId = element.options[element.selectedIndex].id;
         Assert.matches(this.id, selectedId)
     };
