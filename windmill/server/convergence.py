@@ -95,7 +95,7 @@ class TestResolutionSuite(object):
         self.current_suite = None
         
     def add(self, test, suite_name=None):
-        if suite_name is None:
+        if suite_name is None and not test.get('suite_name'):
             suite_name = self.current_suite
         test['suite_name'] = suite_name
         self.unresolved[test['params']['uuid']] = test
@@ -256,6 +256,12 @@ class JSONRPCMethods(RPCMethods):
     def status_change(self, status):
         pass
         
+    def restart_test_run(self, tests):
+        self.clear_queue()
+        self._test_resolution_suite.unresolved = {}
+        for test in tests:
+            self.add_test(test)
+                
     def create_json_save_file(self, tests):
         filename = str(uuid1())+'.json.txt'
         f = open(os.path.join(windmill.settings['JS_PATH'], 'saves', filename), 'w')
