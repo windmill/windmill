@@ -30,16 +30,16 @@ class Frame(wx.Frame):
         
         ##initialize the frame
         wx.Frame.__init__(self, parent, id, title, pos, **kwargs)
-
+        
         #Call function to create menu items
         self.createMenu()
-
+        print "call createTabs method"
         #Call function to setup the tabbed menus
         self.createTabs()
-
+        print "call setupListener method"
         #Call funciton to setup the logging for the ui
         self.setupListener()
-        
+        print "call setupAboutInfo method"
         #initialize the info for the about dialog box
         self.setupAboutInfo()
 
@@ -124,18 +124,18 @@ class Frame(wx.Frame):
             
     def createTabs(self):
         """Creates and lays out the tab menu appropriately"""
-
+        print"creating flatnotebook object"
         ##initialize a notebook widget
         self.book = fnb.FlatNotebook(self, wx.ID_ANY, style=fnb.FNB_NODRAG|fnb.FNB_NO_NAV_BUTTONS|fnb.FNB_NO_X_BUTTON)
 
         # Add some pages to the second notebook
         self.Freeze()
-
+        
         self.appSizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.appSizer)
         
         self.appSizer.Add(self.book, 1, wx.EXPAND)
-        
+        print "creating shelltab panel"
         ##setup the tab contain the shell
         shellTab = wx.Panel(self, -1)
 
@@ -143,29 +143,30 @@ class Frame(wx.Frame):
         shellTabSizer = wx.BoxSizer(wx.VERTICAL)
 
         shellTab.SetSizer(shellTabSizer)
-        
+        print "creating python shell object"
         #create the shell frame
         shellFrame = wx.py.shell.Shell(shellTab, locals=self.shell_objects)
 
         #add the shell frame to the shellTab sizer
         shellTabSizer.Add(shellFrame, 1, wx.EXPAND)        
-
+        print "adding shell panel to the notebook object"
         #add the tab setup to the book
         self.book.AddPage(shellTab, "Shell-Out")
         
         #########################
         ##create the output tab##
         #########################
+        print "creating outputPanel tab of type panel"
         self.outputPanel = wx.Panel(self.book, -1, style=wx.MAXIMIZE_BOX)
-
+        print "creating WindmillOuputPanel object w/ parent outputPanel"
         self.programOutput = WindmillOutputPanel(self.outputPanel, -1, style=wx.MAXIMIZE_BOX)
         outputSizer = wx.BoxSizer(wx.VERTICAL)
         self.outputPanel.SetSizer(outputSizer)
-
+        print "creating text object for definition of log lvl output combo box"
         #create the radiobox used to determine which type of output to display
         textLabel = wx.StaticText(self.outputPanel, -1, "  Set Log Output Level:   ",
                                   style=wx.ALIGN_LEFT)
-        
+        print "creating displayTypebox(loglvl) combobox object"
         #grab the different types of levelnames from logging and use them as option in the combo box
         self.displayTypeBox = wx.ComboBox(self.outputPanel, -1, "INFO", 
                                           wx.DefaultPosition, wx.DefaultSize, 
@@ -180,12 +181,13 @@ class Frame(wx.Frame):
                                       #wx.DefaultPosition, wx.DefaultSize, 
                                       #["New Filter"],
                                       #style=wx.CB_DROPDOWN)                                                                                    
-        
+        print "creating the filtertype search control"
         #self.Bind(wx.EVT_COMBOBOX, self.EvtOnComboFilter, self.filterType)
-        self.filterType= wx.SearchCtrl(self.outputPanel, size=(200,-1), style=wx.TE_PROCESS_ENTER)
+        self.filterType= wx.SearchCtrl(self.outputPanel, style=wx.TE_PROCESS_ENTER)
+        print "creating fitertype search control succeeded"
         self.Bind(wx.EVT_TEXT_ENTER, self.EvtOnDoSearch, self.filterType)
         self.Bind(wx.EVT_TEXT, self.EvtOnDoSearch, self.filterType)
-                
+        print "implement sizer stuff"
         #Create a temp sizer to place the definition text and combo box on same horizontal line
         tempSizer = wx.BoxSizer(wx.HORIZONTAL)
         tempSizer.Add(textLabel, 0, wx.ALIGN_CENTER_VERTICAL)
@@ -201,9 +203,7 @@ class Frame(wx.Frame):
         #create text control that displays the output
         #self.programOutput = WindmillTextCtrl(self.outputPanel, -1, "", style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
         outputSizer.Add(self.programOutput, 1, wx.EXPAND)
-        
-        self.book.AddPage(self.outputPanel, 'Output', select=False)
-    
+        print "Add panel object to contain buttons"
         ##create a panel to hold the buttons
         buttonPanel = wx.Panel(self, -1)
         
@@ -214,29 +214,32 @@ class Frame(wx.Frame):
 
         #assign the button sizer to the button panel a the botton of the screen
         buttonPanel.SetSizer(bottomButtonSizer)
-
+        print "creating button with firefox logo"
         #create the browser buttons
-        try: 
-            bmp = wx.Bitmap("Firefoxlogo2.png", wx.BITMAP_TYPE_ANY)
-            bmp.SetMask(wx.Mask(bmp, wx.ColourDatabase.Find(wx.ColourDatabase(), 'YELLOW')))
-            firstBrowserButton = wx.BitmapButton(buttonPanel, -1, bmp,
-                                                 size = (bmp.GetWidth()+10, bmp.GetHeight()+10))
-            firstBrowserButton.SetMaxSize((bmp.GetWidth()+10, bmp.GetHeight()+10))
-        except wx.PyAssertionError:
-            firstBrowserButton = firstBrowserButton = wx.Button(buttonPanel, id=-1, label="FF", size = (40, 40))
-                    
+        #try: 
+            #bmp = wx.Bitmap("Firefoxlogo2.png", wx.BITMAP_TYPE_ANY)
+            #bmp.SetMask(wx.Mask(bmp, wx.ColourDatabase.Find(wx.ColourDatabase(), 'YELLOW')))
+            #firstBrowserButton = wx.BitmapButton(buttonPanel, -1, bmp,
+                                                 #size = (bmp.GetWidth()+10, bmp.GetHeight()+10))
+            #firstBrowserButton.SetMaxSize((bmp.GetWidth()+10, bmp.GetHeight()+10))
+        #except wx.PyAssertionError:
+        #firstBrowserButton = wx.Button(buttonPanel, id=-1, label="FF", size = (40, 40))
+        print "firefox button successfully created"
+
         #secondBrowserButton = wx.Button(buttonPanel, id=-1, label="IE", size = (60, 40))
-        self.Bind(wx.EVT_BUTTON, self.OnFFButtonClick, firstBrowserButton)
+        #self.Bind(wx.EVT_BUTTON, self.OnFFButtonClick, firstBrowserButton)
                          
         #Add spacer in front for center purposes
         bottomButtonSizer.AddStretchSpacer(1)
         
-        bottomButtonSizer.Add(firstBrowserButton, 1, wx.CENTER) 
+        #bottomButtonSizer.Add(firstBrowserButton, 1, wx.CENTER) 
         #bottomButtonSizer.Add(secondBrowserButton, 1, wx.ALIGN_CENTRE)         
         
         #Add Another spacer after for center purposes
         bottomButtonSizer.AddStretchSpacer(1)
-    
+
+        print "add outputpanel to the notebook object"
+        self.book.AddPage(self.outputPanel, 'Output', select=False)
         self.Thaw()	        
         self.SendSizeEvent()
 
@@ -254,9 +257,6 @@ class Frame(wx.Frame):
 
     def OnFFButtonClick(self, event):
         self.shell_objects['start_firefox']()
-        
-    def EvtOnComboFilter(self, event):
-        i = 0
         
     def OnCloseWindow(self, event):
         #should probably manually stop logging to prevent output errors
@@ -279,7 +279,7 @@ class WindmillOutputPanel(wx.Panel, listmix.ColumnSorterMixin, logging.Handler):
         wx.Panel.__init__(self, *args, **kwargs)
         
         logging.Handler.__init__(self)
-
+        
         self.listCtrl = WindmillListCtrl(self, wx.NewId(), 
                                      style=wx.LC_REPORT| wx.LC_VRULES
                                      | wx.LC_HRULES | wx.LC_SINGLE_SEL)

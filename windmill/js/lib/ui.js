@@ -174,7 +174,7 @@ windmill.ui = new function() {
          //action.style.height = '50px';
          
          //We need a table to format this
-         var t = document.createElement('table');
+         var t = windmill.remote.document.createElement('table');
          t.border = "0";
          t.cellspacing = "1";
          t.cellpadding = "0";
@@ -548,7 +548,8 @@ windmill.ui = new function() {
      
      this.addAction = function(){
        var suite = windmill.ui.getSuite();
-       windmill.remote.$(suite.id).appendChild(windmill.ui.buildAction(null,{})); 
+       var action = windmill.ui.buildAction(null,{})
+       windmill.remote.$(suite.id).appendChild(action); 
      }
      this.getSuite = function(){
          var suite = windmill.remote.$('recordingSuite'+windmill.ui.recordSuiteNum);
@@ -654,7 +655,7 @@ windmill.ui = new function() {
         if (suites[i].hasChildNodes()){
             for (var j = 1; j < suites[i].childNodes.length; j++){
                 //if we hit the suite id, turn on appending
-                if (suites[i].id == uuid){
+                if (suites[i].childNodes[j].id == uuid){
                   appending = true;
                 }
                 var actionObj = {};
@@ -688,6 +689,7 @@ windmill.ui = new function() {
           
         
      var respRun = function(str){
+         setTimeout('windmill.remote.$(\'playback\').src = \'ide/img/playback.png\'', 3000);
          return true;
      }
    

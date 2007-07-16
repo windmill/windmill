@@ -134,6 +134,9 @@ windmill.controller = new function () {
     this.defer = function (){
         //We may want to somehow display that the loop is being deferred but right now it was too messy in output.
         //windmill.ui.writeResult('Deferring..')
+        //If we are getting defers, no tests are running.. and the playback button should be available
+        //windmill.remote.$('playback').src = 'ide/img/playback.png';
+        //console.log(windmill.remote.$('playback'));
     };
     
     //After a page is done loading, continue the loop

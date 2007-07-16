@@ -55,9 +55,11 @@ windmill.xhr = new function () {
         else{
             
             if (windmill.xhr.xhrResponse.result.method != 'defer'){
-                windmill.ui.writeStatus("Status: Running " + windmill.xhr.xhrResponse.result.method + "...");   
+                windmill.ui.writeStatus("Status: Running " + windmill.xhr.xhrResponse.result.method + "...");
             }
-            else{  windmill.ui.writeStatus("Status: Waiting for tests..."); }
+            else{  
+                windmill.ui.writeStatus("Status: Waiting for tests...");
+            }
             
             //Init and start performance but not if the protocol defer
             if (windmill.xhr.xhrResponse.result.method != 'defer'){
