@@ -409,8 +409,10 @@ windmill.controller = new function () {
             return true;
           }
           
-          fleegix.xhr.doPost(resp, '/windmill-jsonrpc/', json_string);
-          return true;
+          result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+          resp(result);
+          
+          return false;
        };
         
         //Keeping the suites running 

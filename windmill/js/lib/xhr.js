@@ -67,9 +67,15 @@ windmill.xhr = new function () {
                 action_timer.setName(windmill.xhr.xhrResponse.result.method);
                 action_timer.startTime();
                 
+                //If the action already exists in the UI, skip all the creating suite stuff
+                if (windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid) != null){
+                 var action = windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid);   
+                }
+                
                 //Build UI if there is a suite name
-                if ( typeof(windmill.xhr.xhrResponse.result.suite_name) != 'undefined'){
+                else if( typeof(windmill.xhr.xhrResponse.result.suite_name) != 'undefined'){
                     var suite = windmill.remote.$(windmill.xhr.xhrResponse.result.suite_name);
+                    //if the suite isn't already there, create it
                     if (suite == null){
                          var ide = windmill.remote.$('ide');
                          var suite = document.createElement('div');
@@ -80,14 +86,15 @@ windmill.xhr = new function () {
                          suite.style.border = '1px solid black';
                          suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
                             windmill.xhr.xhrResponse.result.suite_name+"</td><td><span align=\"right\" style='top:0px;float:right;'>"+
-                            "<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
+                            "<a href=\"#\" onclick=\"windmill.ui.saveAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
+                             "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
                              "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+
                              windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table></div>";
                          ide.appendChild(suite);
                     }
-                
-                   var action = windmill.ui.buildAction(windmill.xhr.xhrResponse.result.method,windmill.xhr.xhrResponse.result.params);
-                
+                    
+                    //Add the action to the suite
+                    var action = windmill.ui.buildAction(windmill.xhr.xhrResponse.result.method,windmill.xhr.xhrResponse.result.params);
                     var suite = windmill.remote.$(windmill.xhr.xhrResponse.result.suite_name);
                     suite.appendChild(action);
                     var ide = windmill.remote.$('ide');
@@ -106,7 +113,7 @@ windmill.xhr = new function () {
                         var mArray = windmill.xhr.xhrResponse.result.method.split(".");
                         result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);  
                     }
-                    else{ result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params); }
+                    else{  result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params); }
                 }
                 catch (error) { 
                     windmill.ui.writeResult("<font color=\"#FF0000\">There was an error in the "+
@@ -116,37 +123,37 @@ windmill.xhr = new function () {
                     action.style.background = '#FF9692';
 
                 }
-
+                
                 //End timer and store
                 action_timer.endTime();
                 var to_write = fleegix.json.serialize(windmill.xhr.xhrResponse.result);
 
-                //Send the report
-                windmill.xhr.sendReport(windmill.xhr.xhrResponse.result.method, result, action_timer);
-
-                //if we had an error display in UI
-                if (result == false){
-                    action.style.background = '#FF9692';
-                    //if the continue on error flag has been set by the shell.. then we just keep on going
-                    if (windmill.stopOnFailure == true){
-                        windmill.xhr.togglePauseJsonLoop();
-                        windmill.ui.writeStatus("Status: Paused, error?...");    
+                //Send the report if its not in the commands namespace, we only call report for test actions
+                if(windmill.xhr.xhrResponse.result.method.split(".")[0] != 'commands'){
+                    windmill.xhr.sendReport(windmill.xhr.xhrResponse.result.method, result, action_timer);
+                    
+                    //action stuff only exists if we have an action in the UI, if we do:
+                    //if we had an error display in UI
+                    if (result == false){
+                        action.style.background = '#FF9692';
+                        //if the continue on error flag has been set by the shell.. then we just keep on going
+                        if (windmill.stopOnFailure == true){
+                            windmill.xhr.togglePauseJsonLoop();
+                            windmill.ui.writeStatus("Status: Paused, error?...");    
+                        }
+                    }
+                    else {
+                        //Write to the result tab
+                        windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');     
+                        action.style.background = '#C7FFCC';
                     }
                 }
-
-                else{
-                    //Write to the result tab
-                    windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');     
-                    action.style.background = '#C7FFCC';
-
-                }
-                
                 //Do the timer write
                 action_timer.write(to_write);
 
             }
         }
-          
+        
         //If the loop is running make the next request    
         if (windmill.xhr.loopState != 0){
             //Sleep for a few seconds before doing the next xhr call
