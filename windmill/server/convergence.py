@@ -259,7 +259,7 @@ class JSONRPCMethods(RPCMethods):
         self.clear_queue()
         self._test_resolution_suite.unresolved = {}
         for test in tests:
-            self.add_test(test)
+            self.add_test(test, suite_name=test.get('suite_name'))
                 
     def create_json_save_file(self, tests):
         filename = str(uuid1())+'.json'
