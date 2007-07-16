@@ -18,43 +18,73 @@ import new
 
 class WindmillTestClient(object):
     
-    _enable_unittest = False
-    enable_assertions = True
-    browser_debugging = False
+    _enable_assertions = True
+    _browser_debugging = False
         
-    def __init__(self, method_proxy):
+    def __init__(self, suite_name, method_proxy=None):
         """Assign all available attributes to instance so they are easily introspected"""
         
-        self.method_proxy = method_proxy
-                
-        def exec_command(command_name, **kwargs):
-            command = {'method':command_name, 'params':kwargs}
-            if not self.browser_debugging:
-                return self.method_proxy.execute_command(command_name)
-            else:
-                return self.method_proxy.add_command(command_name)
+        if method_proxy is None:
+            method_proxy = windmill.tools.make_xmlrpc_client()
         
-        def exec_test(test_name, **kwargs):
-            test = {'method':test_name, 'params':kwargs}
-            if not self.browser_debugging:
-                return self.method_proxy.execute_test(test)
-            else:
-                return self.method_proxy.add_test(test)
+        self._method_proxy = method_proxy
         
-        for action in self.method_proxy.execute_command({'method':'commands.getControllerMethods','params':{}}):
+        for action in self._method_proxy.execute_command({'method':'commands.getControllerMethods','params':{}}):
+            """Bind every available test and action to self, flatten them as well"""
             if action.find('command') is not -1:
                 setattr(self, 
                         action.split('.')[-1], 
-                        lambda **kwargs: exec_command(action, **kwargs)
+                        lambda **kwargs: self._exec_command(action, **kwargs)
                         )
             else:
                 setattr(self, 
                         action.split('.')[-1], 
-                        lambda **kwargs: exec_test(action, **kwargs)
+                        lambda **kwargs: self._exec_test(action, **kwargs)
                         )
-        
+        # We'll need to start the suite for the name passed to the initializer
+        self._method_proxy.start_suite(suite_name)
+                        
+    def _exec_command(self, command_name, **kwargs):
+        """Execute command, if browser_debugging then just add it to queue"""
+        command = {'method':command_name, 'params':kwargs}
+        if not self._browser_debugging:
+            result = self._method_proxy.execute_command({'method':command_name, 'params':kwargs})
+            if not result and self._enable_assertions:
+                assert result
+            else:
+                return result
+        else:
+            return self._method_proxy.add_command({'method':command_name, 'params':kwargs})
             
-                    
+
+    def _exec_test(self, test_name, **kwargs):
+        """Execute test, if browser_debugging then just add it to queue"""
+        test = {'method':test_name, 'params':kwargs}
+        if not self._browser_debugging:
+            print 'test1'
+            result = self._method_proxy.execute_test({'method':test_name, 'params':kwargs})
+            if not result['result'] and self._enable_assertions:
+                assert result
+            else:
+                return result
+        else:
+            return self._method_proxy.add_test({'method':command_name, 'params':kwargs})        
+            
+def get_test_client(name):
+    client = WindmillTestClient(name)
+    
+    if windmill.settings.get('BROWSER_DEBUGGING'):
+        client._browser_debugging = True
+        
+    if windmill.settings.get('ENABLE_PDB'): 
+        import pdb
+        client._browser_debugging = False
+        client._enable_assertions = True
+    else:
+        pdb = None
+
+        
+           
     
         
 

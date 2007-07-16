@@ -112,7 +112,7 @@ class CommandResolutionSuite(object):
         command['status'] = status
         command['result'] = result
         self.resolved[uuid] = command
-        
+
         if status is False:
             test_results_logger.error('Command Failure in command %s' % command)
         elif status is True:
@@ -165,7 +165,7 @@ class RPCMethods(object):
         callback_object = copy.copy(callback)
         callback_object.update(action_object)
         uuid = str(uuid1())
-        callback_object['params']['uuid'] = str(uuid1())
+        callback_object['params']['uuid'] = uuid
         self._logger.debug('Adding object %s' % str(callback_object))
         queue_method(callback_object)    
         resolution_suite.add(callback_object, suite_name)
@@ -199,7 +199,7 @@ class RPCMethods(object):
         while not resolution_suite.resolved.get(uuid):
             pass
         
-        return resolution_suite.resolved.get(uuid)
+        return resolution_suite.resolved[uuid]['result']
 
     def execute_json_command(self, json):
         """Add command from json object with 'method' and 'params' defined, block until it returns, return the result"""
@@ -263,7 +263,7 @@ class JSONRPCMethods(RPCMethods):
             self.add_test(test)
                 
     def create_json_save_file(self, tests):
-        filename = str(uuid1())+'.json.txt'
+        filename = str(uuid1())+'.json'
         f = open(os.path.join(windmill.settings['JS_PATH'], 'saves', filename), 'w')
         for test in tests:
             f.write(simplejson.dumps(test))
