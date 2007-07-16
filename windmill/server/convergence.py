@@ -164,12 +164,11 @@ class RPCMethods(object):
         """Procedue neutral addition method"""
         callback_object = copy.copy(callback)
         callback_object.update(action_object)
-        uuid = str(uuid1())
-        callback_object['params']['uuid'] = uuid
+        if not callback_object['params'].get('uuid'): callback_object['params']['uuid'] = str(uuid1())
         self._logger.debug('Adding object %s' % str(callback_object))
         queue_method(callback_object)    
         resolution_suite.add(callback_object, suite_name)
-        return uuid
+        return callback_object['params']['uuid']
     
     def add_json_test(self, json, suite_name=None):
         """Add test from json object with 'method' and 'params' defined"""
