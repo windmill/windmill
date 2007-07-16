@@ -86,7 +86,7 @@ windmill.xhr = new function () {
                          suite.style.border = '1px solid black';
                          suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
                             windmill.xhr.xhrResponse.result.suite_name+"</td><td><span align=\"right\" style='top:0px;float:right;'>"+
-                            "<a href=\"#\" onclick=\"windmill.ui.saveAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
+                            "<a href=\"#\" onclick=\"windmill.ui.saveSuite(\'"+windmill.xhr.xhrResponse.result.suite_name+
                              "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
                              "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+
                              windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table></div>";

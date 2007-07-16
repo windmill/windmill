@@ -257,6 +257,8 @@ windmill.ui = new function() {
             //Setup second select
              var s1 = document.createElement('select');
              s1.className = 'smalloption';
+             s1.id = action.id+'locatorType';
+             
              var o1 = document.createElement('option');
              o1.value = locator;
              o1.selected = 'selected';
@@ -300,6 +302,8 @@ windmill.ui = new function() {
              //Setup third select
              var s2= document.createElement('select');
              s2.className = 'smalloption';
+             s2.id = action.id+'optionType';
+             
              var o2 = document.createElement('option');
              o2.value = windmill.registry.methods[method].option;
              o2.selected = 'selected';
@@ -557,7 +561,8 @@ windmill.ui = new function() {
              suite.style.overflow = 'hidden';
              suite.style.border = '1px solid black';
              suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
-             "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+suite.id+
+             "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.saveSuite(\'"+suite.id+
+             "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+suite.id+
              "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+suite.id+
              "\')\">[toggle]</a></span></td></tr></table></div>";
              windmill.remote.$('ide').appendChild(suite);
@@ -584,42 +589,117 @@ windmill.ui = new function() {
             }
     }
     
+    this.saveSuite = function(id){
+       var suite = windmill.remote.$(id);
+       var testArray = [];
+
+       if (suite.hasChildNodes()){
+            for (var j = 1; j < suite.childNodes.length; j++){
+                //console.log(suites[i].childNodes[j].id);
+                
+                var actionObj = {};
+                actionObj.suite_name = suite.id;
+                actionObj.version = "0.1";
+                var si = windmill.remote.$(suite.childNodes[j].id+'method').selectedIndex;
+                actionObj.method = windmill.remote.$(suite.childNodes[j].id+'method')[si].value;
+
+                var paramsObj = {};
+                paramsObj.uuid = suite.childNodes[j].id;
+                
+                if (windmill.registry.methods[actionObj.method].locator){
+                  var si = windmill.remote.$(suite.childNodes[j].id+'locatorType').selectedIndex;
+                  paramsObj[windmill.remote.$(suite.childNodes[j].id+'locatorType')[si].value] = windmill.remote.$(suite.childNodes[j].id+'locator').value;
+                }
+                if (windmill.registry.methods[actionObj.method].option){
+                  var si = windmill.remote.$(suite.childNodes[j].id+'optionType').selectedIndex;
+                  paramsObj[windmill.remote.$(suite.childNodes[j].id+'optionType')[si].value] = windmill.remote.$(suite.childNodes[j].id+'option').value;
+                }
+                actionObj.params = paramsObj;
+                //var str = fleegix.json.serialize(actionObj);
+                testArray.push(actionObj);
+            }
+            
+         var respRun = function(str){
+             response = eval('(' + str + ')');
+             window.open(response.result,'Saved Test','width=400,height=600,toolbar=yes,location=no,directories=no,status=no,menubar=yes,scrollbars=yes,copyhistory=no,resizable=yes')
+             return true;
+         }
+   
+         var json_object = new windmill.xhr.json_call('1.1', 'create_json_save_file');
+         var params_obj = {};
+         params_obj.tests = testArray;
+         json_object.params = params_obj;
+         var json_string = fleegix.json.serialize(json_object)
+         fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
+            
+        }
+        else {
+            alert('You need test actions to save!');
+        }
+    }
+    
     //Send the tests to be played back
     this.sendPlayBack = function (uuid){
       
+      var appending = false;
+
       if (typeof(uuid) == 'undefined'){
-        var uuid = windmill.remote.$('ide').childNodes[1].id;
+        appending = true;
       }
+
+      var testArray = [];
+      var suites = windmill.remote.$('ide').childNodes;
       
-      /*  var testArray = windmill.remote.document.getElementById('wmTest').value.split("\n");
-        if (testArray[testArray.length-1] == ""){ 
-            testArray.pop();
+      for (var i = 1; i < suites.length; i++){
+        if (suites[i].hasChildNodes()){
+            for (var j = 1; j < suites[i].childNodes.length; j++){
+                //if we hit the suite id, turn on appending
+                if (suites[i].id == uuid){
+                  appending = true;
+                }
+                var actionObj = {};
+                actionObj.suite_name = suites[i].id;
+                actionObj.version = "0.1";
+                var si = windmill.remote.$(suites[i].childNodes[j].id+'method').selectedIndex;
+                actionObj.method = windmill.remote.$(suites[i].childNodes[j].id+'method')[si].value;
+
+                var paramsObj = {};
+                paramsObj.uuid = suites[i].childNodes[j].id;
+                
+                if (windmill.registry.methods[actionObj.method].locator){
+                  var si = windmill.remote.$(suites[i].childNodes[j].id+'locatorType').selectedIndex;
+                  paramsObj[windmill.remote.$(suites[i].childNodes[j].id+'locatorType')[si].value] = windmill.remote.$(suites[i].childNodes[j].id+'locator').value;
+                }
+                if (windmill.registry.methods[actionObj.method].option){
+                  var si = windmill.remote.$(suites[i].childNodes[j].id+'optionType').selectedIndex;
+                  paramsObj[windmill.remote.$(suites[i].childNodes[j].id+'optionType')[si].value] = windmill.remote.$(suites[i].childNodes[j].id+'option').value;
+                }
+                actionObj.params = paramsObj;
+                
+                //if the playback starts at a specific action, check if we hit that point
+                if (appending == true){
+                  testArray.push(actionObj);
+                }
+            }
         }
+      }
         
         windmill.ui.recordOff();
           
-          var resp = function(str){
         
-             var respRun = function(str){
-                 return true;
-             }
-               
-             var json_object = new windmill.xhr.json_call('1.1', 'run_json_tests');
-             var params_obj = {};
-             params_obj.tests = testArray;
-             json_object.params = params_obj;
-             var json_string = fleegix.json.serialize(json_object)
-             fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
- 
-          }
-          
-          var json_object = new windmill.xhr.json_call('1.1', 'clear_queue');
-          var params_obj = {};
-          json_object.params = params_obj;
-          var json_string = fleegix.json.serialize(json_object)
-          json_string = json_string.replace('\\', '');
-          fleegix.xhr.doPost(resp, '/windmill-jsonrpc/', json_string); */
+     var respRun = function(str){
+         return true;
+     }
+   
+     var json_object = new windmill.xhr.json_call('1.1', 'restart_test_run');
+     var params_obj = {};
+     params_obj.tests = testArray;
+     json_object.params = params_obj;
+     var json_string = fleegix.json.serialize(json_object)
+     fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
 
-    }
+  }
+          
+
     
-}
+};
