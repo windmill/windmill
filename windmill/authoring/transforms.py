@@ -12,9 +12,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+import sys, os, windmill, simplejson
+
 def test_object_transform(test):
     params = ', '.join([key+'='+repr(value) for key, value in test['params'].items()])    
-    return 'assert client.%s(%s)' % (test['method'], params)
+    return 'client.%s(%s)' % (test['method'], params)
     
 def build_test_file(tests):
     ts = ''
