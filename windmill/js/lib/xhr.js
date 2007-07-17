@@ -46,7 +46,6 @@ windmill.xhr = new function () {
     
     //action callback
     this.actionHandler = function(str){
-
         windmill.xhr.xhrResponse = eval('(' + str + ')');
         //If there was a legit json response
         if ( windmill.xhr.xhrResponse.error ){
@@ -63,7 +62,7 @@ windmill.xhr = new function () {
             
             //Init and start performance but not if the protocol defer
             if (windmill.xhr.xhrResponse.result.method != 'defer'){
-                
+
                 //Put on windmill main page that we are running something
                 var action_timer = new TimeObj();
                 action_timer.setName(windmill.xhr.xhrResponse.result.method);
@@ -73,14 +72,13 @@ windmill.xhr = new function () {
                 if (windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid) != null){
                  var action = windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid);   
                 }
-                
                 //Build UI if there is a suite name
-                else if( typeof(windmill.xhr.xhrResponse.result.suite_name) != 'undefined'){
+                else if( windmill.xhr.xhrResponse.result.suite_name != null){
                     var suite = windmill.remote.$(windmill.xhr.xhrResponse.result.suite_name);
                     //if the suite isn't already there, create it
                     if (suite == null){
                          var ide = windmill.remote.$('ide');
-                         var suite = document.createElement('div');
+                         var suite = windmill.remote.document.createElement('div');
                          suite.id = windmill.xhr.xhrResponse.result.suite_name;
                          suite.style.width = "99%";
                          suite.style.background = "lightblue";
@@ -92,7 +90,7 @@ windmill.xhr = new function () {
                              "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
                              "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+
                              windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table></div>";
-                         ide.appendChild(suite);
+                         windmill.remote.$('ide').appendChild(suite);
                     }
                     
                     //Add the action to the suite
@@ -110,10 +108,9 @@ windmill.xhr = new function () {
                 //Run the action
                 //If its a user extension.. run it
                 try {
-                    //var result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params);
                     if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1){
-                        var mArray = windmill.xhr.xhrResponse.result.method.split(".");
-                        result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);  
+                        var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
+                        result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);
                     }
                     else{  result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params); }
                 }
@@ -125,7 +122,7 @@ windmill.xhr = new function () {
                     action.style.background = '#FF9692';
 
                 }
-                
+
                 //End timer and store
                 action_timer.endTime();
                 var to_write = fleegix.json.serialize(windmill.xhr.xhrResponse.result);
@@ -133,11 +130,13 @@ windmill.xhr = new function () {
                 //Send the report if its not in the commands namespace, we only call report for test actions
                 if(windmill.xhr.xhrResponse.result.method.split(".")[0] != 'commands'){
                     windmill.xhr.sendReport(windmill.xhr.xhrResponse.result.method, result, action_timer);
-                    
+
                     //action stuff only exists if we have an action in the UI, if we do:
                     //if we had an error display in UI
                     if (result == false){
-                        action.style.background = '#FF9692';
+                        if (typeof(action) != 'undefined'){ action.style.background = '#FF9692'; }
+                        windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + 
+                        "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');   
                         //if the continue on error flag has been set by the shell.. then we just keep on going
                         if (windmill.stopOnFailure == true){
                             windmill.xhr.togglePauseJsonLoop();
@@ -147,7 +146,7 @@ windmill.xhr = new function () {
                     else {
                         //Write to the result tab
                         windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');     
-                        action.style.background = '#C7FFCC';
+                        if (typeof(action) != 'undefined'){ action.style.background = '#C7FFCC'; }
                     }
                 }
                 //Do the timer write

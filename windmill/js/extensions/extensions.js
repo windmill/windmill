@@ -24,7 +24,6 @@ Copyright 2006, Open Source Applications Foundation
     //Since the div names are a concatonation of their hash key and a prepending string
     //I will just recreate that before I actually look up the dom element, then click
     //the appropriate element
-    windmill.controller.open.req = "blah";
 
     windmill.controller.extensions.clickLozenge =function(param_object){
         var hash_key;
@@ -42,8 +41,7 @@ Copyright 2006, Open Source Applications Foundation
     
     windmill.controller.extensions.cosmoDragDrop = function(param_object){
         
-       
-         var p = param_object;
+       /*  var p = param_object;
          var hash_key;
          
          eval ("hash_key=" + p.dragged.jsid + ";");
@@ -72,29 +70,30 @@ Copyright 2006, Open Source Applications Foundation
                         return res;
                     }
                     
-            
             var dragged = windmill.controller._lookupDispatch(p.dragged);
             var dest = windmill.controller._lookupDispatch(p.destination);
-            if (!dragged || !dest){
+            
+            if ((typeof(dragged) == 'undefined') || (typeof(dest) == 'undefined')){
               return false;
             }
-            //var mouseDownPos = getPos(dragged, 'mouseDown');
-            //var mouseUpPos = getPos(dest, 'mouseUp');
+            
+            var mouseDownPos = getPos(dragged, 'mouseDown');
+            var mouseUpPos = getPos(dest, 'mouseUp');
         
             var webApp = parent.frames['webapp'];
             var mouseDownX = dragged.parentNode.offsetLeft + (webApp.LEFT_SIDEBAR_WIDTH + webApp.HOUR_LISTING_WIDTH + 2) + 12; 
-            var mouseDownY = dragged.parentNode.offsetTop - (webApp.cosmo.view.cal.canvas.getTimedCanvasScrollTop() - webApp.TOP_MENU_HEIGHT) + 12;
+            var mouseDownY = dragged.parentNode.offsetTop - (webApp.cosmo.view.cal.canvasInstance.getTimedCanvasScrollTop() - webApp.TOP_MENU_HEIGHT) + 12;
         
             var webApp = parent.frames['webapp'];
             var mouseUpX = dest.parentNode.offsetLeft + (webApp.LEFT_SIDEBAR_WIDTH + webApp.HOUR_LISTING_WIDTH + 2) + 12; 
-            var mouseUpY = dest.offsetTop - (webApp.cosmo.view.cal.canvas.getTimedCanvasScrollTop() - webApp.TOP_MENU_HEIGHT) + 12; 
+            var mouseUpY = dest.offsetTop - (webApp.cosmo.view.cal.canvasInstance.getTimedCanvasScrollTop() - webApp.TOP_MENU_HEIGHT) + 12; 
             
             var webApp = parent.frames['webapp'];
             windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownX, mouseDownY);
             windmill.events.triggerMouseEvent(dragged, 'mousedown', true);
             windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpX, mouseUpY);
             windmill.events.triggerMouseEvent(dragged, 'mouseup', true);
-            
+          */
             return true;
     }
     

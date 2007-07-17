@@ -148,9 +148,19 @@ windmill.ui = new function() {
          var method = methodObj[selected].value;
          var newAction = windmill.ui.buildAction(method,{'uuid':id});
          windmill.remote.$(id).innerHTML = newAction.innerHTML;
+         windmill.remote.$(id).style.height = '';
      }
      
      this.buildAction = function(method, params){
+         
+         //in the case that the method we are passsing in isn't in the registry, we can still display it
+         //just without all the interactive UI elements
+         if (windmill.registry.methods[method] == null){
+            var action = windmill.remote.document.createElement('div');
+            action.innerHTML = method;
+            return action;
+         }
+         
          
          //if we just want a blank action
          //default to type for now so everything gets displayed
@@ -180,18 +190,18 @@ windmill.ui = new function() {
          t.cellpadding = "0";
          t.style.font = "10px arial";
          
-         var r = document.createElement("tr");
-         var c = document.createElement("td");         
+         var r = windmill.remote.document.createElement("tr");
+         var c = windmill.remote.document.createElement("td");         
          
          c.innerHTML += 'Method: ';
          r.appendChild(c);
          //Setup the method drop down
-             var s = document.createElement('select');
+             var s = windmill.remote.document.createElement('select');
              s.className = 'smalloption';
              s.style.font = '13px arial';
              s.id = action.id + 'method';
              //Setup default method
-             var o = document.createElement('option');
+             var o = windmill.remote.document.createElement('option');
                  o.value = method;
                  o.selected = 'selected';
                  o.innerHTML += method;
@@ -200,19 +210,19 @@ windmill.ui = new function() {
             //Setup methods option  
              for (var m in windmill.registry.methods){
              
-                 var o = document.createElement('option');
+                 var o = windmill.remote.document.createElement('option');
                  o.value = m;
                  o.innerHTML += m;
                  s.appendChild(o);
              }
             s.setAttribute("onchange","windmill.ui.methodChange('"+action.id+"');");
 
-             var c = document.createElement("td");
+             var c = windmill.remote.document.createElement("td");
              c.colSpan = "3";
              c.appendChild(s);
              r.appendChild(c);
     
-        var spn = document.createElement('span');
+        var spn = windmill.remote.document.createElement('span');
         spn.style.position = 'absolute';
         spn.style.left = '95%';
         spn.style.zindex = '10';
@@ -223,7 +233,7 @@ windmill.ui = new function() {
         '\')" style="height:18px;width:18px;" src="ide/img/play.png"></a><a alt="Delete Action" href="#"><img border=0 onclick="windmill.ui.deleteAction(\''+action.id+
         '\')" style="height:18px;width:18px;" src="ide/img/trash.png"></a>';
         
-        var spn2 = document.createElement('span');
+        var spn2 = windmill.remote.document.createElement('span');
         spn2.style.position = 'absolute';
         spn2.style.left = '85%';
         spn2.style.bottom = '2px';
@@ -232,7 +242,7 @@ windmill.ui = new function() {
         spn2.innerHTML += '<a onclick="windmill.ui.addActionAbove(\''+action.id+'\')" href="#">Above</a><br><a onclick="windmill.ui.addActionBelow(\''+action.id+
         '\')" href="#">Below</a></span>';
         
-        var c = document.createElement("td"); 
+        var c = windmill.remote.document.createElement("td"); 
         c.appendChild(spn);
         c.appendChild(spn2);
         r.appendChild(c);
@@ -240,9 +250,9 @@ windmill.ui = new function() {
 
          //If this method needs a locator
          if ( windmill.registry.methods[method].locator){
-             var r = document.createElement("tr");
+             var r = windmill.remote.document.createElement("tr");
              r.id = action.id+'locatorRow';
-             var c = document.createElement("td"); 
+             var c = windmill.remote.document.createElement("td"); 
              c.innerHTML += 'Locater: ';
              r.appendChild(c);
              
@@ -255,29 +265,29 @@ windmill.ui = new function() {
              if (params['xpath']){ locator = 'xpath'; }
            
             //Setup second select
-             var s1 = document.createElement('select');
+             var s1 = windmill.remote.document.createElement('select');
              s1.className = 'smalloption';
              s1.id = action.id+'locatorType';
              
-             var o1 = document.createElement('option');
+             var o1 = windmill.remote.document.createElement('option');
              o1.value = locator;
              o1.selected = 'selected';
              o1.innerHTML += locator;
              s1.appendChild(o1);
              
              for(var i=0;i<windmill.registry.locator.length;i++){
-               var o1 = document.createElement('option');
+               var o1 = windmill.remote.document.createElement('option');
                o1.value = windmill.registry.locator[i];
                o1.innerHTML += windmill.registry.locator[i];
                s1.appendChild(o1);
              }
              
-             var c = document.createElement("td"); 
+             var c = windmill.remote.document.createElement("td"); 
              c.appendChild(s1);
              r.appendChild(c);
 
              //Add the text box
-             var i0 = document.createElement('input');
+             var i0 = windmill.remote.document.createElement('input');
                  i0.name = 'locValue';
                  i0.className = 'texta';
                  i0.size ='35';
@@ -285,7 +295,7 @@ windmill.ui = new function() {
                  i0.setAttribute('value',params[locator]);
              
              i0.id = action.id + 'locator';   
-             var c = document.createElement("td"); 
+             var c = windmill.remote.document.createElement("td"); 
              c.appendChild(i0);
              r.appendChild(c);
              t.appendChild(r);
@@ -293,42 +303,42 @@ windmill.ui = new function() {
             
             //If this method has a option
             if (windmill.registry.methods[method].option != false){
-             var r = document.createElement("tr");
+             var r = windmill.remote.document.createElement("tr");
              r.id = action.id+'optionRow';
-             var c = document.createElement("td");  
+             var c = windmill.remote.document.createElement("td");  
              c.innerHTML += 'Option: ';
              r.appendChild(c);
              
              //Setup third select
-             var s2= document.createElement('select');
+             var s2= windmill.remote.document.createElement('select');
              s2.className = 'smalloption';
              s2.id = action.id+'optionType';
              
-             var o2 = document.createElement('option');
+             var o2 = windmill.remote.document.createElement('option');
              o2.value = windmill.registry.methods[method].option;
              o2.selected = 'selected';
              o2.innerHTML += windmill.registry.methods[method].option;
              s2.appendChild(o2);
              
              for(var i=0;i<windmill.registry.option.length;i++){
-               var o2 = document.createElement('option');
+               var o2 = windmill.remote.document.createElement('option');
                o2.value = windmill.registry.option[i];
                o2.innerHTML += windmill.registry.option[i];
                s2.appendChild(o2);
               }
-              var c = document.createElement("td");  
+              var c = windmill.remote.document.createElement("td");  
               c.appendChild(s2);
               r.appendChild(c);
               
              //Add the text box
-             var i1 = document.createElement('input');
+             var i1 = windmill.remote.document.createElement('input');
                  i1.name = 'optValue';
                  i1.className = 'texta';
                  i1.size ='35';
                  i1.value = params[windmill.registry.methods[method].option];
                  
              i1.id = action.id + 'option';
-             var c = document.createElement("td");  
+             var c = windmill.remote.document.createElement("td");  
              c.appendChild(i1);
              r.appendChild(c);
              t.appendChild(r);
@@ -560,6 +570,7 @@ windmill.ui = new function() {
              suite.style.width = "99%";
              suite.style.background = "lightblue";
              suite.style.overflow = 'hidden';
+             //suite.style.height='40px';
              suite.style.border = '1px solid black';
              suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
              "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.saveSuite(\'"+suite.id+
@@ -679,6 +690,7 @@ windmill.ui = new function() {
                 
                 //if the playback starts at a specific action, check if we hit that point
                 if (appending == true){
+                  //testArray.push(fleegix.json.serialize(actionObj));
                   testArray.push(actionObj);
                 }
             }

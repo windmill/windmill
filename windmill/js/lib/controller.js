@@ -75,8 +75,8 @@ windmill.controller = new function () {
             }
         
             //if xpath was passed, lookup as xpath
-            if(typeof param_object.xpath != "undefined") {
-                element = this.findElement("xpath=" + param_object.xpath)
+            if(typeof param_object.xpath != "undefined") {                
+                element = this.findElement("xpath=" + param_object.xpath);
             }
         
             //if id was passed, do as such
