@@ -65,7 +65,7 @@ def process_options(argv_list):
             
                     
     if action is None:
-        return action_mapping['runserver']
+        return action_mapping['wx']
     else:
         return action
                 
