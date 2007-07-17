@@ -14,7 +14,8 @@
 
 import windmill
 import xmlrpclib
-import new
+import new, copy
+import transforms
 
 class WindmillTestClient(object):
     
@@ -29,17 +30,26 @@ class WindmillTestClient(object):
         
         self._method_proxy = method_proxy
         
-        for action in self._method_proxy.execute_command({'method':'commands.getControllerMethods','params':{}}):
+        for action in self._method_proxy.execute_command(
+                                   {'method':'commands.getControllerMethods','params':{}})['result']:
             """Bind every available test and action to self, flatten them as well"""
+            
+            class ExecWrapper(object):
+                def __init__(self, exec_method, action_name):
+                    self.action_name = action_name
+                    self.exec_method = exec_method
+                def __call__(self, **kwargs):
+                    return self.exec_method(self.action_name, **kwargs)
+            
             if action.find('command') is not -1:
                 setattr(self, 
                         action.split('.')[-1], 
-                        lambda **kwargs: self._exec_command(action, **kwargs)
+                        ExecWrapper(self._exec_command, action)
                         )
             else:
                 setattr(self, 
                         action.split('.')[-1], 
-                        lambda **kwargs: self._exec_test(action, **kwargs)
+                        ExecWrapper(self._exec_test, action)
                         )
         # We'll need to start the suite for the name passed to the initializer
         self._method_proxy.start_suite(suite_name)
@@ -61,7 +71,7 @@ class WindmillTestClient(object):
         """Execute test, if browser_debugging then just add it to queue"""
         test = {'method':test_name, 'params':kwargs}
         if not self._browser_debugging:
-            print 'test1'
+            print test_name
             result = self._method_proxy.execute_test({'method':test_name, 'params':kwargs})
             if not result['result'] and self._enable_assertions:
                 assert result

@@ -199,7 +199,9 @@ class RPCMethods(object):
         while not resolution_suite.resolved.get(uuid):
             pass
         
-        return resolution_suite.resolved[uuid]['result']
+        result = resolution_suite.resolved[uuid]
+        result.pop('totaltime', None)
+        return result
 
     def execute_json_command(self, json):
         """Add command from json object with 'method' and 'params' defined, block until it returns, return the result"""
@@ -262,18 +264,13 @@ class JSONRPCMethods(RPCMethods):
         for test in tests:
             self.add_test(test, suite_name=test.get('suite_name'))
                 
-    def create_json_save_file(self, tests):
-        filename = str(uuid1())+'.json'
-        f = open(os.path.join(windmill.settings['JS_PATH'], 'saves', filename), 'w')
+    def create_save_file(self, transformer, suite_name, tests):
         for test in tests:
+            if test.get('suite_name'):
+                test.pop('suite_name')
             if test['params'].get('uuid'): 
                 test['params'].pop('uuid')
-            f.write(simplejson.dumps(test))
-            f.write('\n')
-        f.flush()
-        f.close()
-        return '%s/windmill-serv/saves/%s' % (windmill.settings['TEST_URL'], filename)
-        
+        return windmill.authoring.transforms.registry[transformer](suite_name, tests)
         
     def clear_queue(self):
         """Clear the server queue"""
