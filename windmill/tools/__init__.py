@@ -17,13 +17,13 @@ import dev_environment, json_tools, server_tools
 def make_xmlrpc_client():
     import windmill
     import xmlrpclib
-    proxy = windmill.tools.server_tools.ProxiedTransport('localhost:4444')
+    proxy = windmill.tools.server_tools.ProxiedTransport('localhost:%s' % str(windmill.settings['SERVER_HTTP_PORT']))
     xmlrpc_client = xmlrpclib.ServerProxy(windmill.settings['TEST_URL']+'/windmill-xmlrpc/',transport=proxy, allow_none=True)
     return xmlrpc_client        
     
 def make_jsonrpc_client():
     import windmill
-    proxy = windmill.tools.json_tools.JSONRPCTransport(uri=windmill.settings['TEST_URL']+'/windmill-jsonrpc/', proxy_uri='http://localhost:4444')
+    proxy = windmill.tools.json_tools.JSONRPCTransport(uri=windmill.settings['TEST_URL']+'/windmill-jsonrpc/', proxy_uri='http://localhost:'+str(windmill.settings['SERVER_HTTP_PORT']))
     jsonrpc_client = windmill.tools.json_tools.ServerProxy(transport=proxy)
     return jsonrpc_client
     

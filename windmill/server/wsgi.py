@@ -29,8 +29,6 @@ import wsgi_xmlrpc
 import wsgi_proxy
 import wsgi_fileserver
 
-PORT = 4444
-
 START_DST_PORT = 32000
 CURRENT_DST_PORT = [random.randint(32000, 34000)]
     
