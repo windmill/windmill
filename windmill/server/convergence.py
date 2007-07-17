@@ -266,6 +266,8 @@ class JSONRPCMethods(RPCMethods):
         filename = str(uuid1())+'.json'
         f = open(os.path.join(windmill.settings['JS_PATH'], 'saves', filename), 'w')
         for test in tests:
+            if test['params'].get('uuid'): 
+                test['params'].pop('uuid')
             f.write(simplejson.dumps(test))
             f.write('\n')
         f.flush()
