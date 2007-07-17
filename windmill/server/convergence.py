@@ -20,6 +20,7 @@ import simplejson
 import logging
 from uuid import uuid1
 import windmill
+from time import sleep
 from dateutil.parser import parse as dateutil_parse
 
 test_results_logger = logging.getLogger('test_results')
@@ -197,7 +198,7 @@ class RPCMethods(object):
         uuid = self.add_object(queue_method, resolution_suite, action_object)
 
         while not resolution_suite.resolved.get(uuid):
-            pass
+            sleep(1)
         
         result = resolution_suite.resolved[uuid]
         result.pop('totaltime', None)
