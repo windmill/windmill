@@ -164,7 +164,8 @@ class RPCMethods(object):
         """Procedue neutral addition method"""
         callback_object = copy.copy(callback)
         callback_object.update(action_object)
-        if not callback_object['params'].get('uuid'): callback_object['params']['uuid'] = str(uuid1())
+        if not callback_object['params'].get('uuid'): 
+            callback_object['params']['uuid'] = str(uuid1())
         self._logger.debug('Adding object %s' % str(callback_object))
         queue_method(callback_object)    
         resolution_suite.add(callback_object, suite_name)
