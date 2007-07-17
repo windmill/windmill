@@ -29,7 +29,7 @@ def build_test_file(tests):
 def create_python_test_file(suite_name, tests, location=None):
     if location is None: 
         location = os.path.join(windmill.settings['JS_PATH'], 'saves', suite_name+'.py')
-    f = open(location, w)
+    f = open(location, 'w')
     f.write(build_test_file(tests))
     f.flush()
     f.close()
@@ -38,7 +38,7 @@ def create_python_test_file(suite_name, tests, location=None):
 def create_json_test_file(suite_name, tests, location=None):
     if location is None: 
         location = os.path.join(windmill.settings['JS_PATH'], 'saves', suite_name+'.json')
-    f = open(location, w)
+    f = open(location, 'w')
     for test in tests:
         f.write(simplejson.dumps(test))
         f.write('\n')
