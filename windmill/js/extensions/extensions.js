@@ -21,80 +21,66 @@ Copyright 2006, Open Source Applications Foundation
 //to a destination time/day using the Cosmo UI objects to calculate and compensate for
 //The relative DIV offsets
 //
-    //Since the div names are a concatonation of their hash key and a prepending string
-    //I will just recreate that before I actually look up the dom element, then click
-    //the appropriate element
+//Since the div names are a concatonation of their hash key and a prepending string
+//I will just recreate that before I actually look up the dom element, then click
+//the appropriate element
 
-    windmill.controller.extensions.clickLozenge =function(param_object){
-        var hash_key;
-        
-        eval ("hash_key=" + param_object.jsid + ";");
-        //hash_key = eval('('+ param_object.jsid + ')');
-        param_object.id = "eventDivContent__" + hash_key;
-        delete param_object.jsid;
-        
-        //Since id comes before jsid in the lookup order
-        //we don't need to reset it, now go ahead and click it!
-        return this.click(param_object);    
+windmill.controller.extensions.clickLozenge =function (param_object){
+    var hash_key;
+
+    eval ("hash_key=" + param_object.jsid + ";");
+    //hash_key = eval('('+ param_object.jsid + ')');
+    param_object.id = "eventDivContent__" + hash_key;
+    delete param_object.jsid;
+
+    //Since id comes before jsid in the lookup order
+    //we don't need to reset it, now go ahead and click it!
+    return this.click(param_object);
+};
+
+
+windmill.controller.extensions.cosmoDragDrop = function (p){
+
+    // Nothing to see here, move along
+    return true;
+
+    var param = p || {};
+    var dragged = param.dragged;
+    var dest = param.destination;
+    var app = windmill.testingApp;
+
+    dragged.id = dragged.pfx + eval(dragged.jsid);
+    // Delete the jsid to force lookup by regular id
+    delete dragged.jsid;
+    dragged = windmill.controller._lookupDispatch(dragged);
+    dest = windmill.controller._lookupDispatch(dest);
+
+    // Bail out if no drag elem or destination
+    if (!dragged || !dest) {
+        return false;
     }
-    
-    
-    windmill.controller.extensions.cosmoDragDrop = function(param_object){
-        console.log('drag droppin');
-       /*  var p = param_object;
-         var hash_key;
-         
-         eval ("hash_key=" + p.dragged.jsid + ";");
-         p.dragged.id = p.dragged.pfx+ hash_key;
-         delete p.dragged.jsid;
-                 
-                function getPos(elem, evType) {
-                         // param_object.mouseDownPos or param_obj.mouseUpPos
-                         var t = evType + 'Pos';
-                         var res = [];
-                         // Explicit function for getting XY of both
-                         // start and end position for drag  start 
-                         // to be calculated from the initial pos of the
-                         // dragged, and end to be calculated from the
-                         // position of the destination
-                         if (p[t]) {
-                             var f = eval(p[t]);
-                             res = f(elem);
-                         }
-                         // Otherwise naively assume top/left XY for both
-                         // start (dragged) and end (destination)
-                         else {
-                                res = [elem.offsetLeft, elem.offsetTop];
-                         }
-           
-                        return res;
-                    }
-                    
-            var dragged = windmill.controller._lookupDispatch(p.dragged);
-            var dest = windmill.controller._lookupDispatch(p.destination);
-            
-            if ((typeof(dragged) == 'undefined') || (typeof(dest) == 'undefined')){
-              return false;
-            }
-            
-            var mouseDownPos = getPos(dragged, 'mouseDown');
-            var mouseUpPos = getPos(dest, 'mouseUp');
-        
-            var webApp = parent.frames['webapp'];
-            var mouseDownX = dragged.parentNode.offsetLeft + (webApp.LEFT_SIDEBAR_WIDTH + webApp.HOUR_LISTING_WIDTH + 2) + 12; 
-            var mouseDownY = dragged.parentNode.offsetTop - (webApp.cosmo.view.cal.canvasInstance.getTimedCanvasScrollTop() - webApp.TOP_MENU_HEIGHT) + 12;
-        
-            var webApp = parent.frames['webapp'];
-            var mouseUpX = dest.parentNode.offsetLeft + (webApp.LEFT_SIDEBAR_WIDTH + webApp.HOUR_LISTING_WIDTH + 2) + 12; 
-            var mouseUpY = dest.offsetTop - (webApp.cosmo.view.cal.canvasInstance.getTimedCanvasScrollTop() - webApp.TOP_MENU_HEIGHT) + 12; 
-            
-            var webApp = parent.frames['webapp'];
-            windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownX, mouseDownY);
-            windmill.events.triggerMouseEvent(dragged, 'mousedown', true);
-            windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpX, mouseUpY);
-            windmill.events.triggerMouseEvent(dragged, 'mouseup', true);
-          */
-            return true;
-    }
-    
-  
+
+    var mouseDownX = dragged.parentNode.offsetLeft +
+        (app.LEFT_SIDEBAR_WIDTH + app.HOUR_LISTING_WIDTH + 2) + 12;
+    var mouseDownY = dragged.parentNode.offsetTop -
+        (app.cosmo.view.cal.canvasInstance.getTimedCanvasScrollTop() -
+        app.TOP_MENU_HEIGHT) + 12;
+
+    var mouseUpX = dest.parentNode.offsetLeft +
+        (app.LEFT_SIDEBAR_WIDTH + app.HOUR_LISTING_WIDTH + 2) + 12;
+    var mouseUpY = dest.offsetTop -
+        (app.cosmo.view.cal.canvasInstance.getTimedCanvasScrollTop() -
+        app.TOP_MENU_HEIGHT) + 12;
+
+    windmill.events.triggerMouseEvent(app.document.body,
+        'mousemove', true, mouseDownX, mouseDownY);
+    windmill.events.triggerMouseEvent(dragged,
+        'mousedown', true);
+    windmill.events.triggerMouseEvent(app.document.body,
+        'mousemove', true, mouseUpX, mouseUpY);
+    windmill.events.triggerMouseEvent(dragged,
+        'mouseup', true);
+        return true;
+};
+
+
