@@ -24,7 +24,7 @@ from StringIO import StringIO
 class Frame(wx.Frame):
     """Frame that displays the Main window"""
 
-    def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='WindyMill', shell_objects = None, **kwargs):
+    def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='WindMill', shell_objects = None, **kwargs):
         
         self.shell_objects = shell_objects
         
@@ -98,8 +98,7 @@ class Frame(wx.Frame):
         menuBar.Append(optionsMenu, "O&ptions")
         menuBar.Append(helpMenu, "&Help")
 
-        self.SetMenuBar(menuBar)
-        
+        self.SetMenuBar(menuBar)        
     def RunTest(self, event):
         #popup a dialog here to run it
         dialog = wx.FileDialog (None,
@@ -299,7 +298,7 @@ class WindmillOutputPanel(wx.Panel, listmix.ColumnSorterMixin, logging.Handler):
     def SearchItems(self, searchValue):
 	
 	print "Before search the master dict has: ", len(self.allLogItems)
-	self.Freeze()
+	#self.Freeze()
 	try:
 	    tempDict = {}
     
@@ -333,9 +332,11 @@ class WindmillOutputPanel(wx.Panel, listmix.ColumnSorterMixin, logging.Handler):
 	    self.itemDataMap.update(tempDict)
 	    
 	    self.listCtrl.ResetList(self.itemDataMap)
-	    #self.SortListItems()
+	    self.SortListItems()
+
 	finally:
-	    self.Thaw()
+            
+	   # self.Thaw()
             print "finished searching"
 	print "After search the master dict has: ", len(self.allLogItems)
 
@@ -344,7 +345,7 @@ class WindmillOutputPanel(wx.Panel, listmix.ColumnSorterMixin, logging.Handler):
         return self.listCtrl
     
     def emit(self, record):
-        self.Freeze()
+        #self.Freeze()
 	try:
 	    # Gets the index to the comlumns and their values
 	    index, key, rows = self.listCtrl.InsertRecord(record)
@@ -361,7 +362,7 @@ class WindmillOutputPanel(wx.Panel, listmix.ColumnSorterMixin, logging.Handler):
 	    self.SortListItems()
 	finally:
             print "finished emitting"
-	    self.Thaw()
+	    #self.Thaw()
 
     def __del__(self):
         self.close()    
@@ -409,10 +410,10 @@ class WindmillListCtrl(wx.ListView, listmix.ListCtrlAutoWidthMixin):
     def InsertNewItem(self, items, levelno=0, index=-1):
         """Inserts a new item at the given debug level with defined items"""
 
-        print "\n\nIndex before insert: ", index
+        #print "\n\nIndex before insert: ", index
         #insert a str item in the first column to create a new row
         index = self.InsertStringItem(sys.maxint, items[0])
-        print "\nIndex after insert: ", index
+        #print "\nIndex after insert: ", index
 
         ##Assign the row column depending on the record level
         cases = {
