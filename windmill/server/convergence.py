@@ -72,7 +72,6 @@ class TestResolutionSuite(object):
         test['result'] = result
         test['starttime'] = starttime
         test['endtime'] = endtime
-        test['totaltime'] = endtime - starttime
         self.resolved[uuid] = test
                 
         if result is False:
