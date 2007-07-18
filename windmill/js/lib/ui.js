@@ -595,6 +595,7 @@ windmill.ui = new function() {
        var action = windmill.ui.buildAction(null,{})
        windmill.remote.$(suite.id).appendChild(action); 
      }
+     
      this.getSuite = function(){
          var suite = windmill.remote.$('recordingSuite'+windmill.ui.recordSuiteNum);
          if (suite == null){
@@ -635,6 +636,7 @@ windmill.ui = new function() {
             }
     }
     
+    //Send the suite to save to the backend and receive an url for the user to save
     this.saveSuite = function(id){
        var suite = windmill.remote.$(id);
        var testArray = [];

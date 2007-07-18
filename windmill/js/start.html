@@ -21,13 +21,13 @@ Copyright 2006, Open Source Applications Foundation
 		<script type="text/javascript" src="lib/registry.js"></script>
 		<script type="text/javascript" src="lib/controller.js"></script>
 		<script type="text/javascript">
-			var url = 'lib/mozcontroller.js';
+			var url = 'lib/mozController.js';
 
 			if (browser.isIE){
-				url = 'lib/iecontroller.js';
+				url = 'lib/ieController.js';
 			}
 			else if(browser.isSafari){
-				url = 'lib/safcontroller.js';
+				url = 'lib/safController.js';
 			}
 			document.write('<script src="', url, '" type="text/javascript"><\/script>');
 		</script>
