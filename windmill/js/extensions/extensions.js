@@ -41,9 +41,6 @@ windmill.controller.extensions.clickLozenge =function (param_object){
 
 windmill.controller.extensions.cosmoDragDrop = function (p){
 
-    // Nothing to see here, move along
-    return true;
-
     var param = p || {};
     var dragged = param.dragged;
     var dest = param.destination;
@@ -59,18 +56,20 @@ windmill.controller.extensions.cosmoDragDrop = function (p){
     if (!dragged || !dest) {
         return false;
     }
+    // Offsets to convert abs XY pos to local pos on canvas
+    var vOff = app.TOP_MENU_HEIGHT +
+        app.ALL_DAY_RESIZE_AREA_HEIGHT +
+        app.DAY_LIST_DIV_HEIGHT +
+        app.ALL_DAY_RESIZE_HANDLE_HEIGHT -
+        app.cosmo.view.cal.canvas.getTimedCanvasScrollTop();
+    var hOff = app.LEFT_SIDEBAR_WIDTH +
+        app.HOUR_LISTING_WIDTH + 12;
 
-    var mouseDownX = dragged.parentNode.offsetLeft +
-        (app.LEFT_SIDEBAR_WIDTH + app.HOUR_LISTING_WIDTH + 2) + 12;
-    var mouseDownY = dragged.parentNode.offsetTop -
-        (app.cosmo.view.cal.canvasInstance.getTimedCanvasScrollTop() -
-        app.TOP_MENU_HEIGHT) + 12;
+    var mouseDownX = dragged.parentNode.offsetLeft + hOff;
+    var mouseDownY = dragged.parentNode.offsetTop + vOff;
 
-    var mouseUpX = dest.parentNode.offsetLeft +
-        (app.LEFT_SIDEBAR_WIDTH + app.HOUR_LISTING_WIDTH + 2) + 12;
-    var mouseUpY = dest.offsetTop -
-        (app.cosmo.view.cal.canvasInstance.getTimedCanvasScrollTop() -
-        app.TOP_MENU_HEIGHT) + 12;
+    var mouseUpX = dest.parentNode.offsetLeft + hOff;
+    var mouseUpY = dest.offsetTop + vOff;
 
     windmill.events.triggerMouseEvent(app.document.body,
         'mousemove', true, mouseDownX, mouseDownY);
