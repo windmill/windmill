@@ -177,7 +177,6 @@ windmill.xhr = new function () {
         }
     }
     
-    
     //Send the report
     this.sendReport = function(method, result, timer){
         

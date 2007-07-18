@@ -40,7 +40,7 @@ Copyright 2006, Open Source Applications Foundation
     
     
     windmill.controller.extensions.cosmoDragDrop = function(param_object){
-        
+        console.log('drag droppin');
        /*  var p = param_object;
          var hash_key;
          

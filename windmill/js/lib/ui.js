@@ -499,7 +499,7 @@ windmill.ui = new function() {
 
           if (e.target.type == 'textarea'){
               params['text'] = e.target.value;
-              windmill.remote.$("recordingSuite").appendChild(this.buildAction('type', params));
+              windmill.remote.$("recordingSuite"+windmill.ui.recordSuiteNum).appendChild(this.buildAction('type', params));
 
           }
           else if (e.target.type == 'text'){
