@@ -62,16 +62,20 @@
 			
 		}
 		var toggleExplore = function(){
-			if ($('toggleDomExp').innerHTML == 'DOM Explorer On'){
+			if ($('explorer').src.indexOf("ide/img/xon.png")  != -1){
+				$('domExp').style.visibility = 'visible';
 				$('domExp').innerHTML = '';
 				opener.windmill.ui.domExplorerOn();
 				opener.window.focus();
-				$('toggleDomExp').innerHTML = 'DOM Explorer Off';
+				$('explorer').src = 'ide/img/xoff.png';
+
 			}
 			else {
+				$('domExp').style.visibility = 'hidden';
 				opener.windmill.ui.domExplorerOff();
-				$('toggleDomExp').innerHTML = 'DOM Explorer On';
+				$('explorer').src = 'ide/img/xon.png';
 				$('domExp').innerHTML = '';
+
 			}
 		}
 	</script>
@@ -79,20 +83,18 @@
 		
 <body onload="javascript:interpreterManager.initialize();opener.windmill.Start();">
 <div id="main" style="position:absolute;width:100%;height:100%;">
-	<div id="runningStatus" align="center" style="position:absolute;width:196px;height:18px;left:55%;top:1%;font-size:12px arial;color:blue;">Status: Nothing yet..</div>
+	<img border=no style="height:40px;width:40px;" src="ide/img/wmIcon.png" alt="Welcome to Windmill!">
+	<div id="runningStatus" align="center" style="position:absolute;width:300px;height:18px;left:35px;top:15px;font-size:13px;color:#3f6d75;"><b>Status:</b> Nothing yet..</div>
 
-	<div id="controllers" style="width:100%;height:40px">
+	<div id="controllers" style="position:absolute;left:340px;top:5px;">
 		
-		&nbsp<a href="#"><img name='record' id="record" border=no src="ide/img/record.png" onClick="toggleRec();" ></a>
-		&nbsp<a href="#"><img name ='playback' id="playback" border=no src="ide/img/playback.png" onClick="togglePlay();"></a>
+		<a href="#" title="Toggle Recorder"><img alt="Toggle Recorder" name='record' id="record" border=no src="ide/img/record.png" onClick="toggleRec();" ></a>
+		&nbsp<a href="#" title="Play All"><img alt="Play All" name ='playback' id="playback" border=no src="ide/img/playback.png" onClick="togglePlay();"></a>
+		&nbsp<a href="#" title="Toggle DOM Explorer"><img alt="Toggle DOM Explorer" name ='explorer' id="explorer" border=no src="ide/img/xon.png" onClick="toggleExplore();"></a>
 		
-		<div id="domExplore" align="center" style="position:absolute;width:196px;height:30px;left:18%;top:1%">
-			<a href="#" id="toggleDomExp" onClick="javascript:toggleExplore();">DOM Explorer On</a>
-			<div id="domExp" style="font:12px arial;color:purple;">
-			</div>
-		</div>
 	</div>
-	
+	<div id="domExp" style="visibility:hidden;position:absolute;background:white;left:130px;top:40px;z-index:100;font:18px arial;color:#3f6d75;border:1px solid #aaa;">
+		</div>
 	<div id="ide" style="width:100%;height:85%;border:1px solid #aaa;overflow:auto;">
 	</div>
 	<div id="navigation" align=center style="height:6%;font:11px arial;">
@@ -156,7 +158,11 @@
 		Break on failure: <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="opener.windmill.ui.toggleBreak();"><br>
 		Suppress Javascript Alerts : <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts' onclick=""><br>
 		Auto Scroll IDE to bottom : <INPUT TYPE=checkbox CHECKED ID='autoScroll' onclick=""><br>
-		Absolute click sensitivity when recording : <INPUT TYPE=checkbox UNCHECKED ID='clickOn' onclick="">
+		Absolute click sensitivity when recording : <INPUT TYPE=checkbox UNCHECKED ID='clickOn' onclick=""><br>
+		Suite Save Formatting: <SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
+								<OPTION selected>python</option>
+								<OPTION>json</option>
+							   </SELECT>
 		<br>
 		<br><div id="loopButton" style="font:18px arial;">
 		<a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Pause Loop</a>

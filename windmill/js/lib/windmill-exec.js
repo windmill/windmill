@@ -21,7 +21,7 @@ function Load(){
        windmill.testingApp = parent.frames['webapp'];
            
        if (windmill.showRemote == true){           
-           windmill.remote = window.open('remote.html','windmill_Remote','width=450,height=500,toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');
+           windmill.remote = window.open('remote.html','windmill_Remote','width=465,height=500,toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');
        } 
      
        setTimeout("windmill.controller.continueLoop()", 7000);

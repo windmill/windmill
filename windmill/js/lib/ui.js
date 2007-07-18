@@ -46,8 +46,7 @@ windmill.ui = new function() {
         }
         else{
             loopButton.value = "Loop Stopped";
-        }
-           
+        }    
     }
     
     //Writing to the performance tab
@@ -98,11 +97,17 @@ windmill.ui = new function() {
         e.target.style.border = windmill.ui.domExplorerBorder;
     }
     
+    this.explorerClick = function(e){
+      	windmill.remote.window.focus();
+
+    }
+    
     //Set the listeners for the dom explorer
     this.domExplorerOn = function(){
         //fleegix.event.listen(windmill.testingApp.document, 'onmouseover', windmill.ui, 'setIdInRemote');
         fleegix.event.listen(windmill.testingApp.document, 'onmouseover', windmill.ui, 'setIdInRemote');
         fleegix.event.listen(windmill.testingApp.document, 'onmouseout', windmill.ui, 'resetBorder');
+        fleegix.event.listen(windmill.testingApp.document, 'onclick', windmill.ui, 'explorerClick');
         
     }
     
@@ -110,6 +115,8 @@ windmill.ui = new function() {
     this.domExplorerOff = function(){
          fleegix.event.unlisten(windmill.testingApp.document, 'onmouseover', windmill.ui, 'setIdInRemote');
          fleegix.event.unlisten(windmill.testingApp.document, 'onmouseout', windmill.ui, 'resetBorder');
+         fleegix.event.unlisten(windmill.testingApp.document, 'onclick', windmill.ui, 'explorerClick');
+
     }
      
        this.scrollRecorderTextArea = function() {
@@ -152,15 +159,7 @@ windmill.ui = new function() {
      }
      
      this.buildAction = function(method, params){
-         
-         //in the case that the method we are passsing in isn't in the registry, we can still display it
-         //just without all the interactive UI elements
-         if (windmill.registry.methods[method] == null){
-            var action = windmill.remote.document.createElement('div');
-            action.innerHTML = method;
-            return action;
-         }
-         
+        
          
          //if we just want a blank action
          //default to type for now so everything gets displayed
@@ -182,6 +181,41 @@ windmill.ui = new function() {
          action.style.background = 'lightyellow';
          action.style.width = '100%';
          //action.style.height = '50px';
+         
+         //in the case that the method we are passsing in isn't in the registry, we can still display it
+         //just without all the interactive UI elements
+         if (windmill.registry.methods[method] == null){
+            var t = windmill.remote.document.createElement('table');
+            t.border = "0";
+            t.cellspacing = "1";
+            t.cellpadding = "0";
+            t.style.font = "10px arial";
+            t.style.width = "100%";             
+            var r = windmill.remote.document.createElement("tr");
+            var c = windmill.remote.document.createElement("td"); 
+            c.style.width = '95%';
+            c.innerHTML += '<div id="'+action.id+'method">'+ method +'</div>';
+            c.innerHTML += '<div style="display:none;" id="'+action.id+'params">'+ fleegix.json.serialize(params) +'</div>';
+            r.appendChild(c);
+
+            var c = windmill.remote.document.createElement("td"); 
+            c.innerHTML += '<a onclick="windmill.ui.addActionAbove(\''+action.id+
+            '\')" href="#">Above</a><br><a onclick="windmill.ui.addActionBelow(\''+action.id+
+            '\')" href="#">Below</a></span>';
+            r.appendChild(c);
+
+            
+            var c = windmill.remote.document.createElement("td"); 
+            c.innerHTML += '<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.sendPlayBack(\''+action.id+
+            '\')" style="height:18px;width:18px;" src="ide/img/play.png"></a><a alt="Delete Action" href="#"><img border=0 onclick="windmill.ui.deleteAction(\''+action.id+
+            '\')" style="height:18px;width:18px;" src="ide/img/trash.png"></a>';
+            
+            r.appendChild(c);
+            t.appendChild(r);
+            
+            action.appendChild(t);
+            return action;
+         }
          
          //We need a table to format this
          var t = windmill.remote.document.createElement('table');
@@ -637,8 +671,14 @@ windmill.ui = new function() {
              return true;
          }
    
-         var json_object = new windmill.xhr.json_call('1.1', 'create_json_save_file');
+         //Get the language to save these suckers in
+         var langSI = windmill.remote.$('suiteSaveFormat').selectedIndex;
+         var lang = windmill.remote.$('suiteSaveFormat')[langSI].value;
+         
+         var json_object = new windmill.xhr.json_call('1.1', 'create_save_file');
          var params_obj = {};
+         params_obj.transformer = lang;
+         params_obj.suite_name = id;
          params_obj.tests = testArray;
          json_object.params = params_obj;
          var json_string = fleegix.json.serialize(json_object)
@@ -672,24 +712,34 @@ windmill.ui = new function() {
                 var actionObj = {};
                 actionObj.suite_name = suites[i].id;
                 actionObj.version = "0.1";
-                var si = windmill.remote.$(suites[i].childNodes[j].id+'method').selectedIndex;
-                actionObj.method = windmill.remote.$(suites[i].childNodes[j].id+'method')[si].value;
+                
+                //If it wasn't a standard UI element, then I stuck the params in a div
+                if (windmill.remote.$(suites[i].childNodes[j].id+'params') != null){
+                 actionObj.method = windmill.remote.$(suites[i].childNodes[j].id+'method').innerHTML;
+                 actionObj.params = eval('('+windmill.remote.$(suites[i].childNodes[j].id+'params').innerHTML + ')'); 
+                }
+                //if its a standard UI element build the params
+                else {
+                  var si = windmill.remote.$(suites[i].childNodes[j].id+'method').selectedIndex;
+                  actionObj.method = windmill.remote.$(suites[i].childNodes[j].id+'method')[si].value;
 
-                var paramsObj = {};
-                paramsObj.uuid = suites[i].childNodes[j].id;
+                  var paramsObj = {};
+                  paramsObj.uuid = suites[i].childNodes[j].id;
                 
-                if (windmill.registry.methods[actionObj.method].locator){
-                  var si = windmill.remote.$(suites[i].childNodes[j].id+'locatorType').selectedIndex;
-                  paramsObj[windmill.remote.$(suites[i].childNodes[j].id+'locatorType')[si].value] = windmill.remote.$(suites[i].childNodes[j].id+'locator').value;
-                }
-                if (windmill.registry.methods[actionObj.method].option){
-                  var si = windmill.remote.$(suites[i].childNodes[j].id+'optionType').selectedIndex;
-                  paramsObj[windmill.remote.$(suites[i].childNodes[j].id+'optionType')[si].value] = windmill.remote.$(suites[i].childNodes[j].id+'option').value;
-                }
-                actionObj.params = paramsObj;
+                  if (windmill.registry.methods[actionObj.method].locator){
+                    var si = windmill.remote.$(suites[i].childNodes[j].id+'locatorType').selectedIndex;
+                    paramsObj[windmill.remote.$(suites[i].childNodes[j].id+'locatorType')[si].value] = windmill.remote.$(suites[i].childNodes[j].id+'locator').value;
+                  }
+                  if (windmill.registry.methods[actionObj.method].option){
+                    var si = windmill.remote.$(suites[i].childNodes[j].id+'optionType').selectedIndex;
+                    paramsObj[windmill.remote.$(suites[i].childNodes[j].id+'optionType')[si].value] = windmill.remote.$(suites[i].childNodes[j].id+'option').value;
+                  }
                 
+                  actionObj.params = paramsObj;
+                }
                 //if the playback starts at a specific action, check if we hit that point
                 if (appending == true){
+                  windmill.remote.$(suites[i].childNodes[j].id).style.background = 'lightyellow';
                   //testArray.push(fleegix.json.serialize(actionObj));
                   testArray.push(actionObj);
                 }
@@ -697,20 +747,25 @@ windmill.ui = new function() {
         }
       }
         
-        windmill.ui.recordOff();
+     windmill.ui.recordOff();
           
-        
+     //console.log(testArray);    
      var respRun = function(str){
          setTimeout('windmill.remote.$(\'playback\').src = \'ide/img/playback.png\'', 3000);
          return true;
      }
-   
+    
      var json_object = new windmill.xhr.json_call('1.1', 'restart_test_run');
      var params_obj = {};
      params_obj.tests = testArray;
      json_object.params = params_obj;
      var json_string = fleegix.json.serialize(json_object)
-     fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
+     
+     doCall = function(){
+       fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
+     }
+     
+     setTimeout('doCall()', 500);
 
   }
           

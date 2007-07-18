@@ -70,28 +70,34 @@ windmill.xhr = new function () {
                 
                 //If the action already exists in the UI, skip all the creating suite stuff
                 if (windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid) != null){
-                 var action = windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid);   
+                 var action = windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid);
+                 action.style.background = 'lightyellow';
                 }
-                //Build UI if there is a suite name
-                else if( windmill.xhr.xhrResponse.result.suite_name != null){
-                    var suite = windmill.remote.$(windmill.xhr.xhrResponse.result.suite_name);
-                    //if the suite isn't already there, create it
-                    if (suite == null){
-                         var ide = windmill.remote.$('ide');
-                         var suite = windmill.remote.document.createElement('div');
-                         suite.id = windmill.xhr.xhrResponse.result.suite_name;
-                         suite.style.width = "99%";
-                         suite.style.background = "lightblue";
-                         suite.style.overflow = 'hidden';
-                         suite.style.border = '1px solid black';
-                         suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
-                            windmill.xhr.xhrResponse.result.suite_name+"</td><td><span align=\"right\" style='top:0px;float:right;'>"+
-                            "<a href=\"#\" onclick=\"windmill.ui.saveSuite(\'"+windmill.xhr.xhrResponse.result.suite_name+
-                             "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
-                             "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+
-                             windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table></div>";
-                         windmill.remote.$('ide').appendChild(suite);
-                    }
+                else {
+                  //If the suite name is null, set it to default
+                  if( windmill.xhr.xhrResponse.result.suite_name == null){
+                    windmill.xhr.xhrResponse.result.suite_name = 'Default';
+                  }
+                  //Try to grab the stuite in the UI
+                  var suite = windmill.remote.$(windmill.xhr.xhrResponse.result.suite_name);
+                
+                  //if the suite isn't already there, create it
+                  if (suite == null){
+                       var ide = windmill.remote.$('ide');
+                       var suite = windmill.remote.document.createElement('div');
+                       suite.id = windmill.xhr.xhrResponse.result.suite_name;
+                       suite.style.width = "99%";
+                       suite.style.background = "lightblue";
+                       suite.style.overflow = 'hidden';
+                       suite.style.border = '1px solid black';
+                       suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
+                          windmill.xhr.xhrResponse.result.suite_name+"</td><td><span align=\"right\" style='top:0px;float:right;'>"+
+                          "<a href=\"#\" onclick=\"windmill.ui.saveSuite(\'"+windmill.xhr.xhrResponse.result.suite_name+
+                           "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
+                           "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+
+                           windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table></div>";
+                       windmill.remote.$('ide').appendChild(suite);
+                     }
                     
                     //Add the action to the suite
                     var action = windmill.ui.buildAction(windmill.xhr.xhrResponse.result.method,windmill.xhr.xhrResponse.result.params);
@@ -104,7 +110,6 @@ windmill.xhr = new function () {
                         ide.scrollTop = ide.scrollHeight;
                     }
                 }
-                
                 //Run the action
                 //If its a user extension.. run it
                 try {

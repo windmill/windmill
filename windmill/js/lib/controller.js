@@ -166,35 +166,25 @@ windmill.controller = new function () {
         
         var n = this._lookupDispatch(param_object);
         var validator = param_object.validator;
-      
-        if (n.nodeType == 1) { 
-
-                    //If the validator string was found we return true
-                    if (n.innerHTML.indexOf(validator) != -1){
-                        return true;
-                    }
-                    //If the validator string was found we return true
-                    if (n.value.indexOf(validator) != -1){
-                        return true;
-                    }      
-                }
-        
-
-             else{  
-                for(var m = n.firstChild; m != null; m = m.nextSibling) {
-                    
-                    //alert(m.nodeValue);
-                    //If the validator string was found we return true
-                    if (m.value.indexOf(validator, 0) != -1){
-                        return true;
-                    }
-                    if (m.innerHTML.indexOf(validator, 0) != -1){
-                        return true;
-                    }
-                }
+      try{
+       if (n.innerHTML.indexOf(validator) != -1){
+         return true;
+       }
+       if (n.hasChildNodes()){
+          for(var m = n.firstChild; m != null; m = m.nextSibling) {       
+           if (m.innerHTML.indexOf(validator) != -1){
+            return true;
+           }
+           if (m.value.indexOf(validator) != -1){
+             return true;  
+           }
+          }
         }
-    //console.log(false);
-    throw false;
+      }
+      catch(error){
+       return false;
+      } 
+       return false;
    };  
     
   
