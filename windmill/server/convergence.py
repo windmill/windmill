@@ -32,13 +32,18 @@ class ControllerQueue(object):
         self.trs = test_resolution_suite
         self.command_queue = []
         self.test_queue = []
+        self.current_suite = None
         
-    def add_command(self, command):
-        
+    def add_command(self, command, suite_name=None):
+        if suite_name is None and not command.get('suite_name'):
+            suite_name = self.current_suite
+        command['suite_name'] = suite_name
         self.command_queue.append(command)
     
-    def add_test(self, test):
-        
+    def add_test(self, test, suite_name=None):
+        if suite_name is None and not test.get('suite_name'):
+            suite_name = self.current_suite
+        test['suite_name'] = suite_name
         self.test_queue.append(test)
         
     def command(self, command):
@@ -159,6 +164,7 @@ class RPCMethods(object):
         
     def start_suite(self, suite_name):
         self._test_resolution_suite.start_suite(suite_name)
+        self._queue.current_suite = suite_name
         return 200
     
     def stop_suite(self):
@@ -172,7 +178,7 @@ class RPCMethods(object):
         if not callback_object['params'].get('uuid'): 
             callback_object['params']['uuid'] = str(uuid1())
         self._logger.debug('Adding object %s' % str(callback_object))
-        queue_method(callback_object)    
+        queue_method(callback_object, suite_name=suite_name)    
         return callback_object['params']['uuid']
     
     def add_json_test(self, json, suite_name=None):
@@ -242,6 +248,7 @@ class JSONRPCMethods(RPCMethods):
         
     def next_action(self):
         """The next action for the browser to execute"""
+        windmill.ide_is_awake = True
         action = self._queue.next_action()
         if action is not None:
             self._logger.debug('queue has next_action %s' % str(action))
