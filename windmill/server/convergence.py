@@ -27,8 +27,9 @@ test_results_logger = logging.getLogger('test_results')
 
 class ControllerQueue(object):
     
-    def __init__(self):
-        
+    def __init__(self, command_resolution_suite, test_resolution_suite): 
+        self.crs = command_resolution_suite
+        self.trs = test_resolution_suite
         self.command_queue = []
         self.test_queue = []
         
@@ -47,9 +48,13 @@ class ControllerQueue(object):
     def next_action(self):
         
         if len(self.command_queue) is not 0:
-            return self.command_queue.pop(0)
+            command = self.command_queue.pop(0)
+            self.crs.add(command)
+            return command
         elif len(self.test_queue) is not 0:
-            return self.test_queue.pop(0)
+            test = self.test_queue.pop(0)
+            self.trs.add(test)
+            return test
         else:
             return None
             
@@ -108,7 +113,7 @@ class CommandResolutionSuite(object):
         
     def resolve(self, status, uuid, result):
         """Resolve command by uuid"""
-        command = self.unresolved.pop(uuid)
+        command = self.unresolved.pop(uuid, None)
         command['status'] = status
         command['result'] = result
         self.resolved[uuid] = command
@@ -160,7 +165,7 @@ class RPCMethods(object):
         self._test_resolution_suite.stop_suite()
         return 200
         
-    def add_object(self, queue_method, resolution_suite, action_object, suite_name=None):
+    def add_object(self, queue_method, action_object, suite_name=None):
         """Procedue neutral addition method"""
         callback_object = copy.copy(callback)
         callback_object.update(action_object)
@@ -168,28 +173,27 @@ class RPCMethods(object):
             callback_object['params']['uuid'] = str(uuid1())
         self._logger.debug('Adding object %s' % str(callback_object))
         queue_method(callback_object)    
-        resolution_suite.add(callback_object, suite_name)
         return callback_object['params']['uuid']
     
     def add_json_test(self, json, suite_name=None):
         """Add test from json object with 'method' and 'params' defined"""
         action_object = simplejson.loads(json)
-        self.add_object(self._queue.add_test, self._test_resolution_suite, action_object, suite_name)
+        self.add_object(self._queue.add_test,  action_object, suite_name)
         return 200
         
     def add_test(self, test_object, suite_name=None):
-        self.add_object(self._queue.add_test, self._test_resolution_suite, test_object, suite_name)
+        self.add_object(self._queue.add_test,  test_object, suite_name)
         return 200
 
     def add_json_command(self, json):    
         """Add command from json object with 'method' and 'params' defined"""
         action_object = simplejson.loads(json)
-        self.add_object(self._queue.add_command, self._command_resolution_suite, action_object)
+        self.add_object(self._queue.add_command, action_object)
         return 200
         
     def add_command(self, command_object):
         """Add command from object"""
-        self.add_object(self._queue.add_command, self._command_resolution_suite, command_object)
+        self.add_object(self._queue.add_command, command_object)
         return 200
         
     def execute_object(self, queue_method, resolution_suite, action_object):
@@ -206,20 +210,20 @@ class RPCMethods(object):
     def execute_json_command(self, json):
         """Add command from json object with 'method' and 'params' defined, block until it returns, return the result"""
         action_object = simplejson.loads(json)
-        return self.execute_object(self._queue.add_command, self._command_resolution_suite, action_object)
+        return self.execute_object(self._queue.add_command, action_object)
 
     def execute_json_test(self, json):
         """Add test from json object with 'method' and 'params' defined, block until it returns, return the result"""
         action_object = simplejson.loads(json)
-        return self.execute_object(self._queue.add_test, self._test_resolution_suite, action_object)
+        return self.execute_object(self._queue.add_test, action_object)
         
     def execute_command(self, action_object):
         """Add command from dict object with 'method' and 'params' defined, block until it returns, return the result"""
-        return self.execute_object(self._queue.add_command, self._command_resolution_suite, action_object)
+        return self.execute_object(self._queue.add_command, action_object)
         
     def execute_test(self, action_object):
         """Add test from dict object with 'method' and 'params' defined, block until it returns, return the result"""
-        return self.execute_object(self._queue.add_test, self._test_resolution_suite, action_object)
+        return self.execute_object(self._queue.add_test, action_object)
         
     def run_json_tests(self, tests):
         """Run list of json tests"""
@@ -261,6 +265,7 @@ class JSONRPCMethods(RPCMethods):
     def restart_test_run(self, tests):
         self.clear_queue()
         self._test_resolution_suite.unresolved = {}
+        self._command_resolution_suite.unresolved ={}
         for test in tests:
             self.add_test(test, suite_name=test.get('suite_name'))
                 

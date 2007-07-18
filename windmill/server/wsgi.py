@@ -129,9 +129,9 @@ def make_windmill_server(http_port=None, js_path=None):
         js_path = windmill.settings['JS_PATH']
         
     import convergence
-    queue = convergence.ControllerQueue()
     test_resolution_suite = convergence.TestResolutionSuite()
     command_resolution_suite = convergence.CommandResolutionSuite()
+    queue = convergence.ControllerQueue(command_resolution_suite, test_resolution_suite)
     xmlrpc_methods_instance = convergence.XMLRPCMethods(queue, test_resolution_suite, command_resolution_suite)
     jsonrpc_methods_instance = convergence.JSONRPCMethods(queue, test_resolution_suite, command_resolution_suite)
     
