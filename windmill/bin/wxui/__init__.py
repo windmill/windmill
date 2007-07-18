@@ -33,14 +33,14 @@ class Frame(wx.Frame):
         
         #Call function to create menu items
         self.createMenu()
-        print "call createTabs method"
-        #Call function to setup the tabbed menus
+
+	#Call function to setup the tabbed menus
         self.createTabs()
-        print "call setupListener method"
-        #Call funciton to setup the logging for the ui
+
+	#Call funciton to setup the logging for the ui
         self.setupListener()
-        print "call setupAboutInfo method"
-        #initialize the info for the about dialog box
+
+	#initialize the info for the about dialog box
         self.setupAboutInfo()
 
         ##bind the import objects
@@ -71,7 +71,7 @@ class Frame(wx.Frame):
         
         self.theLogger = logging.getLogger()
         self.theLogger.addHandler(self.programOutput)       
-        self.theLogger.setLevel(logging._levelNames["INFO"])
+        self.theLogger.setLevel(logging._levelNames["DEBUG"])
         
     def createMenu(self):
         """Creates the menu system"""
@@ -124,136 +124,142 @@ class Frame(wx.Frame):
             
     def createTabs(self):
         """Creates and lays out the tab menu appropriately"""
-        print"creating flatnotebook object"
         ##initialize a notebook widget
         self.book = fnb.FlatNotebook(self, wx.ID_ANY, style=fnb.FNB_NODRAG|fnb.FNB_NO_NAV_BUTTONS|fnb.FNB_NO_X_BUTTON)
 
         # Add some pages to the second notebook
         self.Freeze()
-        
-        self.appSizer = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(self.appSizer)
-        
-        self.appSizer.Add(self.book, 1, wx.EXPAND)
-        print "creating shelltab panel"
-        ##setup the tab contain the shell
-        shellTab = wx.Panel(self, -1)
+	try:     
+	    self.appSizer = wx.BoxSizer(wx.VERTICAL)
+	    self.SetSizer(self.appSizer)
+	    
+	    self.appSizer.Add(self.book, 1, wx.EXPAND)
+    
+	    ##setup the tab contain the shell
+	    shellTab = wx.Panel(self, -1)
+    
+	    #define that the tabSizer for this panel be used.
+	    shellTabSizer = wx.BoxSizer(wx.VERTICAL)
+    
+	    shellTab.SetSizer(shellTabSizer)
+    
+	    #create the shell frame
+	    shellFrame = wx.py.shell.Shell(shellTab, locals=self.shell_objects)
+    
+	    #add the shell frame to the shellTab sizer
+	    shellTabSizer.Add(shellFrame, 1, wx.EXPAND)        
+    
+	    #add the tab setup to the book
+	    self.book.AddPage(shellTab, "Shell-Out")
+	    
+	    #########################
+	    ##create the output tab##
+	    #########################
+    
+	    self.outputPanel = wx.Panel(self.book, -1, style=wx.MAXIMIZE_BOX)
+    
+	    self.programOutput = WindmillOutputPanel(self.outputPanel, -1, style=wx.MAXIMIZE_BOX)
+	    outputSizer = wx.BoxSizer(wx.VERTICAL)
+	    self.outputPanel.SetSizer(outputSizer)
+    
+	    #create the radiobox used to determine which type of output to display
+	    textLabel = wx.StaticText(self.outputPanel, -1, "  Set Log Output Level:   ",
+				      style=wx.ALIGN_LEFT)
+    
+	    #grab the different types of levelnames from logging and use them as option in the combo box
+	    self.displayTypeBox = wx.ComboBox(self.outputPanel, -1, "DEBUG", 
+					      wx.DefaultPosition, wx.DefaultSize, 
+					      list(lvl for lvl in logging._levelNames.keys() if isinstance(lvl, str)),
+					      style=wx.CB_READONLY)                                          
+    
+	    self.Bind(wx.EVT_COMBOBOX, self.EvtChangeLogeLvl, self.displayTypeBox)
+	    
+	    
+	    #grab the different types of levelnames from logging and use them as option in the combo box
+	    #self.filterType = wx.ComboBox(self.outputPanel, -1, "New Filter", 
+					  #wx.DefaultPosition, wx.DefaultSize, 
+					  #["New Filter"],
+					  #style=wx.CB_DROPDOWN)                                                                                    
+    
+	    #self.Bind(wx.EVT_COMBOBOX, self.EvtOnComboFilter, self.filterType)
+	    self.filterType= wx.SearchCtrl(self.outputPanel, style=wx.TE_PROCESS_ENTER)
+    
+	    self.Bind(wx.EVT_TEXT_ENTER, self.EvtOnDoSearch, self.filterType)
+	    self.Bind(wx.EVT_TEXT, self.EvtOnDoSearch, self.filterType)
+    
+	    #Create a temp sizer to place the definition text and combo box on same horizontal line
+	    tempSizer = wx.BoxSizer(wx.HORIZONTAL)
+	    tempSizer.Add(textLabel, 0, wx.ALIGN_CENTER_VERTICAL)
+	    tempSizer.Add(self.displayTypeBox)
+	    
+	    tempSizer.AddStretchSpacer(1)
+    
+	    tempSizer.Add(self.filterType)
+	    
+	    #Add the sizer to the main form
+	    outputSizer.Add(tempSizer, 0, wx.EXPAND)
+    
+	    #create text control that displays the output
+	    #self.programOutput = WindmillTextCtrl(self.outputPanel, -1, "", style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
+	    outputSizer.Add(self.programOutput, 1, wx.EXPAND)
+	    
+	    ##create a panel to hold the buttons
+	    buttonPanel = wx.Panel(self, -1)
+	    
+	    self.appSizer.Add(buttonPanel, 0, wx.EXPAND)
+    
+	    ##create a new sizer to handle the buttons on the button panel at bottom of screen
+	    bottomButtonSizer = wx.BoxSizer(wx.HORIZONTAL)
+    
+	    #assign the button sizer to the button panel a the botton of the screen
+	    buttonPanel.SetSizer(bottomButtonSizer)
+	    import os
+    
+	    #create the browser buttons
+	    try: 
+		    print "Create the bitmap"
+		    bmp = wx.Bitmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Firefoxlogo2.png'), wx.BITMAP_TYPE_PNG)
+		    if(bmp):	
+			    
+			    print "Set the mask color"
+			    bmp.SetMask(wx.Mask(bmp, wx.ColourDatabase.Find(wx.ColourDatabase(), 'YELLOW')))
+			    print "Create the bitmap button"
+			    firstBrowserButton = wx.BitmapButton(buttonPanel, -1, bmp,
+								 size = (bmp.GetWidth()+10, bmp.GetHeight()+10))
+		    else:
+			    firstBrowserButton = wx.Button(buttonPanel, id=-1, label="FF", size = (40, 40))
+    
+	    #firstBrowserButton.SetMaxSize((bmp.GetWidth()+10, bmp.GetHeight()+10))
+	    except Exception:
+		    firstBrowserButton = wx.Button(buttonPanel, id=-1, label="FF", size = (40, 40))
+    
+	    #secondBrowserButton = wx.Button(buttonPanel, id=-1, label="IE", size = (60, 40))
+	    self.Bind(wx.EVT_BUTTON, self.OnFFButtonClick, firstBrowserButton)
+			     
+	    #Add spacer in front for center purposes
+	    bottomButtonSizer.AddStretchSpacer(1)
+	    
+	    bottomButtonSizer.Add(firstBrowserButton, 1, wx.CENTER) 
+	    #bottomButtonSizer.Add(secondBrowserButton, 1, wx.ALIGN_CENTRE)         
+	    
+	    #Add Another spacer after for center purposes
+	    bottomButtonSizer.AddStretchSpacer(1)
+    
+	    self.book.AddPage(self.outputPanel, 'Output', select=False)
 
-        #define that the tabSizer for this panel be used.
-        shellTabSizer = wx.BoxSizer(wx.VERTICAL)
-
-        shellTab.SetSizer(shellTabSizer)
-        print "creating python shell object"
-        #create the shell frame
-        shellFrame = wx.py.shell.Shell(shellTab, locals=self.shell_objects)
-
-        #add the shell frame to the shellTab sizer
-        shellTabSizer.Add(shellFrame, 1, wx.EXPAND)        
-        print "adding shell panel to the notebook object"
-        #add the tab setup to the book
-        self.book.AddPage(shellTab, "Shell-Out")
-        
-        #########################
-        ##create the output tab##
-        #########################
-        print "creating outputPanel tab of type panel"
-        self.outputPanel = wx.Panel(self.book, -1, style=wx.MAXIMIZE_BOX)
-        print "creating WindmillOuputPanel object w/ parent outputPanel"
-        self.programOutput = WindmillOutputPanel(self.outputPanel, -1, style=wx.MAXIMIZE_BOX)
-        outputSizer = wx.BoxSizer(wx.VERTICAL)
-        self.outputPanel.SetSizer(outputSizer)
-        print "creating text object for definition of log lvl output combo box"
-        #create the radiobox used to determine which type of output to display
-        textLabel = wx.StaticText(self.outputPanel, -1, "  Set Log Output Level:   ",
-                                  style=wx.ALIGN_LEFT)
-        print "creating displayTypebox(loglvl) combobox object"
-        #grab the different types of levelnames from logging and use them as option in the combo box
-        self.displayTypeBox = wx.ComboBox(self.outputPanel, -1, "INFO", 
-                                          wx.DefaultPosition, wx.DefaultSize, 
-                                          list(lvl for lvl in logging._levelNames.keys() if isinstance(lvl, str)),
-                                          style=wx.CB_READONLY)                                          
-
-        self.Bind(wx.EVT_COMBOBOX, self.EvtChangeLogeLvl, self.displayTypeBox)
-        
-        
-        #grab the different types of levelnames from logging and use them as option in the combo box
-        #self.filterType = wx.ComboBox(self.outputPanel, -1, "New Filter", 
-                                      #wx.DefaultPosition, wx.DefaultSize, 
-                                      #["New Filter"],
-                                      #style=wx.CB_DROPDOWN)                                                                                    
-        print "creating the filtertype search control"
-        #self.Bind(wx.EVT_COMBOBOX, self.EvtOnComboFilter, self.filterType)
-        self.filterType= wx.SearchCtrl(self.outputPanel, style=wx.TE_PROCESS_ENTER)
-        print "creating fitertype search control succeeded"
-        self.Bind(wx.EVT_TEXT_ENTER, self.EvtOnDoSearch, self.filterType)
-        self.Bind(wx.EVT_TEXT, self.EvtOnDoSearch, self.filterType)
-        print "implement sizer stuff"
-        #Create a temp sizer to place the definition text and combo box on same horizontal line
-        tempSizer = wx.BoxSizer(wx.HORIZONTAL)
-        tempSizer.Add(textLabel, 0, wx.ALIGN_CENTER_VERTICAL)
-        tempSizer.Add(self.displayTypeBox)
-        
-        tempSizer.AddStretchSpacer(1)
-
-        tempSizer.Add(self.filterType)
-        
-        #Add the sizer to the main form
-        outputSizer.Add(tempSizer, 0, wx.EXPAND)
-
-        #create text control that displays the output
-        #self.programOutput = WindmillTextCtrl(self.outputPanel, -1, "", style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
-        outputSizer.Add(self.programOutput, 1, wx.EXPAND)
-        print "Add panel object to contain buttons"
-        ##create a panel to hold the buttons
-        buttonPanel = wx.Panel(self, -1)
-        
-        self.appSizer.Add(buttonPanel, 0, wx.EXPAND)
-
-        ##create a new sizer to handle the buttons on the button panel at bottom of screen
-        bottomButtonSizer = wx.BoxSizer(wx.HORIZONTAL)
-
-        #assign the button sizer to the button panel a the botton of the screen
-        buttonPanel.SetSizer(bottomButtonSizer)
-        print "creating button with firefox logo"
-        #create the browser buttons
-        #try: 
-            #bmp = wx.Bitmap("Firefoxlogo2.png", wx.BITMAP_TYPE_ANY)
-            #bmp.SetMask(wx.Mask(bmp, wx.ColourDatabase.Find(wx.ColourDatabase(), 'YELLOW')))
-            #firstBrowserButton = wx.BitmapButton(buttonPanel, -1, bmp,
-                                                 #size = (bmp.GetWidth()+10, bmp.GetHeight()+10))
-            #firstBrowserButton.SetMaxSize((bmp.GetWidth()+10, bmp.GetHeight()+10))
-        #except wx.PyAssertionError:
-        #firstBrowserButton = wx.Button(buttonPanel, id=-1, label="FF", size = (40, 40))
-        print "firefox button successfully created"
-
-        #secondBrowserButton = wx.Button(buttonPanel, id=-1, label="IE", size = (60, 40))
-        #self.Bind(wx.EVT_BUTTON, self.OnFFButtonClick, firstBrowserButton)
-                         
-        #Add spacer in front for center purposes
-        bottomButtonSizer.AddStretchSpacer(1)
-        
-        #bottomButtonSizer.Add(firstBrowserButton, 1, wx.CENTER) 
-        #bottomButtonSizer.Add(secondBrowserButton, 1, wx.ALIGN_CENTRE)         
-        
-        #Add Another spacer after for center purposes
-        bottomButtonSizer.AddStretchSpacer(1)
-
-        print "add outputpanel to the notebook object"
-        self.book.AddPage(self.outputPanel, 'Output', select=False)
-        self.Thaw()	        
-        self.SendSizeEvent()
+	finally:
+	    self.Thaw()	        
+	self.SendSizeEvent()
 
     def EvtChangeLogeLvl(self, event):
         print "Change log level to:  ", event.GetString(), "   with int value:   ", logging._levelNames[event.GetString()]
         self.theLogger.setLevel(logging._levelNames[event.GetString()])
         
     def EvtOnDoSearch(self, event):
-        self.programOutput.SearchItems(self.filterType.GetValue())
-        #if(self.filterType.GetValue() == ""):
-            ##print "Equals none\n"
-        #else:
-            ##print self.filterType.GetValue(),"\n"
-        
+	searchVal = self.filterType.GetValue()
+	#if not(searchVal == ""):
+	print "Searching for value: ", searchVal
+	self.programOutput.SearchItems(self.filterType.GetValue())
 
     def OnFFButtonClick(self, event):
         self.shell_objects['start_firefox']()
@@ -263,16 +269,9 @@ class Frame(wx.Frame):
         print "Removing the log handler"
         self.theLogger.removeHandler(self.programOutput)
 
-        #print "Shutdown logging"
-        #logging.shutdown()
-        
         print "Clean up wx controls and windows"
         self.Destroy()
         
-class OnFilter(logging.Filter): filter = lambda self, record: True
-
-class OffFilter(logging.Filter): filter = lambda self, record: False
-
 class WindmillOutputPanel(wx.Panel, listmix.ColumnSorterMixin, logging.Handler):
 
     def __init__(self, *args, **kwargs):
@@ -294,66 +293,76 @@ class WindmillOutputPanel(wx.Panel, listmix.ColumnSorterMixin, logging.Handler):
         
         # the value used to parse the output for search purposes
         self.currentSearchValue = ""
+	
+	self.currentIndexValue = 0
     
     def SearchItems(self, searchValue):
+	
+	print "Before search the master dict has: ", len(self.allLogItems)
+	self.Freeze()
+	try:
+	    tempDict = {}
+    
+	    if searchValue == "": # if the search val is none then display entire list
+		#reassign currentSearchValue
+		self.currentSearchValue = searchValue
+		
+		tempDict.update(self.allLogItems)
+		
+	    # determine if this is a new search value
+	    elif(len(searchValue) > len(self.currentSearchValue)): # addition to current search
+		#reassign currentSearchValue
+		self.currentSearchValue = searchValue
+		
+		#search currently active dictionary
+		for key, value in self.itemDataMap.items():
+		    if self.currentSearchValue in value[len(value)-1]: # Just search the message body
+			#tempDict.update({key: value})
+			tempDict[key]=value
+			
+	    else:
+		#reassign currentSearchValue
+		self.currentSearchValue = searchValue
+		
+		#search currently active dictionary
+		for key, value in self.allLogItems.items():
+		    if self.currentSearchValue in value[len(value)-1]: # Just search the message body
+			tempDict[key] = value 
+					
+	    self.itemDataMap.clear()
+	    self.itemDataMap.update(tempDict)
+	    
+	    self.listCtrl.ResetList(self.itemDataMap)
+	    #self.SortListItems()
+	finally:
+	    self.Thaw()
+            print "finished searching"
+	print "After search the master dict has: ", len(self.allLogItems)
 
-        tempDict = {}
-
-        if searchValue == "": # if the search val is none then display entire list
-            #reassign currentSearchValue
-            self.currentSearchValue = searchValue
-            
-            tempDict.update(self.allLogItems)
-            
-        # determine if this is a new search value
-        elif(len(searchValue) > len(self.currentSearchValue)): # addition to current search
-            #reassign currentSearchValue
-            self.currentSearchValue = searchValue
-            
-            #search currently active dictionary
-            for key, value in self.itemDataMap.items():
-                #for item in value:
-              
-                if self.currentSearchValue in value[len(value)-1]: # Just search the message body
-                    tempDict.update({key: value })
-                    #break
-        else:
-            #reassign currentSearchValue
-            self.currentSearchValue = searchValue
-            
-            #search currently active dictionary
-            for key, value in self.allLogItems.items():
-                #for item in value:
-                if self.currentSearchValue in value[len(value)-1]: # Just search the message body
-                    tempDict[key] = value 
-                    #break
-            
-        self.itemDataMap.clear()
-        self.itemDataMap.update(tempDict)
-        #self.itemDataMap.update(self.allLogItems)
-        
-        self.listCtrl.ResetList(self.itemDataMap)
-        #self.SortListItems()
-        
     # Used by the ColumnSorterMixin, see wx/lib/mixins/listctrl.py
     def GetListCtrl(self):
         return self.listCtrl
     
     def emit(self, record):
-        # Gets the index to the comlumns and their values
-        index, rows = self.listCtrl.InsertRecord(record)
-
-        # Assigns the unique index and their values to a datamap for sorting purposes
-        self.allLogItems[index] = rows        
-        
-        if( self.currentSearchValue not in record.getMessage()):
-            self.listCtrl.DeleteItem(index)
-            
-        else:
-            self.itemDataMap[index] = rows
-
-        self.SortListItems()
+        self.Freeze()
+	try:
+	    # Gets the index to the comlumns and their values
+	    index, key, rows = self.listCtrl.InsertRecord(record)
     
+	    # Assigns the unique index and their values to a datamap for sorting purposes
+	    self.allLogItems[key] = rows        
+	    
+	    if( self.currentSearchValue not in record.getMessage()):
+		self.listCtrl.DeleteItem(index)
+		
+	    else:
+		self.itemDataMap[key] = rows
+    
+	    self.SortListItems()
+	finally:
+            print "finished emitting"
+	    self.Thaw()
+
     def __del__(self):
         self.close()    
         
@@ -369,24 +378,41 @@ class WindmillListCtrl(wx.ListView, listmix.ListCtrlAutoWidthMixin):
         self.SetColumnWidth(0, wx.LIST_AUTOSIZE_USEHEADER)
 
         listmix.ListCtrlAutoWidthMixin.__init__(self)
+	
+	self.currentIndexValue = 0
         
     def InsertRecord(self, record):
+	
         recordTime = time.strftime("%H:%M:%S.", time.gmtime(record.created)) + (lambda x: x[x.rfind(".")+1:] )(str(record.created))
 
         index = self.InsertNewItem( (str(record.levelname),
-                                     recordTime,
-                                     record.name,
-                                     str(record.getMessage())),
-                                    record.levelno, sys.maxint)
-        return index, self.GetRow(index)
+				     recordTime,
+				     record.name,
+				     str(record.getMessage())),
+				     record.levelno)
+	key = int(self.currentIndexValue)
 
+	self.currentIndexValue+=1	
+
+	self.SetItemData(index, key)
+
+        return index, key, self.GetRow(index)
+
+    def hashTimeStr(self, strTime):
+	
+	temp =0
+	for num in strTime.replace(".",":").split(":"):
+	    temp+=long(num)
+	    
+	return temp
+	    
     def InsertNewItem(self, items, levelno=0, index=-1):
         """Inserts a new item at the given debug level with defined items"""
 
-        #print "\n\nIndex before insert: ", index
+        print "\n\nIndex before insert: ", index
         #insert a str item in the first column to create a new row
-        index = self.InsertStringItem(index, items[0])
-        #print "\nIndex after insert: ", index
+        index = self.InsertStringItem(sys.maxint, items[0])
+        print "\nIndex after insert: ", index
 
         ##Assign the row column depending on the record level
         cases = {
@@ -402,24 +428,24 @@ class WindmillListCtrl(wx.ListView, listmix.ListCtrlAutoWidthMixin):
             self.SetStringItem(index, i+1, items[i+1])             
             
             ##auto size every column but the last one (the message column)
-            self.SetColumnWidth(i, wx.LIST_AUTOSIZE)
-            
-        self.SetItemData(index, index)
-        return index
+            #self.SetColumnWidth(i, wx.LIST_AUTOSIZE)
+
+	return index
     
     def GetRow(self, index):
         """GetRow(self) -> Tuple"""
         
         return [ self.GetItem(index, i).GetText() for i in range(self.GetColumnCount()) ]
 
-
-
     def ResetList(self, dictValues):
         """Resets the list according to the give dictValues"""
+	
         self.DeleteAllItems()
-        for index, values in dictValues.items():
-            self.InsertNewItem(values, logging._levelNames[values[0]], index)
-        
+        for key, values in dictValues.items():
+            idx = self.InsertNewItem(values, logging._levelNames[values[0]], sys.maxint)
+	    self.SetItemData(idx, key)
+	    
+	
     def __del__(self):
         self.close()    
     

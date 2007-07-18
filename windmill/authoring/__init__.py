@@ -74,7 +74,7 @@ class WindmillTestClient(object):
             print test_name
             result = self._method_proxy.execute_test({'method':test_name, 'params':kwargs})
             if not result['result'] and self._enable_assertions:
-                assert result
+                assert result['result']
             else:
                 return result
         else:
@@ -92,9 +92,3 @@ def get_test_client(name):
         client._enable_assertions = True
     else:
         pdb = None
-
-        
-           
-    
-        
-
