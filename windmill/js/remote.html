@@ -4,12 +4,12 @@
 	<title>Windmill IDE</title>
 	
 	<link rel="stylesheet" type="text/css" href="ide/css/windmill.css"/>
-    <link href="ide/css/interpreter.css" rel="stylesheet" type="text/css" />
+  <link href="ide/css/interpreter.css" rel="stylesheet" type="text/css" />
 
     <script type="text/javascript" src="lib/MochiKit/MochiKit.js"></script>
     <script type="text/javascript" src="lib/interpreter.js"></script>
-	<script type="text/javascript" src="lib/browserdetect.js"></script>
-	<script type="text/javascript" src="lib/fleegix.js"></script>
+	  <script type="text/javascript" src="lib/browserdetect.js"></script>
+  	<script type="text/javascript" src="lib/fleegix.js"></script>
     <script type="text/javascript" src="lib/interpreter.js"></script>
 
 	<script type="text/javascript" charset="utf-8">
@@ -133,18 +133,18 @@
 		</div>
 		<br>
 	 <form id="interpreter_form" autocomplete="off">
-	            <div id="interpreter_area">
-	                <div id="interpreter_output"></div>
-	            </div>
-	            <div id="oneline">
-	                <input style="width:80%;height:5%" id="interpreter_text" name="input_text" type="text" class="textbox" size="58" />
-	            </div>
-	            <div id="multiline">
-	            <textarea style="width:80%;height:10%;" id="interpreter_textarea" name="input_textarea" type="text" class="textbox" cols="55" rows="4">
-	            </textarea>
-	                <br />
-	            </div>
-	        </form>
+	   <div id="interpreter_area">
+	       <div id="interpreter_output"></div>
+	   </div>
+	   <div id="oneline">
+	       <input style="width:80%;height:5%" id="interpreter_text" name="input_text" type="text" class="textbox" size="58" />
+	   </div>
+	   <div id="multiline">
+	   <textarea style="width:80%;height:10%;" id="interpreter_textarea" name="input_textarea" type="text" class="textbox" cols="55" rows="4">
+	   </textarea>
+	       <br />
+	   </div>
+	 </form>
 
 </div>
 <div id="settings" class="dialog">
@@ -155,18 +155,27 @@
 			</table>
 		</div>
 		<br>
-		Break on failure: <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="opener.windmill.ui.toggleBreak();"><br>
-		Suppress Javascript Alerts : <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts' onclick=""><br>
-		Auto Scroll IDE to bottom : <INPUT TYPE=checkbox CHECKED ID='autoScroll' onclick=""><br>
-		Absolute click sensitivity when recording : <INPUT TYPE=checkbox UNCHECKED ID='clickOn' onclick=""><br>
-		Suite Save Formatting: <SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
-								<OPTION selected>python</option>
-								<OPTION>json</option>
-							   </SELECT>
-		<br>
-		<br><div id="loopButton" style="font:18px arial;">
-		<a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Pause Loop</a>
-	</div>
+		<h3>System</h3>
+		<table style="font:14px arial;">
+			<tr><td>Break on failure:</td><td> <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="opener.windmill.ui.toggleBreak();"></td></tr>
+			<tr><td>Suppress Javascript Alerts:</td><td> <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts'></td></tr>
+			<tr><td>Suite Save Formatting:</td><td> <SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
+													<OPTION selected>python</option>
+													<OPTION>json</option>
+												   </SELECT></td></tr>
+		</table>
+		<h3>IDE/Recorder</h3>
+		<table style="font:14px arial;">
+			<tr><td>Auto Scroll IDE to bottom:</td><td> <INPUT TYPE=checkbox CHECKED ID='autoScroll'></td></tr>
+			<tr><td>Absolute click sensitivity when recording:</td><td><INPUT TYPE=checkbox UNCHECKED ID='clickOn'></td></tr>
+			<tr><td>Action play button cascades:</td><td> <INPUT TYPE=checkbox CHECKED ID='playCascade'></td></tr>
+		</table>
+		<br><br>
+		<a href='#' onclick="opener.windmill.testingApp.document.location.reload()">Reload Testing Application</a>: This reloads your page, without resetting Windmill.
+		<br><br><br><br>
+		<div id="loopButton" style="font:18px arial;width:100%;">
+		<center><a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Pause Loop</a></center>
+		</div>
 
 </div>
 </body>

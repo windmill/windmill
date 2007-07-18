@@ -54,10 +54,10 @@ windmill.xhr = new function () {
         else{
             
             if (windmill.xhr.xhrResponse.result.method != 'defer'){
-                windmill.ui.writeStatus("Status: Running " + windmill.xhr.xhrResponse.result.method + "...");
+                windmill.ui.writeStatus("<b>Status:</b> Running " + windmill.xhr.xhrResponse.result.method + "...");
             }
             else{  
-                windmill.ui.writeStatus("Status: Waiting for tests...");
+                windmill.ui.writeStatus("<b>Status:</b> Waiting for tests...");
             }
             
             //Init and start performance but not if the protocol defer
@@ -145,7 +145,7 @@ windmill.xhr = new function () {
                         //if the continue on error flag has been set by the shell.. then we just keep on going
                         if (windmill.stopOnFailure == true){
                             windmill.xhr.togglePauseJsonLoop();
-                            windmill.ui.writeStatus("Status: Paused, error?...");    
+                            windmill.ui.writeStatus("<b>Status:</b> Paused, error?...");    
                         }
                     }
                     else {

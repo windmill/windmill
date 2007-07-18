@@ -14,7 +14,7 @@ Copyright 2006, Open Source Applications Foundation
  limitations under the License.
 -->
 
-    <html>
+ <html>
 	<head>
 		<script type="text/javascript" src="lib/browserdetect.js"></script>
 		<script type="text/javascript" src="lib/windmill.js"></script>
@@ -51,13 +51,13 @@ Copyright 2006, Open Source Applications Foundation
 	 		//Timing the load of the first page
 			 var load_timer = new TimeObj();
 			 load_timer.setName('Loading first page');
-	         load_timer.startTime();
+	     load_timer.startTime();
 			
 			//Enabling the ability to start out out a page that requires query parameters
 			//By parsing the url they requested and opening it and storing that url
 			//Then when we open write the iframe src we can give it the correct starting src attrib
 			var urlSTR = window.location.href.replace("/windmill-serv/start.html","");
-		   	windmill.initURL = urlSTR;
+		  windmill.initURL = urlSTR;
 		
 			//Set the title
 			document.title = 'Windmill Testing Framework: ' + windmill.initURL;
@@ -70,7 +70,9 @@ Copyright 2006, Open Source Applications Foundation
 	<body topmargin="0" leftmargin="0" onload="javascript:Load()">
 	
 	<script type="text/javascript">
-	document.write("<div id=\"pagediv\"><IFRAME  style=\"position:absolute;overflow:auto;width:100%;height:100%;\" id=\"webapp\" name=\"webapp\" onload=\"javascript:windmill.controller.continueLoop();windmill.ui.setRecState();\" target=\"_self\" frameborder=0 SRC=\""+windmill.initURL+"\"></iframe></div>");
+		document.write("<div id=\"pagediv\"><IFRAME  style=\"position:absolute;overflow:auto;width:100%;height:100%;\""+
+		"id=\"webapp\" name=\"webapp\" onload=\"javascript:windmill.controller.continueLoop();windmill.ui.setRecState();\" "+
+		"target=\"_self\" frameborder=0 SRC=\""+windmill.initURL+"\"></iframe></div>");
 	</script>
 
 </body>
