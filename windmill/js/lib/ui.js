@@ -728,10 +728,15 @@ windmill.ui = new function() {
       var appending = false;
       if (typeof(uuid) == 'undefined'){ appending = true; }
 
-      var testArray = [];
+      var testArray    = [];
       var suites = windmill.remote.$('ide').childNodes;
+      var s      = 1;
       
-        for (var i = 1; i < suites.length; i++){
+      //In IE we start our iteration at 0, else 1 for the first suite
+      if (windmill.browser.isIE == true){
+        var s = 0;
+      }
+        for (var i = s; i < suites.length; i++){
           if (suites[i].hasChildNodes()){
               for (var j = 1; j < suites[i].childNodes.length; j++){
                   //if we hit the suite id, turn on appending
@@ -782,7 +787,7 @@ windmill.ui = new function() {
               }
           }
         }
-     alert(testArray.length);
+    
      this.recordOff();
           
      //console.log(testArray);    
