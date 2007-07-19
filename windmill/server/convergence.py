@@ -111,9 +111,6 @@ class TestResolutionSuite(object):
         self.current_suite = None
         
     def add(self, test, suite_name=None):
-        if suite_name is None and not test.get('suite_name'):
-            suite_name = self.current_suite
-        test['suite_name'] = suite_name
         self.unresolved[test['params']['uuid']] = test
         
 class CommandResolutionSuite(object):
