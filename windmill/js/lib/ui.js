@@ -155,12 +155,16 @@ windmill.ui = new function() {
       var newAction = this.buildAction(null, {});
       var parent = windmill.remote.$(uuid).parentNode;
       parent.insertBefore(newAction, windmill.remote.$(uuid));
+      //IE hack
+      windmill.remote.$(newAction.id).innerHTML = newAction.innerHTML;
       fleegix.fx.fadeIn(windmill.remote.$(newAction.id));
      }
      this.addActionBelow = function(uuid){
       var newAction = this.buildAction(null,{});      
       var parent = windmill.remote.$(uuid).parentNode;
-      parent.insertBefore(newAction, windmill.remote.$(uuid).nextSibling);   
+      parent.insertBefore(newAction, windmill.remote.$(uuid).nextSibling);
+      //IE Hack
+      windmill.remote.$(newAction.id).innerHTML = newAction.innerHTML;
       fleegix.fx.fadeIn(windmill.remote.$(newAction.id));
      }
      this.deleteAction = function(uuid){
@@ -175,7 +179,94 @@ windmill.ui = new function() {
       }
      }
      
-     
+     this.addAction = function(action){
+       var suite = this.getSuite();
+       if (typeof(action) == 'undefined'){
+         var action = this.buildAction(null,{})
+       }
+       //A hack to make it draw the UI correctly in IE
+       suite.appendChild(action);
+       windmill.remote.$(action.id).innerHTML = action.innerHTML; 
+     }
+        
+     this.getSuite = function(){
+       var suite = windmill.remote.$('recordingSuite'+recordSuiteNum);
+       if (suite == null){
+           var ide = windmill.remote.$('ide');
+           suite = windmill.remote.document.createElement('div');
+           suite.id = 'recordingSuite' + recordSuiteNum;
+           suite.style.width = "99%";
+           suite.style.background = "lightblue";
+           suite.style.overflow = 'hidden';
+           //suite.style.height='40px';
+           suite.style.border = '1px solid black';
+           suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
+           "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.saveSuite(\'"+suite.id+
+           "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+suite.id+
+           "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+suite.id+
+           "\')\">[toggle]</a></span></td></tr></table></div>";
+           windmill.remote.$('ide').appendChild(suite);
+      }
+      return suite;
+     }
+
+    
+    //Send the suite to save to the backend and receive an url for the user to save
+    this.saveSuite = function(id){
+       var suite = windmill.remote.$(id);
+       var testArray = [];
+
+       if (suite.hasChildNodes()){
+            for (var j = 1; j < suite.childNodes.length; j++){
+                //console.log(suites[i].childNodes[j].id);
+                
+                var actionObj = {};
+                actionObj.suite_name = suite.id;
+                actionObj.version = "0.1";
+                var si = windmill.remote.$(suite.childNodes[j].id+'method').selectedIndex;
+                actionObj.method = windmill.remote.$(suite.childNodes[j].id+'method')[si].value;
+
+                var paramsObj = {};
+                paramsObj.uuid = suite.childNodes[j].id;
+                
+                if (windmill.registry.methods[actionObj.method].locator){
+                  var si = windmill.remote.$(suite.childNodes[j].id+'locatorType').selectedIndex;
+                  paramsObj[windmill.remote.$(suite.childNodes[j].id+'locatorType')[si].value] = windmill.remote.$(suite.childNodes[j].id+'locator').value;
+                }
+                if (windmill.registry.methods[actionObj.method].option){
+                  var si = windmill.remote.$(suite.childNodes[j].id+'optionType').selectedIndex;
+                  paramsObj[windmill.remote.$(suite.childNodes[j].id+'optionType')[si].value] = windmill.remote.$(suite.childNodes[j].id+'option').value;
+                }
+                actionObj.params = paramsObj;
+                //var str = fleegix.json.serialize(actionObj);
+                testArray.push(actionObj);
+            }
+            
+         var respRun = function(str){
+             response = eval('(' + str + ')');
+             window.open(response.result,'Saved Test','width=400,height=600,toolbar=yes,location=no,directories=no,status=no,menubar=yes,scrollbars=yes,copyhistory=no,resizable=yes')
+             return true;
+         }
+   
+         //Get the language to save these suckers in
+         var langSI = windmill.remote.$('suiteSaveFormat').selectedIndex;
+         var lang = windmill.remote.$('suiteSaveFormat')[langSI].value;
+         
+         var json_object = new windmill.xhr.json_call('1.1', 'create_save_file');
+         var params_obj = {};
+         params_obj.transformer = lang;
+         params_obj.suite_name  = id;
+         params_obj.tests       = testArray;
+         json_object.params     = params_obj;
+
+         var json_string = fleegix.json.serialize(json_object)
+         fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
+            
+        }
+        else {
+            windmill.remote.alert('You need test actions to save!');
+        }
+    }
      //This function takes a method and it's params and returns a DOM
      //Element representing that action for the UI
      this.buildAction = function(method, params){
@@ -222,7 +313,8 @@ windmill.ui = new function() {
             i0.size      = '35';
             i0.value     = method;
             c.appendChild(i0);
-
+            //This makes it look better in IE
+            c.innerHTML += '<br>';
             //c.innerHTML += '<input type="text" class="texta" size="55" id="'+action.id+'params" value="'+ fleegix.json.serialize(params).replace( /"/g, '\'' ); +'"/>';
             var i = windmill.remote.document.createElement("input");
             i.type      = 'text';
@@ -472,17 +564,15 @@ windmill.ui = new function() {
             params[locator] = locValue;
             
             if(e.type == 'dblclick'){
-                windmill.remote.$("recordingSuite"+recordSuiteNum).appendChild(this.buildAction('doubleClick', params));
+                this.addAction(this.buildAction('doubleClick', params));
             }
             else{
                  //console.log(e.target.parentNode);                 
                  if (windmill.remote.$("clickOn").checked == true){
-                     windmill.remote.$("recordingSuite"+recordSuiteNum).appendChild(this.buildAction('click', params));
-
+                     this.addAction(this.buildAction('click', params));
                  }
                  else if ((e.target.onclick != null) || (locator == 'link') || (e.target.type == 'image')){
-                    
-                    windmill.remote.$("recordingSuite"+recordSuiteNum).appendChild(this.buildAction('click', params));
+                    this.addAction(this.buildAction('click', params));
                 }
           }
         }
@@ -514,26 +604,26 @@ windmill.ui = new function() {
 
           if (e.target.type == 'textarea'){
               params['text'] = e.target.value;
-              windmill.remote.$("recordingSuite"+recordSuiteNum).appendChild(this.buildAction('type', params));
+              this.addAction(this.buildAction('type', params));
 
           }
           else if (e.target.type == 'text'){
               params['text'] = e.target.value;
-              windmill.remote.$("recordingSuite"+recordSuiteNum).appendChild(this.buildAction('type', params));
+              this.addAction(this.buildAction('type', params));
           }
           else if (e.target.type == 'password'){
               params['text'] = e.target.value;
-              windmill.remote.$("recordingSuite"+recordSuiteNum).appendChild(this.buildAction('type', params));
+              this.addAction(this.buildAction('type', params));
           }
           else if(e.target.type == 'select-one'){
               params['option'] = e.target.value;
-              windmill.remote.$("recordingSuite"+recordSuiteNum).appendChild(this.buildAction('select', params));   
+              this.addAction(this.buildAction('select', params));   
           }
           else if(e.target.type == 'radio'){
-              windmill.remote.$("recordingSuite"+recordSuiteNum).appendChild(this.buildAction('radio', params));
+              this.addAction(this.buildAction('radio', params));
           }
           else if(e.target.type == "checkbox"){
-              windmill.remote.$("recordingSuite"+recordSuiteNum).appendChild(this.buildAction('check', params));    
+              this.addAction(this.buildAction('check', params));    
           }
           
           this.scrollRecorderTextArea();
@@ -550,7 +640,20 @@ windmill.ui = new function() {
          //keep track of the recorder state, for page refreshes
          this.recordState = true;
          this.getSuite();
-          
+         
+         //IE's onChange support doesn't bubble so we have to manually
+         //Attach a listener to every select and input in the app
+         if (windmill.browser.isIE != false){
+           var in = windmill.testingApp.document.getElementsByTagName('input');
+           for (var i = 0; i < in.length; i++) { 
+              fleegix.event.listen(in[i], 'onchange', this, 'writeJsonChange');
+           }
+           var se = windmill.testingApp.document.getElementsByTagName('select');
+           for (var i = 0; i < se.length; i++) { 
+              fleegix.event.listen(se[i], 'onchange', this, 'writeJsonChange');
+           }
+         }
+         
          fleegix.event.listen(windmill.testingApp.document, 'ondblclick', this, 'writeJsonClicks');
          fleegix.event.listen(windmill.testingApp.document, 'onchange', this, 'writeJsonChange');
          //fleegix.event.listen(windmill.testingApp.document, 'onblur', this, 'writeJsonChange');
@@ -575,7 +678,6 @@ windmill.ui = new function() {
          }
      }
      
-     
      this.recordOff = function(){
          this.recordState = false;
          fleegix.event.unlisten(windmill.testingApp.document, 'ondblclick', this, 'writeJsonClicks');
@@ -592,103 +694,17 @@ windmill.ui = new function() {
          
          for (var i=0;i<iframeCount;i++)
          {
-             try{
-                 fleegix.event.unlisten(iframeArray[i], 'ondblclick', this, 'writeJsonClicks');
-                 fleegix.event.unlisten(iframeArray[i], 'onchange', this, 'writeJsonChange');
-                 fleegix.event.unlisten(iframeArray[i], 'onclick', this, 'writeJsonClicks');
-                 //fleegix.event.unlisten(iframeArray[i], 'onblur', this, 'writeJsonClicks');
-
-             }
-             catch(error){ 
-                this.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);          
-            }
+            try{
+               fleegix.event.unlisten(iframeArray[i], 'ondblclick', this, 'writeJsonClicks');
+               fleegix.event.unlisten(iframeArray[i], 'onchange', this, 'writeJsonChange');
+               fleegix.event.unlisten(iframeArray[i], 'onclick', this, 'writeJsonClicks');
+               //fleegix.event.unlisten(iframeArray[i], 'onblur', this, 'writeJsonClicks');
+           }
+           catch(error){ 
+              this.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);          
+          }
          }      
      }
-     
-     this.addAction = function(){
-       var suite = this.getSuite();
-       var action = this.buildAction(null,{})
-       windmill.remote.$(suite.id).appendChild(action); 
-     }
-     
-     this.getSuite = function(){
-       var suite = windmill.remote.$('recordingSuite'+recordSuiteNum);
-       if (suite == null){
-           var ide = windmill.remote.$('ide');
-           suite = windmill.remote.document.createElement('div');
-           suite.id = 'recordingSuite' + recordSuiteNum;
-           suite.style.width = "99%";
-           suite.style.background = "lightblue";
-           suite.style.overflow = 'hidden';
-           //suite.style.height='40px';
-           suite.style.border = '1px solid black';
-           suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
-           "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.saveSuite(\'"+suite.id+
-           "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+suite.id+
-           "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+suite.id+
-           "\')\">[toggle]</a></span></td></tr></table></div>";
-           windmill.remote.$('ide').appendChild(suite);
-      }
-      return suite;
-     }
-
-    
-    //Send the suite to save to the backend and receive an url for the user to save
-    this.saveSuite = function(id){
-       var suite = windmill.remote.$(id);
-       var testArray = [];
-
-       if (suite.hasChildNodes()){
-            for (var j = 1; j < suite.childNodes.length; j++){
-                //console.log(suites[i].childNodes[j].id);
-                
-                var actionObj = {};
-                actionObj.suite_name = suite.id;
-                actionObj.version = "0.1";
-                var si = windmill.remote.$(suite.childNodes[j].id+'method').selectedIndex;
-                actionObj.method = windmill.remote.$(suite.childNodes[j].id+'method')[si].value;
-
-                var paramsObj = {};
-                paramsObj.uuid = suite.childNodes[j].id;
-                
-                if (windmill.registry.methods[actionObj.method].locator){
-                  var si = windmill.remote.$(suite.childNodes[j].id+'locatorType').selectedIndex;
-                  paramsObj[windmill.remote.$(suite.childNodes[j].id+'locatorType')[si].value] = windmill.remote.$(suite.childNodes[j].id+'locator').value;
-                }
-                if (windmill.registry.methods[actionObj.method].option){
-                  var si = windmill.remote.$(suite.childNodes[j].id+'optionType').selectedIndex;
-                  paramsObj[windmill.remote.$(suite.childNodes[j].id+'optionType')[si].value] = windmill.remote.$(suite.childNodes[j].id+'option').value;
-                }
-                actionObj.params = paramsObj;
-                //var str = fleegix.json.serialize(actionObj);
-                testArray.push(actionObj);
-            }
-            
-         var respRun = function(str){
-             response = eval('(' + str + ')');
-             window.open(response.result,'Saved Test','width=400,height=600,toolbar=yes,location=no,directories=no,status=no,menubar=yes,scrollbars=yes,copyhistory=no,resizable=yes')
-             return true;
-         }
-   
-         //Get the language to save these suckers in
-         var langSI = windmill.remote.$('suiteSaveFormat').selectedIndex;
-         var lang = windmill.remote.$('suiteSaveFormat')[langSI].value;
-         
-         var json_object = new windmill.xhr.json_call('1.1', 'create_save_file');
-         var params_obj = {};
-         params_obj.transformer = lang;
-         params_obj.suite_name  = id;
-         params_obj.tests       = testArray;
-         json_object.params     = params_obj;
-
-         var json_string = fleegix.json.serialize(json_object)
-         fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
-            
-        }
-        else {
-            alert('You need test actions to save!');
-        }
-    }
     
     //Playback Functionality
     //*********************************
