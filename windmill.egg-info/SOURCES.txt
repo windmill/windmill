@@ -1,6 +1,6 @@
 ez_setup.py
 setup.py
-wmIcon.rsrc
+wmicon.icns
 contrib/pyselenium/src/__init__.py
 contrib/pyselenium/src/seleniumservercontrol.py
 contrib/pyselenium/src/seleniumunittest.py

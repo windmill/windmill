@@ -644,9 +644,9 @@ windmill.ui = new function() {
          //IE's onChange support doesn't bubble so we have to manually
          //Attach a listener to every select and input in the app
          if (windmill.browser.isIE != false){
-           var in = windmill.testingApp.document.getElementsByTagName('input');
-           for (var i = 0; i < in.length; i++) { 
-              fleegix.event.listen(in[i], 'onchange', this, 'writeJsonChange');
+           var inp = windmill.testingApp.document.getElementsByTagName('input');
+           for (var i = 0; i < inp.length; i++) { 
+              fleegix.event.listen(inp[i], 'onchange', this, 'writeJsonChange');
            }
            var se = windmill.testingApp.document.getElementsByTagName('select');
            for (var i = 0; i < se.length; i++) { 
@@ -680,6 +680,19 @@ windmill.ui = new function() {
      
      this.recordOff = function(){
          this.recordState = false;
+         
+          //IE's onChange support doesn't bubble so we have to manually
+         //Attach a listener to every select and input in the app
+         if (windmill.browser.isIE != false){
+           var inp = windmill.testingApp.document.getElementsByTagName('input');
+           for (var i = 0; i < inp.length; i++) { 
+              fleegix.event.unlisten(inp[i], 'onchange', this, 'writeJsonChange');
+           }
+           var se = windmill.testingApp.document.getElementsByTagName('select');
+           for (var i = 0; i < se.length; i++) { 
+              fleegix.event.unlisten(se[i], 'onchange', this, 'writeJsonChange');
+           }
+         }
          fleegix.event.unlisten(windmill.testingApp.document, 'ondblclick', this, 'writeJsonClicks');
          fleegix.event.unlisten(windmill.testingApp.document, 'onchange', this, 'writeJsonChange');
          fleegix.event.unlisten(windmill.testingApp.document, 'onclick', this, 'writeJsonClicks');
@@ -717,6 +730,7 @@ windmill.ui = new function() {
 
       var testArray = [];
       var suites = windmill.remote.$('ide').childNodes;
+      
         for (var i = 1; i < suites.length; i++){
           if (suites[i].hasChildNodes()){
               for (var j = 1; j < suites[i].childNodes.length; j++){
@@ -768,7 +782,7 @@ windmill.ui = new function() {
               }
           }
         }
-      
+     alert(testArray.length);
      this.recordOff();
           
      //console.log(testArray);    
