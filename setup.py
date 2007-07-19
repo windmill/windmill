@@ -11,10 +11,14 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-from ez_setup import use_setuptools
-use_setuptools()        
-from setuptools import setup
+# from ez_setup import use_setuptools
+# use_setuptools()        
+# import pkg_resources
+import ez_setup
+ez_setup.use_setuptools()
+
 import sys
+from setuptools import setup
 
 desc = """Windmill is a tool for testing of all functional web testing."""
 summ = """Windmill is a web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities."""
@@ -23,25 +27,27 @@ PACKAGE_NAME = "windmill"
 PACKAGE_VERSION = "0.2.0"
 
 # == Build Section == Handles .app with py2app, .exe with py2exe, and unix binary with scripts option
-# mainscript = ['windmill/bin/windmill-admin.py']
-# data_files = []
-# 
-# if sys.platform == 'darwin':
-#     extra_options = dict(setup_requires=['py2app'],
-#                          app=[mainscript],
-#                          # Cross-platform applications generally expect sys.argv to
-#                          # be used for opening files.
-#                          options=dict(py2app=dict(argv_emulation=True)),
-#                          )
-# elif sys.platform == 'win32':
-#     extra_options = dict(setup_requires=['py2exe'],
-#                          app=[mainscript],
-#                          )
-# else:
-#     extra_options = dict(# Normally unix-like platforms will use "setup.py install"
-#                          # and install the main script as such
-#                          scripts=[mainscript],
-#                          )
+mainscript = 'windmill/bin/windmill-admin.py'
+data_files = []
+
+if sys.platform == 'darwin':
+    extra_options = dict(setup_requires=['py2app'],
+                         app=[mainscript],
+                         #scripts=[mainscript, 'windmill/bin/json2python.py'],
+                         iconfile='wmIcon.rsrc',
+                         # Cross-platform applications generally expect sys.argv to
+                         # be used for opening files.
+                         options=dict(py2app=dict(argv_emulation=True)),
+                         )
+elif sys.platform == 'win32':
+    extra_options = dict(setup_requires=['py2exe'],
+                         app=[mainscript],
+                         )
+else:
+    extra_options = dict(# Normally unix-like platforms will use "setup.py install"
+                         # and install the main script as such
+                         scripts=[mainscript],
+                         )
 
 setup(name=PACKAGE_NAME,
       version=PACKAGE_VERSION,
@@ -70,6 +76,6 @@ setup(name=PACKAGE_NAME,
                    'Topic :: Software Development :: Libraries :: Python Modules',
                   ],
       # -- build section -- #
-      # **extra_options
+      **extra_options
      )
 
