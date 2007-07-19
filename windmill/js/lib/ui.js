@@ -708,45 +708,46 @@ windmill.ui = new function() {
                   if (suites[i].childNodes[j].id == uuid){
                     appending = true;
                   }
-                  var actionObj = {};
-                  actionObj.suite_name = suites[i].id;
-                  actionObj.version = "0.1";
-                
-                  //If it wasn't a standard UI element, then I stuck the params in a div
-                  if (windmill.remote.$(suites[i].childNodes[j].id+'params') != null){
-                   actionObj.method = windmill.remote.$(suites[i].childNodes[j].id+'method').value;
-                   actionObj.params = eval('('+windmill.remote.$(suites[i].childNodes[j].id+'params').value + ')'); 
-                  }
-                  //if its a standard UI element build the params
-                  else {
-                    var si = windmill.remote.$(suites[i].childNodes[j].id+'method').selectedIndex;
-                    actionObj.method = windmill.remote.$(suites[i].childNodes[j].id+'method')[si].value;
-
-                    var paramsObj = {};
-                    paramsObj.uuid = suites[i].childNodes[j].id;
-                
-                    if (windmill.registry.methods[actionObj.method].locator){
-                      var si = windmill.remote.$(suites[i].childNodes[j].id+'locatorType').selectedIndex;
-                      paramsObj[windmill.remote.$(suites[i].childNodes[j].id+'locatorType')[si].value] = windmill.remote.$(suites[i].childNodes[j].id+'locator').value;
-                    }
-                    if (windmill.registry.methods[actionObj.method].option){
-                      var si = windmill.remote.$(suites[i].childNodes[j].id+'optionType').selectedIndex;
-                      paramsObj[windmill.remote.$(suites[i].childNodes[j].id+'optionType')[si].value] = windmill.remote.$(suites[i].childNodes[j].id+'option').value;
-                    }
-                
-                    actionObj.params = paramsObj;
-                  }
                   //if the playback starts at a specific action, check if we hit that point
                   if (appending == true){
-                    windmill.remote.$(suites[i].childNodes[j].id).style.background = 'lightyellow';
-                    //testArray.push(fleegix.json.serialize(actionObj));
-                    testArray.push(actionObj);
+                    var actionObj = {};
+                    actionObj.suite_name = suites[i].id;
+                    actionObj.version = "0.1";
+                
+                    //If it wasn't a standard UI element, then I stuck the params in a div
+                    if (windmill.remote.$(suites[i].childNodes[j].id+'params') != null){
+                     actionObj.method = windmill.remote.$(suites[i].childNodes[j].id+'method').value;
+                     actionObj.params = eval('('+windmill.remote.$(suites[i].childNodes[j].id+'params').value + ')'); 
+                    }
+                    //if its a standard UI element build the params
+                    else {
+                      var si = windmill.remote.$(suites[i].childNodes[j].id+'method').selectedIndex;
+                      actionObj.method = windmill.remote.$(suites[i].childNodes[j].id+'method')[si].value;
+
+                      var paramsObj = {};
+                      paramsObj.uuid = suites[i].childNodes[j].id;
+                
+                      if (windmill.registry.methods[actionObj.method].locator){
+                        var si = windmill.remote.$(suites[i].childNodes[j].id+'locatorType').selectedIndex;
+                        paramsObj[windmill.remote.$(suites[i].childNodes[j].id+'locatorType')[si].value] = windmill.remote.$(suites[i].childNodes[j].id+'locator').value;
+                      }
+                      if (windmill.registry.methods[actionObj.method].option){
+                        var si = windmill.remote.$(suites[i].childNodes[j].id+'optionType').selectedIndex;
+                        paramsObj[windmill.remote.$(suites[i].childNodes[j].id+'optionType')[si].value] = windmill.remote.$(suites[i].childNodes[j].id+'option').value;
+                      }
+                
+                      actionObj.params = paramsObj;
+                     }
                   
-                  //if they don't want the play button for each action to cascade
-                  //Just play that particular action, unless the big play button was hit
-                  if ((windmill.remote.$('playCascade').checked == false) && (typeof(uuid) == 'undefined')){
-                    appending = false;
-                  }
+                      windmill.remote.$(suites[i].childNodes[j].id).style.background = 'lightyellow';
+                      //testArray.push(fleegix.json.serialize(actionObj));
+                      testArray.push(actionObj);
+                  
+                    //if they don't want the play button for each action to cascade
+                    //Just play that particular action, unless the big play button was hit
+                    if ((windmill.remote.$('playCascade').checked == false) && (typeof(uuid) == 'undefined')){
+                      appending = false;
+                    }
                   
                   }
               }
