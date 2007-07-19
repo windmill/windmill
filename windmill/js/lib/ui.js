@@ -695,8 +695,8 @@ windmill.ui = new function() {
     
     //Send the tests to be played back
     this.sendPlayBack = function (uuid){
+      
       var appending = false;
-
       if (typeof(uuid) == 'undefined'){ appending = true; }
 
       var testArray = [];
@@ -742,13 +742,12 @@ windmill.ui = new function() {
                       windmill.remote.$(suites[i].childNodes[j].id).style.background = 'lightyellow';
                       //testArray.push(fleegix.json.serialize(actionObj));
                       testArray.push(actionObj);
+                  }
                   
-                    //if they don't want the play button for each action to cascade
-                    //Just play that particular action, unless the big play button was hit
-                    if ((windmill.remote.$('playCascade').checked == false) && (typeof(uuid) == 'undefined')){
-                      appending = false;
-                    }
-                  
+                   //if they don't want the play button for each action to cascade
+                  //Just play that particular action, unless the big play button was hit
+                  if ((windmill.remote.$('playCascade').checked == false) && (typeof(uuid) != 'undefined')){
+                    appending = false;
                   }
               }
           }
