@@ -17,11 +17,12 @@ Copyright 2006, Open Source Applications Foundation
 function TimeObj() {
     
     var timeStarted = '0:0:0:0';
-    var timeEnded = '0:0:0:0';
-    var startMS = 0;
-    var endMS = 0;
-    var runTime = '';
+    var timeEnded  = '0:0:0:0';
+    var startMS    = 0;
+    var endMS      = 0;
+    var runTime    = '';
     var identifier = '';
+
     
   this.getStart = function(){
       return timeStarted;

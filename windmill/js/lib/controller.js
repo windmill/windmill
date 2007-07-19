@@ -45,9 +45,10 @@ Copyright 2006, Open Source Applications Foundation
  
 windmill.controller = new function () {
     
-    this.extensions = {};
-    this.commands = {};
+    this.extensions              = {};
+    this.commands             = {};
     this.optionLocatorFactory = new OptionLocatorFactory();
+
     
         /*******************************
         /* Helper functions, non user facing

@@ -40,7 +40,7 @@ windmill.controller.extensions.clickLozenge =function (param_object){
 
 
 windmill.controller.extensions.cosmoDragDrop = function (p){
-
+   
     var param = p || {};
     var dragged = param.dragged;
     var dest = param.destination;

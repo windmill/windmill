@@ -30,11 +30,12 @@ windmill.xhr = new function () {
     this.loopState = 1;
    
     //json_call
-    this.json_call = function(version, method, params){
+    this.json_call   = function(version, method, params){
         this.version = version || null;
-        this.method = method || null;
-        this.params = params || [];
+        this.method  = method || null;
+        this.params  = params || [];
     }
+
 
     
      this.toggleCollapse = function(id){
@@ -86,11 +87,11 @@ windmill.xhr = new function () {
                        var ide = windmill.remote.$('ide');
                        var suite = windmill.remote.document.createElement('div');
                        suite.id = windmill.xhr.xhrResponse.result.suite_name;
-                       suite.style.width = "99%";
+                       suite.style.width      = "99%";
                        suite.style.background = "lightblue";
-                       suite.style.overflow = 'hidden';
-                       suite.style.border = '1px solid black';
-                       suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
+                       suite.style.overflow   = 'hidden';
+                       suite.style.border     = '1px solid black';
+                       suite.innerHTML        = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
                           windmill.xhr.xhrResponse.result.suite_name+"</td><td><span align=\"right\" style='top:0px;float:right;'>"+
                           "<a href=\"#\" onclick=\"windmill.ui.saveSuite(\'"+windmill.xhr.xhrResponse.result.suite_name+
                            "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
