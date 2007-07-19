@@ -46,6 +46,12 @@ class ControllerQueue(object):
         test['suite_name'] = suite_name
         self.test_queue.append(test)
         
+    def start_suite(self, suite_name):
+        self.current_suite = suite_name
+
+    def stop_suite(self):
+        self.current_suite = None
+        
     def command(self, command):
         
         self.command_queue.insert(0, command)
@@ -164,7 +170,7 @@ class RPCMethods(object):
         
     def start_suite(self, suite_name):
         self._test_resolution_suite.start_suite(suite_name)
-        self._queue.current_suite = suite_name
+        self._queue.start_suite(suite_name)
         return 200
     
     def stop_suite(self):
@@ -216,20 +222,20 @@ class RPCMethods(object):
     def execute_json_command(self, json):
         """Add command from json object with 'method' and 'params' defined, block until it returns, return the result"""
         action_object = simplejson.loads(json)
-        return self.execute_object(self._queue.add_command, action_object)
+        return self.execute_object(self._queue.add_command, self._command_resolution_suite, action_object)
 
     def execute_json_test(self, json):
         """Add test from json object with 'method' and 'params' defined, block until it returns, return the result"""
         action_object = simplejson.loads(json)
-        return self.execute_object(self._queue.add_test, action_object)
+        return self.execute_object(self._queue.add_test, self._test_resolution_suite, action_object)
         
     def execute_command(self, action_object):
         """Add command from dict object with 'method' and 'params' defined, block until it returns, return the result"""
-        return self.execute_object(self._queue.add_command, action_object)
+        return self.execute_object(self._queue.add_command, self._command_resolution_suite, action_object)
         
     def execute_test(self, action_object):
         """Add test from dict object with 'method' and 'params' defined, block until it returns, return the result"""
-        return self.execute_object(self._queue.add_test, action_object)
+        return self.execute_object(self._queue.add_test, self._test_resolution_suite, action_object)
         
     def run_json_tests(self, tests):
         """Run list of json tests"""
