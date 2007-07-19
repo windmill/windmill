@@ -16,19 +16,23 @@ from setuptools import setup
 import sys, os, copy
 
 APP = 'windmill/bin/windmill-admin.py'
-DATA_FILES = ['windmill', 
-              # '/Users/mikeal/tmp/CherryPy-3.0.1/cherrypy',
-              # '/Users/mikeal/tmp/dateutil-1.1/dateutil',
-              # '/Users/mikeal/tmp/simplejson-1.7.1/simplejson',
-              # '/Users/mikeal/Documents/projects/tools/wsgi_fileserver/trunk/wsgi_fileserver',
-              # '/Users/mikeal/Documents/projects/tools/wsgi_jsonrpc/trunk/wsgi_jsonrpc',
-              # '/Users/mikeal/Documents/projects/tools/wsgi_proxy/trunk/wsgi_proxy',
-              # '/Users/mikeal/Documents/projects/tools/wsgi_xmlrpc/trunk/wsgi_xmlrpc',
-              # #'/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5',
-              # '/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/email',
-              # '/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/lib-dynload/',
-              # '/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/wx-2.8-mac-unicode',
-              ]
+DATA_FILES = ['windmill']
+              
+mikeals_build = [ '/Users/mikeal/tmp/CherryPy-3.0.1/cherrypy',
+                 '/Users/mikeal/tmp/dateutil-1.1/dateutil',
+                 '/Users/mikeal/tmp/simplejson-1.7.1/simplejson',
+                 '/Users/mikeal/Documents/projects/tools/wsgi_fileserver/trunk/wsgi_fileserver',
+                 '/Users/mikeal/Documents/projects/tools/wsgi_jsonrpc/trunk/wsgi_jsonrpc',
+                 '/Users/mikeal/Documents/projects/tools/wsgi_proxy/trunk/wsgi_proxy',
+                 '/Users/mikeal/Documents/projects/tools/wsgi_xmlrpc/trunk/wsgi_xmlrpc',
+                 #'/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5',
+                 '/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/email',
+                 '/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/lib-dynload/',
+    '/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/wx-2.8-mac-unicode',
+                ]
+                
+if os.path.isdir('/Users/mikeal'):
+    DATA_FILES.extend(mikeals_build)
 
 for filename in copy.copy(DATA_FILES):
     def add_subfilename(sub_filename):
