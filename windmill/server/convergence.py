@@ -52,8 +52,7 @@ class ControllerQueue(object):
     def stop_suite(self):
         self.current_suite = None
         
-    def command(self, command):
-        
+    def command(self, command):        
         self.command_queue.insert(0, command)
         
     def next_action(self):
@@ -207,7 +206,7 @@ class RPCMethods(object):
         
     def execute_object(self, queue_method, resolution_suite, action_object):
         """Procedure neutral blocking exeution of a given object."""
-        uuid = self.add_object(queue_method, resolution_suite, action_object)
+        uuid = self.add_object(queue_method, action_object)
 
         while not resolution_suite.resolved.get(uuid):
             sleep(1)

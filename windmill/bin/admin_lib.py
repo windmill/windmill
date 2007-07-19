@@ -14,6 +14,7 @@
 
 import windmill
 import logging, time
+from time import sleep
 import os, sys, inspect, shutil
 from datetime import datetime
 from threading import Thread
@@ -26,6 +27,9 @@ def process_options(argv_list):
     
     action = None
     
+    # This might be the hairiest code in windmill :)
+    # We have a very specific way we need to parse arguments 
+    # because of the way different arguments interact with each other
     for index in range(len(argv_list)):
         if index <= len(argv_list):
             if argv_list[index].startswith('http://'):
@@ -61,17 +65,21 @@ def process_options(argv_list):
                 options = argv_list[index].replace('-')
                 for option in options:
                     admin_options.flags_dict[option]()
-              
-            
                     
     if action is None:
-        return action_mapping['wx']
+        print len(sys.argv)
+        if len(sys.argv) is 0 or len(sys.argv) is 1:
+            return action_mapping['wx']
+        else:
+            return action_mapping['runserver']
     else:
         return action
                 
 
 def setup_servers(console_level=logging.INFO):
     """Setup the server and return httpd and loggers"""
+    windmill.is_active = True
+    windmill.ide_is_awake = False
     console_handler = logging.getLogger().handlers[0]
     console_handler.setLevel(console_level)
     httpd = windmill.server.wsgi.make_windmill_server()
@@ -134,6 +142,9 @@ def setup():
 
     if windmill.settings['TEST_DIR'] is not None:
          shell_objects.run_given_test_dir() 
+    
+    if windmill.settings['PYTHON_TEST_FRAME']:
+         windmill.settings['TEST_FRAME'] = python_test_frame
          
     browser = [setting for setting in windmill.settings.keys() if setting.startswith('START_') and \
                                                                   windmill.settings[setting] is True]
@@ -147,10 +158,32 @@ def setup():
         shell_objects_dict[attribute] = getattr(shell_objects, attribute)
 
     windmill.settings['shell_objects'] = shell_objects_dict
+                
     return shell_objects_dict
 
 
+def python_test_frame(shell_objects):
+    from windmill.authoring import frame
+    if windmill.settings['PYTHON_TEST_FILE']:
+        print 'test_file', windmill.settings['PYTHON_TEST_FILE']
+        test_run_method = lambda : frame.collect_and_run_tests(windmill.settings['PYTHON_TEST_FILE'])
+    else:
+        test_run_method = lambda : frame.collect_and_run_tests(os.path.abspath(os.path.curdir))
+    
+    def run_tests():
+        while not windmill.ide_is_awake:
+            sleep(1)
+        test_run_method()
+    
+    thread = Thread(target=run_tests)
+    thread.start()
+    shell_objects['test_frame_thread'] = thread
+    return 'call_action'
+    
+
 def teardown(shell_objects):
+    
+    windmill.is_active = False
     
     shell_objects['clear_queue']()
 

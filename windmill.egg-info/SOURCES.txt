@@ -1,3 +1,4 @@
+ez_setup.py
 setup.py
 wmIcon.rsrc
 contrib/pyselenium/src/__init__.py
@@ -15,6 +16,7 @@ windmill/authoring/transforms.py
 windmill/bin/__init__.py
 windmill/bin/admin_lib.py
 windmill/bin/admin_options.py
+windmill/bin/json2python.py
 windmill/bin/shell_objects.py
 windmill/bin/windmill-admin.py
 windmill/bin/wxui/Firefoxlogo2.png
@@ -42,6 +44,9 @@ windmill/js/ide/img/playbackstop.png
 windmill/js/ide/img/record.png
 windmill/js/ide/img/stoprecord.png
 windmill/js/ide/img/trash.png
+windmill/js/ide/img/wmIcon.png
+windmill/js/ide/img/xoff.png
+windmill/js/ide/img/xon.png
 windmill/js/ide/tabs/README
 windmill/js/ide/tabs/tab.css
 windmill/js/ide/tabs/tab.js

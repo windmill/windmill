@@ -30,17 +30,19 @@ class WindmillTestClient(object):
         
         self._method_proxy = method_proxy
         
+        class ExecWrapper(object):
+            def __init__(self, exec_method, action_name):
+                self.action_name = action_name
+                self.exec_method = exec_method
+            def __call__(self, **kwargs):
+                return self.exec_method(self.action_name, **kwargs)
+                
+                
         for action in self._method_proxy.execute_command(
                                    {'method':'commands.getControllerMethods','params':{}})['result']:
-            """Bind every available test and action to self, flatten them as well"""
             
-            class ExecWrapper(object):
-                def __init__(self, exec_method, action_name):
-                    self.action_name = action_name
-                    self.exec_method = exec_method
-                def __call__(self, **kwargs):
-                    return self.exec_method(self.action_name, **kwargs)
             
+            #Bind every available test and action to self, flatten them as well
             if action.find('command') is not -1:
                 setattr(self, 
                         action.split('.')[-1], 
@@ -71,7 +73,6 @@ class WindmillTestClient(object):
         """Execute test, if browser_debugging then just add it to queue"""
         test = {'method':test_name, 'params':kwargs}
         if not self._browser_debugging:
-            print test_name
             result = self._method_proxy.execute_test({'method':test_name, 'params':kwargs})
             if not result['result'] and self._enable_assertions:
                 assert result['result']
@@ -83,10 +84,10 @@ class WindmillTestClient(object):
 def get_test_client(name):
     client = WindmillTestClient(name)
     
-    if windmill.settings.get('BROWSER_DEBUGGING'):
+    if windmill.settings.get('BROWSER_DEBUGGING', None):
         client._browser_debugging = True
         
-    if windmill.settings.get('ENABLE_PDB'): 
+    if windmill.settings.get('ENABLE_PDB', None): 
         import pdb
         client._browser_debugging = False
         client._enable_assertions = True

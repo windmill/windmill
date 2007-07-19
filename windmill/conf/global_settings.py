@@ -33,6 +33,11 @@ START_FIREFOX = False
 
 CONTINUE_ON_FAILURE = False
 
+PYTHON_TEST_FRAME = False
+PYTHON_TEST_FILE = None
+ENABLE_PDB = False
+BROWSER_DEBUGGING = False
+
 # Browser prefs
 
 # Mozilla prefs
