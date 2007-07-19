@@ -511,7 +511,7 @@ windmill.ui = new function() {
                  i1.className = 'texta';
                  i1.size      = '35';
                  if (typeof(params[windmill.registry.methods[method].option]) != 'undefined'){
-                   i1.value     = params[windmill.registry.methods[method].option];
+                   i1.setAttribute("value", params[windmill.registry.methods[method].option]);
                  }
                  i1.id        = action.id + 'option';
                  i1.setAttribute('onFocus', 'windmill.ui.setRemoteElem(\''+i1.id+'\')');
@@ -582,7 +582,7 @@ windmill.ui = new function() {
      
      //Writing json to the remote for the change events
      this.writeJsonChange = function(e){          
-       
+
            if( this.recordState == false){ return; }
            var locator = '';
            var locValue = '';
