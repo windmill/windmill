@@ -14,7 +14,7 @@
 
 import wx
 import wx.lib.flatnotebook as fnb
-import  wx.lib.mixins.listctrl  as  listmix
+import wx.grid as gridlib
 import logging
 import sys
 import time
@@ -64,7 +64,9 @@ class Frame(wx.Frame):
                               "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
                               "See the License for the specific language governing permissions and",
                               "limitations under the License."]))
-        
+	
+	#os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wlogo.png')
+	#self.aboutInfo.SetIcon(
     def setupListener(self):
         """Sets up the listener to the logger"""
         #logging.basicConfig(format='%(asctime)s %(message)s')
@@ -119,7 +121,7 @@ class Frame(wx.Frame):
         
     def OnAbout(self, event):
         #popup a About dialog 
-        wx.AboutBox(aboutInfo)
+        wx.AboutBox(self.aboutInfo)
             
     def createTabs(self):
         """Creates and lays out the tab menu appropriately"""
@@ -135,7 +137,7 @@ class Frame(wx.Frame):
 	    self.appSizer.Add(self.book, 1, wx.EXPAND)
     
 	    ##setup the tab contain the shell
-	    shellTab = wx.Panel(self, -1)
+	    shellTab = wx.Panel(self.book, -1)
     
 	    #define that the tabSizer for this panel be used.
 	    shellTabSizer = wx.BoxSizer(wx.VERTICAL)
@@ -145,6 +147,10 @@ class Frame(wx.Frame):
 	    #create the shell frame
 	    shellFrame = wx.py.shell.Shell(shellTab, locals=self.shell_objects)
     
+	    import windmill
+	    windmill.stdout = shellFrame.stdout
+	    windmill.stdin = shellFrame.stdin	
+
 	    #add the shell frame to the shellTab sizer
 	    shellTabSizer.Add(shellFrame, 1, wx.EXPAND)        
     
@@ -157,7 +163,7 @@ class Frame(wx.Frame):
     
 	    self.outputPanel = wx.Panel(self.book, -1, style=wx.MAXIMIZE_BOX)
     
-	    self.programOutput = WindmillOutputPanel(self.outputPanel, -1, style=wx.MAXIMIZE_BOX)
+	    self.programOutput = CustTableGrid(self.outputPanel)
 	    outputSizer = wx.BoxSizer(wx.VERTICAL)
 	    self.outputPanel.SetSizer(outputSizer)
     
@@ -256,9 +262,7 @@ class Frame(wx.Frame):
         
     def EvtOnDoSearch(self, event):
 	searchVal = self.filterType.GetValue()
-	#if not(searchVal == ""):
-	print "Searching for value: ", searchVal
-	self.programOutput.SearchItems(self.filterType.GetValue())
+	self.programOutput.SearchValues(searchVal)
 
     def OnFFButtonClick(self, event):
         self.shell_objects['start_firefox']()
@@ -271,185 +275,326 @@ class Frame(wx.Frame):
         print "Clean up wx controls and windows"
         self.Destroy()
         
-class WindmillOutputPanel(wx.Panel, listmix.ColumnSorterMixin, logging.Handler):
+#--------------------------------------------------------------------------- 
+class CustomDataTable(gridlib.PyGridTableBase): 
+    def __init__(self): 
+        gridlib.PyGridTableBase.__init__(self) 
 
-    def __init__(self, *args, **kwargs):
-        wx.Panel.__init__(self, *args, **kwargs)
+        self.colLabels = ['Level', 'Time', 'Logger', 'Message'] 
+        self.dataTypes = [gridlib.GRID_VALUE_STRING,
+                          gridlib.GRID_VALUE_STRING, 
+                          gridlib.GRID_VALUE_STRING,  
+                          gridlib.GRID_VALUE_STRING ] 
+        self.data = []
+	
+	self.previousSize = 0
         
-        logging.Handler.__init__(self)
-        
-        self.listCtrl = WindmillListCtrl(self, wx.NewId(), 
-                                     style=wx.LC_REPORT| wx.LC_VRULES
-                                     | wx.LC_HRULES | wx.LC_SINGLE_SEL)
+    #-------------------------------------------------- 
+    # required methods for the wxPyGridTableBase interface 
+    def GetNumberRows(self): 
+        return len(self.data) + 1 
+    
+    def GetNumberCols(self): 
+        return len(self.colLabels)
+    
+    def IsEmptyCell(self, row, col): 
+        try: 
+            return not self.data[row][col] 
+        except IndexError: 
+            return True 
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(sizer)
-        sizer.Add(self.listCtrl, 1, wx.EXPAND)
+    # Get/Set values in the table.  The Python version of these 
+    # methods can handle any data-type, (as long as the Editor and 
+    # Renderer understands the type too,) not just strings as in the 
+    # C++ version. 
+    def GetValue(self, row, col): 
+        try: 
+            return self.data[row][col] 
+        except IndexError: 
+            return '' 
+    
+    def SetValue(self, row, col, value): 
+        try: 
+            self.data[row][col] = value 
+        except IndexError: 
+            # add a new row 
+            self.data.append([''] * self.GetNumberCols()) 
+            self.SetValue(row, col, value) 
+            # tell the grid we've added a row 
+            msg = gridlib.GridTableMessage(self,            # The table 
+                    gridlib.GRIDTABLE_NOTIFY_ROWS_APPENDED, # what we did to it 
+                    1                                       # how many 
+                    ) 
+            self.GetView().ProcessTableMessage(msg) 
+
+    #-------------------------------------------------- 
+    # Some optional methods 
+    # Called when the grid needs to display labels 
+    def GetColLabelValue(self, col): 
+        return self.colLabels[col] 
+
+    # Called to determine the kind of editor/renderer to use by 
+    # default, doesn't necessarily have to be the same type used 
+    # natively by the editor/renderer if they know how to convert. 
+    def GetTypeName(self, row, col): 
+        return self.dataTypes[col] 
+
+    # Called to determine how the data can be fetched and stored by the 
+    # editor and renderer.  This allows you to enforce some type-safety 
+    # in the grid. 
+    def CanGetValueAs(self, row, col, typeName): 
+        colType = self.dataTypes[col].split(':')[0] 
+        if typeName == colType: 
+            return True 
+        else: 
+            return False 
+
+    def CanSetValueAs(self, row, col, typeName): 
+        return self.CanGetValueAs(row, col, typeName) 
+    
+    
+    def DeleteRows(self, pos = 0, numRows = 0):
+	try:
+	    if len(self.data) != 0 and len(self.data) < pos+numRows:
+		del self.data[pos:pos+numRows]
+		
+		## tell the grid we've added a row 
+		msg = gridlib.GridTableMessage(self,            # The table
+			gridlib.GRIDTABLE_NOTIFY_ROWS_DELETED, # what we did to it 
+			pos,
+			numRows# how many 
+			) 
+		self.GetView().ProcessTableMessage(msg)
+	except Exception:
+	    print "\nERROR IN DELETEROWS\n"
+	    return False
+	
+	return True
+	    
+    def AppendNewRow(self, values):
+        """Sets a row to a value"""
         
-        self.allLogItems = {}
-        self.itemDataMap = {}
-        listmix.ColumnSorterMixin.__init__(self, self.listCtrl.GetColumnCount())
+        self.data.append(values) 
+    
+        ## tell the grid we've added a row 
+        msg = gridlib.GridTableMessage(self,            # The table 
+                gridlib.GRIDTABLE_NOTIFY_ROWS_APPENDED, # what we did to it 
+                1                                       # how many 
+                ) 
+        self.GetView().ProcessTableMessage(msg)
+
+    def AppendRows(self, numRows = 1):
+        """Sets a row to a value"""
+
+	## tell the grid we've added a row 
+        msg = gridlib.GridTableMessage(self,            # The table 
+                gridlib.GRIDTABLE_NOTIFY_ROWS_APPENDED, # what we did to it 
+                numRows                                       # how many 
+                )
+	
+        self.GetView().ProcessTableMessage(msg)
+
+
+    def GetRow(self, row):
+        """Gets a row with the given index"""
+        try:
+            return self.data[row]
+        except IndexError:
+            print "Row not part of database"
         
-        # the value used to parse the output for search purposes
+    
+    def ChangeDataSet(self, nwlst):
+	#assign a value to retain the current length of the data list
+	previousSize = len(self.data)
+	
+	#nuke the old list just in case
+	#del self.data
+	
+	#reassign the data list
+	self.data = list(nwlst)
+	
+	#call the function to resize the number of rows if necessary
+	self.ResizeTableRows(len(self.data), previousSize)
+	
+    def ResizeTableRows(self, now, prev):
+	print "Thenew size is: ", now, " and the previous size is ", prev  
+	try:
+	    if now - prev > 0: # need to adds some rows
+		#print "\nTrying to append ", now - prev, " new rows in the grid\n"
+		## tell the grid we've added a row 
+		msg = gridlib.GridTableMessage(self,            # The table
+					       gridlib.GRIDTABLE_NOTIFY_ROWS_APPENDED, # what we did to it 
+					       now - prev       # how many 
+					       ) 
+		self.GetView().ProcessTableMessage(msg)
+	    elif now - prev < 0: # need to delete empty rows
+		#print "\nTrying to remove ", -1* now - prev, " rows in the grid\n"
+		#print "\nAnd there are  ", self.GetNumberRows(), " rows in the grid\n"
+		## tell the grid we've added a row 
+		#nRows = self.GetNumberRows()
+		msg = gridlib.GridTableMessage(self,            # The table
+					       gridlib.GRIDTABLE_NOTIFY_ROWS_DELETED, # what we did to it 
+					       0,
+					       prev - now        # how many 
+					   ) 
+		self.GetView().ProcessTableMessage(msg)
+	    else:
+		#print "Ran into a zeroError in ResizeTableRows with ", now - prev, " number"
+		return
+	except wx._core.PyAssertionError:
+	    #print "Ran into a pyAssertinError in ResizeTableRows with ", now - prev, " number"
+	    return
+	    
+
+
+#--------------------------------------------------------------------------- 
+class CustTableGrid(gridlib.Grid, logging.Handler): 
+    def __init__(self, parent): 
+        gridlib.Grid.__init__(self, parent, -1) 
+        
+        logging.Handler.__init__(self)        
+
+        table = CustomDataTable() 
+        
+        self.masterList = []
+	
+        #determines the last column sorted
+        self.lastSorted = [0, False] 
+
+        #make the text in each cell wrap to fit within the width of each cell.
+        self.SetDefaultRenderer(wx.grid.GridCellAutoWrapStringRenderer())
+        
+        # The second parameter means that the grid is to take ownership of the 
+        # table and will destroy it when done.  Otherwise you would need to keep 
+        # a reference to it and call it's Destroy method later. 
+        self.SetTable(table, True) 
+        
+        #assign the second column to 150 width STATIC VALUE. MUST CHANGE
+	self.SetColSize(2, 150)
+
+	#insure left side label is not displayed
+        self.SetRowLabelSize(0) 
+
+	#remove the extra space after the last column
+        self.SetScrollLineX(1)
+
+        #disable the editing of cells
+        self.EnableEditing(False)
+        
+        #Set the default alignment of the cells values
+        self.SetDefaultCellAlignment(wx.ALIGN_LEFT, wx.ALIGN_CENTER)
+
         self.currentSearchValue = ""
+        
+        ##define the events to be used on the control##
+        
+        #Onsize for resizing the message column
+        self.Bind(wx.EVT_SIZE, self.OnSize)
+        
+        #on column double click sorting values
+        self.Bind(gridlib.EVT_GRID_LABEL_LEFT_DCLICK, self.SortSpecificColumn)
 	
-	self.currentIndexValue = 0
-    
-    def SearchItems(self, searchValue):
-	
-	print "Before search the master dict has: ", len(self.allLogItems)
-	#self.Freeze()
-	try:
-	    tempDict = {}
-    
-	    if searchValue == "": # if the search val is none then display entire list
-		#reassign currentSearchValue
-		self.currentSearchValue = searchValue
-		
-		tempDict.update(self.allLogItems)
-		
-	    # determine if this is a new search value
-	    elif(len(searchValue) > len(self.currentSearchValue)): # addition to current search
-		#reassign currentSearchValue
-		self.currentSearchValue = searchValue
-		
-		#search currently active dictionary
-		for key, value in self.itemDataMap.items():
-		    if self.currentSearchValue in value[len(value)-1]: # Just search the message body
-			#tempDict.update({key: value})
-			tempDict[key]=value
-			
-	    else:
-		#reassign currentSearchValue
-		self.currentSearchValue = searchValue
-		
-		#search currently active dictionary
-		for key, value in self.allLogItems.items():
-		    if self.currentSearchValue in value[len(value)-1]: # Just search the message body
-			tempDict[key] = value 
-					
-	    self.itemDataMap.clear()
-	    self.itemDataMap.update(tempDict)
-	    
-	    self.listCtrl.ResetList(self.itemDataMap)
-	    self.SortListItems()
+	#Handle when the data in a cell changes by changing it's color appropriately
+	self.Bind(gridlib.EVT_GRID_CELL_CHANGE, self.EvtCellChange)
 
-	finally:
-            
-	   # self.Thaw()
-            print "finished searching"
-	print "After search the master dict has: ", len(self.allLogItems)
+	#Handle when the data in a cell changes by changing it's color appropriately
+	self.Bind(gridlib.EVT_GRID_CMD_SELECT_CELL, self.EvtCellChange)
 
-    # Used by the ColumnSorterMixin, see wx/lib/mixins/listctrl.py
-    def GetListCtrl(self):
-        return self.listCtrl
-    
+	#print "The parent object has the following functions and attributies: \n\n", dir(self.Parent), "\n\n"
+
     def emit(self, record):
-        #self.Freeze()
-	try:
-	    # Gets the index to the comlumns and their values
-	    index, key, rows = self.listCtrl.InsertRecord(record)
-    
-	    # Assigns the unique index and their values to a datamap for sorting purposes
-	    self.allLogItems[key] = rows        
-	    
-	    if( self.currentSearchValue not in record.getMessage()):
-		self.listCtrl.DeleteItem(index)
+	#parse the record into a list format that fits to the table
+	lstItem = self.ParseRecordToList(record)
+
+	#append the new item to the master list
+	self.masterList.append(lstItem)
+	
+	#determine if the record should be place in the table
+	if( record.getMessage().find(self.currentSearchValue) is not -1):
+	    self.GetTable().AppendNewRow(lstItem)
+	    self.SortColumn()
+
+	    #because of crashing purposes must call autesizerows less often, so i'm callin only every 5 times
+	    #if(self.GetTable().GetNumberRows() % 7 == 0 ):
+		#self.AutoSizeRows(False)
 		
+    def SearchValues(self, searchValue):
+
+	#print "The search value is: ", searchValue, " and the len of data is: ", len(self.GetTable().data)
+	if searchValue == "":
+	    self.GetTable().ChangeDataSet(self.masterList)	    
+
+	# determine if this is a new search value
+	elif(len(searchValue) > len(self.currentSearchValue)): # addition to current search
+	    ##reassign currentSearchValue
+	    #self.currentSearchValue = searchValue
+	    ##search currently active list
+	    self.GetTable().ChangeDataSet(filter(lambda lst: lst[self.GetNumberCols()-1].find(searchValue) is not -1, self.GetTable().data))
+			    
+	else:
+	    #reassign currentSearchValue
+	    #self.currentSearchValue = searchValue
+	    #search master list
+	    self.GetTable().ChangeDataSet(filter(lambda lst: lst[self.GetNumberCols()-1].find(searchValue) is not -1, self.masterList))
+	
+	#reassign currentSearchValue
+	self.currentSearchValue = searchValue
+
+	self.SortColumn()
+	self.AutoSizeRows(False)
+	
+	
+
+    def ParseRecordToList(self, record):
+	#retrieve the record time
+	recordTime = time.strftime("%H:%M:%S.", time.gmtime(record.created)) + (lambda x: x[x.rfind(".")+1:] )(str(record.created))
+
+	#append the new record into the master list
+	return [str(record.levelname), recordTime, record.name, str(record.getMessage())]
+			
+	
+    def OnSize(self, event):
+        """handles a window resize"""
+	event.Skip()
+        
+        #determine the width of the last column to the edge of the screen
+        totalSize = 0
+        
+        for cell in range(0, self.GetNumberCols() -1):
+            totalSize += self.GetColSize(cell)
+        #print "The scrollbar pos is: ", self.Parent.GetScrollBar(wx.HORIZONTAL)
+        self.SetColSize(self.GetNumberCols() -1, event.Size[0] - totalSize - 15)        
+        
+        self.AutoSizeRows(True)
+
+    
+    def SortSpecificColumn(self, event):
+        if self.lastSorted[0] == event.Col:
+            self.lastSorted[1] = not(self.lastSorted[1])
+        else:
+            self.lastSorted[0] = event.Col
+            self.lastSorted[1] = False
+
+        self.SortColumn(event.Col, self.lastSorted[1])
+        
+    def SortColumn(self, col = None, reverse = False):
+	if( len(self.GetTable().data) is not 0):
+	    if col is None:
+		self.GetTable().data.sort(key=lambda lst: lst[self.lastSorted[0]], reverse=self.lastSorted[1])
 	    else:
-		self.itemDataMap[key] = rows
-    
-	    self.SortListItems()
-	finally:
-            print "finished emitting"
-	    #self.Thaw()
-
-    def __del__(self):
-        self.close()    
-        
-class WindmillListCtrl(wx.ListView, listmix.ListCtrlAutoWidthMixin):
-    def __init__(self, *args, **kwargs):
-        wx.ListCtrl.__init__(self, *args, **kwargs)
-       
-        self.InsertColumn(0, "Level", format=wx.LIST_FORMAT_CENTER)
-        self.InsertColumn(1, "Time",format=wx.LIST_FORMAT_CENTER)
-        self.InsertColumn(2, "Logger", format=wx.LIST_FORMAT_CENTER, width=len("Logger")*self.GetFont().GetPointSize())
-        self.InsertColumn(3, "Message")
-
-        self.SetColumnWidth(0, wx.LIST_AUTOSIZE_USEHEADER)
-
-        listmix.ListCtrlAutoWidthMixin.__init__(self)
-	
-	self.currentIndexValue = 0
-        
-    def InsertRecord(self, record):
-	
-        recordTime = time.strftime("%H:%M:%S.", time.gmtime(record.created)) + (lambda x: x[x.rfind(".")+1:] )(str(record.created))
-
-        index = self.InsertNewItem( (str(record.levelname),
-				     recordTime,
-				     record.name,
-				     str(record.getMessage())),
-				     record.levelno)
-	key = int(self.currentIndexValue)
-
-	self.currentIndexValue+=1	
-
-	self.SetItemData(index, key)
-
-        return index, key, self.GetRow(index)
-
-    def hashTimeStr(self, strTime):
-	
-	temp =0
-	for num in strTime.replace(".",":").split(":"):
-	    temp+=long(num)
+		self.GetTable().data.sort(key=lambda lst: lst[col], reverse=reverse)
 	    
-	return temp
-	    
-    def InsertNewItem(self, items, levelno=0, index=-1):
-        """Inserts a new item at the given debug level with defined items"""
+	    #self.AutoSizeRows(False)
+	    self.ForceRefresh()
 
-        #print "\n\nIndex before insert: ", index
-        #insert a str item in the first column to create a new row
-        index = self.InsertStringItem(sys.maxint, items[0])
-        #print "\nIndex after insert: ", index
-
-        ##Assign the row column depending on the record level
-        cases = {
-          logging.INFO : lambda: self.SetItemTextColour(index, wx.BLUE),
-          logging.ERROR: lambda: self.SetItemTextColour(index, wx.RED),
-          logging.DEBUG: lambda: self.SetItemTextColour(index, wx.ColourDatabase.Find(wx.ColourDatabase(), 'DARK GREEN')),
-        }
-        
-        cases[levelno]()
-       
-        #spit out the rest of the values to the other columns
-        for i in range(len(items)-1):
-            self.SetStringItem(index, i+1, items[i+1])             
-            
-            ##auto size every column but the last one (the message column)
-            #self.SetColumnWidth(i, wx.LIST_AUTOSIZE)
-
-	return index
-    
-    def GetRow(self, index):
-        """GetRow(self) -> Tuple"""
-        
-        return [ self.GetItem(index, i).GetText() for i in range(self.GetColumnCount()) ]
-
-    def ResetList(self, dictValues):
-        """Resets the list according to the give dictValues"""
-	
-        self.DeleteAllItems()
-        for key, values in dictValues.items():
-            idx = self.InsertNewItem(values, logging._levelNames[values[0]], sys.maxint)
-	    self.SetItemData(idx, key)
-	    
+    def EvtCellChange(self, event):
+	print "Cell changed at: ", event.GetCol(), ", ", event.GetRow()
+	if(event.GetCol() == 0):
+	    self.SetRowAttr(event.GetRow(), gridlib.GridCellAttr(colText = wx.GREEN))
 	
     def __del__(self):
-        self.close()    
-    
+        self.close()   
+
 class App(wx.App):
     """Application class."""
     def __init__(self, shell_objects = None, redirect=False, *args, **kwargs):
