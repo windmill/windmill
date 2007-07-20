@@ -55,10 +55,10 @@ windmill.xhr = new function () {
         else{
             
             if (windmill.xhr.xhrResponse.result.method != 'defer'){
-                windmill.ui.writeStatus("<b>Status:</b> Running " + windmill.xhr.xhrResponse.result.method + "...");
+                windmill.ui.results.writeStatus("<b>Status:</b> Running " + windmill.xhr.xhrResponse.result.method + "...");
             }
             else{  
-                windmill.ui.writeStatus("<b>Status:</b> Waiting for tests...");
+                windmill.ui.results.writeStatus("<b>Status:</b> Waiting for tests...");
             }
             
             //Init and start performance but not if the protocol defer
@@ -93,17 +93,19 @@ windmill.xhr = new function () {
                        suite.style.border     = '1px solid black';
                        suite.innerHTML        = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
                           windmill.xhr.xhrResponse.result.suite_name+"</td><td><span align=\"right\" style='top:0px;float:right;'>"+
-                          "<a href=\"#\" onclick=\"windmill.ui.saveSuite(\'"+windmill.xhr.xhrResponse.result.suite_name+
-                           "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
+                          "<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+windmill.xhr.xhrResponse.result.suite_name+
+                           "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
                            "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+
                            windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table></div>";
                        windmill.remote.$('ide').appendChild(suite);
                      }
                     
                     //Add the action to the suite
-                    var action = windmill.ui.buildAction(windmill.xhr.xhrResponse.result.method,windmill.xhr.xhrResponse.result.params);
+                    var action = windmill.ui.remote.buildAction(windmill.xhr.xhrResponse.result.method,windmill.xhr.xhrResponse.result.params);
                     var suite = windmill.remote.$(windmill.xhr.xhrResponse.result.suite_name);
                     suite.appendChild(action);
+                    //IE Hack
+                    windmill.remote.$(action.id).innerHTML = action.innerHTML;
                     var ide = windmill.remote.$('ide');
                 
                     //If the settings box is checked, scroll to the bottom
@@ -121,9 +123,9 @@ windmill.xhr = new function () {
                     else{  result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params); }
                 }
                 catch (error) { 
-                    windmill.ui.writeResult("<font color=\"#FF0000\">There was an error in the "+
+                    windmill.ui.results.writeResult("<font color=\"#FF0000\">There was an error in the "+
                     windmill.xhr.xhrResponse.result.method+" action. "+error+"</font>");
-                    windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + 
+                    windmill.ui.results.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + 
                     "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
                     action.style.background = '#FF9692';
 
@@ -141,17 +143,17 @@ windmill.xhr = new function () {
                     //if we had an error display in UI
                     if (result == false){
                         if (typeof(action) != 'undefined'){ action.style.background = '#FF9692'; }
-                        windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + 
+                        windmill.ui.results.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + 
                         "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');   
                         //if the continue on error flag has been set by the shell.. then we just keep on going
                         if (windmill.stopOnFailure == true){
                             windmill.xhr.togglePauseJsonLoop();
-                            windmill.ui.writeStatus("<b>Status:</b> Paused, error?...");    
+                            windmill.ui.results.writeStatus("<b>Status:</b> Paused, error?...");    
                         }
                     }
                     else {
                         //Write to the result tab
-                        windmill.ui.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');     
+                        windmill.ui.results.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');     
                         if (typeof(action) != 'undefined'){ action.style.background = '#C7FFCC'; }
                     }
                 }
@@ -174,7 +176,7 @@ windmill.xhr = new function () {
         response = eval('(' + str + ')');
         
         if (!response.result == 200){
-            windmill.ui.writeResult('Error: Report receiving non 200 response.');
+            windmill.ui.results.writeResult('Error: Report receiving non 200 response.');
         }
     }
     

@@ -1,10 +1,11 @@
-  <html>
-	<head>
+<html>
+<head>
 	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 	<title>Windmill IDE</title>
 	
 	<link rel="stylesheet" type="text/css" href="ide/css/windmill.css"/>
-  <link href="ide/css/interpreter.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="ide/css/remote.css"/>
+  <link rel="stylesheet" type="text/css" href="ide/css/interpreter.css"/>
 
     <script type="text/javascript" src="lib/MochiKit/MochiKit.js"></script>
     <script type="text/javascript" src="lib/interpreter.js"></script>
@@ -31,12 +32,12 @@
 		
 		var toggleRec = function(){
 			if ($('record').src.indexOf("ide/img/record.png")  != -1){
-				opener.windmill.ui.recordOn();
+				opener.windmill.ui.recorder.recordOn();
 				opener.window.focus();
 				$('record').src = 'ide/img/stoprecord.png';
 			}
 			else{
-				opener.windmill.ui.recordOff();
+				opener.windmill.ui.recorder.recordOff();
 				$('record').src = 'ide/img/record.png';
 			}
 		}
@@ -65,14 +66,14 @@
 			if ($('explorer').src.indexOf("ide/img/xon.png")  != -1){
 				$('domExp').style.visibility = 'visible';
 				$('domExp').innerHTML = '';
-				opener.windmill.ui.domExplorerOn();
+				opener.windmill.ui.domexplorer.domExplorerOn();
 				opener.window.focus();
 				$('explorer').src = 'ide/img/xoff.png';
 
 			}
 			else {
 				$('domExp').style.visibility = 'hidden';
-				opener.windmill.ui.domExplorerOff();
+				opener.windmill.ui.domexplorer.domExplorerOff();
 				$('explorer').src = 'ide/img/xon.png';
 				$('domExp').innerHTML = '';
 
@@ -82,103 +83,149 @@
 </head>
 		
 <body onload="javascript:interpreterManager.initialize();opener.windmill.Start();">
-<div id="main" style="position:absolute;width:100%;height:100%;">
-	&nbsp<img border=no style="height:41px;width:40px;" src="ide/img/wmIcon.png" alt="Welcome to Windmill!">
-	<div id="runningStatus" align="center" style="position:absolute;width:300px;height:18px;left:35px;top:10px;font-size:12px;color:#3f6d75;"><b>Status:</b> Nothing yet..</div>
-
-	<div id="controllers" style="position:absolute;left:340px;top:5px;">
-		
+<div id="main">
+	&nbsp
+	<img border=no style="height:41px;width:40px;" src="ide/img/wmIcon.png" alt="Welcome to Windmill!">
+	<div id="runningStatus" align="center"><b>Status:</b> Nothing yet..</div>
+	
+	<div id="controllers">
 		<a href="#" title="Toggle Recorder"><img alt="Toggle Recorder" name='record' id="record" border=no src="ide/img/record.png" onClick="toggleRec();" ></a>
 		&nbsp<a href="#" title="Play All"><img alt="Play All" name ='playback' id="playback" border=no src="ide/img/playback.png" onClick="togglePlay();"></a>
 		&nbsp<a href="#" title="Toggle DOM Explorer"><img alt="Toggle DOM Explorer" name ='explorer' id="explorer" border=no src="ide/img/xon.png" onClick="toggleExplore();"></a>
-		
 	</div>
-	<div id="domExp" style="visibility:hidden;position:absolute;background:white;left:130px;top:40px;z-index:100;font:18px arial;color:#3f6d75;border:1px solid #aaa;">
-		</div>
-	<div id="ide" style="width:100%;height:85%;border:1px solid #aaa;overflow:auto;">
+	
+	<div id="domExp">
 	</div>
-	<div id="navigation" align=center style="height:6%;font:11px arial;">
+	
+	<div id="ide">
+	</div>
+	
+	<div id="navigation" align=center>
 		<span>Navigation: 
-		<a href="#" onclick="javascript:openDialog('console')">Console</a>&nbsp 
-		<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
-		<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
+			<a href="#" onclick="javascript:openDialog('console')">Console</a>&nbsp 
+			<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
+			<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
 		</span>
-		<span>IDE: <a href="#" onclick="opener.windmill.ui.incRecSuite();windmill.ui.getSuite();">New Suite</a>&nbsp
-			<a href="#" onclick="windmill.ui.addAction();">New Action</a>&nbsp | &nbsp
-		<a href="#" onclick="javascript:windmill.ui.clearIDE()">Clear IDE</a>&nbsp
+		<span>IDE: 
+			<a href="#" onclick="opener.windmill.ui.incRecSuite();windmill.ui.remote.getSuite();">New Suite</a>&nbsp
+			<a href="#" onclick="windmill.ui.remote.addAction();">New Action</a>&nbsp | &nbsp
+		  <a href="#" onclick="windmill.ui.remote.clearIDE()">Clear IDE</a>&nbsp
+		</span>
 	</div>
 	
 </div>
-<div id="gray" style="position:absolute;width:100%;height:100%;background-color:gray;opacity:.8;z-index:9;visibility:hidden;"></div>
+<div id="gray"></div>
 
 <div id="output" class="dialog">
 		<div align="right">
 			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
-				<tr><td style="width:92%;"><strong>Output</strong></td><td style="font: 9pt arial;">
-					<a href="#" onclick="javascript:closeDialog('output');">Close</a>
-				</td></tr>
+				<tr>
+					<td style="width:92%;">
+						<strong>Output</strong>
+					</td>
+					<td style="font: 9pt arial;">
+					  <a href="#" onclick="javascript:closeDialog('output');">Close</a>
+				  </td>
+				</tr>
 			</table>
 		</div>
-		<br><strong>General Output</strong><br>
-		<div id="tab4" style="height:40%;width:99%;overflow:auto;border:1px dashed black;"></div><br>
-	    <strong>Performance Output</strong><br>
-		<div id="tab3" style="height:40%;width:99%;overflow:auto;border:1px dashed black;"></div>
+		<br>
+			<strong>General Output</strong>
+		<br>
+		<div id="tab4" class="tab"></div>
+		<br>
+	    <strong>Performance Output</strong>
+		<br>
+		<div id="tab3" class="tab"></div>
 </div>
 <div id="console" class="dialog" style="font:12pt arial">
 		<div align="right">
 			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
-				<tr><td style="width:92%;"><strong>Windmill Console</strong></td><td style="font: 9pt arial;">
-					<a href="#" onclick="javascript:closeDialog('console');">Close</a></td></tr>
+				<tr>
+					<td style="width:92%;">
+						<strong>Windmill Console</strong>
+					</td>
+					<td style="font: 9pt arial;">
+						<a href="#" onclick="javascript:closeDialog('console');">Close</a>
+					</td>
+				</tr>
 			</table>
 		</div>
 		<br>
-	 <form id="interpreter_form" autocomplete="off">
-	   <div id="interpreter_area">
-	       <div id="interpreter_output"></div>
+	  <form id="interpreter_form" autocomplete="off">
+	  	<div id="interpreter_area">
+	    	<div id="interpreter_output">
+	    	</div>
 	   </div>
 	   <div id="oneline">
 	       <input style="width:80%;height:5%" id="interpreter_text" name="input_text" type="text" class="textbox" size="58" />
 	   </div>
 	   <div id="multiline">
-	   <textarea style="width:80%;height:10%;" id="interpreter_textarea" name="input_textarea" type="text" class="textbox" cols="55" rows="4">
-	   </textarea>
-	       <br />
+	     <textarea style="width:80%;height:10%;" id="interpreter_textarea" name="input_textarea" type="text" class="textbox" cols="55" rows="4">
+	     </textarea>
+	     <br />
 	   </div>
 	 </form>
-
 </div>
+
 <div id="settings" class="dialog">
 		<div align="right">
 			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
-				<tr><td style="width:92%;"><strong>Windmill Settings</strong></td><td style="font: 9pt arial;">
-					<a href="#" onclick="javascript:closeDialog('settings');">Close</a></td></tr>
+				<tr>
+					<td style="width:92%;">
+						<strong>Windmill Settings</strong>
+					</td>
+					<td style="font: 9pt arial;">
+						<a href="#" onclick="javascript:closeDialog('settings');">Close</a>
+					</td>
+				</tr>
 			</table>
 		</div>
 		<br>
 		<h3>System</h3>
 		<table style="font:14px arial;">
-			<tr><td>Break on failure:</td><td> <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="opener.windmill.ui.toggleBreak();"></td></tr>
-			<tr><td>Suppress Javascript Alerts:</td><td> <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts'></td></tr>
-			<tr><td>Suite Save Formatting:</td><td> <SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
-													<OPTION selected>python</option>
-													<OPTION>json</option>
-												   </SELECT></td></tr>
+			<tr>
+				<td>Break on failure:</td>
+				<td> <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="opener.windmill.ui.toggleBreak();"></td>
+			</tr>
+			<tr>
+				<td>Suppress Javascript Alerts:</td><td> <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts'></td>
+			</tr>
+			<tr>
+				<td>Suite Save Formatting:</td>
+				<td> 
+					<SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
+						<OPTION selected>python</option>
+						<OPTION>json</option>
+					</SELECT>
+				</td>
+			</tr>
 		</table>
+		
 		<h3>IDE/Recorder</h3>
 		<table style="font:14px arial;">
-			<tr><td>Auto Scroll IDE to bottom:</td><td> <INPUT TYPE=checkbox CHECKED ID='autoScroll'></td></tr>
-			<tr><td>Absolute click sensitivity when recording:</td><td><INPUT TYPE=checkbox UNCHECKED ID='clickOn'></td></tr>
-			<tr><td>Action play button cascades:</td><td> <INPUT TYPE=checkbox CHECKED ID='playCascade'></td></tr>
+			<tr>
+				<td>Auto Scroll IDE to bottom:</td>
+				<td> <INPUT TYPE=checkbox CHECKED ID='autoScroll'></td>
+			</tr>
+			<tr>
+				<td>Absolute click sensitivity when recording:</td>
+				<td><INPUT TYPE=checkbox UNCHECKED ID='clickOn'></td>
+			</tr>
+			<tr>
+				<td>Action play button cascades:</td>
+				<td> <INPUT TYPE=checkbox CHECKED ID='playCascade'></td>
+			</tr>
 		</table>
 		<br><br>
 		<a href='#' onclick="opener.windmill.testingApp.document.location.reload()">Reload Testing Application</a>: This reloads your page, without resetting Windmill.
 		<br><br><br><br>
 		<div id="loopButton" style="font:18px arial;width:100%;">
-		<center><a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Pause Loop</a></center>
+			<center>
+				<a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Pause Loop</a>
+			</center>
 		</div>
-
 </div>
+
 </body>
-
-
 </html>

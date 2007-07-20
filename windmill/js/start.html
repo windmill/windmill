@@ -17,34 +17,40 @@ Copyright 2006, Open Source Applications Foundation
  <html>
 	<head>
 		<script type="text/javascript" src="lib/browserdetect.js"></script>
-		<script type="text/javascript" src="lib/windmill.js"></script>
-		<script type="text/javascript" src="lib/registry.js"></script>
-		<script type="text/javascript" src="lib/controller.js"></script>
+		<script type="text/javascript" src="wm/windmill.js"></script>
+		<script type="text/javascript" src="wm/registry.js"></script>
+		<script type="text/javascript" src="controller/controller.js"></script>
 		<script type="text/javascript">
-			var url = 'lib/mozController.js';
+			var url = 'controller/mozController.js';
 
 			if (browser.isIE){
-				url = 'lib/ieController.js';
+				url = 'controller/ieController.js';
 			}
 			else if(browser.isSafari){
-				url = 'lib/safController.js';
+				url = 'controller/safController.js';
 			}
 			document.write('<script src="', url, '" type="text/javascript"><\/script>');
 		</script>
 		<script type="text/javascript" src="lib/fleegix.js"></script>
-		<script type="text/javascript" src="lib/timing.js"></script>
-		<script type="text/javascript" src="lib/performance.js"></script>
-		<script type="text/javascript" src="lib/events.js"></script>
+		<script type="text/javascript" src="wm/timing.js"></script>
+		<script type="text/javascript" src="wm/performance.js"></script>
+		<script type="text/javascript" src="wm/events.js"></script>
 		
 		<script type="text/javascript" src="lib/log4js.js" ></script>
-		<script type="text/javascript" src="lib/ui.js"></script>
-		<script type="text/javascript" src="lib/xhr.js"></script>
+		<script type="text/javascript" src="wm/ui.js"></script>
+		<script type="text/javascript" src="wm/playback.js"></script>
+		<script type="text/javascript" src="wm/remote.js"></script>
+		<script type="text/javascript" src="wm/recorder.js"></script>
+		<script type="text/javascript" src="wm/domexplorer.js"></script>
+		<script type="text/javascript" src="wm/results.js"></script>
+
+		<script type="text/javascript" src="wm/xhr.js"></script>
 		<script type="text/javascript" src="lib/xpath/misc.js"></script>
 		<script type="text/javascript" src="lib/xpath/dom.js"></script>
 		<script type="text/javascript" src="lib/xpath/xpath.js"></script>
 
-		<script type="text/javascript" src="lib/windmill-exec.js"></script>
-	    <script type="text/javascript" src="lib/helpers.js"></script>
+		<script type="text/javascript" src="wm/windmill-exec.js"></script>
+	  <script type="text/javascript" src="lib/helpers.js"></script>
 		<script type="text/javascript" src="extensions/extensions.js"></script>
 
 		<script type="text/javascript">
@@ -70,9 +76,11 @@ Copyright 2006, Open Source Applications Foundation
 	<body topmargin="0" leftmargin="0" onload="javascript:Load()">
 	
 	<script type="text/javascript">
-		document.write("<div id=\"pagediv\"><IFRAME  style=\"position:absolute;overflow:auto;width:100%;height:100%;\""+
-		"id=\"webapp\" name=\"webapp\" onload=\"javascript:windmill.controller.continueLoop();windmill.ui.setRecState();\" "+
-		"target=\"_self\" frameborder=0 SRC=\""+windmill.initURL+"\"></iframe></div>");
+		document.write("<div id=\"pagediv\">"+
+			"<IFRAME style=\"position:absolute;overflow:auto;width:100%;height:100%;\""+
+			"id=\"webapp\" name=\"webapp\" onload=\"javascript:windmill.controller.continueLoop();windmill.ui.recorder.setRecState();\" "+
+			"target=\"_self\" frameborder=0 SRC=\""+windmill.initURL+"\"></iframe>"+
+		"</div>");
 	</script>
 
 </body>

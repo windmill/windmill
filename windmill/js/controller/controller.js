@@ -134,7 +134,7 @@ windmill.controller = new function () {
     /************************************/
     this.defer = function (){
         //We may want to somehow display that the loop is being deferred but right now it was too messy in output.
-        //windmill.ui.writeResult('Deferring..')
+        //windmill.ui.results.writeResult('Deferring..')
         //If we are getting defers, no tests are running.. and the playback button should be available
         //windmill.remote.$('playback').src = 'ide/img/playback.png';
         //console.log(windmill.remote.$('playback'));
@@ -357,7 +357,7 @@ windmill.controller = new function () {
     //After the app reloads you have to re overwrite the alert function for the TestingApp
     this.reWriteAlert = function(param_object){
       windmill.testingApp.window.alert = function(s){
-          windmill.ui.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
+          windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
       };
 
         return true;
