@@ -18,13 +18,14 @@ import wx.grid as gridlib
 import logging
 import sys
 import time
+import os
 from wx.py.crust import CrustFrame
 from StringIO import StringIO
 
 class Frame(wx.Frame):
     """Frame that displays the Main window"""
 
-    def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='WindMill', shell_objects = None, **kwargs):
+    def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='Windmill', shell_objects = None, **kwargs):
         
         self.shell_objects = shell_objects
         
@@ -43,8 +44,37 @@ class Frame(wx.Frame):
 	#initialize the info for the about dialog box
         self.setupAboutInfo()
 
+	self.SetupPreferences()
         ##bind the import objects
         self.Bind(wx.EVT_CLOSE, self.OnCloseWindow)
+
+    def SetupPreferences(self):
+	"""Setup the default preferences from loading the conf file"""
+	self.preferences = {}
+	# Let's create a file and write it to disk.
+	filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wx_windmill.conf")
+	
+	try:
+	    infile = open(filename,"r")
+
+	    # Let's get some data:
+	    if infile:
+		line = infile.readline()
+		
+		while len(line) is not 0:
+		    attr, value = line.split(':')
+		    self.preferences[attr] = value
+		    line = infile.readline()
+
+	except IOError, ValueError:
+	    """take care of the null case with no attr file"""
+	    #the file needs to be created.
+	    
+	finally:
+	    infile.close()
+    
+    def SavePreferences(self):
+	"""Saves all the preferences created"""
 
     def setupAboutInfo(self):
         self.aboutInfo = wx.AboutDialogInfo()
@@ -84,11 +114,12 @@ class Frame(wx.Frame):
         fileMenu = wx.Menu()
         self.Bind(wx.EVT_MENU, self.RunTest, fileMenu.Append(wx.NewId(), "Run &Test", "Select a test to run."))
         self.Bind(wx.EVT_MENU, self.RunSuite, fileMenu.Append(wx.NewId(), "Run &Suite", "Select a suite to run."))        
-        fileMenu.Append(wx.NewId(), "&Preference", "")
+        #fileMenu.Append(wx.NewId(), "&Preference", "")
         self.Bind(wx.EVT_MENU, self.OnCloseWindow, fileMenu.Append(wx.NewId(), "E&xit", "Exit Windmill"))
 
         ##setup the options menu
         optionsMenu = wx.Menu()
+	self.Bind(wx.EVT_MENU, self.EvtOnDefaultUrl, optionsMenu.Append(wx.NewId(), "Default Url", "Default Browser Url"))
 
         ##setup the Help menu
         helpMenu = wx.Menu()
@@ -98,9 +129,11 @@ class Frame(wx.Frame):
         ##Add menu items to the menu bar
         menuBar.Append(fileMenu, "&File")
         menuBar.Append(optionsMenu, "O&ptions")
-        menuBar.Append(helpMenu, "&Help")
+
+	menuBar.Append(helpMenu, "&Help")
 
         self.SetMenuBar(menuBar)        
+	
     def RunTest(self, event):
         #popup a dialog here to run it
         dialog = wx.FileDialog (None,
@@ -179,13 +212,6 @@ class Frame(wx.Frame):
     
 	    self.Bind(wx.EVT_COMBOBOX, self.EvtChangeLogeLvl, self.displayTypeBox)
 	    
-	    
-	    #grab the different types of levelnames from logging and use them as option in the combo box
-	    #self.filterType = wx.ComboBox(self.outputPanel, -1, "New Filter", 
-					  #wx.DefaultPosition, wx.DefaultSize, 
-					  #["New Filter"],
-					  #style=wx.CB_DROPDOWN)                                                                                    
-    
 	    #self.Bind(wx.EVT_COMBOBOX, self.EvtOnComboFilter, self.filterType)
 	    self.filterType= wx.SearchCtrl(self.outputPanel, style=wx.TE_PROCESS_ENTER)
     
@@ -205,7 +231,6 @@ class Frame(wx.Frame):
 	    outputSizer.Add(tempSizer, 0, wx.EXPAND)
     
 	    #create text control that displays the output
-	    #self.programOutput = WindmillTextCtrl(self.outputPanel, -1, "", style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_RICH)
 	    outputSizer.Add(self.programOutput, 1, wx.EXPAND)
 	    
 	    ##create a panel to hold the buttons
@@ -218,63 +243,108 @@ class Frame(wx.Frame):
     
 	    #assign the button sizer to the button panel a the botton of the screen
 	    buttonPanel.SetSizer(bottomButtonSizer)
-	    import os
+
+	    #import os
     
 	    #create the browser buttons
 	    try: 
-		    print "Create the bitmap"
-		    bmp = wx.Bitmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Firefoxlogo2.png'), wx.BITMAP_TYPE_PNG)
-		    if(bmp):	
-			    
-			    print "Set the mask color"
-			    bmp.SetMask(wx.Mask(bmp, wx.ColourDatabase.Find(wx.ColourDatabase(), 'YELLOW')))
-			    print "Create the bitmap button"
-			    firstBrowserButton = wx.BitmapButton(buttonPanel, -1, bmp,
-								 size = (bmp.GetWidth()+10, bmp.GetHeight()+10))
-		    else:
-			    firstBrowserButton = wx.Button(buttonPanel, id=-1, label="FF", size = (40, 40))
-    
+		bmp = wx.Bitmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Firefoxlogo2.png'), wx.BITMAP_TYPE_PNG)
+		if(bmp):	
+		    bmp.SetMask(wx.Mask(bmp, wx.ColourDatabase.Find(wx.ColourDatabase(), 'YELLOW')))
+		
+		    firstBrowserButton = wx.BitmapButton(buttonPanel, -1, bmp,
+							 size = (bmp.GetWidth()+10, bmp.GetHeight()+10))
+		else:
+		    firstBrowserButton = wx.Button(buttonPanel, id=-1, label="FF", size = (40, 40))
+
 	    #firstBrowserButton.SetMaxSize((bmp.GetWidth()+10, bmp.GetHeight()+10))
 	    except Exception:
-		    firstBrowserButton = wx.Button(buttonPanel, id=-1, label="FF", size = (40, 40))
+		firstBrowserButton = wx.Button(buttonPanel, id=-1, label="FF", size = (40, 40))
     
 	    #secondBrowserButton = wx.Button(buttonPanel, id=-1, label="IE", size = (60, 40))
-	    self.Bind(wx.EVT_BUTTON, self.OnFFButtonClick, firstBrowserButton)
+	    self.Bind(wx.EVT_BUTTON, self.EvtOnFFButtonClick, firstBrowserButton)
 			     
 	    #Add spacer in front for center purposes
 	    bottomButtonSizer.AddStretchSpacer(1)
 	    
+	    #Add the button to the button sizer
 	    bottomButtonSizer.Add(firstBrowserButton, 1, wx.CENTER) 
-	    #bottomButtonSizer.Add(secondBrowserButton, 1, wx.ALIGN_CENTRE)         
 	    
 	    #Add Another spacer after for center purposes
 	    bottomButtonSizer.AddStretchSpacer(1)
     
-	    self.book.AddPage(self.outputPanel, 'Output', select=False)
+	    self.book.AddPage(self.outputPanel, 'Output', select=True)
 
 	finally:
 	    self.Thaw()	        
+
 	self.SendSizeEvent()
 
     def EvtChangeLogeLvl(self, event):
-        print "Change log level to:  ", event.GetString(), "   with int value:   ", logging._levelNames[event.GetString()]
+        #print "Change log level to:  ", event.GetString(), "   with int value:   ", logging._levelNames[event.GetString()]
         self.theLogger.setLevel(logging._levelNames[event.GetString()])
         
     def EvtOnDoSearch(self, event):
 	searchVal = self.filterType.GetValue()
 	self.programOutput.SearchValues(searchVal)
 
-    def OnFFButtonClick(self, event):
-        self.shell_objects['start_firefox']()
-        
+    def EvtOnFFButtonClick(self, event):
+	self.shell_objects['start_firefox']()
+	
     def OnCloseWindow(self, event):
         #should probably manually stop logging to prevent output errors
-        print "Removing the log handler"
+        #print "Removing the log handler"
         self.theLogger.removeHandler(self.programOutput)
 
-        print "Clean up wx controls and windows"
+        #print "Clean up wx controls and windows"
         self.Destroy()
+	
+    def EvtOnDefaultUrl(self, event):
+	
+	#get the url from the preferences file or use a default
+	from windmill import settings
+
+	textEntry = wx.TextEntryDialog(self, 
+				       message = "Please select an Url to be used as the browser default.", 
+				       caption = "Default Browser Url", 
+				       defaultValue = settings['TEST_URL'],
+				       style = wx.OK | wx.CANCEL | wx.CENTRE,
+				       pos = wx.DefaultPosition)
+	
+	if textEntry.ShowModal() == wx.ID_OK:
+	    settings['TEST_URL'] = textEntry.GetValue()
+
+class MySplashScreen(wx.SplashScreen):
+    """
+    Create a splash screen widget.
+    """
+    def __init__(self, parent=None, shell_objects=None):
+	self.shell_objects = shell_objects
+        # This is a recipe to a the screen.
+        # Modify the following variables as necessary.
+        aBitmap = wx.Image(name = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wmsplash.png')).ConvertToBitmap()
+        splashStyle = wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT
+        splashDuration = 5000 # milliseconds
+
+	# Call the constructor with the above arguments in exactly the
+        # following order.
+        wx.SplashScreen.__init__(self, aBitmap, splashStyle,
+                                 splashDuration, parent)
+        self.Bind(wx.EVT_CLOSE, self.OnExit)
+
+        wx.Yield()
+#----------------------------------------------------------------------#
+
+    def OnExit(self, evt):
+        self.Hide()
+        # MyFrame is the main frame.
+	self.frame = Frame(shell_objects=self.shell_objects, size=(800, 500))
         
+	self.frame.Show()
+
+        # The program will freeze without this line.
+        evt.Skip()  # Make sure the default handler runs too...
+
 #--------------------------------------------------------------------------- 
 class CustomDataTable(gridlib.PyGridTableBase): 
     def __init__(self): 
@@ -352,7 +422,6 @@ class CustomDataTable(gridlib.PyGridTableBase):
     def CanSetValueAs(self, row, col, typeName): 
         return self.CanGetValueAs(row, col, typeName) 
     
-    
     def DeleteRows(self, pos = 0, numRows = 0):
 	try:
 	    if len(self.data) != 0 and len(self.data) < pos+numRows:
@@ -394,7 +463,6 @@ class CustomDataTable(gridlib.PyGridTableBase):
 	
         self.GetView().ProcessTableMessage(msg)
 
-
     def GetRow(self, row):
         """Gets a row with the given index"""
         try:
@@ -402,13 +470,9 @@ class CustomDataTable(gridlib.PyGridTableBase):
         except IndexError:
             print "Row not part of database"
         
-    
     def ChangeDataSet(self, nwlst):
 	#assign a value to retain the current length of the data list
 	previousSize = len(self.data)
-	
-	#nuke the old list just in case
-	#del self.data
 	
 	#reassign the data list
 	self.data = list(nwlst)
@@ -417,10 +481,8 @@ class CustomDataTable(gridlib.PyGridTableBase):
 	self.ResizeTableRows(len(self.data), previousSize)
 	
     def ResizeTableRows(self, now, prev):
-	print "Thenew size is: ", now, " and the previous size is ", prev  
 	try:
 	    if now - prev > 0: # need to adds some rows
-		#print "\nTrying to append ", now - prev, " new rows in the grid\n"
 		## tell the grid we've added a row 
 		msg = gridlib.GridTableMessage(self,            # The table
 					       gridlib.GRIDTABLE_NOTIFY_ROWS_APPENDED, # what we did to it 
@@ -428,10 +490,7 @@ class CustomDataTable(gridlib.PyGridTableBase):
 					       ) 
 		self.GetView().ProcessTableMessage(msg)
 	    elif now - prev < 0: # need to delete empty rows
-		#print "\nTrying to remove ", -1* now - prev, " rows in the grid\n"
-		#print "\nAnd there are  ", self.GetNumberRows(), " rows in the grid\n"
 		## tell the grid we've added a row 
-		#nRows = self.GetNumberRows()
 		msg = gridlib.GridTableMessage(self,            # The table
 					       gridlib.GRIDTABLE_NOTIFY_ROWS_DELETED, # what we did to it 
 					       0,
@@ -439,14 +498,11 @@ class CustomDataTable(gridlib.PyGridTableBase):
 					   ) 
 		self.GetView().ProcessTableMessage(msg)
 	    else:
-		#print "Ran into a zeroError in ResizeTableRows with ", now - prev, " number"
 		return
+
 	except wx._core.PyAssertionError:
-	    #print "Ran into a pyAssertinError in ResizeTableRows with ", now - prev, " number"
 	    return
 	    
-
-
 #--------------------------------------------------------------------------- 
 class CustTableGrid(gridlib.Grid, logging.Handler): 
     def __init__(self, parent): 
@@ -500,8 +556,6 @@ class CustTableGrid(gridlib.Grid, logging.Handler):
 	#Handle when the data in a cell changes by changing it's color appropriately
 	self.Bind(gridlib.EVT_GRID_CMD_SELECT_CELL, self.EvtCellChange)
 
-	#print "The parent object has the following functions and attributies: \n\n", dir(self.Parent), "\n\n"
-
     def emit(self, record):
 	#parse the record into a list format that fits to the table
 	lstItem = self.ParseRecordToList(record)
@@ -526,14 +580,10 @@ class CustTableGrid(gridlib.Grid, logging.Handler):
 
 	# determine if this is a new search value
 	elif(len(searchValue) > len(self.currentSearchValue)): # addition to current search
-	    ##reassign currentSearchValue
-	    #self.currentSearchValue = searchValue
 	    ##search currently active list
 	    self.GetTable().ChangeDataSet(filter(lambda lst: lst[self.GetNumberCols()-1].find(searchValue) is not -1, self.GetTable().data))
 			    
 	else:
-	    #reassign currentSearchValue
-	    #self.currentSearchValue = searchValue
 	    #search master list
 	    self.GetTable().ChangeDataSet(filter(lambda lst: lst[self.GetNumberCols()-1].find(searchValue) is not -1, self.masterList))
 	
@@ -543,8 +593,6 @@ class CustTableGrid(gridlib.Grid, logging.Handler):
 	self.SortColumn()
 	self.AutoSizeRows(False)
 	
-	
-
     def ParseRecordToList(self, record):
 	#retrieve the record time
 	recordTime = time.strftime("%H:%M:%S.", time.gmtime(record.created)) + (lambda x: x[x.rfind(".")+1:] )(str(record.created))
@@ -583,14 +631,14 @@ class CustTableGrid(gridlib.Grid, logging.Handler):
 		self.GetTable().data.sort(key=lambda lst: lst[self.lastSorted[0]], reverse=self.lastSorted[1])
 	    else:
 		self.GetTable().data.sort(key=lambda lst: lst[col], reverse=reverse)
-	    
+
 	    #self.AutoSizeRows(False)
 	    self.ForceRefresh()
 
     def EvtCellChange(self, event):
 	print "Cell changed at: ", event.GetCol(), ", ", event.GetRow()
-	if(event.GetCol() == 0):
-	    self.SetRowAttr(event.GetRow(), gridlib.GridCellAttr(colText = wx.GREEN))
+	#if(event.GetCol() == 0):
+	    #self.SetRowAttr(event.GetRow(), gridlib.GridCellAttr(colText = wx.GREEN))
 	
     def __del__(self):
         self.close()   
@@ -603,7 +651,9 @@ class App(wx.App):
         wx.App.__init__(self, redirect, *args, **kwargs)
         
     def OnInit(self):
-        self.frame = Frame(shell_objects=self.shell_objects, size=(800, wx.DefaultSize[0]))
-        self.frame.Show()
-        self.SetTopWindow(self.frame)
+        MySplash = MySplashScreen(shell_objects=self.shell_objects)
+        MySplash.Show()
+	#self.frame = Frame(shell_objects=self.shell_objects, size=(800, wx.DefaultSize[0]))
+        #self.frame.Show()
+        #self.SetTopWindow(self.frame)
         return True
