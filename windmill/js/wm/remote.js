@@ -220,7 +220,7 @@ windmill.ui.remote = new function () {
 
             
             var c = windmill.remote.document.createElement("td"); 
-            c.innerHTML += '<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.sendPlayBack(\''+action.id+
+            c.innerHTML += '<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\''+action.id+
             '\')" style="height:18px;width:18px;" src="ide/img/play.png"></a><a alt="Delete Action" href="#">'+
             '<img border=0 onclick="windmill.ui.remote.deleteAction(\''+action.id+'\')" style="height:18px;width:18px;" '+
             'src="ide/img/trash.png"></a>';
@@ -280,7 +280,7 @@ windmill.ui.remote = new function () {
 
         
         
-        spn.innerHTML += '<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.sendPlayBack(\''+action.id+
+        spn.innerHTML += '<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\''+action.id+
         '\')" style="height:18px;width:18px;" src="ide/img/play.png"></a><a alt="Delete Action" href="#">'+
         '<img border=0 onclick="windmill.ui.remote.deleteAction(\''+action.id+'\')" style="height:18px;width:18px;" '+
         'src="ide/img/trash.png"></a>';

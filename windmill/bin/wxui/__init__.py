@@ -44,37 +44,60 @@ class Frame(wx.Frame):
 	#initialize the info for the about dialog box
         self.setupAboutInfo()
 
-	self.SetupPreferences()
+	#self.SetupPreferences()
         ##bind the import objects
         self.Bind(wx.EVT_CLOSE, self.OnCloseWindow)
 
-    def SetupPreferences(self):
-	"""Setup the default preferences from loading the conf file"""
-	self.preferences = {}
-	# Let's create a file and write it to disk.
-	filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wx_windmill.conf")
+    #def SetupPreferences(self):
+	#"""Setup the default preferences from loading the conf file"""
+	#self.preferences = {}
+	### Let's create a file and write it to disk.
+	##filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wx_windmill.conf")
 	
-	try:
-	    infile = open(filename,"r")
+	##try:
+	    ##infile = open(filename,"r")
 
-	    # Let's get some data:
-	    if infile:
-		line = infile.readline()
+	    ### Let's get some data:
+	    ##if infile:
+		##line = infile.readline()
 		
-		while len(line) is not 0:
-		    attr, value = line.split(':')
-		    self.preferences[attr] = value
-		    line = infile.readline()
+		##while len(line) is not 0:
+		    ##attr, value = line.split(':')
+		    ##self.preferences[attr] = value
+		    ##line = infile.readline()
 
-	except IOError, ValueError:
-	    """take care of the null case with no attr file"""
-	    #the file needs to be created.
+	    ##infile.close()
+
+	##except IOError, ValueError:
+	    ##"""take care of the null case with no attr file"""
+	    ###the file needs to be created.
 	    
-	finally:
-	    infile.close()
     
-    def SavePreferences(self):
-	"""Saves all the preferences created"""
+    #def SavePreferences(self):
+	#"""Saves all the preferences created"""
+	#filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wx_windmill.conf")
+	
+	#try:
+	    #infile = open(filename,"r")
+
+	    ## Let's get some data:
+	    #if infile:
+		#line = infile.readline()
+		
+		#while len(line) is not 0:
+		    #attr, value = line.split(':')
+		    #self.preferences[attr] = value
+		    #line = infile.readline()
+
+	#except IOError, ValueError:
+	    #"""take care of the null case with no attr file"""
+
+	    ##the file needs to be created.
+	    
+	    
+	#finally:
+	    #infile.close()
+
 
     def setupAboutInfo(self):
         self.aboutInfo = wx.AboutDialogInfo()
@@ -95,8 +118,14 @@ class Frame(wx.Frame):
                               "See the License for the specific language governing permissions and",
                               "limitations under the License."]))
 	
-	#os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wlogo.png')
-	#self.aboutInfo.SetIcon(
+	icon = wx.Icon( name = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wico.gif'), 
+			type =wx.BITMAP_TYPE_GIF, 
+			desiredWidth = -1, 
+			desiredHeight = -1)
+	
+	self.SetIcon(icon)
+	self.aboutInfo.SetIcon(icon)
+
     def setupListener(self):
         """Sets up the listener to the logger"""
         #logging.basicConfig(format='%(asctime)s %(message)s')
@@ -119,11 +148,11 @@ class Frame(wx.Frame):
 
         ##setup the options menu
         optionsMenu = wx.Menu()
-	self.Bind(wx.EVT_MENU, self.EvtOnDefaultUrl, optionsMenu.Append(wx.NewId(), "Default Url", "Default Browser Url"))
-
+	self.Bind(wx.EVT_MENU, self.EvtOnDefaultUrl, optionsMenu.Append(wx.NewId(), "Default URL", "Default Browser URL"))
+	
         ##setup the Help menu
         helpMenu = wx.Menu()
-        helpMenu.Append(wx.NewId(), "Windmill", "Link to website")
+	self.Bind(wx.EVT_MENU, self.OnWebsiteLink, helpMenu.Append(wx.NewId(), "Windmill Home Page", "Link to website"))
         self.Bind(wx.EVT_MENU, self.OnAbout, helpMenu.Append(wx.NewId(), "About", "About windmill"))            
 
         ##Add menu items to the menu bar
@@ -299,14 +328,20 @@ class Frame(wx.Frame):
         #print "Clean up wx controls and windows"
         self.Destroy()
 	
+    def OnWebsiteLink(self, event):
+	"""Bring up a link to the windmill homepage"""
+	import webbrowser
+	webbrowser.open_new("http://windmill.osafoundation.org")
+	
+	
     def EvtOnDefaultUrl(self, event):
 	
 	#get the url from the preferences file or use a default
 	from windmill import settings
 
 	textEntry = wx.TextEntryDialog(self, 
-				       message = "Please select an Url to be used as the browser default.", 
-				       caption = "Default Browser Url", 
+				       message = "Please select an URL to be used as the browser default.", 
+				       caption = "Default Browser URL", 
 				       defaultValue = settings['TEST_URL'],
 				       style = wx.OK | wx.CANCEL | wx.CENTRE,
 				       pos = wx.DefaultPosition)

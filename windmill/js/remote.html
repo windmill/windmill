@@ -44,7 +44,7 @@
 		var togglePlay = function(){
 			if ($('playback').src.indexOf("ide/img/playback.png")  != -1){
 				opener.windmill.xhr.startJsonLoop();
-				opener.windmill.ui.sendPlayBack();				
+				opener.windmill.ui.playback.sendPlayBack();				
 				$('playback').src = 'ide/img/playbackstop.png';
 			}
 			else{
