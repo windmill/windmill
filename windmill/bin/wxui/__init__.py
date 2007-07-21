@@ -550,7 +550,7 @@ class CustTableGrid(gridlib.Grid, logging.Handler):
         self.masterList = []
 	
         #determines the last column sorted
-        self.lastSorted = [0, False] 
+        self.lastSorted = [1, True] 
 
         #make the text in each cell wrap to fit within the width of each cell.
         self.SetDefaultRenderer(wx.grid.GridCellAutoWrapStringRenderer())
@@ -562,7 +562,8 @@ class CustTableGrid(gridlib.Grid, logging.Handler):
         
         #assign the second column to 150 width STATIC VALUE. MUST CHANGE
 	self.SetColSize(2, 150)
-
+	self.SetColSize(1, 100)
+	
 	#insure left side label is not displayed
         self.SetRowLabelSize(0) 
 
@@ -570,15 +571,17 @@ class CustTableGrid(gridlib.Grid, logging.Handler):
         self.SetScrollLineX(1)
 
         #disable the editing of cells
-        self.EnableEditing(True)
-        
+        #self.EnableEditing(True)
+	#self.EnableCellEditControl(True)        
+	
         #Set the default alignment of the cells values
         self.SetDefaultCellAlignment(wx.ALIGN_LEFT, wx.ALIGN_CENTER)
 
-	self.SetColSize(1, 100)
         self.currentSearchValue = ""
         
-        ##define the events to be used on the control##
+        self.EnableDragColSize(False)
+
+	##define the events to be used on the control##
         
         #Onsize for resizing the message column
         self.Bind(wx.EVT_SIZE, self.OnSize)
@@ -604,7 +607,7 @@ class CustTableGrid(gridlib.Grid, logging.Handler):
 	    self.GetTable().AppendNewRow(lstItem)
 	    self.SortColumn()
 
-	    #because of crashing purposes must call autesizerows less often, so i'm callin only every 5 times
+	    ##because of crashing purposes must call autesizerows less often, so i'm callin only every 5 times
 	    #if(self.GetTable().GetNumberRows() % 7 == 0 ):
 		#self.AutoSizeRows(False)
 		
@@ -660,6 +663,7 @@ class CustTableGrid(gridlib.Grid, logging.Handler):
             self.lastSorted[1] = False
 
         self.SortColumn(event.Col, self.lastSorted[1])
+	self.AutoSizeRows(False)
         
     def SortColumn(self, col = None, reverse = False):
 	if( len(self.GetTable().data) is not 0):

@@ -17,7 +17,7 @@ windmill.ui.domexplorer = new function () {
             windmill.remote.$("domExp").innerHTML = "ID: "+ e.target.id;  
         }
         else{
-            windmill.remote.$("domExp").innerHTML = "Name: "+ e.target.nodeName;  
+            windmill.remote.$("domExp").innerHTML = "Name: "+ e.target.name;  
         }
         this.domExplorerBorder = e.target.style.border;
         e.target.style.border = "1px solid yellow";
