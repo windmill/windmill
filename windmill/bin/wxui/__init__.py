@@ -570,11 +570,12 @@ class CustTableGrid(gridlib.Grid, logging.Handler):
         self.SetScrollLineX(1)
 
         #disable the editing of cells
-        self.EnableEditing(False)
+        self.EnableEditing(True)
         
         #Set the default alignment of the cells values
         self.SetDefaultCellAlignment(wx.ALIGN_LEFT, wx.ALIGN_CENTER)
 
+	self.SetColSize(1, 100)
         self.currentSearchValue = ""
         
         ##define the events to be used on the control##
@@ -671,7 +672,8 @@ class CustTableGrid(gridlib.Grid, logging.Handler):
 	    self.ForceRefresh()
 
     def EvtCellChange(self, event):
-	print "Cell changed at: ", event.GetCol(), ", ", event.GetRow()
+	"""Handle cell change event"""
+	#print "Cell changed at: ", event.GetCol(), ", ", event.GetRow()
 	#if(event.GetCol() == 0):
 	    #self.SetRowAttr(event.GetRow(), gridlib.GridCellAttr(colText = wx.GREEN))
 	

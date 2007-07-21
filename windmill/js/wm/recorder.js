@@ -64,7 +64,7 @@ windmill.ui.recorder = new function () {
            }
            else if (e.target.name != ""){
               locator = 'name';
-              locValue = e.target.nodeName;
+              locValue = e.target.name;
            }
            else{
             locator = 'Couldnt Detect';
