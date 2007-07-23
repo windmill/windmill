@@ -24,6 +24,9 @@ windmill.ui.domexplorer = new function () {
        if (this.exploreState == true){
          this.domExplorerOn();
        }
+       else{
+        this.domEplorerOff();
+       }
      }
   
     //Reset the border to what it was before the mouse over
@@ -82,17 +85,24 @@ windmill.ui.domexplorer = new function () {
       fleegix.event.listen(windmill.testingApp.document, 'onmouseover', this, 'setIdInRemote');
       fleegix.event.listen(windmill.testingApp.document, 'onmouseout', this, 'resetBorder');
       fleegix.event.listen(windmill.testingApp.document, 'onclick', this, 'explorerClick');
+      windmill.remote.$('explorer').src = 'ide/img/xoff.png';
+      windmill.remote.$('domExp').style.visibility = 'visible';
+			windmill.remote.$('domExp').innerHTML = '';
       
     }
     
     //Remove the listeners for the dom explorer
     this.domExplorerOff = function(){
-       this.exploreState = true;
+       this.exploreState = false;
        fleegix.event.unlisten(windmill.testingApp.document, 'onmouseover', this, 'setIdInRemote');
        fleegix.event.unlisten(windmill.testingApp.document, 'onmouseout', this, 'resetBorder');
        fleegix.event.unlisten(windmill.testingApp.document, 'onclick', this, 'explorerClick');
        
        //Reset the selected element
        windmill.ui.remote.selectedElement = null;
+       windmill.remote.$('explorer').src = 'ide/img/xon.png';
+       windmill.remote.$('domExp').style.visibility = 'hidden';
+       windmill.remote.$('domExp').innerHTML = '';
+
     }  
 };
