@@ -16,7 +16,7 @@
  */
 
 // This script contains a badly-organised collection of miscellaneous
-// functions that really better homes.
+// functions that really need better homes.
 
 function classCreate() {
     return function () {

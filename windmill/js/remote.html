@@ -14,9 +14,14 @@
     <script type="text/javascript" src="lib/interpreter.js"></script>
 
 	<script type="text/javascript" charset="utf-8">
-		//Setting up shortcuts for the console
-		var windmill = opener.windmill;
-		var testingApp = opener.windmill.testingApp;
+		//If the user went directly to remote.html
+		try {
+			var windmill = opener.windmill;
+			var testingApp = opener.windmill.testingApp;
+		}
+		catch(error){
+			document.location = '/windmill-serv/start.html';
+		}
 		var $ = function(id) {
 		  return document.getElementById(id);
 		};

@@ -21,9 +21,14 @@ function Load(){
        windmill.testingApp = parent.frames['webapp'];
            
        if (windmill.showRemote == true){           
-           windmill.remote = window.open('remote.html','windmill_Remote','width=465,height=500,toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');
+        windmill.remote = window.open('remote.html','windmill_Remote','width=465,height=500,toolbar=no,'+
+        'location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');
+        
+        if (!windmill.remote){
+          alert('We detected a popup blocker, please disable it while you are using Windmill as we load the UI in a popup window.');
+        }
        } 
-     
+      
        setTimeout("windmill.controller.continueLoop()", 7000);
        
 }
