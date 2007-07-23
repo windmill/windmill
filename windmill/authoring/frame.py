@@ -43,7 +43,7 @@ def get_module(directory):
 def get_test_module(test_path):
     if os.path.isfile(test_path):
         root_module = get_module(os.path.dirname(test_path))
-        test_module = getattr(root_module, test_path.split('.')[-2])
+        test_module = getattr(root_module, os.path.split(test_path)[-1].split('.')[0])
     elif os.path.isdir(test_path):
         root_module = get_module(test_path)
         test_module = root_module
@@ -107,8 +107,10 @@ def run_test_callable(test):
         results['failed'] += 1
         
 def collect_and_run_tests(file_path):
-    if os.path.split(file_path)[-1] != '__init__.py' and not os.path.isdir(file_path):
+    if os.path.split(file_path)[-1] == '__init__.py':
         file_path = os.path.dirname(os.path.abspath(file_path))
+    else:
+        file_path = os.path.abspath(file_path)
     root_module, test_module = get_test_module(file_path)
     run_test_module(test_module, root_module)
 

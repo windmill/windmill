@@ -67,7 +67,6 @@ def process_options(argv_list):
                     admin_options.flags_dict[option]()
                     
     if action is None:
-        print len(sys.argv)
         if len(sys.argv) is 0 or len(sys.argv) is 1:
             return action_mapping['wx']
         else:
@@ -165,7 +164,6 @@ def setup():
 def python_test_frame(shell_objects):
     from windmill.authoring import frame
     if windmill.settings['PYTHON_TEST_FILE']:
-        print 'test_file', windmill.settings['PYTHON_TEST_FILE']
         test_run_method = lambda : frame.collect_and_run_tests(windmill.settings['PYTHON_TEST_FILE'])
     else:
         test_run_method = lambda : frame.collect_and_run_tests(os.path.abspath(os.path.curdir))

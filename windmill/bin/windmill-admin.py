@@ -14,8 +14,12 @@
 #   limitations under the License.
 
 ## We need to import every library we ever use here so that setup.py compiles will find all of them
-#import wx
-#from wx import *
+try:
+    import wx
+    from wx import *
+    import readline, rlcompleter
+except:
+    pass
 import os, sys, time
 import xmlrpclib
 import new
@@ -28,7 +32,7 @@ from email.Header import Header, decode_header
 import dateutil, time, datetime, SimpleXMLRPCServer
 import cherrypy
 import commands, shutil, signal, webbrowser, StringIO
-import uuid, code, keyword, readline, rlcompleter
+import uuid, code, keyword
 
 # WINDMILL_DIR = os.path.abspath(os.path.expanduser(sys.modules[__name__].__file__)+os.path.sep+os.path.pardir+os.path.sep+os.path.pardir+os.path.sep+os.path.pardir)
 # sys.path.insert(0, WINDMILL_DIR)
