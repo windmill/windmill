@@ -1,0 +1,108 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Windmill automated Web application UI testing framework</title>
+    <script type="text/javascript" src="/fleegix.js"></script>
+    <script type="text/javascript" src="/windmill_site.js"></script>
+    <script type="text/javascript">
+      fleegix.event.listen(window, 'onload', init);
+    </script>
+    <link media="all" rel="stylesheet" type="text/css" href="/main.css"/>
+    <!--[if IE]>
+      <style type="text/css">
+        /* HaX0r IE's crappy PNG support */
+        body {
+          background-color: #85b8c5;
+        }
+      </style>
+    <![endif]-->
+    <!--[if IE 6 ]>
+      <style type="text/css">
+        /* ... and IE6's crappy transparent PNG support */
+        #wSideImg {
+          background-image: none;
+          filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/images/windmill_w_side.png',
+            sizingMethod='scale');
+        }
+      </style>
+    <![endif]-->
+  </head>
+  <body>
+    <div id="wSideContainer">
+      <div id="wSideImg"></div>
+    </div>
+    <div id="container">
+      <div id="header">
+        <div id="logoContainer">
+            <a href="/" style="border: 0px; background-color: transparent;">
+                <img src="/images/windmill_logo.png" width="317"
+                  height="68" alt="Windmill logo" />
+            </a>
+          </div>
+        <img id="mottoImgBegin" src="/images/windmill_motto_begin.png" width="291" height="42" alt="Web UI testing ..." />
+        <div id="bulletListContainer">
+          <ul>
+            <li>Complete automation of user interface testing</li>
+            <li>Makes writing tests easier, portable, and sustainable</li>
+            <li>Flexible, customizable architecture</li>
+            <li>Major focus on making debugging painless</li>
+          </ul>
+        </div>
+        <img id="mottoImgEnd" src="/images/windmill_motto_end.png" width="406" height="35" alt="The way it should be." />
+      </div>
+      <div id="main">
+        <table cellpadding="0" cellspacing="0">
+        <tr>
+        <td id="leftCol">
+          <div class="sectionHeader">About</div>
+          <div class="sectionBody">
+            <p>
+              <strong>Windmill</strong> is a web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.
+            </p>
+            <p>
+              The first goal of <strong>Windmill</strong> to make test writing easier, portable and sustainable. Test writing and debugging is an interactive process and requires an architecture that allows for large amounts of flexibility and back-and-forth communication.
+            </p>
+            <p>
+              The second goal of <strong>Windmill</strong> is to keep the project open and transparent, encouraging as much outside contribution as possible. This goal is shared by every project at OSAF and we have a pretty good record of accomplishing transparency in our projects.
+            </p>
+            <p style="text-align: right;"><a href="/trac/wiki/MissionStatement">Learn more about the Windmill project ...</a></p>
+          </div>
+        </td>
+        <td id="rightCol">
+          <div class="sectionHeader">Downloads</div>
+          <div class="sectionBody">
+            <p>
+              Download: <a href="#">Latest version, 0.2</a>
+            </p>
+            <p>
+              Other versions and builds for specific platforms <a href="#">can be found here</a>.
+            </p>
+            <p>
+              You can also view the Subversion repository <a href="/trac/browser">with a Web browser</a>.
+            </p>
+          </div>
+          <div class="sectionHeader">More Info</div>
+          <div class="sectionBody">
+            <ul id="moreInfoList">
+              <li>The <a href="/trac/wiki/GettingStarted">Getting Started doc</a></li>
+              <li>IRC: #windmill on Freenode</li>
+              <li><a href="http://lists.osafoundation.org/mailman/listinfo/windmill-dev">Windmill Mailing List</a></li>
+            </ul>
+          </div>
+        </td>
+        </tr>
+        </table>
+      </div>
+      <div id="bottom">
+        &nbsp;
+      </div>
+      <div id="spacer"></div>
+    </div>
+    <div id="footer">
+      Copyright 2007 <a href="#">Open Source Applications Foundation</a>
+    </div>
+  </body>
+</html>
