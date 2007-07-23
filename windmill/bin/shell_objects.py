@@ -15,6 +15,8 @@
 
 import windmill
 import sys, os, logging
+from time import sleep
+from windmill.authoring import frame
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +50,12 @@ def run_test_file(filename):
     jsonrpc_client.run_json_tests(test_strings)
     jsonrpc_client.stop_suite()
     logger.info('Added tests from %s' % filename)
+    
+def run_python_test(filename):
+    test_run_method = lambda : frame.collect_and_run_tests(filename)
+    while not windmill.ide_is_awake:
+        sleep(1)
+    test_run_method()
     
 def run_test_dir(directory):
     # Try to import test_conf
