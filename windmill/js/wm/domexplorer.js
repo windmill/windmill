@@ -24,9 +24,6 @@ windmill.ui.domexplorer = new function () {
        if (this.exploreState == true){
          this.domExplorerOn();
        }
-       else{
-        this.domExplorerOff();
-       }
      }
   
     //Reset the border to what it was before the mouse over
