@@ -25,7 +25,7 @@ windmill.ui.domexplorer = new function () {
          this.domExplorerOn();
        }
        else{
-        this.domEplorerOff();
+        this.domExplorerOff();
        }
      }
   

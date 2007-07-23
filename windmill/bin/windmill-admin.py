@@ -14,8 +14,8 @@
 #   limitations under the License.
 
 ## We need to import every library we ever use here so that setup.py compiles will find all of them
-import wx
-from wx import *
+#import wx
+#from wx import *
 import os, sys, time
 import xmlrpclib
 import new
