@@ -57,6 +57,21 @@ def run_python_test(filename):
         sleep(1)
     test_run_method()
     
+def load_python_tests(filename):
+    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
+    run_python_test(filename)
+    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True}})
+    
+def load_json_test_file(filename):
+    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
+    run_test_file(filename)
+    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True}})
+
+def load_json_test_dir(filename):
+    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
+    run_test_dir(filename)
+    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True}})
+    
 def run_test_dir(directory):
     # Try to import test_conf
     sys.path.insert(0, os.path.abspath(directory))
