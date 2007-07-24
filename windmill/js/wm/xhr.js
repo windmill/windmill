@@ -50,7 +50,7 @@ windmill.xhr = new function () {
         windmill.xhr.xhrResponse = eval('(' + str + ')');
         //If there was a legit json response
         if ( windmill.xhr.xhrResponse.error ){
-            //windmill.Log.debug("There was a JSON syntax error: '" + windmill.xhr.xhrResponse.error + "'");
+            windmill.ui.results.writeResult("There was a JSON syntax error: '" + windmill.xhr.xhrResponse.error + "'");
         }
         else{
             

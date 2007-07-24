@@ -516,7 +516,7 @@ windmill.controller = new function () {
         this.findElementBy = function (locatorType, locator, inDocument, inWindow) {
             var locatorFunction = this.locationStrategies[locatorType];
             if (! locatorFunction) {
-                //windmill.Log.debug("Unrecognised locator type: '" + locatorType + "'");
+                windmill.ui.results.writeResult("Unrecognised locator type: '" + locatorType + "'");
             }
             
             return locatorFunction.call(this, locator, inDocument, inWindow);
@@ -562,7 +562,7 @@ windmill.controller = new function () {
         };
 
         // Element was not found by any locator function.
-        ////windmill.Log.debug("Element " + locator + " not found");
+        windmill.ui.results.writeResult("Element " + locator + " not found");
     };
 
 
@@ -607,7 +607,7 @@ windmill.controller = new function () {
         try {
             element = eval(domTraversal);
         } catch (e) {
-            //windmill.Log.debug("dom Traversal, element not found.");
+            windmill.ui.results.writeResult("dom Traversal, element not found.");
         }
 
         if (!element) {
@@ -783,7 +783,7 @@ OptionLocatorFactory.prototype.fromLocatorString = function (locatorString) {
         return new this.optionLocators[locatorType](locatorValue);
     }
 
-      //windmill.Log.debug("Unrecognised locator type: '" + locatorType + "'");
+      windmill.ui.results.writeResult("Unrecognised locator type: '" + locatorType + "'");
       
 };
 
@@ -816,7 +816,7 @@ OptionLocatorFactory.prototype.OptionLocatorByLabel = function (label) {
                 return element.options[i];
             }
         }
-        //windmill.Log.debug("Option with label '" + this.label + "' not found");
+        windmill.ui.results.writeResult("Option with label '" + this.label + "' not found");
         
    
     };
@@ -840,7 +840,7 @@ OptionLocatorFactory.prototype.OptionLocatorByValue = function (value) {
             }
         }
        
-        //windmill.Log.debug("Option with value '" + this.value + "' not found");
+       windmill.ui.results.writeResult("Option with value '" + this.value + "' not found");
         
     };
 
@@ -857,14 +857,14 @@ OptionLocatorFactory.prototype.OptionLocatorByIndex = function (index) {
     this.index = Number(index);
     if (isNaN(this.index) || this.index < 0) {
    
-        //windmill.Log.debug("Illegal Index: " + index);
+        windmill.ui.results.writeResult("Illegal Index: " + index);
     
     }
 
     this.findOption = function (element) {
         if (element.options.length <= this.index) {
             
-            //windmill.Log.debug("Index out of range.  Only " + element.options.length + " options available");
+            windmill.ui.results.writeResult("Index out of range.  Only " + element.options.length + " options available");
        
         }
         return element.options[this.index];
@@ -887,7 +887,7 @@ OptionLocatorFactory.prototype.OptionLocatorById = function (id) {
                 return element.options[i];
             }
         }
-        //windmill.Log.debug("Option with id '" + this.id + "' not found");
+        //windmill.windmill.ui.results.writeResult(.debug("Option with id '" + this.id + "' not found");
        
     };
 

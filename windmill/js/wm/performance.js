@@ -21,8 +21,8 @@ windmill.performance = new function () {
   
   
   //Setup log4js object
-  //this.Log =  new Log4js.getLogger("Performance_log");
-  //this.Log.setLevel(Log4js.Level.ALL);
+  //this.windmill.ui.results.writeResult( =  new windmill.ui.results.writeResult(4js.getwindmill.ui.results.writeResult(ger("Performance_log");
+  //this.windmill.ui.results.writeResult(.setLevel(windmill.ui.results.writeResult(4js.Level.ALL);
     
     //Other performance functionality
     
