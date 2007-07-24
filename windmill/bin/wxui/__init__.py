@@ -142,33 +142,34 @@ class Frame(wx.Frame):
         ##setup the file menu and associated events
         fileMenu = wx.Menu()
         self.Bind(wx.EVT_MENU, self.EvtOnRunTest, fileMenu.Append(wx.NewId(), "Run &Test File", "Select a test to run."))
-	self.Bind(wx.EVT_MENU, self.EvtOnRunDir, fileMenu.Append(wx.NewId(), "Run Test &Directory", "Select a directory to run."))	
-	fileMenu.AppendSeparator()
-	self.Bind(wx.EVT_MENU, self.EvtOnLoadTest, fileMenu.Append(wx.NewId(), "Load Test", "Loads a single test"))
-	self.Bind(wx.EVT_MENU, self.EvtOnLoadDir, fileMenu.Append(wx.NewId(), "Load Test Directory", "Load a directory full of tests"))
-	fileMenu.AppendSeparator()
-	#self.Bind(wx.EVT_MENU, self.RunSuite, fileMenu.Append(wx.NewId(), "Run &Suite", "Select a suite to run."))        
-        #fileMenu.Append(wx.NewId(), "&Preference", "")
 
+	fileMenu.AppendSeparator()	
+	
 	self.Bind(wx.EVT_MENU, self.OnCloseWindow, fileMenu.Append(wx.NewId(), "E&xit", "Exit Windmill"))
+
+	##setup the test menu and associated events
+	testMenu = wx.Menu()
+	self.Bind(wx.EVT_MENU, self.EvtOnRunDir, testMenu.Append(wx.NewId(), "Run Test &Directory", "Select a directory to run."))	
+	testMenu.AppendSeparator()
+	
+	self.Bind(wx.EVT_MENU, self.EvtOnLoadTest, testMenu.Append(wx.NewId(), "Load Test", "Loads a single test"))
+	self.Bind(wx.EVT_MENU, self.EvtOnLoadDir, testMenu.Append(wx.NewId(), "Load Test Directory", "Load a directory full of tests"))
 
         ##setup the options menu
         optionsMenu = wx.Menu()
 	self.Bind(wx.EVT_MENU, self.EvtOnDefaultUrl, optionsMenu.Append(wx.NewId(), "Default URL", "Default Browser URL"))
 
-
 	toolsMenu = wx.Menu()
 	self.Bind(wx.EVT_MENU, self.EvtOnClearQueue, toolsMenu.Append(wx.NewId(), "Clear Queue", "Clear the Queue"))	
-
 	
         ##setup the Help menu
         helpMenu = wx.Menu()
 	self.Bind(wx.EVT_MENU, self.OnWebsiteLink, helpMenu.Append(wx.NewId(), "Windmill Home Page", "Link to website"))
         self.Bind(wx.EVT_MENU, self.OnAbout, helpMenu.Append(wx.NewId(), "About", "About windmill"))            
 
-
         ##Add menu items to the menu bar
         menuBar.Append(fileMenu, "&File")
+	menuBar.Append(testMenu, "T&ests")
         menuBar.Append(optionsMenu, "O&ptions")
 	menuBar.Append(toolsMenu, "&Tools")
 	menuBar.Append(helpMenu, "&Help")
