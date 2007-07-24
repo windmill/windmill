@@ -32,12 +32,24 @@ windmill.controller.extensions.clickLozenge =function (param_object){
     //hash_key = eval('('+ param_object.jsid + ')');
     param_object.id = "eventDivContent__" + hash_key;
     delete param_object.jsid;
-
+    
     //Since id comes before jsid in the lookup order
     //we don't need to reset it, now go ahead and click it!
-    return this.click(param_object);
+    return windmill.controller.click(param_object);
 };
 
+windmill.controller.extensions.clickItem =function (param_object){
+    var hash_key;
+
+    eval ("hash_key=" + param_object.jsid + ";");
+    //hash_key = eval('('+ param_object.jsid + ')');
+    param_object.id = "listView_item" + hash_key;
+    delete param_object.jsid;
+    console.log(param_object);
+    //Since id comes before jsid in the lookup order
+    //we don't need to reset it, now go ahead and click it!
+    return windmill.controller.click(param_object);
+};
 
 windmill.controller.extensions.cosmoDragDrop = function (p){
    

@@ -141,46 +141,107 @@ class Frame(wx.Frame):
 
         ##setup the file menu and associated events
         fileMenu = wx.Menu()
-        self.Bind(wx.EVT_MENU, self.RunTest, fileMenu.Append(wx.NewId(), "Run &Test", "Select a test to run."))
-        self.Bind(wx.EVT_MENU, self.RunSuite, fileMenu.Append(wx.NewId(), "Run &Suite", "Select a suite to run."))        
+        self.Bind(wx.EVT_MENU, self.EvtOnRunTest, fileMenu.Append(wx.NewId(), "Run &Test File", "Select a test to run."))
+	self.Bind(wx.EVT_MENU, self.EvtOnRunDir, fileMenu.Append(wx.NewId(), "Run Test &Directory", "Select a directory to run."))	
+	fileMenu.AppendSeparator()
+	self.Bind(wx.EVT_MENU, self.EvtOnLoadTest, fileMenu.Append(wx.NewId(), "Load Test", "Loads a single test"))
+	self.Bind(wx.EVT_MENU, self.EvtOnLoadDir, fileMenu.Append(wx.NewId(), "Load Test Directory", "Load a directory full of tests"))
+	fileMenu.AppendSeparator()
+	#self.Bind(wx.EVT_MENU, self.RunSuite, fileMenu.Append(wx.NewId(), "Run &Suite", "Select a suite to run."))        
         #fileMenu.Append(wx.NewId(), "&Preference", "")
-        self.Bind(wx.EVT_MENU, self.OnCloseWindow, fileMenu.Append(wx.NewId(), "E&xit", "Exit Windmill"))
+
+	self.Bind(wx.EVT_MENU, self.OnCloseWindow, fileMenu.Append(wx.NewId(), "E&xit", "Exit Windmill"))
 
         ##setup the options menu
         optionsMenu = wx.Menu()
 	self.Bind(wx.EVT_MENU, self.EvtOnDefaultUrl, optionsMenu.Append(wx.NewId(), "Default URL", "Default Browser URL"))
+
+
+	toolsMenu = wx.Menu()
+	self.Bind(wx.EVT_MENU, self.EvtOnClearQueue, toolsMenu.Append(wx.NewId(), "Clear Queue", "Clear the Queue"))	
+
 	
         ##setup the Help menu
         helpMenu = wx.Menu()
 	self.Bind(wx.EVT_MENU, self.OnWebsiteLink, helpMenu.Append(wx.NewId(), "Windmill Home Page", "Link to website"))
         self.Bind(wx.EVT_MENU, self.OnAbout, helpMenu.Append(wx.NewId(), "About", "About windmill"))            
 
+
         ##Add menu items to the menu bar
         menuBar.Append(fileMenu, "&File")
         menuBar.Append(optionsMenu, "O&ptions")
-
+	menuBar.Append(toolsMenu, "&Tools")
 	menuBar.Append(helpMenu, "&Help")
 
         self.SetMenuBar(menuBar)        
 	
-    def RunTest(self, event):
+    def EvtOnRunTest(self, event):
+        #popup a dialog here to run it
+        dialog = wx.FileDialog (None,
+                                message = u"Choose a Test",
+                                defaultFile = u"",	
+                                wildcard = u"Python files (*.py)|*.py|Json files (*.json)|*.json",
+                                style = wx.OPEN|wx.CHANGE_DIR)        
+
+	if dialog.ShowModal() == wx.ID_OK:
+	    filename = dialog.GetPath()
+	    
+	    if filename.find(".py") is not -1:
+		print "Running the python version of run test"
+		self.shell_objects['run_python_test'](filename)
+	    else:
+		print "Running the json version of run test"
+		self.shell_objects['run_test_file'](filename)
+
+    def EvtOnRunTest(self, event):
+        #popup a dialog here to run it
+        dialog = wx.FileDialog (None,
+                                message = u"Choose a Test",
+                                defaultFile = u"",	
+                                wildcard = u"Python files (*.py)|*.py|Json files (*.json)|*.json",
+                                style = wx.OPEN|wx.CHANGE_DIR)        
+
+	if dialog.ShowModal() == wx.ID_OK:
+	    filename = dialog.GetPath()
+	    
+	    if filename.find(".py") is not -1:
+		print "Running the python version of run test"
+		self.shell_objects['run_python_test'](filename)
+	    else:
+		print "Running the json version of run test"
+		self.shell_objects['run_test_file'](filename)		
+
+    def EvtOnRunDir(self, event):
+	dialog = wx.DirDialog(None,
+			      message = u"Choose directory to load")
+    
+	if dialog.ShowModal() == wx.ID_OK:
+	    self.shell_objects['run_test_dir'](dialog.GetPath())
+
+    def EvtOnLoadTest(self, event):
         #popup a dialog here to run it
         dialog = wx.FileDialog (None,
                                 message = u"Choose a Test",
                                 defaultFile = u"",
-                                wildcard = u"*.py",
+                                wildcard = u"Python files (*.py)|*.py|Json files (*.json)|*.json",
                                 style = wx.OPEN|wx.CHANGE_DIR)        
-        dialog.ShowModal()
-        
-    def RunSuite(self, event):
-        #popup a different dialog for running the suites
-        dialog = wx.FileDialog (None,
-                                message = u"Choose a Suite",
-                                defaultFile = u"",
-                                wildcard = u"*.py",
-                                style = wx.OPEN|wx.CHANGE_DIR)        
-        dialog.ShowModal()
-        
+
+	if dialog.ShowModal() == wx.ID_OK:
+	    filename = dialog.GetPath()
+	    
+	    if filename.find(".py") is not -1:
+		self.shell_objects['load_python_tests'](filename)
+	    else:
+		self.shell_objects['load_json_test_file'](filename)
+
+    def EvtOnLoadDir(self, event):
+	dialog = wx.DirDialog(None,
+			      message = u"Choose directory to load")
+    
+	if dialog.ShowModal() == wx.ID_OK:
+	    self.shell_objects['load_json_test_dir'](dialog.GetPath())
+
+
     def OnAbout(self, event):
         #popup a About dialog 
         wx.AboutBox(self.aboutInfo)
@@ -242,19 +303,22 @@ class Frame(wx.Frame):
 	    self.Bind(wx.EVT_COMBOBOX, self.EvtChangeLogeLvl, self.displayTypeBox)
 	    
 	    #self.Bind(wx.EVT_COMBOBOX, self.EvtOnComboFilter, self.filterType)
-	    self.filterType= wx.SearchCtrl(self.outputPanel, style=wx.TE_PROCESS_ENTER)
+	    self.filterType= wx.SearchCtrl(self.outputPanel, size=(200,-1), style=wx.TE_PROCESS_ENTER)
     
 	    self.Bind(wx.EVT_TEXT_ENTER, self.EvtOnDoSearch, self.filterType)
-	    self.Bind(wx.EVT_TEXT, self.EvtOnDoSearch, self.filterType)
+	    self.Bind(wx.EVT_TEXT, self.EvtOnDoSearch, self.filterType, 1)
     
 	    #Create a temp sizer to place the definition text and combo box on same horizontal line
 	    tempSizer = wx.BoxSizer(wx.HORIZONTAL)
 	    tempSizer.Add(textLabel, 0, wx.ALIGN_CENTER_VERTICAL)
 	    tempSizer.Add(self.displayTypeBox)
 	    
-	    tempSizer.AddStretchSpacer(1)
+	    tempSizer.AddStretchSpacer(2)
     
 	    tempSizer.Add(self.filterType)
+	    
+	    #Add spacer in front for center purposes
+	    tempSizer.AddStretchSpacer(1)
 	    
 	    #Add the sizer to the main form
 	    outputSizer.Add(tempSizer, 0, wx.EXPAND)
@@ -349,6 +413,13 @@ class Frame(wx.Frame):
 	if textEntry.ShowModal() == wx.ID_OK:
 	    settings['TEST_URL'] = textEntry.GetValue()
 
+    def EvtOnClearQueue(self, event):
+	try:
+	    self.shell_objects['clear_queue']()
+	except Exception:
+	    print "Clear Queue Failed"
+
+	
 class MySplashScreen(wx.SplashScreen):
     """
     Create a splash screen widget.
@@ -368,15 +439,17 @@ class MySplashScreen(wx.SplashScreen):
         self.Bind(wx.EVT_CLOSE, self.OnExit)
 
         wx.Yield()
+
+	# Initialize the main frame while the splash screen is being displayed.
+	self.frame = Frame(shell_objects=self.shell_objects, size=(800, 500))
+
 #----------------------------------------------------------------------#
 
     def OnExit(self, evt):
         self.Hide()
-        # MyFrame is the main frame.
-	self.frame = Frame(shell_objects=self.shell_objects, size=(800, 500))
-        
-	self.frame.Show()
 
+	self.frame.Show()
+	
         # The program will freeze without this line.
         evt.Skip()  # Make sure the default handler runs too...
 
@@ -680,7 +753,7 @@ class CustTableGrid(gridlib.Grid, logging.Handler):
 	#print "Cell changed at: ", event.GetCol(), ", ", event.GetRow()
 	#if(event.GetCol() == 0):
 	    #self.SetRowAttr(event.GetRow(), gridlib.GridCellAttr(colText = wx.GREEN))
-	
+
     def __del__(self):
         self.close()   
 
@@ -689,11 +762,13 @@ class App(wx.App):
     def __init__(self, shell_objects = None, redirect=False, *args, **kwargs):
      
         self.shell_objects = shell_objects
-        wx.App.__init__(self, redirect, *args, **kwargs)
-        
+	
+	wx.App.__init__(self, redirect, *args, **kwargs)
+	
     def OnInit(self):
         MySplash = MySplashScreen(shell_objects=self.shell_objects)
         MySplash.Show()
+
 	#self.frame = Frame(shell_objects=self.shell_objects, size=(800, wx.DefaultSize[0]))
         #self.frame.Show()
         #self.SetTopWindow(self.frame)

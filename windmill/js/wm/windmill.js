@@ -37,18 +37,21 @@ var windmill = new function () {
      this.testingApp = parent.frames['webapp'];
     
     this.Start = function(){
-        //Index page load report
-          load_timer.endTime();
+      //Index page load report
+      load_timer.endTime();
 
-          windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
-          windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + browser.current_ua + ".</b><br>");
-          load_timer.write();
+      windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
+      browser.current_ua + ".</b><br>");
+      windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + 
+      browser.current_ua + ".</b><br>");
+      load_timer.write();
 
     }
     
     //windmill Options to be set
     this.stopOnFailure = false;
     this.showRemote = true;
+    this.runTests = true;
     
 };
 

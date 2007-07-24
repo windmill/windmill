@@ -418,6 +418,9 @@ windmill.controller = new function () {
             if(typeof param_object.showRemote != "undefined") {
                 windmill.showRemote = param_object.showRemote;
             }
+            if(typeof param_object.runTests != "undefined") {
+                windmill.runTests = param_object.runTests;
+            }
         
             return true;
         };

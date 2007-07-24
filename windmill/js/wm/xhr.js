@@ -115,22 +115,25 @@ windmill.xhr = new function () {
                 }
                 //Run the action
                 //If its a user extension.. run it
-                try {
-                    if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1){
-                        var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
-                        result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);
-                    }
-                    else{  result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params); }
-                }
-                catch (error) { 
-                    windmill.ui.results.writeResult("<font color=\"#FF0000\">There was an error in the "+
-                    windmill.xhr.xhrResponse.result.method+" action. "+error+"</font>");
-                    windmill.ui.results.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + 
-                    "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
-                    action.style.background = '#FF9692';
+                if (windmill.runTests == true){
+                  try {
+                      if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1){
+                          var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
+                          result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);
+                      }
+                      else{  result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params); }
+                  }
+                  catch (error) { 
+                      windmill.ui.results.writeResult("<font color=\"#FF0000\">There was an error in the "+
+                      windmill.xhr.xhrResponse.result.method+" action. "+error+"</font>");
+                      windmill.ui.results.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + 
+                      "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
+                      action.style.background = '#FF9692';
 
+                  }
                 }
-
+                else { result == true; }
+                
                 //End timer and store
                 action_timer.endTime();
                 var to_write = fleegix.json.serialize(windmill.xhr.xhrResponse.result);
@@ -159,7 +162,6 @@ windmill.xhr = new function () {
                 }
                 //Do the timer write
                 action_timer.write(to_write);
-
             }
         }
         
