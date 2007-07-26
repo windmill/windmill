@@ -21,6 +21,7 @@ import time
 import os
 from wx.py.crust import CrustFrame
 from StringIO import StringIO
+from threading import Thread
 
 class Frame(wx.Frame):
     """Frame that displays the Main window"""
@@ -189,36 +190,22 @@ class Frame(wx.Frame):
 	    
 	    if filename.find(".py") is not -1:
 		print "Running the python version of run test"
-		self.shell_objects['run_python_test'](filename)
+		x = Thread(target=self.shell_objects['run_python_test'], args=[filename])
+		
 	    else:
 		print "Running the json version of run test"
-		self.shell_objects['run_test_file'](filename)
-
-    def EvtOnRunTest(self, event):
-        #popup a dialog here to run it
-        dialog = wx.FileDialog (None,
-                                message = u"Choose a Test",
-                                defaultFile = u"",	
-                                wildcard = u"Python files (*.py)|*.py|Json files (*.json)|*.json",
-                                style = wx.OPEN|wx.CHANGE_DIR)        
-
-	if dialog.ShowModal() == wx.ID_OK:
-	    filename = dialog.GetPath()
-	    
-	    if filename.find(".py") is not -1:
-		print "Running the python version of run test"
-		self.shell_objects['run_python_test'](filename)
-	    else:
-		print "Running the json version of run test"
-		self.shell_objects['run_test_file'](filename)		
+		x = Thread(target=self.shell_objects['run_test_file'], args=[filename])
+				
+	    x.start()
 
     def EvtOnRunDir(self, event):
 	dialog = wx.DirDialog(None,
 			      message = u"Choose directory to load")
     
 	if dialog.ShowModal() == wx.ID_OK:
-	    self.shell_objects['run_test_dir'](dialog.GetPath())
-
+	    x = Thread(target=   self.shell_objects['run_test_dir'], args=[dialog.GetPath()])
+	    x.start()
+	    
     def EvtOnLoadTest(self, event):
         #popup a dialog here to run it
         dialog = wx.FileDialog (None,
@@ -231,16 +218,21 @@ class Frame(wx.Frame):
 	    filename = dialog.GetPath()
 	    
 	    if filename.find(".py") is not -1:
-		self.shell_objects['load_python_tests'](filename)
+		x = Thread(target=self.shell_objects['load_python_tests'], args=[filename])
+	    
 	    else:
-		self.shell_objects['load_json_test_file'](filename)
+		x = Thread(target=self.shell_objects['load_json_test_file'], args=[filename])
+	    
+	    x.start()
 
     def EvtOnLoadDir(self, event):
 	dialog = wx.DirDialog(None,
 			      message = u"Choose directory to load")
     
 	if dialog.ShowModal() == wx.ID_OK:
-	    self.shell_objects['load_json_test_dir'](dialog.GetPath())
+	    x = Thread(target=self.shell_objects['load_json_test_dir'], args=[dialog.GetPath()])
+	
+	x.start()
 
 
     def OnAbout(self, event):
