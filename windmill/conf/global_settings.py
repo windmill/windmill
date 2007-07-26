@@ -20,6 +20,8 @@ TEST_URL = 'http://www.google.com'
 
 SERVER_HTTP_PORT = 4444
 
+USECODE = False
+
 CONSOLE_LOG_LEVEL = logging.INFO
 FILE_LOG_LEVEL = logging.INFO
 

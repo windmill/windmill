@@ -213,6 +213,7 @@ def runserver_action(shell_objects):
 def shell_action(shell_objects):
     # If ipython is installed and we weren't given the usecode option
     try:
+        assert not windmill.settings['USECODE']
         from IPython.Shell import IPShellEmbed
         ipshell = IPShellEmbed()
 

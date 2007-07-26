@@ -95,6 +95,11 @@ class ContinueOnFailure(GeneralBoolSettingToTrue):
     """Keep the browser running tests after failure"""
     option_names = ('c', 'continueonfailure')
     setting = 'CONTINUE_ON_FAILURE'
+    
+class UseCode(GeneralBoolSettingToTrue):
+    """Use the code module rather than ipython"""
+    option_names = (None, 'usecode')
+    setting = 'USECODE'
         
 def process_module(module):
     """Process this modules option list"""

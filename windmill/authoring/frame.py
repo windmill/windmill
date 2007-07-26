@@ -43,14 +43,14 @@ def get_module(directory):
 def get_test_module(test_path):
     if os.path.isfile(test_path):
         root_module = get_module(os.path.dirname(test_path))
-        test_module = getattr(root_module, os.path.split(test_path)[-1].split('.')[0])
+        test_module = get_module(test_path)
+        setattr(root_module, test_module.__name__, test_module)
     elif os.path.isdir(test_path):
         root_module = get_module(test_path)
         test_module = root_module
     return root_module, test_module
     
 def run_test_module(test_module, root_module=None):
-    
     if hasattr(test_module, '_depends_') and ( root_module is not None ):
         for test in [getattr(root_module, x) for x in test_module._depends_ if (
                      getattr(root_module, x) not in modules_run)]:
