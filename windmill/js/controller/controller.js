@@ -163,7 +163,7 @@ windmill.controller = new function () {
     
     //Currently only does one level below the provided div
     //To make it more thorough it needs recursion to be implemented later
-    this.verify = function (param_object) { 
+    this.assertText = function (param_object) { 
         
         var n = this._lookupDispatch(param_object);
         var validator = param_object.validator;
@@ -186,7 +186,17 @@ windmill.controller = new function () {
        return false;
       } 
        return false;
-   };  
+   }; 
+   
+    //Assert that a specified node exists
+    this.assertNode = function (param_object) { 
+   
+     var element = this._lookupDispatch(param_object);
+     if (!element){
+      return false;
+     }
+      return true;
+   };   
     
   
    //Type Function
@@ -366,6 +376,38 @@ windmill.controller = new function () {
     /*******************************************************************************************************
     /* Commands namespace functions, mostly system specific for the server to inderact with the client
     /******************************************************************************************************/
+      
+       //This function allows the user to specify a string of JS and execute it
+       this.commands.execJS = function(param_object){
+          
+          //Lets send the result now to the server
+          var json_object = new windmill.xhr.json_call('1.1', 'command_result');
+          var params_obj = {};
+          
+          try {
+            params_obj.result = eval(param_object.code); 
+           
+          }
+          catch(error){
+            params_obj.result = error;
+          }
+          
+          params_obj.status = true;
+          params_obj.uuid = param_object.uuid;
+          //params_obj.result = r;
+          json_object.params = params_obj;
+          var json_string = fleegix.json.serialize(json_object)
+    
+          var resp = function(str){
+            return true;
+          }
+          
+          result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+          resp(result);
+          
+          return false;
+        
+       }
     
        //Give the backend a list of available controller methods
        this.commands.getControllerMethods = function (param_object){

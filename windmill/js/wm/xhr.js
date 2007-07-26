@@ -74,9 +74,13 @@ windmill.xhr = new function () {
                  var action = windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid);
                  action.style.background = 'lightyellow';
                 }
+                //If its a command we don't want to build any UI
+                else if (windmill.xhr.xhrResponse.result.method.split(".")[0] == 'commands'){
+                  //do nothing
+                }
                 else {
                   //If the suite name is null, set it to default
-                  if( windmill.xhr.xhrResponse.result.suite_name == null){
+                  if (windmill.xhr.xhrResponse.result.suite_name == null){
                     windmill.xhr.xhrResponse.result.suite_name = 'Default';
                   }
                   //Try to grab the stuite in the UI
