@@ -13,30 +13,30 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-## We need to import every library we ever use here so that setup.py compiles will find all of them
-try:
-    import wx
-    from wx import *
-    import readline, rlcompleter
-except:
-    pass
+## The resolver for py2app won't find dependencies that aren't imported in the main app file.
+## The if block is to speed up initial load.
+
+if not __name__ == "__main__":
+    try:
+        import wx
+        from wx import *
+        import readline, rlcompleter
+    except:
+        pass
+    import xmlrpclib
+    import new
+    import httplib, urllib, re
+    import copy, socket, random, urlparse, logging
+    import wsgi_jsonrpc, wsgi_xmlrpc, wsgi_proxy, wsgi_fileserver
+    import simplejson
+    import email
+    from email.Header import Header, decode_header
+    import dateutil, time, datetime, SimpleXMLRPCServer
+    import cherrypy
+    import commands, shutil, signal, webbrowser, StringIO
+    import uuid, code, keyword
+
 import os, sys, time
-import xmlrpclib
-import new
-import httplib, urllib, re
-import copy, socket, random, urlparse, logging
-import wsgi_jsonrpc, wsgi_xmlrpc, wsgi_proxy, wsgi_fileserver
-import simplejson
-import email
-from email.Header import Header, decode_header
-import dateutil, time, datetime, SimpleXMLRPCServer
-import cherrypy
-import commands, shutil, signal, webbrowser, StringIO
-import uuid, code, keyword
-
-# WINDMILL_DIR = os.path.abspath(os.path.expanduser(sys.modules[__name__].__file__)+os.path.sep+os.path.pardir+os.path.sep+os.path.pardir+os.path.sep+os.path.pardir)
-# sys.path.insert(0, WINDMILL_DIR)
-
 import windmill
 
 if __name__ == "__main__":
@@ -45,9 +45,7 @@ if __name__ == "__main__":
         admin_options.help()
         sys.exit()
 
-    # import simplejson
     from windmill.bin import admin_lib
-    import windmill
     windmill.stdout, windmill.stdin = sys.stdout, sys.stdin
     
     admin_lib.configure_global_settings()

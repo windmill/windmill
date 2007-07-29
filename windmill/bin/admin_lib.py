@@ -92,7 +92,6 @@ def run_threaded(console_level=logging.INFO):
     httpd_thread = Thread(target=httpd.start)
     httpd_thread.start()
     
-    time.sleep(1)
     return httpd, httpd_thread, console_handler
 
 def configure_global_settings():

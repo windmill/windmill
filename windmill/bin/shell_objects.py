@@ -60,17 +60,17 @@ def run_python_test(filename):
 def load_python_tests(filename):
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
     run_python_test(filename)
-    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True}})
+    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
     
 def load_json_test_file(filename):
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
     run_test_file(filename)
-    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True}})
+    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
 
 def load_json_test_dir(filename):
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
     run_test_dir(filename)
-    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True}})
+    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
     
 def run_test_dir(directory):
     # Try to import test_conf

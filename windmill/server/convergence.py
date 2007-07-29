@@ -28,23 +28,37 @@ test_results_logger = logging.getLogger('test_results')
 class ControllerQueue(object):
     
     def __init__(self, command_resolution_suite, test_resolution_suite): 
-        self.crs = command_resolution_suite
-        self.trs = test_resolution_suite
-        self.command_queue = []
-        self.test_queue = []
+        self.resolution_suites = {'test': test_resolution_suite,
+                                  'command': command_resolution_suite}
+        self.queue = []
         self.current_suite = None
         
     def add_command(self, command, suite_name=None):
+        """Add Command to the controller queue"""
         if suite_name is None and not command.get('suite_name'):
             suite_name = self.current_suite
         command['suite_name'] = suite_name
-        self.command_queue.append(command)
+        
+        if command['params'].get('priority', None):
+            priority = command['params'].pop('priority')
+        else:
+            priority = 0
+        
+        command['type'] = 'command'
+            
+        if type(priority) is int:
+            self.queue.insert(priority, command)
+        else:
+            self.queue.append(command)
     
     def add_test(self, test, suite_name=None):
         if suite_name is None and not test.get('suite_name'):
             suite_name = self.current_suite
         test['suite_name'] = suite_name
-        self.test_queue.append(test)
+        
+        test['type'] = 'test'
+        
+        self.queue.append(test)
         
     def start_suite(self, suite_name):
         self.current_suite = suite_name
@@ -52,19 +66,15 @@ class ControllerQueue(object):
     def stop_suite(self):
         self.current_suite = None
         
-    def command(self, command):        
-        self.command_queue.insert(0, command)
+    # def command(self, command):        
+    #     self.command_queue.insert(0, command)
         
     def next_action(self):
         
-        if len(self.command_queue) is not 0:
-            command = self.command_queue.pop(0)
-            self.crs.add(command)
-            return command
-        elif len(self.test_queue) is not 0:
-            test = self.test_queue.pop(0)
-            self.trs.add(test)
-            return test
+        if len(self.queue) is not 0:
+            controller_action = self.queue.pop(0)
+            self.resolution_suites[controller_action.pop('type')].add(controller_action)
+            return controller_action
         else:
             return None
             
