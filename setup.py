@@ -12,11 +12,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from setuptools import setup
 import sys, os, copy
+from setuptools import setup
 
 APP = 'windmill/bin/windmill-admin.py'
 DATA_FILES = ['windmill']
+
+APP_VERSION = '0.2.0'
+APP_DESC    = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.'
 
 mikeals_build = ['/Users/mikeal/tmp/CherryPy-3.0.1/cherrypy',
                  '/Users/mikeal/tmp/dateutil-1.1/dateutil',
@@ -77,7 +80,20 @@ if 'develop' in sys.argv or 'upload' in sys.argv:
 
 setup(
     name='windmill',
-    data_files=DATA_FILES,
+    version=APP_VERSION,
+    description=APP_DESC,
+    author='Open Source Applications Foundation',
+    author_email='windmill-dev@list.osafoundation.org',
+    url='http://windmill.osafoundation.org/trac/',
+    license='http://www.apache.org/licenses/LICENSE-2.0',
     packages=['windmill'],
-    **extra_options)
-
+    platforms=['Any'],
+    classifiers=['Development Status :: 4 - Beta',
+                 'Environment :: Library',
+                 'Intended Audience :: Developers',
+                 'License :: OSI Approved :: Apache Software License',
+                 'Operating System :: OS Independent',
+                 'Topic :: Software Development :: Libraries :: Python Modules',
+                ],
+    **extra_options
+)
