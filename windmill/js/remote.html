@@ -103,6 +103,8 @@
 	</div>
 	
 	<div id="ide">
+		<form id="ideForm" name="ideForm">
+		</form>
 	</div>
 	
 	<div id="navigation" align=center>
@@ -174,6 +176,7 @@
 </div>
 
 <div id="settings" class="dialog">
+		<form id='settingsForm' name='settingsForm'>
 		<div align="right">
 			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
 				<tr>
@@ -200,8 +203,8 @@
 				<td>Suite Save Formatting:</td>
 				<td> 
 					<SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
-						<OPTION selected>python</option>
-						<OPTION>json</option>
+						<OPTION value="python" selected>python</option>
+						<OPTION value="json">json</option>
 					</SELECT>
 				</td>
 			</tr>
@@ -230,6 +233,7 @@
 				<a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Pause Loop</a>
 			</center>
 		</div>
+	</form>
 </div>
 
 </body>

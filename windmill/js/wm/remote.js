@@ -27,11 +27,11 @@ windmill.ui.remote = new function () {
     this.clearIDE = function(){
       input_box=windmill.remote.confirm("Are you sure you want to delete all the data in the IDE?");
       if (input_box==true) {
-        fleegix.fx.fadeOut(windmill.remote.$('ide'));
+        fleegix.fx.fadeOut(windmill.remote.$('ideForm'));
         d = function(){ 
-        windmill.remote.$('ide').innerHTML = '';
+        windmill.remote.$('ideForm').innerHTML = '';
         windmill.ui.recorder.recordOff();
-        fleegix.fx.fadeIn(windmill.remote.$('ide'));  
+        fleegix.fx.fadeIn(windmill.remote.$('ideForm'));  
         }
        setTimeout("d()",800);
       }
@@ -93,7 +93,7 @@ windmill.ui.remote = new function () {
      this.getSuite = function(){
        var suite = windmill.remote.$('recordingSuite'+windmill.ui.recordSuiteNum);
        if (suite == null){
-           var ide = windmill.remote.$('ide');
+           var ide = windmill.remote.$('ideForm');
            suite = windmill.remote.document.createElement('div');
            suite.id = 'recordingSuite' + windmill.ui.recordSuiteNum;
            suite.style.width = "99%";
@@ -106,7 +106,7 @@ windmill.ui.remote = new function () {
            "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+suite.id+
            "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+suite.id+
            "\')\">[toggle]</a></span></td></tr></table></div>";
-           windmill.remote.$('ide').appendChild(suite);
+           windmill.remote.$('ideForm').appendChild(suite);
       }
       return suite;
      }
@@ -144,8 +144,11 @@ windmill.ui.remote = new function () {
             }
             
          var respRun = function(str){
+             //alert(str);
              response = eval('(' + str + ')');
-             window.open(response.result,'Saved Test','width=400,height=600,toolbar=yes,location=no,directories=no,status=no,menubar=yes,scrollbars=yes,copyhistory=no,resizable=yes')
+             //window.open(response.result,'Saved Test','width=400,height=600')
+             //window.open(response.result);
+             window.open(response.result,null,"height=500,width=600,status=no,toolbar=no,menubar=no,location=no,resizable=yes");
              return true;
          }
    
@@ -164,9 +167,7 @@ windmill.ui.remote = new function () {
          fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
             
         }
-        else {
-            windmill.remote.alert('You need test actions to save!');
-        }
+        else { windmill.remote.alert('You need test actions to save!'); }
     }
      //This function takes a method and it's params and returns a DOM
      //Element representing that action for the UI
@@ -190,7 +191,7 @@ windmill.ui.remote = new function () {
          action.style.border     = '1px dashed #aaa';
          action.style.background = 'lightyellow';
          action.style.width      = '100%';
-
+         
          //action.style.height = '50px';
          
          //in the case that the method we are passsing in isn't in the registry, we can still display it
@@ -304,7 +305,7 @@ windmill.ui.remote = new function () {
         var spn2 = windmill.remote.document.createElement('span');
         spn2.style.position = 'absolute';
         spn2.style.left   = '85%';
-        spn2.style.bottom = '2px';
+        //spn2.style.bottom = '2px';
         spn2.style.zindex = '10';
         spn2.style.font   = '10px arial';
         spn2.innerHTML += '<a onclick="windmill.ui.remote.addActionAbove(\''+action.id+
@@ -424,7 +425,7 @@ windmill.ui.remote = new function () {
              r.appendChild(c);
              t.appendChild(r);
             }
-            
+          
            action.appendChild(t);
            //action.innerHTML = t.innerHTML;
            return action; 

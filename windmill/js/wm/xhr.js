@@ -88,7 +88,7 @@ windmill.xhr = new function () {
                 
                   //if the suite isn't already there, create it
                   if (suite == null){
-                       var ide = windmill.remote.$('ide');
+                       var ide = windmill.remote.$('ideForm');
                        var suite = windmill.remote.document.createElement('div');
                        suite.id = windmill.xhr.xhrResponse.result.suite_name;
                        suite.style.width      = "99%";
@@ -101,7 +101,7 @@ windmill.xhr = new function () {
                            "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
                            "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+
                            windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table></div>";
-                       windmill.remote.$('ide').appendChild(suite);
+                       windmill.remote.$('ideForm').appendChild(suite);
                      }
                     
                     //Add the action to the suite
@@ -110,7 +110,7 @@ windmill.xhr = new function () {
                     suite.appendChild(action);
                     //IE Hack
                     windmill.remote.$(action.id).innerHTML = action.innerHTML;
-                    var ide = windmill.remote.$('ide');
+                    var ide = windmill.remote.$('ideForm');
                 
                     //If the settings box is checked, scroll to the bottom
                     if ( windmill.remote.document.getElementById('autoScroll').checked == true){
@@ -161,7 +161,7 @@ windmill.xhr = new function () {
                     else {
                         //Write to the result tab
                         windmill.ui.results.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');     
-                        if (typeof(action) != 'undefined'){ action.style.background = '#C7FFCC'; }
+                        if ((typeof(action) != 'undefined') && (windmill.runTests == true)){ action.style.background = '#C7FFCC'; }
                     }
                 }
                 //Do the timer write

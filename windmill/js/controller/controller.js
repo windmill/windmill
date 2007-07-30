@@ -197,7 +197,22 @@ windmill.controller = new function () {
      }
       return true;
    };   
-    
+ 
+    //Assert that a specified node exists
+    this.assertProperty = function (param_object) { 
+   
+     var element = this._lookupDispatch(param_object);
+     if (!element){
+      return false;
+     }
+     
+     var vArray = param_object.validator.split('|');
+     var value = eval ('element.' + vArray[0]);
+     if (value.indexOf(vArray[1]) != -1){
+       return true;
+     }
+     return false;
+   };   
   
    //Type Function
    this.type = function (param_object){
@@ -240,9 +255,8 @@ windmill.controller = new function () {
         done = function(){
             return true;
         }
-        setTimeout("done()", param_object.milliseconds);
-        
-        return true;
+        var t = setTimeout("done()", param_object.milliseconds);
+        //alert(t);
     };
     
     //Initial stab at selector functionality, taken from selenium-browserbot.js

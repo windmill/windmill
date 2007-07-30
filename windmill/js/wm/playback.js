@@ -25,7 +25,7 @@ windmill.ui.playback = new function () {
       if (typeof(uuid) == 'undefined'){ appending = true; }
 
       var testArray    = [];
-      var suites = windmill.remote.$('ide').childNodes;
+      var suites = windmill.remote.$('ideForm').childNodes;
       var s      = 1;
       
       //In IE we start our iteration at 0, else 1 for the first suite
