@@ -106,16 +106,11 @@ def configure_global_settings():
     logging.getLogger().addHandler(console)
 
     if os.environ.has_key('WINDMILL_CONFIG_FILE'):
-        sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.expanduser(os.environ['WINDMILL_CONFIG_FILE']))))
-        local_settings = __import__(os.path.basename(os.environ['WINDMILL_CONFIG_FILE'].split('.')[0]))
-        sys.path.remove(os.path.abspath(os.path.dirname(os.path.expanduser(os.environ['WINDMILL_CONFIG_FILE']))))
+        local_settings = os.environ['WINDMILL_CONFIG_FILE']
     else:
-        try:
-            import windmill_settings as local_settings
-        except:
-            local_settings = object()
+        local_settings = None
 
-    windmill.settings = windmill.conf.configure_settings(local_settings)
+    windmill.settings = windmill.conf.configure_settings(localSettings=local_settings)
 
 
 
