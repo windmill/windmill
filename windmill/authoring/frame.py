@@ -12,7 +12,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import os, sys, pdb, inspect, traceback
+import os
+import sys
+import pdb
+import inspect
+import traceback
+import new
 
 results = {'pass':0, 'failed':0}
 modules_run = []
@@ -42,7 +47,16 @@ def get_module(directory):
     
 def get_test_module(test_path):
     if os.path.isfile(test_path):
-        root_module = get_module(os.path.dirname(test_path))
+        if os.path.isfile(os.path.join(os.path.dirname(test_path), '__init__.py')):
+            root_module = get_module(os.path.dirname(test_path))
+        else:
+            root_module = new.module('root_test_module')
+            for fn in [fn for fn in os.listdir(os.path.dirname(test_path)) if fn.endswith('.py')]:
+                try:
+                    mod = get_module(os.path.join(os.path.dirname(test_path), fn))
+                    setattr(root_module, mod.__name__, mod)
+                except:
+                    pass # If any of the other file fail to import just ignore them
         test_module = get_module(test_path)
         setattr(root_module, test_module.__name__, test_module)
     elif os.path.isdir(test_path):
