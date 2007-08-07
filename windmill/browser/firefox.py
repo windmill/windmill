@@ -151,7 +151,7 @@ class MozillaBrowser(object):
         else:
             profile_path = self.profile.profile_path
 
-        if sys.platform is not 'linux2':
+        if sys.platform != 'linux2':
             self.command = [self.mozilla_bin, '-profile', profile_path]
         else:
             self.command = [self.mozilla_bin, '-P', 'windmill']
