@@ -14,65 +14,86 @@
 
 import logging, os, sys, tempfile, shutil
 
-PLATFORM = sys.platform
+def findInPath(fileName, path=os.environ['PATH']):
+    dirs = path.split(os.pathsep)
+    for dir in dirs:
+        if os.path.isfile(os.path.join(dir, fileName)):
+            return os.path.join(dir, fileName)
+        if os.name == 'nt' or sys.platform == 'cygwin':
+            if os.path.isfile(os.path.join(dir, fileName + ".exe")):
+                return os.path.join(dir, fileName + ".exe")
+    return None
 
-TEST_URL = 'http://www.google.com'
-
-SERVER_HTTP_PORT = 4444
-
-USECODE = False
 
 CONSOLE_LOG_LEVEL = logging.INFO
-FILE_LOG_LEVEL = logging.INFO
+FILE_LOG_LEVEL    = logging.INFO
 
-JS_PATH = os.path.dirname(sys.modules['windmill'].__file__)+os.path.sep+'js'
+SERVER_HTTP_PORT = 4444
+PLATFORM         = sys.platform
+WINDMILL_PATH    = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+JS_PATH          = os.path.join(WINDMILL_PATH, 'js')
 
+TEST_URL  = 'http://www.google.com'
 TEST_FILE = None
-TEST_DIR = None
-EXIT_ON_DONE = False
+TEST_DIR  = None
 
-START_FIREFOX = False
-
+USECODE             = False
+EXIT_ON_DONE        = False
 CONTINUE_ON_FAILURE = False
+ENABLE_PDB          = False
+BROWSER_DEBUGGING   = False
+START_FIREFOX       = False
 
 PYTHON_TEST_FRAME = False
-PYTHON_TEST_FILE = None
-ENABLE_PDB = False
-BROWSER_DEBUGGING = False
+PYTHON_TEST_FILE  = None
 
 # Browser prefs
 
 # Mozilla prefs
+MOZILLA_CREATE_NEW_PROFILE     = True
+MOZILLA_REMOVE_PROFILE_ON_EXIT = True
+
 MOZILLA_PROFILE_PATH = tempfile.mkdtemp()
+
 if MOZILLA_PROFILE_PATH.find('-') is not -1:
     shutil.rmtree(MOZILLA_PROFILE_PATH)
     MOZILLA_PROFILE_PATH = tempfile.mkdtemp()
-MOZILLA_CREATE_NEW_PROFILE = True
-MOZILLA_REMOVE_PROFILE_ON_EXIT = True
 
-if sys.platform == 'darwin':
-    if os.path.isdir(os.path.expanduser('~/Applications/Firefox.app/')):
-        MOZILLA_DEFAULT_PROFILE = os.path.expanduser('~/Applications/Firefox.app/Contents/MacOS/defaults/profile/')
-        MOZILLA_BINARY = os.path.expanduser('~/Applications/Firefox.app/Contents/MacOS/firefox-bin')  
-    elif os.path.isdir('/Applications/Firefox.app/'):
-        MOZILLA_DEFAULT_PROFILE = '/Applications/Firefox.app/Contents/MacOS/defaults/profile/'
-        MOZILLA_BINARY = '/Applications/Firefox.app/Contents/MacOS/firefox-bin'
-        
+if PLATFORM == 'darwin':
+    firefoxApp = os.path.join('/Applications', 'Firefox.app')
+    firefoxDir = os.path.join(os.path.expanduser('~/'), firefoxApp)
+
+    if not os.path.isdir(firefoxDir):
+        firefoxDir = firefoxApp
+
+    MOZILLA_DEFAULT_PROFILE = os.path.join(firefoxDir, 'Contents', 'MacOS', 'defaults', 'profile')
+    MOZILLA_BINARY          = os.path.join(firefoxDir, 'Contents', 'MacOS', 'firefox-bin')
+
 elif sys.platform == 'linux2':
-    if os.path.isfile('/usr/bin/firefox'):
-        MOZILLA_BINARY = '/usr/bin/firefox'
-    
+    firefoxBin = findInPath('firefox')
+
+    if os.path.isfile(firefoxBin):
+        MOZILLA_BINARY = firefoxBin
+
     if os.path.isdir('/usr/share/firefox/defaults/profile'):
         MOZILLA_DEFAULT_PROFILE = '/usr/share/firefox/defaults/profile'
 
-elif sys.platform == 'cygwin':
-    if os.path.isfile('/cygdrive/c/Program Files/Mozilla Firefox/firefox.exe'):
-        MOZILLA_BINARY = '/cygdrive/c/Program\\ Files/Mozilla\\ Firefox/firefox.exe'
-        
-    if os.path.isdir('/cygdrive/c/Program Files/Mozilla Firefox/defaults/profile'):
-        MOZILLA_DEFAULT_PROFILE = '/cygdrive/c/Program Files/Mozilla Firefox/defaults/profile'
+elif os.name == 'nt' or sys.platform == 'cygwin':
+    IE_BINARY = findInPath('iexplore')
 
-elif sys.platform == 'win32':
-    MOZILLA_BINARY = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
-    MOZILLA_DEFAULT_PROFILE = "C:\Program Files\Mozilla Firefox\defaults\profile"
-    IE_BINARY = "C:\\Program Files\\Internet Explorer\\iexplore.exe"
+    firefoxBin = findInPath('firefox')
+    firefoxDir = os.path.dirname(firefoxBin)
+
+    if os.path.isfile(firefoxBin):
+        MOZILLA_BINARY          = firefoxBin
+        MOZILLA_DEFAULT_PROFILE = os.path.join(firefoxDir, 'defaults', 'profile')
+
+
+if __name__ == '__main__':
+    if '--test' in sys.argv:
+        print 'running on           ', PLATFORM
+        print 'we are at            ', WINDMILL_PATH
+        print 'our JS is at         ', JS_PATH
+        print 'firefox is at        ', MOZILLA_BINARY
+        print 'default profile is at', MOZILLA_DEFAULT_PROFILE
+
