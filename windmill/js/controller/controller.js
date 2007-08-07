@@ -103,12 +103,11 @@ windmill.controller = new function () {
     
         //Function to handle the random keyword scenario
         this._handleVariable = function (actualValue){
-             
              var variables = actualValue.match(/{\$[^}]*}/g);
-             console.log(variables);
-             
+                                    
              for (var i = 0; i < variables.length; i++){
                 var variable = variables[i];
+                
                 if (windmill.varRegistry.hasKey(variable)){
                    actualValue = actualValue.replace(variable, windmill.varRegistry.getByKey(variable));
                 }
@@ -357,6 +356,18 @@ windmill.controller = new function () {
 
            return true;
        };
+       
+    //Functions for interacting with the windmill variable storage
+    this.storeURL = function(param_object){
+      var linkNode = this._lookupDispatch(param_object);
+      if (linkNode){
+       windmill.varRegistry.addItem('{$'+param_object.link +'}',linkNode.href);
+       return true;
+      }
+      else{
+        return false;
+      }
+    }
    
     //Directly access mouse events
     this.mousedown = function (param_object){
@@ -519,12 +530,12 @@ windmill.controller = new function () {
         index = Number(index);
         if (isNaN(index) || index < 0) {
             //throw new WindmillError("Illegal Index: " + index);
-            console.log('Error')
+            //console.log('Error')
 
         }
         if (elements.length <= index) {
             //throw new WindmillError("Index out of range: " + index);
-            console.log('Error')
+            //console.log('Error')
         }
         return [elements[index]];
     };

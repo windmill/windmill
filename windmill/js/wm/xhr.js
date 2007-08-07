@@ -47,7 +47,9 @@ windmill.xhr = new function () {
     this.actionHandler = function(str){
       
         //If the are variables passed we need to do our lex and replace
-        if (str.indexOf('{$') != -1){ str = windmill.controller._handleVariable(str); }
+        if (str.indexOf('{$') != -1){
+          str = windmill.controller._handleVariable(str); 
+        }
         
         windmill.xhr.xhrResponse = eval('(' + str + ')');
         //If there was a legit json response
