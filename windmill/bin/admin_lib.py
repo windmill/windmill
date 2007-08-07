@@ -96,7 +96,6 @@ def run_threaded(console_level=logging.INFO):
 
 def configure_global_settings():
     # Get local config
-    
     logging.getLogger().setLevel(0)
     
     console = logging.StreamHandler()
@@ -111,7 +110,6 @@ def configure_global_settings():
         local_settings = None
 
     windmill.settings = windmill.conf.configure_settings(localSettings=local_settings)
-
 
 
 def setup():
@@ -131,7 +129,7 @@ def setup():
         jsonrpc_client.add_json_command('{"method": "setOptions", "params": {"stopOnFailure" : false}}')
 
     if windmill.settings['TEST_FILE'] is not None:
-         shell_objects.run_test_file(windmill.settings['TEST_FILE'], shell_objects.jsonrpc_client)
+         shell_objects.run_test_file(windmill.settings['TEST_FILE'])
 
     if windmill.settings['TEST_DIR'] is not None:
          shell_objects.run_given_test_dir() 
@@ -166,6 +164,7 @@ def python_test_frame(shell_objects):
         while not windmill.ide_is_awake:
             sleep(1)
         test_run_method()
+        windmill.TESTS_COMPLETED = True
     
     thread = Thread(target=run_tests)
     thread.start()
@@ -186,6 +185,7 @@ def teardown(shell_objects):
     while shell_objects['httpd_thread'].isAlive():
         shell_objects['httpd'].stop()
 
+
 def runserver_action(shell_objects):
 
     try:
@@ -193,16 +193,17 @@ def runserver_action(shell_objects):
         print 'Server running...'
         if not windmill.settings['EXIT_ON_DONE']:
             while 1:
-                pass
+                sleep(1)
         else:
-            while len(shell_objects['httpd'].controller_queue.test_queue) is not 0 and \
-                  len(shell_objects['httpd'].test_resolution_suite.unresolved_tests) is not 0:
-                pass
+            while ( len(shell_objects['httpd'].controller_queue.queue) is not 0 ) or (
+                    len(shell_objects['httpd'].test_resolution_suite.unresolved) is not 0 ):
+                sleep(1)
             
             teardown(shell_objects)
 
     except KeyboardInterrupt:
         teardown(shell_objects)
+
 
 def shell_action(shell_objects):
     # If ipython is installed and we weren't given the usecode option
@@ -218,6 +219,7 @@ def shell_action(shell_objects):
 
     teardown(shell_objects)
     
+    
 def wxui_action(shell_objects):
     import wxui
     app = wxui.App(shell_objects)
@@ -227,7 +229,7 @@ def wxui_action(shell_objects):
     
     
 def tinderbox_action(shell_objects):
-    
+    """Tinderbox action for continuous integration"""
     shell_objects['jsonrpc_client'].add_json_command('{"method": "setOptions", "params": {"stopOnFailure" : false}}')
     
     class ResultsProcessor(object):
@@ -240,30 +242,55 @@ def tinderbox_action(shell_objects):
             
     result_processor = ResultsProcessor()
     shell_objects['httpd'].test_resolution_suite.result_processor = result_processor
+    
+    starttime = datetime.now()
+    result = None
         
-    try:
-        starttime = datetime.now()
-        while len(shell_objects['httpd'].controller_queue.test_queue) is not 0 and \
-              len(shell_objects['httpd'].test_resolution_suite.unresolved_tests) is not 0:
-            pass
+    if windmill.settings['TEST_DIR'] or windmill.settings['TEST_FILE']:    
+        try:
+            while ( len(shell_objects['httpd'].controller_queue.queue) is not 0 ) or (
+                    len(shell_objects['httpd'].test_resolution_suite.unresolved) is not 0 ):
+                sleep(1)
+        
+            print '#TINDERBOX# Testname = FullSuite'  
+            print '#TINDERBOX# Time elapsed = %s' % str (datetime.now() - starttime)
+            
+            if result_processor.failed > 0 or result_processor.passed is 0:
+                result = "FAILED"
+            else:
+                result = "PASSED"
+            
+            print '#TINDERBOX# Status = %s' % result
+            teardown(shell_objects)
+            if result == "FAILED":
+                sys.exit(1)
+
+        except KeyboardInterrupt:
+            teardown(shell_objects)
+            if result == "FAILED":
+                sys.exit(1)
+    else:
+        try:
+            while not windmill.TESTS_COMPLETED:
+                sleep(1)
+        except KeyboardInterrupt:
+            teardown(shell_objects)
+            if result == "FAILED":
+                sys.exit(1)
         
         print '#TINDERBOX# Testname = FullSuite'  
         print '#TINDERBOX# Time elapsed = %s' % str (datetime.now() - starttime)
-            
-        if result_processor.failed > 0 or result_processor.passed is 0:
+        if windmill.RESULTS['fail'] > 0 or windmill.RESULTS['pass'] is 0:
             result = "FAILED"
         else:
             result = "PASSED"
-            
+        
         print '#TINDERBOX# Status = %s' % result
         teardown(shell_objects)
         if result == "FAILED":
             sys.exit(1)
-
-    except KeyboardInterrupt:
-        teardown(shell_objects)
-        if result == "FAILED":
-            sys.exit(1)
+        
+            
 
 action_mapping = {'shell':shell_action, 'runserver':runserver_action, 'tbox':tinderbox_action, 'wx':wxui_action}
 

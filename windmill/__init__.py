@@ -13,3 +13,6 @@
 #   limitations under the License.
 
 import authoring, bin, browser, server, conf, test, tools
+
+TESTS_COMPLETED = False
+RESULTS = {'pass':0, 'fail':0}

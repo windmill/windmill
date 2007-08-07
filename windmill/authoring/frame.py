@@ -19,15 +19,16 @@ import inspect
 import traceback
 import new
 
-results = {'pass':0, 'failed':0}
 modules_run = []
 
 try:
     import windmill
     wm_settings = windmill.settings
+    results = windmill.RESULTS
 except:
     # Windmill is either not available or settings haven't been initialized
     wm_settings = {}
+    results = {'pass':0, 'failed':0}
 
 
 settings = {'pytest_on_failure': lambda x, e: sys.stdout.write('%s failed' % x.__name__), 
@@ -112,13 +113,13 @@ def run_test_callable(test):
         if windmill.settings.get('ENABLE_PDB', None):
             wm_post_mortem()
         settings['pytest_on_failure'](test, e)
-        results['failed'] += 1
+        results['fail'] += 1
     except Exception, e:
         print traceback.format_exc()
         if windmill.settings.get('ENABLE_PDB', None):
             wm_post_mortem()
         settings['pytest_on_failure'](test, e)
-        results['failed'] += 1
+        results['fail'] += 1
         
 def collect_and_run_tests(file_path):
     if os.path.split(file_path)[-1] == '__init__.py':

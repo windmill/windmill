@@ -49,7 +49,7 @@ if __name__ == "__main__":
     windmill.stdout, windmill.stdin = sys.stdout, sys.stdin
     
     admin_lib.configure_global_settings()
-    
+        
     action = admin_lib.process_options(sys.argv)
     
     shell_objects = admin_lib.setup()
