@@ -53,11 +53,11 @@ PYTHON_TEST_FILE  = None
 MOZILLA_CREATE_NEW_PROFILE     = True
 MOZILLA_REMOVE_PROFILE_ON_EXIT = True
 
-MOZILLA_PROFILE_PATH = tempfile.mkdtemp()
+MOZILLA_PROFILE_PATH = tempfile.mkdtemp(suffix='.slt')
 
-if MOZILLA_PROFILE_PATH.find('-') is not -1:
+while MOZILLA_PROFILE_PATH.find('-') is not -1:
     shutil.rmtree(MOZILLA_PROFILE_PATH)
-    MOZILLA_PROFILE_PATH = tempfile.mkdtemp()
+    MOZILLA_PROFILE_PATH = tempfile.mkdtemp(suffix='.slt')
 
 if PLATFORM == 'darwin':
     firefoxApp = os.path.join('/Applications', 'Firefox.app')
