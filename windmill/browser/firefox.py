@@ -16,6 +16,7 @@ import windmill
 import exceptions
 import os, sys, shutil, time, signal
 import killableprocess
+import commands
 import logging
 import urlparse
 
