@@ -36,8 +36,6 @@ windmill.xhr = new function () {
         this.params  = params || [];
     }
 
-
-    
      this.toggleCollapse = function(id){
         if (windmill.remote.document.getElementById(id).style.height == '18px'){
             windmill.remote.document.getElementById(id).style.height = '';
@@ -47,6 +45,10 @@ windmill.xhr = new function () {
     
     //action callback
     this.actionHandler = function(str){
+      
+        //If the are variables passed we need to do our lex and replace
+        if (str.indexOf('{$') != -1){ str = windmill.controller._handleVariable(str); }
+        
         windmill.xhr.xhrResponse = eval('(' + str + ')');
         //If there was a legit json response
         if ( windmill.xhr.xhrResponse.error ){
@@ -110,10 +112,10 @@ windmill.xhr = new function () {
                     suite.appendChild(action);
                     //IE Hack
                     windmill.remote.$(action.id).innerHTML = action.innerHTML;
-                    var ide = windmill.remote.$('ideForm');
+                    var ide = windmill.remote.$('ide');
                 
                     //If the settings box is checked, scroll to the bottom
-                    if ( windmill.remote.document.getElementById('autoScroll').checked == true){
+                    if ( windmill.remote.$('autoScroll').checked == true){
                         ide.scrollTop = ide.scrollHeight;
                     }
                 }
@@ -173,8 +175,7 @@ windmill.xhr = new function () {
         if (windmill.xhr.loopState != 0){
             //Sleep for a few seconds before doing the next xhr call
             setTimeout("windmill.xhr.getNext()", 2000);
-        }
-          
+        }    
     }
       
     //Make sure we get back a confirmation

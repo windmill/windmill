@@ -101,32 +101,24 @@ windmill.controller = new function () {
             return element;
         };
     
-        this._randomString = function (){
-        	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-        	var string_length = 8;
-        	var randomstring = '';
-        	for (var i=0; i<string_length; i++) {
-        		var rnum = Math.floor(Math.random() * chars.length);
-        		randomstring += chars.substring(rnum,rnum+1);
-        	}
-        	return randomstring;
-        }
-    
         //Function to handle the random keyword scenario
-        this._handleRandom = function (actualValue){
-             if (actualValue.indexOf("%random%") != -1){
+        this._handleVariable = function (actualValue){
              
-                 if((windmill.randomRegistry.string == null)){
-                    windmill.randomRegistry.string = this._randomString();
-                 }
-                 if((windmill.randomRegistry.string != null) && (windmill.randomRegistry.overWrite == true)){
-                     windmill.randomRegistry.string = this._randomString();
-                 }
+             var variables = actualValue.match(/{\$[^}]*}/g);
+             console.log(variables);
              
-                 actualValue = actualValue.replace("%random%", windmill.randomRegistry.string);
-             }
+             for (var i = 0; i < variables.length; i++){
+                var variable = variables[i];
+                if (windmill.varRegistry.hasKey(variable)){
+                   actualValue = actualValue.replace(variable, windmill.varRegistry.getByKey(variable));
+                }
+                //if it doesn't exist and contains the string random we create it (username or pass etc)
+                else if (variable.indexOf('random') != -1){
+                 actualValue = actualValue.replace(variable, windmill.varRegistry.addItemCreateValue(variable));
+                }
+              }
         
-            return actualValue;
+          return actualValue;
          }
     
     /************************************
@@ -151,9 +143,9 @@ windmill.controller = new function () {
         
         
         webappframe = document.getElementById('webapp');
-        url = this._handleRandom(param_object.url);
+        //url = this._handleRandom(param_object.url);
         
-        webappframe.src = url;
+        webappframe.src = param_object.url;
         
         //Turn off loop until the onload for the iframe restarts it
         windmill.xhr.loopState = 0;
@@ -238,7 +230,7 @@ windmill.controller = new function () {
              }
          }
          
-         actualValue = this._handleRandom(actualValue);
+         //actualValue = this._handleRandom(actualValue);
          
          //Set the value
          element.value = actualValue;
@@ -252,7 +244,10 @@ windmill.controller = new function () {
        
     //Wait function
     this.wait = function (param_object){
+        windmill.xhr.togglePauseJsonLoop();
+
         done = function(){
+            windmill.xhr.togglePauseJsonLoop();
             return true;
         }
         var t = setTimeout("done()", param_object.milliseconds);

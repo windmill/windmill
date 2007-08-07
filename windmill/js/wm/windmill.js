@@ -25,13 +25,9 @@ var windmill = new function () {
     this.builder={};
     this.helpers={};
     
-    //So that users can generate a user for the current test randomly
-    //Usually you want one username for the test so you can set it once and leave it for the test
-    //a user can write a method to set overWrite to true if they want to replace it each time %random% is used in a json test
-    this.randomRegistry = new function (){
-        var string = null;
-        var overWrite = false;
-    }
+    //We need to allow users to store data locally
+    //So we are using the fleegix hash data structure
+    this.varRegistry = new fleegix.hash.Hash();
     
     //The app your testing
      this.testingApp = parent.frames['webapp'];
