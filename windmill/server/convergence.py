@@ -298,8 +298,7 @@ class JSONRPCMethods(RPCMethods):
         
     def clear_queue(self):
         """Clear the server queue"""
-        self._queue.command_queue = []
-        self._queue.test_queue = []
+        self._queue.queue = []
         
 class XMLRPCMethods(RPCMethods):
     pass

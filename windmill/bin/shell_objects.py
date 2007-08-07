@@ -51,6 +51,9 @@ def run_test_file(filename):
     jsonrpc_client.stop_suite()
     logger.info('Added tests from %s' % filename)
     
+def show_queue():
+    return windmill.settings['shell_objects']['httpd'].controller_queue.queue
+    
 def run_python_test(filename):
     test_run_method = lambda : frame.collect_and_run_tests(filename)
     while not windmill.ide_is_awake:
