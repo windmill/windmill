@@ -59,12 +59,13 @@ class MozillaProfile(object):
         self.profile_path = path
         
         if windmill.settings['MOZILLA_CREATE_NEW_PROFILE']:
-            if os.path.exists(self.profile_path) is True:
-                shutil.rmtree(self.profile_path)
-        
             if sys.platform == 'linux2':
                 print commands.getoutput('%s -CreateProfile "windmill %s"' % (
                                          MOZILLA_BINARY, self.profile_path))
+                                         
+            if os.path.exists(self.profile_path) is True:
+                shutil.rmtree(self.profile_path)
+        
             shutil.copytree(default_profile, self.profile_path)
         
             self.prefs_js_filename = self.profile_path + '/prefs.js'
@@ -186,7 +187,6 @@ class MozillaBrowser(object):
             except:
                 logger.error('Cannot kill firefox')
                 
-        shutil.rmtree(windmill.settings['MOZILLA_PROFILE_PATH'])
         if windmill.settings['MOZILLA_REMOVE_PROFILE_ON_EXIT'] is True:
             # Windows holds on to the file handlers for prefs.js indefinitely, we leave tempfiles and let the OS handle cleaning them up at a later time 
             if sys.platform != "win32":
