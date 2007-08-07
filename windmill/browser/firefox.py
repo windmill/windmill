@@ -33,6 +33,8 @@ else:
     
 MOZILLA_PROFILE_PATH = windmill.settings['MOZILLA_PROFILE_PATH']
 MOZILLA_DEFAULT_PROFILE = windmill.settings['MOZILLA_DEFAULT_PROFILE']
+MOZILLA_BINARY = windmill.settings['MOZILLA_BINARY']
+
 
 def setpgid_preexec_fn():
     os.setpgid(0, 0)
@@ -59,6 +61,9 @@ class MozillaProfile(object):
             if os.path.exists(self.profile_path) is True:
                 shutil.rmtree(self.profile_path)
         
+            if sys.platform == 'linux2':
+                print commands.getoutput('%s -CreateProfile "windmill %s"' % (
+                                         MOZILLA_BINARY, self.profile_path))
             shutil.copytree(default_profile, self.profile_path)
         
             self.prefs_js_filename = self.profile_path + '/prefs.js'
@@ -126,9 +131,6 @@ class MozillaProfile(object):
     def clean_up(self):
         shutil.rmtree(self.profile_path)
         
-            
-MOZILLA_BINARY = windmill.settings['MOZILLA_BINARY']
-
 def convertPath(linuxPath):
     sysdrive = os.environ.get('SYSTEMDRIVE')
     cygdrive = '/cygdrive/%s' % sysdrive.lower().replace(':', '')
@@ -148,7 +150,10 @@ class MozillaBrowser(object):
         else:
             profile_path = self.profile.profile_path
 
-        self.command = [self.mozilla_bin, '-profile', profile_path]
+        if sys.platform is not 'linux2':
+            self.command = [self.mozilla_bin, '-profile', profile_path]
+        else:
+            self.command = [self.mozilla_bin, '-P', 'windmill']
 
     def start(self):
 
