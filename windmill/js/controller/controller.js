@@ -251,6 +251,7 @@ windmill.controller = new function () {
         }
         var t = setTimeout("done()", param_object.milliseconds);
         //alert(t);
+        return true;
     };
     
     //Initial stab at selector functionality, taken from selenium-browserbot.js

@@ -231,11 +231,10 @@ windmill.ui.remote = new function () {
             r.appendChild(c);
             var c = windmill.remote.document.createElement("td"); 
             c.innerHTML += '<a onclick="windmill.ui.remote.addActionAbove(\''+action.id+
-            '\')" href="#">Above</a><br><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
-            '\')" href="#">Below</a></span>';
+            '\')" href="#"><img border=0 style="height:18px;width:18px;" src="ide/img/addup.png"></a><br><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
+            '\')" href="#"><img border=0 style="height:18px;width:18px;" src="ide/img/adddown.png"></a>';
             r.appendChild(c);
 
-            
             var c = windmill.remote.document.createElement("td"); 
             c.innerHTML += '<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\''+action.id+
             '\')" style="height:18px;width:18px;" src="ide/img/play.png"></a><a alt="Delete Action" href="#">'+
@@ -292,11 +291,10 @@ windmill.ui.remote = new function () {
         var spn = windmill.remote.document.createElement('span');
         spn.style.position  = 'absolute';
         spn.style.left   = '95%';
+        spn.style.bottom = '2px';
         spn.style.zindex = '10';
         spn.style.font   = '10px arial';
 
-        
-        
         spn.innerHTML += '<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\''+action.id+
         '\')" style="height:18px;width:18px;" src="ide/img/play.png"></a><a alt="Delete Action" href="#">'+
         '<img border=0 onclick="windmill.ui.remote.deleteAction(\''+action.id+'\')" style="height:18px;width:18px;" '+
@@ -304,13 +302,13 @@ windmill.ui.remote = new function () {
         
         var spn2 = windmill.remote.document.createElement('span');
         spn2.style.position = 'absolute';
-        spn2.style.left   = '85%';
-        //spn2.style.bottom = '2px';
+        spn2.style.left   = '90%';
+        spn2.style.bottom = '3px';
         spn2.style.zindex = '10';
         spn2.style.font   = '10px arial';
         spn2.innerHTML += '<a onclick="windmill.ui.remote.addActionAbove(\''+action.id+
-        '\')" href="#">Above</a><br><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
-        '\')" href="#">Below</a></span>';
+        '\')" href="#"><img border=0 style="height:18px;width:18px;" src="ide/img/addup.png"></a><br><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
+        '\')" href="#"><img border=0 style="height:18px;width:18px;" src="ide/img/adddown.png"></a></span>';
         
         var c = windmill.remote.document.createElement("td"); 
         c.appendChild(spn);
