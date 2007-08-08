@@ -212,7 +212,7 @@ windmill.ui.remote = new function () {
             i0.type      = 'text';
             i0.id        = action.id+'method';
             i0.className = 'texta';
-            i0.size      = '35';
+            i0.size      = '40';
             i0.setAttribute('value', method);
             c.appendChild(i0);
             
@@ -231,8 +231,8 @@ windmill.ui.remote = new function () {
             r.appendChild(c);
             var c = windmill.remote.document.createElement("td"); 
             c.innerHTML += '<a onclick="windmill.ui.remote.addActionAbove(\''+action.id+
-            '\')" href="#"><img border=0 style="height:18px;width:18px;" src="ide/img/addup.png"></a><br><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
-            '\')" href="#"><img border=0 style="height:18px;width:18px;" src="ide/img/adddown.png"></a>';
+            '\')" href="#"><img border=0 style="height:16px;width:16px;" src="ide/img/addup.png"></a><br><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
+            '\')" href="#"><img border=0 style="height:16px;width:16px;" src="ide/img/adddown.png"></a>';
             r.appendChild(c);
 
             var c = windmill.remote.document.createElement("td"); 
@@ -307,8 +307,8 @@ windmill.ui.remote = new function () {
         spn2.style.zindex = '10';
         spn2.style.font   = '10px arial';
         spn2.innerHTML += '<a onclick="windmill.ui.remote.addActionAbove(\''+action.id+
-        '\')" href="#"><img border=0 style="height:18px;width:18px;" src="ide/img/addup.png"></a><br><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
-        '\')" href="#"><img border=0 style="height:18px;width:18px;" src="ide/img/adddown.png"></a></span>';
+        '\')" href="#"><img border=0 style="height:16px;width:16px;" src="ide/img/addup.png"></a><br><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
+        '\')" href="#"><img border=0 style="height:16px;width:16px;" src="ide/img/adddown.png"></a></span>';
         
         var c = windmill.remote.document.createElement("td"); 
         c.appendChild(spn);
@@ -361,7 +361,7 @@ windmill.ui.remote = new function () {
               var i0 = windmill.remote.document.createElement('input');
                  i0.name      = 'locValue';
                  i0.className = 'texta';
-                 i0.size      = '35';
+                 i0.size      = '45';
                  //Dont know why I have to do this.. but it wont work if its not setattrib
                  if (params[locator]){
                    i0.setAttribute('value',params[locator]);
@@ -410,7 +410,7 @@ windmill.ui.remote = new function () {
              var i1 = windmill.remote.document.createElement('input');
                  i1.name      = 'optValue';
                  i1.className = 'texta';
-                 i1.size      = '35';
+                 i1.size      = '40';
                  if (typeof(params[windmill.registry.methods[method].option]) != 'undefined'){
                    i1.setAttribute("value", params[windmill.registry.methods[method].option]);
                  }

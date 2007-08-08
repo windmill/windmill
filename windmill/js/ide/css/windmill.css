@@ -48,15 +48,19 @@ a:hover {
 }
 
 .texta {
- font-size: 10px;
- background-color: #D7E5F2;
- color: #102132;
- border: 1px solid #284279; 
+  font-size: 10px;
+	margin:0px;
+	height:19px;
+	width:252px;
+	border:solid 0 #fff;
+	background: transparent url("../img/text_elem_gradient.gif"); 
 }
 
 .smalloption {
  font-size: 10px;
  background-color: #D7E5F2;
  color: #102132;
- border: 1px solid #284279; 
+ border:solid 0 #fff;
+ background: transparent url("../img/text_elem_gradient.gif"); 
+
 }
