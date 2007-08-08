@@ -11,12 +11,12 @@
  left:35px;
  top:10px;
  font-size:12px;
- color:#3f6d75; 
+ color:#456068; 
 }
 
 #controllers {
  position:absolute;
- left:340px;
+ left:325px;
  top:5px; 
 }
 
@@ -24,12 +24,14 @@
  visibility:hidden;
  position:absolute;
  background:white;
- left:130px;
+ left:50px;
  top:40px;
+ width:85%;
  z-index:100;
- font:18px arial;
+ font:15px arial;
  color:#3f6d75;
  border:1px solid #aaa; 
+ overflow:auto;
 }
 
 #ide {
@@ -39,9 +41,13 @@
  overflow:auto; 
 }
 
+#ideForm {
+ width:100%;
+}
+
 #navigation {
  height:6%;
- font:11px arial; 
+ font:11px arial;
 }
 
 #gray {

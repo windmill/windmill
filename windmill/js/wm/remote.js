@@ -85,6 +85,7 @@ windmill.ui.remote = new function () {
        if (typeof(action) == 'undefined'){
          var action = this.buildAction(null,{})
        }
+       
        //A hack to make it draw the UI correctly in IE
        suite.appendChild(action);
        windmill.remote.$(action.id).innerHTML = action.innerHTML; 
@@ -177,7 +178,6 @@ windmill.ui.remote = new function () {
          if (method == null){
             method = 'click';
             params.id = ' ';
-
          }
 
          //var action = this.constructAction(method,'','',windmill.registry.methods[method].option,parms[windmill.registry.methods[method].option]);

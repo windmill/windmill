@@ -86,6 +86,23 @@
 
 			}
 		}
+		var toggleAExplore = function(){
+			if ($('assertx').src.indexOf("ide/img/axon.png")  != -1){
+				$('domExp').style.visibility = 'visible';
+				$('domExp').innerHTML = '';
+				opener.windmill.ui.assertexplorer.assertExplorerOn();
+				opener.window.focus();
+				$('assertx').src = 'ide/img/axoff.png';
+
+			}
+			else {
+				$('domExp').style.visibility = 'hidden';
+				opener.windmill.ui.assertexplorer.assertExplorerOff();
+				$('assertx').src = 'ide/img/axon.png';
+				$('domExp').innerHTML = '';
+
+			}
+		}
 	</script>
 </head>
 		
@@ -96,9 +113,10 @@
 	<div id="runningStatus" align="center"><b>Status:</b> Nothing yet..</div>
 	
 	<div id="controllers">
-		<a href="#" title="Toggle Recorder"><img alt="Toggle Recorder" name='record' id="record" border=no src="ide/img/record.png" onClick="toggleRec();" ></a>
-		&nbsp<a href="#" title="Play All"><img alt="Play All" name ='playback' id="playback" border=no src="ide/img/playback.png" onClick="togglePlay();"></a>
-		&nbsp<a href="#" title="Toggle DOM Explorer"><img alt="Toggle DOM Explorer" name ='explorer' id="explorer" border=no src="ide/img/xon.png" onClick="toggleExplore();"></a>
+		<a href="#" title="Toggle Recorder"><img height="28px" width="28px" alt="Toggle Recorder" name='record' id="record" border=no src="ide/img/record.png" onClick="toggleRec();" ></a>
+		&nbsp<a href="#" title="Play All"><img height="28px" width="28px" alt="Play All" name ='playback' id="playback" border=no src="ide/img/playback.png" onClick="togglePlay();"></a>
+		&nbsp<a href="#" title="Toggle DOM Explorer"><img height="28px" width="28px" alt="Toggle DOM Explorer" name ='explorer' id="explorer" border=no src="ide/img/xon.png" onClick="toggleExplore();"></a>
+		&nbsp<a href="#" title="Toggle Assert Explorer"><img height="28px" width="28px" alt="Toggle Assert Explorer" name ='assertx' id="assertx" border=no src="ide/img/axon.png" onClick="toggleAExplore();"></a>
 	</div>
 	
 	<div id="domExp">
@@ -109,13 +127,13 @@
 		</form>
 	</div>
 	
-	<div id="navigation" align=center>
-		<span>Navigation: 
+	<div id="navigation" style="font-wight:bold;" align=center>
+		<span style="font-weight: bold;"> 
 			<a href="#" onclick="javascript:openDialog('console')">Console</a>&nbsp 
 			<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
 			<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
 		</span>
-		<span>IDE: 
+		<span>|
 			<a href="#" onclick="opener.windmill.ui.incRecSuite();windmill.ui.remote.getSuite();">New Suite</a>&nbsp
 			<a href="#" onclick="windmill.ui.remote.addAction();">New Action</a>&nbsp | &nbsp
 		  <a href="#" onclick="windmill.ui.remote.clearIDE()">Clear IDE</a>&nbsp
@@ -129,7 +147,7 @@
 		<div align="right">
 			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
 				<tr>
-					<td style="width:92%;">
+					<td align="left" style="width:92%;color:#456068;">
 						<strong>Output</strong>
 					</td>
 					<td style="font: 9pt arial;">
@@ -147,11 +165,11 @@
 		<br>
 		<div id="tab3" class="tab"></div>
 </div>
-<div id="console" class="dialog" style="font:12pt arial">
+<div id="console" class="dialog">
 		<div align="right">
 			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
 				<tr>
-					<td style="width:92%;">
+					<td align="left" style="width:92%;color:#456068;">
 						<strong>Windmill Console</strong>
 					</td>
 					<td style="font: 9pt arial;">
@@ -182,7 +200,7 @@
 		<div align="right">
 			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
 				<tr>
-					<td style="width:92%;">
+					<td align="left" style="width:92%;color:#456068;">
 						<strong>Windmill Settings</strong>
 					</td>
 					<td style="font: 9pt arial;">

@@ -26,26 +26,29 @@ windmill.ui.recorder = new function () {
      }
      //write json to the remote from the click events
      this.writeJsonClicks = function(e){
+         //console.log(e);
          if( this.recordState == false){ return; }
-         
          var locator = '';
          var locValue = '';
          if (e.target.id != ""){
             locator = 'id';
             locValue = e.target.id;
          }
-         else if (e.target.name != ""){
+         else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")){
             locator = 'name';
             locValue = e.target.name;
          }
-         else if (e.target.innerHTML.match('href') != 'null'){
+         else if (e.target.tagName == "A"){
             locator = 'link';
             locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig,"");
-            locValue = locValue.replace("\n", "");
+            locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
          }
          else{
-             locator = 'Couldnt Detect';
-             locValue = 'Couldnt Detect';
+           var xpArray = getXPath(e.target);
+           var stringXpath = xpArray.join('/');
+           
+           locator = 'xpath';
+           locValue = stringXpath;
          } 
          if (locValue != ""){
             var params = {};
@@ -78,13 +81,15 @@ windmill.ui.recorder = new function () {
               locator = 'id';
               locValue = e.target.id;
            }
-           else if (e.target.name != ""){
+          else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")){
               locator = 'name';
               locValue = e.target.name;
            }
            else{
-            locator = 'Couldnt Detect';
-            locValue = 'Couldnt Detect';
+             var xpArray = getXPath(e.target);
+             var stringXpath = xpArray.join('/');
+             locator = 'xpath';
+             locValue = stringXpath;
            }
           
           var params = {};
