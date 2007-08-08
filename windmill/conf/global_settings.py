@@ -72,19 +72,25 @@ if PLATFORM == 'darwin':
 elif sys.platform == 'linux2':
     firefoxBin = findInPath('firefox')
 
-    if os.path.isfile(firefoxBin):
+    if firefoxBin is not None and os.path.isfile(firefoxBin):
         MOZILLA_BINARY = firefoxBin
 
     if os.path.isdir('/usr/share/firefox/defaults/profile'):
         MOZILLA_DEFAULT_PROFILE = '/usr/share/firefox/defaults/profile'
 
 elif os.name == 'nt' or sys.platform == 'cygwin':
-    IE_BINARY = findInPath('iexplore')
-
+    IE_BINARY  = findInPath('iexplore')
     firefoxBin = findInPath('firefox')
-    firefoxDir = os.path.dirname(firefoxBin)
 
-    if os.path.isfile(firefoxBin):
+    if firefoxBin is None:
+        try:
+            firefoxBin = os.path.join(os.environ['ProgramFiles'], 'Mozilla Firefox', 'firefox.exe')
+        except:
+            firefoxBin = None
+
+    if firefoxBin is not None and os.path.isfile(firefoxBin):
+        firefoxDir = os.path.dirname(firefoxBin)
+
         MOZILLA_BINARY          = firefoxBin
         MOZILLA_DEFAULT_PROFILE = os.path.join(firefoxDir, 'defaults', 'profile')
 

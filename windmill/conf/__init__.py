@@ -28,7 +28,7 @@ def _load(globalName='global_settings.py', localSettings=None):
 
         localSettings = local_settings.loadSettings(dirname=localPath, filename=localFile)
     else:
-        localSettings  = local_settings.loadSettings()
+        localSettings = local_settings.loadSettings()
 
     return globalSettings, localSettings
 

@@ -31,7 +31,15 @@ import os, sys
 import platform
 import imp
 import glob
+import logging
+import traceback
 
+logger = logging.getLogger(__name__)
+
+
+def _dumpException():
+    t, v, tb = sys.exc_info()
+    return ''.join(traceback.format_exception(t, v, tb))
 
 def locateSettings(dirName='windmill'):
     """
@@ -75,6 +83,7 @@ def locateSettings(dirName='windmill'):
         try:
             os.makedirs(settingsDir, 0700)
         except:
+            logger.error('Unable to create setting directory [%s]' % settingsDir)
             settingsDir = None
 
     return settingsDir
@@ -115,6 +124,8 @@ def loadSettings(dirname=None, filename='prefs.py'):
                 minfo  = imp.find_module(mname, [settingsDir])
                 result = imp.load_module(mname, *minfo)
             except:
+                logger.error('Error loading settings file [%s]' % prefsFile)
+                logger.error(_dumpException())
                 minfo  = None
                 result = None
 
