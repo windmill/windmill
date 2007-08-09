@@ -16,11 +16,11 @@ body, html
 a {
   color: #9a3527;
   text-decoration: none;
-  border-bottom: 1px dotted;
 }
 a:hover {
-  color: #fff;
-  background-color: #90bfcb;
+  color: #456068;
+  border-bottom: 1px dotted;
+
 }
 
 #pagediv {
