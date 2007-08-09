@@ -120,6 +120,7 @@ class MozillaProfile(object):
         self.user_pref('"browser.cache.memory.enable", false')
         # Disable "do you want to remember this password?"
         self.user_pref('"signon.rememberSignons", false')
+        self.user_pref('"dom.max_script_run_time", 20')
         
         
     def user_pref(self, string):
