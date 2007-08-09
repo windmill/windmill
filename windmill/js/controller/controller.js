@@ -148,6 +148,7 @@ windmill.controller = new function () {
         
         //Turn off loop until the onload for the iframe restarts it
         windmill.xhr.loopState = 0;
+        //windmill.xhr.togglePauseJsonLoop();
         return true;
     };
     

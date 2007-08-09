@@ -31,6 +31,7 @@ windmill.controller.extensions.clickLozenge =function (param_object){
     eval ("hash_key=" + param_object.jsid + ";");
     //hash_key = eval('('+ param_object.jsid + ')');
     param_object.id = "eventDivContent__" + hash_key;
+    console.log(param_object);
     delete param_object.jsid;
     
     //Since id comes before jsid in the lookup order
