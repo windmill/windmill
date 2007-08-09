@@ -45,55 +45,6 @@ class Frame(wx.Frame):
         ##bind the import objects
         self.Bind(wx.EVT_CLOSE, self.OnCloseWindow)
 
-    #def SetupPreferences(self):
-	#"""Setup the default preferences from loading the conf file"""
-	
-	## Let's create a file and write it to disk.
-	#filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wx_windmill.conf")
-	
-	#try:
-	    #infile = open(filename,"r")
-
-	    ## Let's get some data:
-	    #if infile:
-		#for line in infile:
-		    #theline = line.split(' : ', 1)
-
-		    #if( len(theline) == 2):
-			#self.preferences[theline[0]] = theline[1].strip("\n").strip('"')
-
-		#infile.close()
-	    
-	#except IOError, ValueError:
-	    #"""take care of the null case with no attr file"""
-	    ##the file needs to be created.
-
-	#from windmill import settings
-	
-	#self.preferences.update(settings)
-	
-    #def SavePreferences(self):
-	#"""Saves all the preferences created"""
-	#filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wx_windmill.conf")
-	
-	#try:
-	    #outfile = open(filename,"w")
-
-	    ## Let's write some data:
-	    #if outfile:
-		#for key,index in self.preferences.items():
-		    #if( key is not "" and index is not ""):
-			#outfile.write(key + ' : "' + index + '"\n')
-
-		#outfile.close()
-	#except IOError, ValueError:
-	    #"""take care of the null case with no attr file"""
-	    #print "ERROR OCCURRED"
-	    ##the file needs to be created.
-	    
-	#finally:
-	    #outfile.close()
-
     def createMenu(self):
         """Creates the menu system"""
 
@@ -115,12 +66,10 @@ class Frame(wx.Frame):
 	self.Bind(wx.EVT_MENU, self.OnLoadTest, testMenu.Append(wx.NewId(), "Load Test", "Loads a single test"))
 	self.Bind(wx.EVT_MENU, self.OnLoadDir, testMenu.Append(wx.NewId(), "Load Test Directory", "Load a directory full of tests"))
 
-        ##setup the options menu
-        optionsMenu = wx.Menu()
-	self.Bind(wx.EVT_MENU, self.OnPreferences, optionsMenu.Append(wx.ID_PREFERENCES, "Preferences", "Prefences Dialog"))
-
+        ##setup the tools menu
 	toolsMenu = wx.Menu()
 	self.Bind(wx.EVT_MENU, self.OnClearQueue, toolsMenu.Append(wx.NewId(), "Clear Queue", "Clear the Queue"))	
+	self.Bind(wx.EVT_MENU, self.OnPreferences, toolsMenu.Append(wx.ID_PREFERENCES, "Preferences", "Prefences Dialog"))
 	
         ##setup the Help menu
         helpMenu = wx.Menu()
@@ -130,7 +79,6 @@ class Frame(wx.Frame):
         ##Add menu items to the menu bar
         menuBar.Append(fileMenu, "&File")
 	menuBar.Append(testMenu, "T&ests")
-        menuBar.Append(optionsMenu, "O&ptions")
 	menuBar.Append(toolsMenu, "&Tools")
 	menuBar.Append(helpMenu, "&Help")
 
@@ -359,7 +307,6 @@ class Frame(wx.Frame):
 	x.start()
 
     def OnChangeLogeLvl(self, event):
-        #print "Change log level to:  ", event.GetString(), "   with int value:   ", logging._levelNames[event.GetString()]
         self.theLogger.setLevel(logging._levelNames[event.GetString()])
         
     def OnDoSearch(self, event):
@@ -371,12 +318,9 @@ class Frame(wx.Frame):
 	
     def OnCloseWindow(self, event):
         #should probably manually stop logging to prevent output errors
-        #print "Removing the log handler"
         self.theLogger.removeHandler(self.programOutput)
 	
-	#self.SavePreferences()
-        #print "Clean up wx controls and windows"
-        self.Destroy()
+	self.Destroy()
 	
     def OnWebsiteLink(self, event):
 	"""Bring up a link to the windmill homepage"""
