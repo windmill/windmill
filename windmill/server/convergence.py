@@ -254,6 +254,11 @@ class RPCMethods(object):
         for test in tests:
             self.add_test(test)
         return 200
+
+    def clear_queue(self):
+        """Clear the server queue"""
+        self._queue.queue = []
+        return 200
     
         
 class JSONRPCMethods(RPCMethods):
@@ -295,10 +300,6 @@ class JSONRPCMethods(RPCMethods):
             if test['params'].get('uuid'): 
                 test['params'].pop('uuid')
         return windmill.authoring.transforms.registry[transformer](suite_name, tests)
-        
-    def clear_queue(self):
-        """Clear the server queue"""
-        self._queue.queue = []
         
 class XMLRPCMethods(RPCMethods):
     pass

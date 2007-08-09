@@ -75,7 +75,7 @@ if 'develop' in sys.argv or 'upload' in sys.argv:
                                          'wsgi_proxy',
                                          'wsgi_jsonrpc',
                                          'wsgi_xmlrpc',
-                                         'wsgi_fileserver',
+                                         'wsgi_fileserver >= 0.2.3',
                                         ]
 
 setup(
