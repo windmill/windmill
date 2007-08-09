@@ -48,7 +48,7 @@ a:hover {
 }
 
 .texta {
-  font-size: 10px;
+  font: 10px arial;
 	margin:0px;
 	height:19px;
 	width:252px;
@@ -57,7 +57,8 @@ a:hover {
 }
 
 .smalloption {
- font-size: 10px;
+ font-size: 10px arial;
+ height:19px;
  border:solid 0 #fff;
  background: transparent url("../img/text_elem_gradient.gif"); 
 
