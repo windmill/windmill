@@ -250,9 +250,8 @@ windmill.controller = new function () {
             windmill.xhr.togglePauseJsonLoop();
             return true;
         }
-        var t = setTimeout("done()", param_object.milliseconds);
-        //alert(t);
-        return true;
+        setTimeout("done()", param_object.milliseconds);
+        
     };
     
     //Initial stab at selector functionality, taken from selenium-browserbot.js
