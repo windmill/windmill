@@ -292,5 +292,7 @@ def tinderbox_action(shell_objects):
         
             
 
-action_mapping = {'shell':shell_action, 'runserver':runserver_action, 'tbox':tinderbox_action, 'wx':wxui_action}
+action_mapping = {'shell':shell_action, 'runserver':runserver_action, 
+                  'tbox':tinderbox_action, 'wx':wxui_action,
+                  'run_service':runserver_action}
 
