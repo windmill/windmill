@@ -397,6 +397,61 @@ windmill.controller = new function () {
     /*******************************************************************************************************
     /* Commands namespace functions, mostly system specific for the server to inderact with the client
     /******************************************************************************************************/
+       
+       //Create lots of variables
+       this.commands.createVariables = function(param_object){
+        for (var i = 0;i<param_object.variables.length;i++){
+         windmill.varRegistry.addItem('{$'+param_object.variables[i].split('|')[0] +'}',param_object.variables[i].split('|')[1]);
+        }
+          //Send to the server
+          var json_object = new windmill.xhr.json_call('1.1', 'command_result');
+          var params_obj = {};
+          params_obj.status = true;
+          params_obj.uuid = param_object.uuid;
+          params_obj.result = 'true';
+          json_object.params = params_obj;
+          var json_string = fleegix.json.serialize(json_object)
+    
+          var resp = function(str){
+            return true;
+          }
+          
+          result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+          resp(result);
+          return true;
+        
+       }
+       
+       //This function stores a variable and it's value in the variable registry
+       this.commands.createVariable = function(param_object){
+        var value = null;
+        if (windmill.varRegistry.hasKey('{$'+param_object.name +'}')){
+          value = windmill.varRegistry.getByKey('{$'+param_object.name +'}');
+        }
+        else{
+          windmill.varRegistry.addItem('{$'+param_object.name +'}',param_object.value);
+          value = windmill.varRegistry.getByKey('{$'+param_object.name +'}');
+        }
+        
+          //Send to the server
+          var json_object = new windmill.xhr.json_call('1.1', 'command_result');
+          var params_obj = {};
+          params_obj.status = true;
+          params_obj.uuid = param_object.uuid;
+          params_obj.result = value;
+          json_object.params = params_obj;
+          var json_string = fleegix.json.serialize(json_object)
+    
+          var resp = function(str){
+            return true;
+          }
+          
+          result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+          resp(result);
+          
+          return true;
+        
+       }
       
        //This function allows the user to specify a string of JS and execute it
        this.commands.execJS = function(param_object){
