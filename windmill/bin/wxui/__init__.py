@@ -339,7 +339,7 @@ class Frame(wx.Frame):
 
     def OnClearQueue(self, event):
 	try:
-	    self.shell_objects['clear_queue']()
+	    self.shell_objects['httpd'].xmlrpc_methods_instance.clear_queue()
 	except Exception:
 	    print "Clear Queue Failed"
 
