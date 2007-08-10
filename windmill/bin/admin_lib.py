@@ -221,11 +221,15 @@ def shell_action(shell_objects):
     
     
 def wxui_action(shell_objects):
-    import wxui
-    app = wxui.App(shell_objects)
-    shell_objects['wxui_app'] = app
-    app.MainLoop()
-    teardown(shell_objects)
+    try:
+        import wxui
+        app = wxui.App(shell_objects)
+        shell_objects['wxui_app'] = app
+        app.MainLoop()
+        teardown(shell_objects)
+    except ImportError:
+        print 'Failed to import wx, defaulting to the shell'
+        shell_action(shell_objects)
     
     
 def tinderbox_action(shell_objects):
