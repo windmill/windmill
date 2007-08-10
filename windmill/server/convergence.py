@@ -245,14 +245,15 @@ class RPCMethods(object):
         
     def run_json_tests(self, tests):
         """Run list of json tests"""
-        for test in tests:
-            self.add_json_test(test)
-        return 200
+        return self.run_tests([simplejson.loads(test) for test in tests])
 
     def run_tests(self, tests):
         """Run list of tests"""
         for test in tests:
-            self.add_test(test)
+            if test['method'].find('command') is -1:
+                self.add_test(test)
+            else:
+                self.add_command(test)
         return 200
 
     def clear_queue(self):

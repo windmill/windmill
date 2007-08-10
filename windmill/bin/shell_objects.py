@@ -44,6 +44,10 @@ def start_ie():
     return controller
     
 def run_test_file(filename):
+    if filename.find(',') is not -1:
+        for testfile in filename.split(','):
+            run_test_file(testfile)
+        return
     f = open(filename)
     test_strings = f.read().splitlines()
     jsonrpc_client.start_suite(filename.split(os.path.sep)[-1])
@@ -77,6 +81,10 @@ def load_json_test_dir(filename):
     
 def run_test_dir(directory):
     # Try to import test_conf
+    if directory.find(',') is not -1:
+        for testdir in directory.split(','):
+            run_test_dir(testdir)
+        return
     sys.path.insert(0, os.path.abspath(directory))
     try:
         import test_conf
