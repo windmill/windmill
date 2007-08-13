@@ -129,7 +129,7 @@ def setup():
         jsonrpc_client.add_json_command('{"method": "setOptions", "params": {"stopOnFailure" : false}}')
 
     if windmill.settings['TEST_FILE'] is not None:
-         shell_objects.run_test_file(windmill.settings['TEST_FILE'])
+         shell_objects.run_json_test_file(windmill.settings['TEST_FILE'])
 
     if windmill.settings['TEST_DIR'] is not None:
          shell_objects.run_given_test_dir() 

@@ -43,10 +43,11 @@ def start_ie():
     windmill.settings['controllers'].append(controller)
     return controller
     
-def run_test_file(filename):
+def run_json_test_file(*args):
+    filename = ','.join(args)
     if filename.find(',') is not -1:
         for testfile in filename.split(','):
-            run_test_file(testfile)
+            run_json_test_file(testfile)
         return
     f = open(filename)
     test_strings = f.read().splitlines()
@@ -71,19 +72,20 @@ def load_python_tests(filename):
     
 def load_json_test_file(filename):
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
-    run_test_file(filename)
+    run_json_test_file(filename)
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
 
 def load_json_test_dir(filename):
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
-    run_test_dir(filename)
+    run_json_test_dir(filename)
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
     
-def run_test_dir(directory):
+def run_json_test_dir(*args):
     # Try to import test_conf
+    directory = ','.join(args)
     if directory.find(',') is not -1:
         for testdir in directory.split(','):
-            run_test_dir(testdir)
+            run_json_test_dir(testdir)
         return
     sys.path.insert(0, os.path.abspath(directory))
     try:
@@ -95,10 +97,10 @@ def run_test_dir(directory):
                      not test_name.startswith('.') and test_name.endswith('.json') )]
         
     for test in test_list:
-        run_test_file(os.path.abspath(directory)+os.path.sep+test)
+        run_json_test_file(os.path.abspath(directory)+os.path.sep+test)
 
 def run_given_test_dir():
-    run_test_dir(windmill.settings['TEST_DIR'])
+    run_json_test_dir(windmill.settings['TEST_DIR'])
     
     logger = logging.getLogger(__name__)
 
