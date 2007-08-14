@@ -21,7 +21,6 @@ import logging
 from uuid import uuid1
 import windmill
 from time import sleep
-from dateutil.parser import parse as dateutil_parse
 
 test_results_logger = logging.getLogger('test_results')
 
@@ -91,8 +90,6 @@ class TestResolutionSuite(object):
 
     def resolve(self, result, uuid, starttime, endtime, debug=None):
         """Resolve test by uuid"""
-        starttime = dateutil_parse(starttime)
-        endtime = dateutil_parse(endtime)
         test = self.unresolved.pop(uuid)
         test['result'] = result
         test['starttime'] = starttime
