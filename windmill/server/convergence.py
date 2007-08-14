@@ -109,9 +109,6 @@ class TestResolutionSuite(object):
                 self.result_processor.failure(test, debug=debug)
             elif result is True:
                 self.result_processor.success(test, debug=debug)
-                
-        if test.has_key('result_callback'):
-            test['result_callback'](result, debug)
             
     def start_suite(self, suite_name):
         self.current_suite = suite_name
@@ -139,9 +136,6 @@ class CommandResolutionSuite(object):
             test_results_logger.error('Command Failure in command %s' % command)
         elif status is True:
             test_results_logger.debug('Command Succes in command %s' % command)
-            
-        if command.has_key('result_callback'):
-            command['result_callback'](status, result)
     
     def add(self, command, suite_name=None):
         self.unresolved[command['params']['uuid']] = command
@@ -280,6 +274,7 @@ class JSONRPCMethods(RPCMethods):
     def report(self, uuid, result, starttime, endtime, debug=None):
         """Report fass/fail for a test"""
         self._test_resolution_suite.resolve(result, uuid, starttime, endtime, debug)
+        return 200
         
     def command_result(self, status, uuid, result):
         self._command_resolution_suite.resolve(status, uuid, result)
