@@ -34,10 +34,10 @@ windmill.controller.click = function(param_object){
 
        // Trigger the event.
        // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-       windmill.events.triggerMouseEvent(element, 'mousedown', true);
-       windmill.events.triggerMouseEvent(element, 'mouseup', true);
-       windmill.events.triggerMouseEvent(element, 'click', true);
-       
+         windmill.events.triggerMouseEvent(element, 'mousedown', true);
+         windmill.events.triggerMouseEvent(element, 'mouseup', true);
+         windmill.events.triggerMouseEvent(element, 'click', true);
+          
        //Apparently there is some annoying issue with chrome..and this fixes it. Concept from selenium browerbot.
        if (!browser.isChrome && !preventDefault) {
            if (element.href) {

@@ -147,11 +147,13 @@ windmill.ui.recorder = new function () {
            }
          }
          
-         fleegix.event.listen(windmill.testingApp.document, 'ondblclick', this, 'writeJsonClicks');
-         fleegix.event.listen(windmill.testingApp.document, 'onchange', this, 'writeJsonChange');
-         //fleegix.event.listen(windmill.testingApp.document, 'onblur', this, 'writeJsonChange');
-         fleegix.event.listen(windmill.testingApp.document, 'onclick', this, 'writeJsonClicks');
+          try{
 
+           fleegix.event.listen(windmill.testingApp.document, 'ondblclick', this, 'writeJsonClicks');
+           fleegix.event.listen(windmill.testingApp.document, 'onchange', this, 'writeJsonChange');
+           //fleegix.event.listen(windmill.testingApp.document, 'onblur', this, 'writeJsonChange');
+           fleegix.event.listen(windmill.testingApp.document, 'onclick', this, 'writeJsonClicks');
+         
          //We need to set these listeners on all iframes inside the testing app, per bug 32
          var iframeCount = windmill.testingApp.window.frames.length;
          var iframeArray = windmill.testingApp.window.frames;
@@ -168,6 +170,12 @@ windmill.ui.recorder = new function () {
             catch(error){             
                 this.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);     
             }
+         }
+         }
+         catch(error){
+           alert('You left your testing domain, and we do not yet support cross domain testing in the same session.');
+           windmill.remote.$('record').src = 'ide/img/record.png';
+           this.recordState = false;
          }
      }
      
@@ -186,9 +194,11 @@ windmill.ui.recorder = new function () {
               fleegix.event.unlisten(se[i], 'onchange', this, 'writeJsonChange');
            }
          }
-         fleegix.event.unlisten(windmill.testingApp.document, 'ondblclick', this, 'writeJsonClicks');
-         fleegix.event.unlisten(windmill.testingApp.document, 'onchange', this, 'writeJsonChange');
-         fleegix.event.unlisten(windmill.testingApp.document, 'onclick', this, 'writeJsonClicks');
+         try{
+           fleegix.event.unlisten(windmill.testingApp.document, 'ondblclick', this, 'writeJsonClicks');
+           fleegix.event.unlisten(windmill.testingApp.document, 'onchange', this, 'writeJsonChange');
+           fleegix.event.unlisten(windmill.testingApp.document, 'onclick', this, 'writeJsonClicks');
+        
          //fleegix.event.unlisten(windmill.testingApp.document, 'onblur', this, 'writeJsonChange');
 
          //fleegix.event.unlisten(windmill.testingApp.document, 'onmousedown', this, 'writeJsonDragDown');
@@ -207,8 +217,16 @@ windmill.ui.recorder = new function () {
                //fleegix.event.unlisten(iframeArray[i], 'onblur', this, 'writeJsonClicks');
            }
            catch(error){ 
-              this.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);          
-          }
+              windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);          
+           }
+         }
+         
+         }
+         catch(error){
+          //alert('You left your testing domain, and we do not yet support cross domain testing in the same session.');
+          //windmill.remote.toggleRec();
+          windmill.ui.results.writeResult('There was a problem unbinding, must be cross domain.' + error);          
+
          }      
      }
 };
