@@ -60,8 +60,7 @@ class MozillaProfile(object):
         
         if windmill.settings['MOZILLA_CREATE_NEW_PROFILE']:
             if sys.platform == 'linux2':
-                print commands.getoutput('%s -CreateProfile "windmill %s"' % (
-                                         MOZILLA_BINARY, self.profile_path))
+                print commands.getoutput('chmod -R %s %s' % (os.getlogin(), self.profile_path))
                                          
             if os.path.exists(self.profile_path) is True:
                 shutil.rmtree(self.profile_path)
@@ -122,7 +121,6 @@ class MozillaProfile(object):
         self.user_pref('"signon.rememberSignons", false')
         self.user_pref('"dom.max_script_run_time", 20')
         
-        
     def user_pref(self, string):
         self.prefs_js_f.write('user_pref(' + string + ');\n')
         self.prefs_js_f.flush()
@@ -153,10 +151,7 @@ class MozillaBrowser(object):
         else:
             profile_path = self.profile.profile_path
 
-        if sys.platform != 'linux2':
-            self.command = [self.mozilla_bin, '-profile', profile_path]
-        else:
-            self.command = [self.mozilla_bin, '-P', 'windmill']
+        self.command = [self.mozilla_bin, '-profile', profile_path]
 
     def start(self):
 
