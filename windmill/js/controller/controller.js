@@ -529,7 +529,8 @@ windmill.controller = new function () {
         
         //Keeping the suites running 
         this.commands.setOptions = function (param_object){
-        
+            console.log(param_object);
+
             if(typeof param_object.stopOnFailure != "undefined") {
                 windmill.stopOnFailure = param_object.stopOnFailure;
             }

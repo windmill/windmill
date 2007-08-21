@@ -121,9 +121,12 @@ windmill.xhr = new function () {
                         ide.scrollTop = ide.scrollHeight;
                     }
                 }
+                
+                //Forgotten case; If the windmill.runTests is false, but we are trying to change it back to true with a command
+                //This fix runs all commands regardless  
                 //Run the action
-                //If its a user extension.. run it
-                if (windmill.runTests == true){
+                //If it's a user extension.. run it
+                if ((windmill.runTests == true) || (windmill.xhr.xhrResponse.result.method.split(".")[0] == 'commands')){
                   try {
                       if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1){
                           var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
