@@ -87,11 +87,14 @@ def run_json_test_dir(*args):
         for testdir in directory.split(','):
             run_json_test_dir(testdir)
         return
-    sys.path.insert(0, os.path.abspath(directory))
+    
     try:
+        sys.path.insert(0, os.path.abspath(directory))
         import test_conf
         test_list = test_conf.test_list
-    except:
+        sys.modules.pop(test_conf.__name__)
+        sys.path.pop(0)
+    except ImportError:
         print 'No test_conf.py for this directory, executing all test in directory'
         test_list = [test_name for test_name in os.listdir(os.path.abspath(directory)) if ( 
                      not test_name.startswith('.') and test_name.endswith('.json') )]
