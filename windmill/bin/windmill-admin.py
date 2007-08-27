@@ -40,9 +40,12 @@ import os, sys, time
 import windmill
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == 'help':
+    if len(sys.argv) is 0 or len(sys.argv) is 1 or sys.argv[1] == 'help' or sys.argv[1] == '--help':
         from windmill.bin import admin_options
-        admin_options.help()
+        if len(sys.argv) > 0:
+            admin_options.help(sys.argv[0])
+        else:
+            admin_options.help()
         sys.exit()
 
     from windmill.bin import admin_lib

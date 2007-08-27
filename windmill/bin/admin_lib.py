@@ -30,6 +30,8 @@ def process_options(argv_list):
     # This might be the hairiest code in windmill :)
     # We have a very specific way we need to parse arguments 
     # because of the way different arguments interact with each other
+    # 8/27/2007 Gawd this is ugly, i would love to refactor this but I've
+    # forgotten what it does -Mikeal
     for index in range(len(argv_list)):
         if index <= len(argv_list):
             if argv_list[index].startswith('http://'):
@@ -67,13 +69,9 @@ def process_options(argv_list):
                     admin_options.flags_dict[option]()
                     
     if action is None:
-        if len(sys.argv) is 0 or len(sys.argv) is 1:
-            return action_mapping['wx']
-        else:
-            return action_mapping['runserver']
+        return action_mapping['runserver']
     else:
         return action
-                
 
 def setup_servers(console_level=logging.INFO):
     """Setup the server and return httpd and loggers"""

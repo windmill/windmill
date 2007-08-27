@@ -74,7 +74,8 @@ class StartIE(GeneralBoolSettingToTrue):
     setting = 'START_IE'
     
 class RunPythonTests(object):
-    """Run a set of python tests. If no test file is specified the current directory is used."""
+    """Run a set of python tests. 
+        If no test file is specified the current directory is used."""
     option_names = ('t', 'test')
     setting = 'PYTHON_TEST_FRAME'
     def __call__(self, value=None):
@@ -87,17 +88,18 @@ class PDB(GeneralBoolSettingToTrue):
     setting = 'ENABLE_PDB'
     
 class BrowserDebugging(GeneralBoolSettingToTrue):
-    """Enable browser debugging. Python tests will all load in to the server at once."""
+    """Enable browser debugging. 
+        Python tests will all load in to the server at once."""
     option_names = (None, 'browserdebug')
     setting = 'BROWSER_DEBUGGING'
     
 class ContinueOnFailure(GeneralBoolSettingToTrue):
-    """Keep the browser running tests after failure"""
+    """Keep the browser running tests after failure."""
     option_names = ('c', 'continueonfailure')
     setting = 'CONTINUE_ON_FAILURE'
     
 class UseCode(GeneralBoolSettingToTrue):
-    """Use the code module rather than ipython"""
+    """Use the code module rather than ipython."""
     option_names = (None, 'usecode')
     setting = 'USECODE'
         
@@ -114,17 +116,38 @@ def process_module(module):
     module.options_dict = options_dict
     module.flags_dict = flags_dict
     
-def help():
+def help(bin_name='windmill'):
     module = sys.modules[__name__]
     from windmill.conf import global_settings
+    all_option_names = []
+    options_string = []
     for option in [getattr(module, x) for x in dir(module) if (
                    hasattr(getattr(module, x), 'option_names')) and (
                    getattr(module, x).__doc__ is not None ) ]:
+        all_option_names.append(option.option_names)
         if hasattr(option, 'setting'):
             default = ' Defaults to %s' % str(getattr(global_settings, option.setting, None))
         else:
             default = ''
-        print ' = '.join([str(option.option_names), option.__doc__]) + default
+        options_string.append('    '+'  '.join([str(option.option_names), option.__doc__]) + default)
+
+    preamble = """windmill web test automation system.
+    %s [-%s] action [option=value] [firefox] [http://www.google.com]
+    
+Available Actions:
+    shell         Enter the windmilll shell environment (modified python shell). 
+                  Uses ipython if installed. Exit using ^d
+    run_service   Run the windmill service in foreground. Kill using ^c.
+    tbox          Run the "continuous integration" mode. 
+                  Exits automatically after tests have finished.
+    wx            Run the wxPython based graphical interface for the 
+                  windmill service. Still experimental.
+    
+Available Options:""" % ( bin_name,
+                                           ''.join([ o[0] for o in all_option_names if o[0] is not None ]) 
+                                          )
+    print preamble
+    print '\n'.join(options_string)
     
 
 
