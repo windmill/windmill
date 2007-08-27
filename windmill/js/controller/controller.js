@@ -244,11 +244,11 @@ windmill.controller = new function () {
        
     //Wait function
     this.wait = function (param_object){
-        windmill.xhr.togglePauseJsonLoop();
-
+      windmill.xhr.loopState = 0;
         done = function(){
-            windmill.xhr.togglePauseJsonLoop();
-            return true;
+          windmill.xhr.loopState = 1;
+          windmill.xhr.getNext();
+          return true;
         }
         setTimeout("done()", param_object.milliseconds);
         
