@@ -60,11 +60,11 @@ while MOZILLA_PROFILE_PATH.find('-') is not -1:
     MOZILLA_PROFILE_PATH = tempfile.mkdtemp(suffix='.windmill')
 
 if PLATFORM == 'darwin':
-    firefoxApp = os.path.join('/Applications', 'Firefox.app')
+    firefoxApp = os.path.join('Applications', 'Firefox.app')
     firefoxDir = os.path.join(os.path.expanduser('~/'), firefoxApp)
 
     if not os.path.isdir(firefoxDir):
-        firefoxDir = firefoxApp
+        firefoxDir = os.path.join('/', firefoxApp)
 
     MOZILLA_DEFAULT_PROFILE = os.path.join(firefoxDir, 'Contents', 'MacOS', 'defaults', 'profile')
     MOZILLA_BINARY          = os.path.join(firefoxDir, 'Contents', 'MacOS', 'firefox-bin')
