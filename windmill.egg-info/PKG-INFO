@@ -1,10 +1,16 @@
 Metadata-Version: 1.0
 Name: windmill
-Version: 0.0.0
-Summary: UNKNOWN
-Home-page: UNKNOWN
-Author: UNKNOWN
-Author-email: UNKNOWN
-License: UNKNOWN
+Version: 0.2
+Summary: Web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.
+Home-page: http://windmill.osafoundation.org/
+Author: Open Source Applications Foundation
+Author-email: tools-dev@osafoundation.org
+License: http://www.apache.org/licenses/LICENSE-2.0
 Description: UNKNOWN
-Platform: UNKNOWN
+Platform: Any
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development :: Libraries :: Python Modules

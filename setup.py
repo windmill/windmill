@@ -12,88 +12,40 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import sys, os, copy
 from setuptools import setup
+import sys
 
-APP = 'windmill/bin/windmill-admin.py'
-DATA_FILES = ['windmill']
+desc = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.'
 
-APP_VERSION = '0.2.0'
-APP_DESC    = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.'
+PACKAGE_NAME = "windmill"
+PACKAGE_VERSION = "0.2"
 
-mikeals_build = ['/Users/mikeal/tmp/CherryPy-3.0.1/cherrypy',
-                 '/Users/mikeal/tmp/dateutil-1.1/dateutil',
-                 '/Users/mikeal/tmp/simplejson-1.7.1/simplejson',
-                 '/Users/mikeal/Documents/projects/tools/wsgi_fileserver/trunk/wsgi_fileserver',
-                 '/Users/mikeal/Documents/projects/tools/wsgi_jsonrpc/trunk/wsgi_jsonrpc',
-                 '/Users/mikeal/Documents/projects/tools/wsgi_proxy/trunk/wsgi_proxy',
-                 '/Users/mikeal/Documents/projects/tools/wsgi_xmlrpc/trunk/wsgi_xmlrpc',
-                 #'/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5',
-                 '/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/email',
-                 '/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/lib-dynload/', '/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/wx-2.8-mac-unicode/wx',
-                 ]
+setup(name=PACKAGE_NAME,
+      version=PACKAGE_VERSION,
+      description=desc,
+      author='Open Source Applications Foundation',
+      author_email='tools-dev@osafoundation.org',
+      url='http://windmill.osafoundation.org/',
+      license='http://www.apache.org/licenses/LICENSE-2.0',
+      packages=['windmill'],
+      platforms =['Any'],
+      install_requires = ['cherrypy >= 3.0.1',
+                          'simplejson',
+                          'dateutil',
+                          # All these wsgi_ libraries used to be part of windmill but are now seperate libraries.
+                          'wsgi_proxy', 
+                          'wsgi_jsonrpc',
+                          'wsgi_xmlrpc',
+                          'wsgi_fileserver',
+                          ],                          
+      classifiers=['Development Status :: 4 - Beta',
+                   'Environment :: Console',
+                   'Intended Audience :: Developers',
+                   'License :: OSI Approved :: Apache Software License',
+                   'Operating System :: OS Independent',
+                   'Topic :: Software Development :: Libraries :: Python Modules',
+                  ],
+      # -- build section -- #
+      # **extra_options
+     )
 
-if os.path.isdir('/Users/mikeal'):
-    DATA_FILES.extend(mikeals_build)
-
-for filename in copy.copy(DATA_FILES):
-    def add_subfilename(sub_filepath):
-        for item in os.listdir(sub_filepath):
-            sub = os.path.join(sub_filepath, item)
-
-            if os.path.isdir(sub) and not item.startswith('.') and sub not in DATA_FILES:
-                add_subfilename(sub)
-
-        DATA_FILES.append(sub_filepath)
-
-    add_subfilename(filename)
-
-if sys.platform == 'darwin':
-    extra_options = dict(setup_requires=['py2app'],
-                         app=[APP],
-                         # scripts=[APP, 'windmill/bin/json2python.py'],
-                         # Cross-platform applications generally expect sys.argv to
-                         # be used for opening files.
-                         options=dict(py2app=dict(argv_emulation=True, iconfile='wmicon.icns')),
-                         )
-elif sys.platform == 'win32':
-    extra_options = dict(setup_requires=['py2exe'],
-                         app=[APP],
-                         )
-else:
-    extra_options = dict(# Normally unix-like platforms will use "setup.py install"
-                         # and install the main script as such
-                         scripts=[APP],
-                         )
-
-if 'develop' in sys.argv or 'upload' in sys.argv:
-    extra_options['install_requires'] = ['cherrypy >= 3.0.1',
-                                         'simplejson',
-                                         'dateutil',
-                                         # All these wsgi_ libraries used to be part of
-                                         # windmill but are now seperate libraries.
-                                         'wsgi_proxy',
-                                         'wsgi_jsonrpc',
-                                         'wsgi_xmlrpc',
-                                         'wsgi_fileserver >= 0.2.3',
-                                        ]
-
-setup(
-    name='windmill',
-    version=APP_VERSION,
-    description=APP_DESC,
-    author='Open Source Applications Foundation',
-    author_email='windmill-dev@list.osafoundation.org',
-    url='http://windmill.osafoundation.org/trac/',
-    license='http://www.apache.org/licenses/LICENSE-2.0',
-    packages=['windmill'],
-    platforms=['Any'],
-    classifiers=['Development Status :: 4 - Beta',
-                 'Environment :: Library',
-                 'Intended Audience :: Developers',
-                 'License :: OSI Approved :: Apache Software License',
-                 'Operating System :: OS Independent',
-                 'Topic :: Software Development :: Libraries :: Python Modules',
-                ],
-    **extra_options
-)
