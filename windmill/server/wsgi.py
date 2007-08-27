@@ -45,10 +45,16 @@ def reconstruct_url(environ):
         else:
             if environ['SERVER_PORT'] != '80':
                url += ':' + environ['SERVER_PORT']
-    url += quote(environ.get('SCRIPT_NAME',''))
-    url += quote(environ.get('PATH_INFO','')).replace(url.replace(':', '%3A'), '')
+    url += environ.get('SCRIPT_NAME','')
+    url += environ.get('PATH_INFO','')
+    # Fix ;arg=value in url
+    if url.find('%3B') is not -1:
+        url, arg = url.split('%3B', 1)
+        url = ';'.join([url, arg.replace('%3D', '=')])
+    # Stick query string back in
     if environ.get('QUERY_STRING'):
         url += '?' + environ['QUERY_STRING']
+        
     environ['reconstructed_url'] = url
     return url
     
