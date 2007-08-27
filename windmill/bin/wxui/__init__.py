@@ -132,10 +132,25 @@ class Frame(wx.Frame):
 	    textLabel = wx.StaticText(self.outputPanel, -1, "  Set Log Output Level:   ",
 				      style=wx.ALIGN_LEFT)
     
+	    loglist = list(lvl for lvl in logging._levelNames.keys() if isinstance(lvl, str))
+	    
+	    def mylogsort(one, two):
+		if logging._levelNames[one] > logging._levelNames[two]: return -1
+		elif logging._levelNames[one] < logging._levelNames[two]: return 1 
+		else: return 0
+		
+	    loglist.sort(cmp=mylogsort)
+	    
+	    #removes a duplicate message
+	    try:
+		loglist.remove('WARN')
+	    except Exception:
+		"""error don't worry"""
+	    
 	    #grab the different types of levelnames from logging and use them as option in the combo box
-	    self.displayTypeBox = wx.ComboBox(self.outputPanel, -1, "DEBUG", 
+	    self.displayTypeBox = wx.ComboBox(self.outputPanel, -1, "INFO", 
 					      wx.DefaultPosition, wx.DefaultSize, 
-					      list(lvl for lvl in logging._levelNames.keys() if isinstance(lvl, str)),
+					      loglist,
 					      style=wx.CB_READONLY)                                          
     
 	    self.Bind(wx.EVT_COMBOBOX, self.OnChangeLogeLvl, self.displayTypeBox)
