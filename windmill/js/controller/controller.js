@@ -191,7 +191,8 @@ windmill.controller = new function () {
       return true;
    };   
  
-    //Assert that a specified node exists
+    // Assert that a an element's property is a particular
+    // value
     this.assertProperty = function (param_object) { 
    
      var element = this._lookupDispatch(param_object);
@@ -206,7 +207,49 @@ windmill.controller = new function () {
      }
      return false;
    };   
-  
+
+  // Assert that a specified image has actually loaded
+  // The Safari workaround results in additional requests
+  // for broken images (in Safari only) but works reliably
+  this.assertImageLoaded = function (param_object) {
+    var img = this._lookupDispatch(param_object);
+    if (!img || img.tagName != 'IMG') {
+      return false;
+    }
+    var comp = img.complete;
+    var ret = null; // Return value
+
+    // Workaround for Safari -- it only supports the
+    // complete attrib on script-created images
+    if (typeof comp == 'undefined') {
+      test = new Image();
+      // If the original image was successfully loaded,
+      // src for new one should be pulled from cache
+      test.src = img.src;
+      comp = test.complete;
+    }
+
+    // Check the complete attrib. Note the strict
+    // equality check -- we don't want undefined, null, etc.
+    // --------------------------
+    // False -- Img failed to load in IE/Safari, or is
+    // still trying to load in FF
+    if (comp === false) {
+      ret = false;
+    }
+    // True, but image has no size -- image failed to
+    // load in FF
+    else if (comp === true && img.naturalWidth == 0) {
+      ret = false;
+    }
+    // Otherwise all we can do is assume everything's
+    // hunky-dory
+    else {
+      ret = true;
+    }
+    return ret;
+  };
+
    //Type Function
    this.type = function (param_object){
    
