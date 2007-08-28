@@ -28,7 +28,7 @@ windmill.xhr = new function () {
     
     //Keep track of the loop state, running or paused
     this.loopState = 1;
-   
+    this.timeoutId = null;
     //json_call
     this.json_call   = function(version, method, params){
         this.version = version || null;
@@ -45,7 +45,9 @@ windmill.xhr = new function () {
     
     //action callback
     this.actionHandler = function(str){
-      
+        //We got here, which means xhr didn't stall
+        //clearTimeout(timeoutId);
+        
         //If the are variables passed we need to do our lex and replace
         if (str.indexOf('{$') != -1){
           str = windmill.controller._handleVariable(str); 
@@ -132,7 +134,13 @@ windmill.xhr = new function () {
                           var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
                           result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);
                       }
-                      else{  result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params); }
+                      else{  
+                        //Wait/open needs to not grab the next action immediately
+                        if ((windmill.xhr.xhrResponse.result.method == 'wait') || (windmill.xhr.xhrResponse.result.method == 'open')){
+                          windmill.xhr.loopState = 0;
+                        }
+                        result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params);
+                      }
                   }
                   catch (error) { 
                       windmill.ui.results.writeResult("<font color=\"#FF0000\">There was an error in the "+
@@ -161,7 +169,7 @@ windmill.xhr = new function () {
                         "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');   
                         //if the continue on error flag has been set by the shell.. then we just keep on going
                         if (windmill.stopOnFailure == true){
-                            windmill.xhr.togglePauseJsonLoop();
+                            windmill.xhr.loopState = 0;
                             windmill.ui.results.writeStatus("<b>Status:</b> Paused, error?...");    
                         }
                     }
@@ -175,12 +183,11 @@ windmill.xhr = new function () {
                 action_timer.write(to_write);
             }
         }
-        
         //If the loop is running make the next request    
         if (windmill.xhr.loopState != 0){
             //Sleep for a few seconds before doing the next xhr call
-            setTimeout("windmill.xhr.getNext()", 2000);
-        }    
+            setTimeout("windmill.xhr.getNext()", 2000);  
+        }
     }
       
     //Make sure we get back a confirmation
@@ -220,9 +227,17 @@ windmill.xhr = new function () {
     
     //Get the next action from the server
     this.getNext = function(){
-        var json_object = new this.json_call('1.1', 'next_action');
-        var json_string = fleegix.json.serialize(json_object)
-        fleegix.xhr.doPost(this.actionHandler, '/windmill-jsonrpc/', json_string);
+        if (windmill.xhr.loopState != 0){
+          var json_object = new this.json_call('1.1', 'next_action');
+          var json_string = fleegix.json.serialize(json_object)
+          var reqid = fleegix.xhr.doPost(this.actionHandler, '/windmill-jsonrpc/', json_string);
+        }
+        /*cancelXhr = function() { 
+          fleegix.xhr.abort(reqid); 
+          windmill.ui.results.writeResult("The service took 60+ seconds to respond, moving on.");
+          this.getNext();
+        }
+        this.timeoutId = setTimeout(cancelXhr, 60000);*/
     }
     
     //Start the json loop running
@@ -232,12 +247,12 @@ windmill.xhr = new function () {
     
     //Handle the toggle of the loop paused/running
     this.togglePauseJsonLoop = function(){
-        if (this.loopState == 1){
-            this.loopState = 0;
+        if (windmill.xhr.loopState == 1){
+            windmill.xhr.loopState = 0;
             windmill.ui.toggleLoopButtonText();
         }
         else {
-            this.loopState = 1;
+            windmill.xhr.loopState = 1;
             windmill.ui.toggleLoopButtonText();
             windmill.xhr.getNext();
         }

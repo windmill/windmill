@@ -139,17 +139,18 @@ windmill.controller = new function () {
     
     //open an url in the webapp iframe
     this.open = function (param_object) {
-        
-        
+        windmill.xhr.loopState = 0;
         webappframe = document.getElementById('webapp');
         //url = this._handleRandom(param_object.url);
         
         webappframe.src = param_object.url;
         
         //Turn off loop until the onload for the iframe restarts it
-        windmill.xhr.loopState = 0;
         //windmill.xhr.togglePauseJsonLoop();
-        return true;
+        done = function(){
+          return true;
+        }
+        setTimeout('done()', 5000);
     };
     
     
@@ -244,14 +245,15 @@ windmill.controller = new function () {
        
     //Wait function
     this.wait = function (param_object){
-      windmill.xhr.loopState = 0;
+        windmill.xhr.loopState = 0;
+        //make sure the current iteration has time to stop
         done = function(){
           windmill.xhr.loopState = 1;
           windmill.xhr.getNext();
           return true;
         }
-        setTimeout("done()", param_object.milliseconds);
         
+        setTimeout('done()', param_object.milliseconds);
     };
     
     //Initial stab at selector functionality, taken from selenium-browserbot.js

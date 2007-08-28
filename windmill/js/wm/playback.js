@@ -99,10 +99,10 @@ windmill.ui.playback = new function () {
      var json_string = fleegix.json.serialize(json_object)
      
      doCall = function(){
-       fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
+       var z = fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
      }
      
-     setTimeout('doCall()', 500);
+     setTimeout('doCall()', 1000);
   }
 
 };
