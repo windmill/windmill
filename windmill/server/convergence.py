@@ -279,6 +279,12 @@ class JSONRPCMethods(RPCMethods):
     def status_change(self, status):
         pass
         
+    def set_test_url(url):
+        windmill.settings['TEST_URL'] = url
+        windmill.server.proxy.initial_forwarding_registry = {}
+        windmill.server.proxy.forwarding_registry = {}
+        return 200
+        
     def restart_test_run(self, tests):
         self.clear_queue()
         self._test_resolution_suite.unresolved = {}
