@@ -33,7 +33,7 @@ setup(name=PACKAGE_NAME,
                           'simplejson',
                           'dateutil',
                           # All these wsgi_ libraries used to be part of windmill but are now seperate libraries.
-                          'wsgi_proxy', 
+                          'wsgi_proxy >= 0.2.2', 
                           'wsgi_jsonrpc',
                           'wsgi_xmlrpc',
                           'wsgi_fileserver',
