@@ -190,8 +190,19 @@ windmill.controller = new function () {
      }
       return true;
    };   
- 
-    // Assert that a an element's property is a particular
+   
+   //Assert that a form element contains the expected value
+   this.assertValue = function (param_object) { 
+     var n = this._lookupDispatch(param_object);
+     var validator = param_object.validator;
+     
+     if (n.value.indexOf(validator) != -1){
+      return true;
+     }
+     return false;
+   }
+   
+   // Assert that a an element's property is a particular
     // value
     this.assertProperty = function (param_object) { 
    
