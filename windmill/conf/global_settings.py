@@ -36,6 +36,7 @@ JS_PATH          = os.path.join(WINDMILL_PATH, 'js')
 TEST_URL  = 'http://www.google.com'
 TEST_FILE = None
 TEST_DIR  = None
+FORWARDING_TEST_URL = None
 
 USECODE             = False
 EXIT_ON_DONE        = False

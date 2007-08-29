@@ -41,34 +41,35 @@ class WindmillProxyApplication(object):
         """Proxy for requests to the actual http server"""
         url = urlparse(environ['reconstructed_url'])
 
-        # Do our domain change magic
-        def change_environ_domain(original_netloc, new_netloc, environ):
-            for key, value in environ.items():
-                if ( type(value) is str ) and ( value.find(original_netloc) is not -1 ):
-                     environ[key] = value.replace(original_netloc, new_netloc)
-            return environ
+        if windmill.settings['FORWARDING_TEST_URL'] is not None:
+            # Do our domain change magic
+            def change_environ_domain(original_netloc, new_netloc, environ):
+                for key, value in environ.items():
+                    if ( type(value) is str ) and ( value.find(original_netloc) is not -1 ):
+                         environ[key] = value.replace(original_netloc, new_netloc)
+                return environ
             
-        test_netloc = urlparse(windmill.settings['TEST_URL']).netloc
-        referer = environ.get('HTTP_REFERER', None)
+            test_netloc = urlparse(windmill.settings['TEST_URL']).netloc
+            referer = environ.get('HTTP_REFERER', None)
 
-        if ( url.netloc != test_netloc ):
-            initial_forwarding_registry[url.geturl().replace(url.netloc, test_netloc)] = url.netloc
-            start_response("302 Found", [('Content-Type', 'text/plain'), 
-                                         ('Location', url.geturl().replace(url.netloc, test_netloc) )])
-            logger.debug('New domain request, forwarded to '+url.geturl().replace(url.netloc, test_netloc))
-            return ['Windmill is forwarding you to a new url at the proper test domain']
+            if ( url.netloc != test_netloc ):
+                initial_forwarding_registry[url.geturl().replace(url.netloc, test_netloc)] = url.netloc
+                start_response("302 Found", [('Content-Type', 'text/plain'), 
+                                             ('Location', url.geturl().replace(url.netloc, test_netloc) )])
+                logger.debug('New domain request, forwarded to '+url.geturl().replace(url.netloc, test_netloc))
+                return ['Windmill is forwarding you to a new url at the proper test domain']
         
-        elif ( url.geturl() in initial_forwarding_registry.keys() ):
-            host_netloc = initial_forwarding_registry.pop(url.geturl())
-            forwarding_registry[url.geturl()] = host_netloc
-            environ = change_environ_domain(url.netloc, host_netloc, environ)
-            url = urlparse(url.geturl().replace(url.netloc, host_netloc))
+            elif ( url.geturl() in initial_forwarding_registry.keys() ):
+                host_netloc = initial_forwarding_registry.pop(url.geturl())
+                forwarding_registry[url.geturl()] = host_netloc
+                environ = change_environ_domain(url.netloc, host_netloc, environ)
+                url = urlparse(url.geturl().replace(url.netloc, host_netloc))
             
-        elif (referer is not None) and (referer in forwarding_registry.keys()):
-            host_netloc = forwarding_registry[referer]
-            forwarding_registry[url.geturl()] = host_netloc
-            environ = change_environ_domain(url.netloc, host_netloc, environ)
-            url = urlparse(url.geturl().replace(url.netloc, host_netloc))
+            elif (referer is not None) and (referer in forwarding_registry.keys()):
+                host_netloc = forwarding_registry[referer]
+                forwarding_registry[url.geturl()] = host_netloc
+                environ = change_environ_domain(url.netloc, host_netloc, environ)
+                url = urlparse(url.geturl().replace(url.netloc, host_netloc))
             
         # Create connection object
         try:
