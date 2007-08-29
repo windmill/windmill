@@ -133,8 +133,12 @@ windmill.controller = new function () {
     
     //After a page is done loading, continue the loop
     this.continueLoop = function (){
+      cont = function(){
         windmill.xhr.loopState = 1;
         windmill.xhr.startJsonLoop();
+      }
+      //Just making sure the page is fully loaded
+      setTimeout("cont()", 1000);
     };
     
     //open an url in the webapp iframe
@@ -200,7 +204,7 @@ windmill.controller = new function () {
       return true;
      }
      return false;
-   }
+   };
    
    // Assert that a an element's property is a particular
     // value
