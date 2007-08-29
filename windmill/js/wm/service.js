@@ -17,11 +17,11 @@ Copyright 2006, Open Source Applications Foundation
 //Functions for writing status to the UI
 /***************************************/
 windmill.service = new function () {
-    //Set the URL we are testing in the python service
-    this.setTestURL = function(){
+    //Set the URL we are starting out testing
+    this.setStartURL = function(){
       var json_object = new windmill.xhr.json_call('1.1', 'set_test_url');
       var params_obj = {};
-      params_obj.url = windmill.testingApp.location.protocol+'//'+ windmill.testingApp.location.hostname;
+      params_obj.url = window.location.protocol+'//'+ window.location.hostname;
       json_object.params = params_obj;
       var json_string = fleegix.json.serialize(json_object)
 
@@ -31,5 +31,25 @@ windmill.service = new function () {
       
       result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
       resp(result);
+    };
+    
+    //Set the URL we are testing in the python service
+    this.setTestURL = function(){
+      try{   
+        var json_object = new windmill.xhr.json_call('1.1', 'set_test_url');
+        var params_obj = {};
+        params_obj.url = windmill.testingApp.location.protocol+'//'+ windmill.testingApp.location.hostname;
+        json_object.params = params_obj;
+        var json_string = fleegix.json.serialize(json_object)
+
+        var resp = function(str){
+          return true;
+        }
+      
+        result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+        resp(result);
+      }
+      catch(er){
+      }
     };
 };

@@ -46,14 +46,26 @@ var windmill = new function () {
       //Set a variable so that windmill knows that the remote has fully loaded
       this.remoteLoaded = true;
     }
+    
+    //When the page is unloaded turn off the loop until it loads the new one
+    this.unloaded = function(){
+      windmill.xhr.loopState = 0;
+    }
+    
+    //On load setup all the listener stuff
+    //Set the listener on the testingApp on unload
     this.loaded = function(){
      windmill.ui.domexplorer.setExploreState();
      windmill.ui.recorder.setRecState();
+     try { fleegix.event.listen(windmill.testingApp, 'onunload', windmill, 'unloaded'); }
+     catch(er){}
+
      delayed = function(){
        windmill.controller.continueLoop();
        windmill.service.setTestURL();
      }
      setTimeout('delayed()', 2000);
+     
     }
     
     //windmill Options to be set

@@ -184,7 +184,7 @@ windmill.xhr = new function () {
         //If the loop is running make the next request    
         if (windmill.xhr.loopState != 0){
             //Sleep for a few seconds before doing the next xhr call
-            setTimeout("windmill.xhr.getNext()", 4000);  
+            setTimeout("windmill.xhr.getNext()", 3000);  
         }
     }
       
