@@ -32,6 +32,7 @@ var windmill = new function () {
     //The app your testing
      this.testingApp = parent.frames['webapp'];
     
+    this.remoteLoaded = false;
     this.Start = function(){
       //Index page load report
       load_timer.endTime();
@@ -41,7 +42,18 @@ var windmill = new function () {
       windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + 
       browser.current_ua + ".</b><br>");
       load_timer.write();
-
+      
+      //Set a variable so that windmill knows that the remote has fully loaded
+      this.remoteLoaded = true;
+    }
+    this.loaded = function(){
+     windmill.ui.domexplorer.setExploreState();
+     windmill.ui.recorder.setRecState();
+     delayed = function(){
+       windmill.controller.continueLoop();
+       windmill.service.setTestURL();
+     }
+     setTimeout('delayed()', 2000);
     }
     
     //windmill Options to be set

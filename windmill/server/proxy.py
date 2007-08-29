@@ -49,7 +49,7 @@ class WindmillProxyApplication(object):
                          environ[key] = value.replace(original_netloc, new_netloc)
                 return environ
             
-            test_netloc = urlparse(windmill.settings['TEST_URL']).netloc
+            test_netloc = urlparse(windmill.settings['FORWARDING_TEST_URL']).netloc
             referer = environ.get('HTTP_REFERER', None)
 
             if ( url.netloc != test_netloc ):

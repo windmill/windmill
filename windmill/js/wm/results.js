@@ -25,7 +25,13 @@ windmill.ui.results = new function () {
     }
     
     this.writeStatus = function(str){
-      windmill.remote.$("runningStatus").innerHTML = str;
+      //If the remote hasn't fully loaded, this kills the action
+      //that is trying to be run, because this code either stalls or dies
+      //this makes sure, and is set by the remote onload
+      if (windmill.remoteLoaded == true){
+        var status = windmill.remote.$("runningStatus");
+        status.innerHTML = str;
+      }
     }
     
     //Writing to the results tab

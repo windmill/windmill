@@ -279,7 +279,7 @@ class JSONRPCMethods(RPCMethods):
     def status_change(self, status):
         pass
         
-    def set_test_url(url):
+    def set_test_url(self, url):
         windmill.settings['FORWARDING_TEST_URL'] = url
         windmill.server.proxy.initial_forwarding_registry = {}
         windmill.server.proxy.forwarding_registry = {}

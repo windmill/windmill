@@ -29,6 +29,6 @@ function Load(){
         }
        } 
       
-       setTimeout("windmill.controller.continueLoop()", 7000);
+       setTimeout("windmill.controller.continueLoop()", 4000);
        
 }

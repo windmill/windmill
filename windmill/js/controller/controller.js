@@ -143,10 +143,13 @@ windmill.controller = new function () {
     
     //open an url in the webapp iframe
     this.open = function (param_object) {
-        windmill.xhr.loopState = 0;
-        webappframe = document.getElementById('webapp');
-        //url = this._handleRandom(param_object.url);
+        //We need to tell the service where we are before we
+        //head to a new page
+        windmill.service.setTestURL();
         
+        //Turn the loop off until the page loads
+        windmill.xhr.loopState = 0;
+        webappframe = document.getElementById('webapp');        
         webappframe.src = param_object.url;
         
         //Turn off loop until the onload for the iframe restarts it
@@ -460,6 +463,7 @@ windmill.controller = new function () {
        
        //Create lots of variables
        this.commands.createVariables = function(param_object){
+        
         for (var i = 0;i<param_object.variables.length;i++){
          windmill.varRegistry.addItem('{$'+param_object.variables[i].split('|')[0] +'}',param_object.variables[i].split('|')[1]);
         }
@@ -472,14 +476,10 @@ windmill.controller = new function () {
           json_object.params = params_obj;
           var json_string = fleegix.json.serialize(json_object)
     
-          var resp = function(str){
-            return true;
-          }
+          var resp = function(str){ return true; }
           
           result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-          resp(result);
-          return true;
-        
+          resp(result);        
        }
        
        //This function stores a variable and it's value in the variable registry
@@ -542,7 +542,6 @@ windmill.controller = new function () {
           resp(result);
           
           return false;
-        
        }
     
        //Give the backend a list of available controller methods

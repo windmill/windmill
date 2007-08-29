@@ -54,22 +54,20 @@ windmill.xhr = new function () {
         }
         
         windmill.xhr.xhrResponse = eval('(' + str + ')');
+        
         //If there was a legit json response
         if ( windmill.xhr.xhrResponse.error ){
-            windmill.ui.results.writeResult("There was a JSON syntax error: '" + windmill.xhr.xhrResponse.error + "'");
+          windmill.ui.results.writeResult("There was a JSON syntax error: '" + windmill.xhr.xhrResponse.error + "'");
         }
         else{
-            
             if (windmill.xhr.xhrResponse.result.method != 'defer'){
-                windmill.ui.results.writeStatus("<b>Status:</b> Running " + windmill.xhr.xhrResponse.result.method + "...");
+              windmill.ui.results.writeStatus("<b>Status:</b> Running " + windmill.xhr.xhrResponse.result.method + "...");
             }
-            else{  
-                windmill.ui.results.writeStatus("<b>Status:</b> Waiting for tests...");
-            }
+            else{ windmill.ui.results.writeStatus("<b>Status:</b> Waiting for tests..."); }
             
             //Init and start performance but not if the protocol defer
             if (windmill.xhr.xhrResponse.result.method != 'defer'){
-
+              
                 //Put on windmill main page that we are running something
                 var action_timer = new TimeObj();
                 action_timer.setName(windmill.xhr.xhrResponse.result.method);
@@ -186,7 +184,7 @@ windmill.xhr = new function () {
         //If the loop is running make the next request    
         if (windmill.xhr.loopState != 0){
             //Sleep for a few seconds before doing the next xhr call
-            setTimeout("windmill.xhr.getNext()", 2000);  
+            setTimeout("windmill.xhr.getNext()", 4000);  
         }
     }
       
