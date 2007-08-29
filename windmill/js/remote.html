@@ -106,6 +106,31 @@
 
 			}
 		}
+		
+		//Scrolling rules when using the IDE
+		//This is a pretty insane hack, description inline
+		var scroll = function(){
+				//When someone scrolls we are assuming they no longer want it to jump to the bottom
+				//So here I am turning the auto scrolling off
+				//However if they scroll back to the bottom, we want to turn auto scroll on
+				$('autoScroll').checked = false;
+
+				var ide = $('ide');
+				var a = ide.scrollTop;
+				var b = ide.scrollHeight - ide.offsetHeight + 1;
+				var c = a - b;
+				
+				//If this offset that I get from the above math is less than 4
+				//Then they are back at the bottom and we turn auto scroll back on
+				if (Math.abs(c) < 4){
+					$('autoScroll').checked = true;
+				}
+				//If not we keep auto scroll off
+				else{
+					$('autoScroll').checked = false;
+				}
+		}
+		
 	</script>
 </head>
 		
@@ -125,7 +150,7 @@
 	<div id="domExp">
 	</div>
 	
-	<div id="ide">
+	<div id="ide" onscroll="scroll();">
 		<form id="ideForm" name="ideForm">
 		</form>
 	</div>

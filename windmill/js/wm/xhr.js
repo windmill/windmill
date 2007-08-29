@@ -120,7 +120,7 @@ windmill.xhr = new function () {
                 
                     //If the settings box is checked, scroll to the bottom
                     if ( windmill.remote.$('autoScroll').checked == true){
-                        ide.scrollTop = ide.scrollHeight;
+                      ide.scrollTop = ide.scrollHeight;
                     }
                 }
                 
@@ -148,7 +148,7 @@ windmill.xhr = new function () {
                       windmill.ui.results.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + 
                       "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
                       action.style.background = '#FF9692';
-
+                      result = false;
                   }
                 }
                 else { result == true; }
