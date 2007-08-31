@@ -53,292 +53,292 @@ windmill.controller = new function () {
     this.optionLocatorFactory = new OptionLocatorFactory();
 
     
-        /*******************************
-        /* Helper functions, non user facing
-        /* Note: the getControllerMethods command above returns a list of all the user facing functions to the user
-        /* And the ones that start with an underscore are ignored in that list
-        /* So if you are adding functionality for internal use and doesnt map from json please start with _
-        /*******************************/
-        this._getDocument = function () { return windmill.testingApp.document; }
-        this._getCurrentWindow = function() { return parent; }
-        this._getTitle = function() {
-            var t = this._getDocument().title;
-            if (typeof(t) == "string") {
-                t = t.trim();
-            }
-            return t;
+    /*******************************
+    /* Helper functions, non user facing
+    /* Note: the getControllerMethods command above returns a list of all the user facing functions to the user
+    /* And the ones that start with an underscore are ignored in that list
+    /* So if you are adding functionality for internal use and doesnt map from json please start with _
+    /*******************************/
+    this._getDocument = function () { return windmill.testingApp.document; }
+    this._getCurrentWindow = function() { return parent; }
+    this._getTitle = function() {
+        var t = this._getDocument().title;
+        if (typeof(t) == "string") {
+            t = t.trim();
         }
-    
-        //Translates from the way we are passing objects to functions to the lookups
-        this._lookupDispatch = function (param_object){
-
-            var element = null;
-            //If a link was passed, lookup as link
-            if(typeof param_object.link != "undefined") {
-                element = this.findElement("link=" + param_object.link)
-            }
-        
-            //if xpath was passed, lookup as xpath
-            if(typeof param_object.xpath != "undefined") {                
-                element = this.findElement("xpath=" + param_object.xpath);
-            }
-        
-            //if id was passed, do as such
-            if(typeof param_object.id != "undefined") {
-                element = this.findElement("id=" + param_object.id)
-            }
-        
-            //if jsid was passed
-            if(typeof param_object.jsid != "undefined") {
-                var jsid;
-                eval ("jsid=" + param_object.jsid + ";");
-                element = this.findElement("id=" + jsid);
-            }
-        
-            //if name was passed
-            if(typeof param_object.name != "undefined") {
-                element = this.findElement("name=" + param_object.name)
-            }        
-            
-
-            return element;
-        };
-    
-        //Function to handle the random keyword scenario
-        this._handleVariable = function (actualValue){
-             var variables = actualValue.match(/{\$[^}]*}/g);
-                                    
-             for (var i = 0; i < variables.length; i++){
-                var variable = variables[i];
-                
-                if (windmill.varRegistry.hasKey(variable)){
-                   actualValue = actualValue.replace(variable, windmill.varRegistry.getByKey(variable));
-                }
-                //if it doesn't exist and contains the string random we create it (username or pass etc)
-                else if (variable.indexOf('random') != -1){
-                 actualValue = actualValue.replace(variable, windmill.varRegistry.addItemCreateValue(variable));
-                }
-              }
-        
-          return actualValue;
-         }
-    
-    /************************************
-    /* User facing windmill functionality
-    /************************************/
-    this.defer = function (){
-        //We may want to somehow display that the loop is being deferred but right now it was too messy in output.
-        //windmill.ui.results.writeResult('Deferring..')
-        //If we are getting defers, no tests are running.. and the playback button should be available
-        //windmill.remote.$('playback').src = 'ide/img/playback.png';
-        //console.log(windmill.remote.$('playback'));
-    };
-    
-    //After a page is done loading, continue the loop
-    this.continueLoop = function (){
-      cont = function(){
-        windmill.xhr.loopState = 1;
-        windmill.xhr.startJsonLoop();
-      }
-      //Just making sure the page is fully loaded
-      setTimeout("cont()", 1000);
-    };
-    
-    //open an url in the webapp iframe
-    this.open = function (param_object) {
-        //We need to tell the service where we are before we
-        //head to a new page
-        windmill.service.setTestURL();
-        
-        //Turn the loop off until the page loads
-        windmill.xhr.loopState = 0;
-        webappframe = document.getElementById('webapp');        
-        webappframe.src = param_object.url;
-        
-        //Turn off loop until the onload for the iframe restarts it
-        //windmill.xhr.togglePauseJsonLoop();
-        done = function(){
-          return true;
-        }
-        setTimeout('done()', 5000);
-    };
-    
-
-   //Type Function
-   this.type = function (param_object){
-   
-   var element = this._lookupDispatch(param_object);
-   if (!element){
-       return false;
-   }
-         //Get the focus on to the item to be typed in, or selected
-         windmill.events.triggerEvent(element, 'focus', false);
-         windmill.events.triggerEvent(element, 'select', true);
-         
-         //Make sure text fits in the textbox
-         var maxLengthAttr = element.getAttribute("maxLength");
-         var actualValue = param_object.text;
-         var stringValue = param_object.text;
-         
-         if (maxLengthAttr != null) {
-             var maxLength = parseInt(maxLengthAttr);
-             if (stringValue.length > maxLength) {
-                 //truncate it to fit
-                 actualValue = stringValue.substr(0, maxLength);
-             }
-         }
-         
-         //actualValue = this._handleRandom(actualValue);
-         
-         //Set the value
-         element.value = actualValue;
-         
-         // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
-         //Another wierd chrome thing?
-         windmill.events.triggerEvent(element, 'change', true);
-         
-         return true;
-   };
-    
-    //Initial stab at selector functionality, taken from selenium-browserbot.js
-    /*
-    * Select the specified option and trigger the relevant events of the element.
-    */
-    this.select = function (param_object) {
-        var element = this._lookupDispatch(param_object);
-        
-        if (!element){
-               return false;
-         }
-           
-        /*if (!("options" in element)) {
-               //throw new WindmillError("Specified element is not a Select (has no options)");
-               
-         }*/
-        
-        var locator = this.optionLocatorFactory.fromLocatorString('label=' + param_object.option);
-        
-        var optionToSelect = locator.findOption(element);
-        
-        windmill.events.triggerEvent(element, 'focus', false);
-        var changed = false;
-        for (var i = 0; i < element.options.length; i++) {
-            var option = element.options[i];
-            if (option.selected && option != optionToSelect) {
-                option.selected = false;
-                changed = true;
-            }
-            else if (!option.selected && option == optionToSelect) {
-                option.selected = true;
-                changed = true;
-            }
-        }
-
-        if (changed) {
-            windmill.events.triggerEvent(element, 'change', true);
-        }
-        
-        return true;
-    };
-
-    //Drag Drop functionality allowing functions passed to calculate cursor offsets
-    this.dragDrop = function (param_object){
-        
-       
-         var p = param_object;
-         var hash_key;
-         
-         eval ("hash_key=" + p.dragged.jsid + ";");
-         p.dragged.id = hash_key;
-         delete p.dragged.jsid;
-                 
-                function getPos(elem, evType) {
-                         // param_object.mouseDownPos or param_obj.mouseUpPos
-                         var t = evType + 'Pos';
-                         var res = [];
-                         // Explicit function for getting XY of both
-                         // start and end position for drag  start 
-                         // to be calculated from the initial pos of the
-                         // dragged, and end to be calculated from the
-                         // position of the destination
-                         if (p[t]) {
-                             var f = eval(p[t]);
-                             res = f(elem);
-                         }
-                         // Otherwise naively assume top/left XY for both
-                         // start (dragged) and end (destination)
-                         else {
-                                res = [elem.offsetLeft, elem.offsetTop];
-                         }
-           
-                        return res;
-                    }
-                    
-        
-            var dragged = this._lookupDispatch(p.dragged);
-            var dest = this._lookupDispatch(p.destination);
-            var mouseDownPos = getPos(dragged, 'mouseDown');
-            var mouseUpPos = getPos(dest, 'mouseUp');
-        
-            var webApp = parent.frames['webapp'];
-            windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
-            windmill.events.triggerMouseEvent(dragged, 'mousedown', true);
-            windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
-            windmill.events.triggerMouseEvent(dragged, 'mouseup', true);
-            windmill.events.triggerMouseEvent(dragged, 'click', true);
-            
-            return true;
-    };
-    
-    //Drag Drop functionality allowing functions passed to calculate cursor offsets
-       this.dragDropXY = function (param_object){
-
-           var p = param_object;
-           var webApp = parent.frames['webapp'];
-           windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.source[0], p.source[1]);
-           windmill.events.triggerMouseEvent(webApp.document.body, 'mousedown', true);
-           windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.destination[0], p.destination[1]);
-           windmill.events.triggerMouseEvent(webApp.document.body, 'mouseup', true);
-           windmill.events.triggerMouseEvent(webApp.document.body, 'click', true);
-
-           return true;
-       };
-       
-    //Functions for interacting with the windmill variable storage
-    this.storeURL = function(param_object){
-      var linkNode = this._lookupDispatch(param_object);
-      if (linkNode){
-       windmill.varRegistry.addItem('{$'+param_object.link +'}',linkNode.href);
-       return true;
-      }
-      else{
-        return false;
-      }
+        return t;
     }
-   
-    //Directly access mouse events
-    this.mousedown = function (param_object){
-        var mupElement = this._lookupDispatch(param_object);
-        windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  
-        
-        return true;
-    };
-    
-    this.mouseup = function (param_object){
-        var mdnElement = this._lookupDispatch(param_object);
-        windmill.events.triggerMouseEvent(mdnElement, 'mouseup', true);
-        
-        return true;
-    };
-    
-    //After the app reloads you have to re overwrite the alert function for the TestingApp
-    this.reWriteAlert = function(param_object){
-      windmill.testingApp.window.alert = function(s){
-          windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
-      };
 
-        return true;
+    //Translates from the way we are passing objects to functions to the lookups
+    this._lookupDispatch = function (param_object){
+
+        var element = null;
+        //If a link was passed, lookup as link
+        if(typeof param_object.link != "undefined") {
+            element = this.findElement("link=" + param_object.link)
+        }
+    
+        //if xpath was passed, lookup as xpath
+        if(typeof param_object.xpath != "undefined") {                
+            element = this.findElement("xpath=" + param_object.xpath);
+        }
+    
+        //if id was passed, do as such
+        if(typeof param_object.id != "undefined") {
+            element = this.findElement("id=" + param_object.id)
+        }
+    
+        //if jsid was passed
+        if(typeof param_object.jsid != "undefined") {
+            var jsid;
+            eval ("jsid=" + param_object.jsid + ";");
+            element = this.findElement("id=" + jsid);
+        }
+    
+        //if name was passed
+        if(typeof param_object.name != "undefined") {
+            element = this.findElement("name=" + param_object.name)
+        }        
+        
+
+        return element;
     };
+
+    //Function to handle the random keyword scenario
+    this._handleVariable = function (actualValue){
+         var variables = actualValue.match(/{\$[^}]*}/g);
+                                
+         for (var i = 0; i < variables.length; i++){
+            var variable = variables[i];
+            
+            if (windmill.varRegistry.hasKey(variable)){
+               actualValue = actualValue.replace(variable, windmill.varRegistry.getByKey(variable));
+            }
+            //if it doesn't exist and contains the string random we create it (username or pass etc)
+            else if (variable.indexOf('random') != -1){
+             actualValue = actualValue.replace(variable, windmill.varRegistry.addItemCreateValue(variable));
+            }
+          }
+    
+      return actualValue;
+     }
+
+  /************************************
+  /* User facing windmill functionality
+  /************************************/
+  this.defer = function (){
+      //We may want to somehow display that the loop is being deferred but right now it was too messy in output.
+      //windmill.ui.results.writeResult('Deferring..')
+      //If we are getting defers, no tests are running.. and the playback button should be available
+      //windmill.remote.$('playback').src = 'ide/img/playback.png';
+      //console.log(windmill.remote.$('playback'));
+  };
+
+  //After a page is done loading, continue the loop
+  this.continueLoop = function (){
+    cont = function(){
+      windmill.xhr.loopState = 1;
+      windmill.xhr.startJsonLoop();
+    }
+    //Just making sure the page is fully loaded
+    setTimeout("cont()", 1000);
+  };
+
+  //open an url in the webapp iframe
+  this.open = function (param_object) {
+      //We need to tell the service where we are before we
+      //head to a new page
+      windmill.service.setTestURL();
+    
+      //Turn the loop off until the page loads
+      windmill.xhr.loopState = 0;
+      webappframe = document.getElementById('webapp');        
+      webappframe.src = param_object.url;
+    
+      //Turn off loop until the onload for the iframe restarts it
+      //windmill.xhr.togglePauseJsonLoop();
+      done = function(){
+        return true;
+      }
+      setTimeout('done()', 5000);
+  };
+
+
+  //Type Function
+  this.type = function (param_object){
+
+  var element = this._lookupDispatch(param_object);
+  if (!element){
+     return false;
+  }
+       //Get the focus on to the item to be typed in, or selected
+       windmill.events.triggerEvent(element, 'focus', false);
+       windmill.events.triggerEvent(element, 'select', true);
+     
+       //Make sure text fits in the textbox
+       var maxLengthAttr = element.getAttribute("maxLength");
+       var actualValue = param_object.text;
+       var stringValue = param_object.text;
+     
+       if (maxLengthAttr != null) {
+           var maxLength = parseInt(maxLengthAttr);
+           if (stringValue.length > maxLength) {
+               //truncate it to fit
+               actualValue = stringValue.substr(0, maxLength);
+           }
+       }
+     
+       //actualValue = this._handleRandom(actualValue);
+     
+       //Set the value
+       element.value = actualValue;
+     
+       // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
+       //Another wierd chrome thing?
+       windmill.events.triggerEvent(element, 'change', true);
+     
+       return true;
+  };
+
+  //Initial stab at selector functionality, taken from selenium-browserbot.js
+  /*
+  * Select the specified option and trigger the relevant events of the element.
+  */
+  this.select = function (param_object) {
+      var element = this._lookupDispatch(param_object);
+    
+      if (!element){
+             return false;
+       }
+       
+      /*if (!("options" in element)) {
+             //throw new WindmillError("Specified element is not a Select (has no options)");
+           
+       }*/
+    
+      var locator = this.optionLocatorFactory.fromLocatorString('label=' + param_object.option);
+    
+      var optionToSelect = locator.findOption(element);
+    
+      windmill.events.triggerEvent(element, 'focus', false);
+      var changed = false;
+      for (var i = 0; i < element.options.length; i++) {
+          var option = element.options[i];
+          if (option.selected && option != optionToSelect) {
+              option.selected = false;
+              changed = true;
+          }
+          else if (!option.selected && option == optionToSelect) {
+              option.selected = true;
+              changed = true;
+          }
+      }
+
+      if (changed) {
+          windmill.events.triggerEvent(element, 'change', true);
+      }
+    
+      return true;
+  };
+
+  //Drag Drop functionality allowing functions passed to calculate cursor offsets
+  this.dragDrop = function (param_object){
+    
+   
+       var p = param_object;
+       var hash_key;
+     
+       eval ("hash_key=" + p.dragged.jsid + ";");
+       p.dragged.id = hash_key;
+       delete p.dragged.jsid;
+             
+              function getPos(elem, evType) {
+                       // param_object.mouseDownPos or param_obj.mouseUpPos
+                       var t = evType + 'Pos';
+                       var res = [];
+                       // Explicit function for getting XY of both
+                       // start and end position for drag  start 
+                       // to be calculated from the initial pos of the
+                       // dragged, and end to be calculated from the
+                       // position of the destination
+                       if (p[t]) {
+                           var f = eval(p[t]);
+                           res = f(elem);
+                       }
+                       // Otherwise naively assume top/left XY for both
+                       // start (dragged) and end (destination)
+                       else {
+                              res = [elem.offsetLeft, elem.offsetTop];
+                       }
+       
+                      return res;
+                  }
+                
+    
+          var dragged = this._lookupDispatch(p.dragged);
+          var dest = this._lookupDispatch(p.destination);
+          var mouseDownPos = getPos(dragged, 'mouseDown');
+          var mouseUpPos = getPos(dest, 'mouseUp');
+    
+          var webApp = parent.frames['webapp'];
+          windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
+          windmill.events.triggerMouseEvent(dragged, 'mousedown', true);
+          windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
+          windmill.events.triggerMouseEvent(dragged, 'mouseup', true);
+          windmill.events.triggerMouseEvent(dragged, 'click', true);
+        
+          return true;
+  };
+
+  //Drag Drop functionality allowing functions passed to calculate cursor offsets
+     this.dragDropXY = function (param_object){
+
+         var p = param_object;
+         var webApp = parent.frames['webapp'];
+         windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.source[0], p.source[1]);
+         windmill.events.triggerMouseEvent(webApp.document.body, 'mousedown', true);
+         windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.destination[0], p.destination[1]);
+         windmill.events.triggerMouseEvent(webApp.document.body, 'mouseup', true);
+         windmill.events.triggerMouseEvent(webApp.document.body, 'click', true);
+
+         return true;
+     };
+   
+  //Functions for interacting with the windmill variable storage
+  this.storeURL = function(param_object){
+    var linkNode = this._lookupDispatch(param_object);
+    if (linkNode){
+     windmill.varRegistry.addItem('{$'+param_object.link +'}',linkNode.href);
+     return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  //Directly access mouse events
+  this.mousedown = function (param_object){
+      var mupElement = this._lookupDispatch(param_object);
+      windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  
+    
+      return true;
+  };
+
+  this.mouseup = function (param_object){
+      var mdnElement = this._lookupDispatch(param_object);
+      windmill.events.triggerMouseEvent(mdnElement, 'mouseup', true);
+    
+      return true;
+  };
+
+  //After the app reloads you have to re overwrite the alert function for the TestingApp
+  this.reWriteAlert = function(param_object){
+    windmill.testingApp.window.alert = function(s){
+        windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
+    };
+
+      return true;
+  };
     
         
     /********************************************************************************
