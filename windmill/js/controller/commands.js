@@ -33,7 +33,7 @@
         
           //Send to the server
           var json_object = new windmill.xhr.json_call('1.1', 'command_result');
-          var params_obj = {"status":true, "uuid":param_object.uuid, "result":value,};
+          var params_obj = {"status":true, "uuid":param_object.uuid, "result":value };
 
           json_object.params = params_obj;
           var json_string = fleegix.json.serialize(json_object)
