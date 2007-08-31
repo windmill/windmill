@@ -29,6 +29,7 @@ windmill.xhr = new function () {
     //Keep track of the loop state, running or paused
     this.loopState = 1;
     this.timeoutId = null;
+    
     //json_call
     this.json_call   = function(version, method, params){
         this.version = version || null;
@@ -128,16 +129,16 @@ windmill.xhr = new function () {
                 //If it's a user extension.. run it
                 if ((windmill.runTests == true) || (windmill.xhr.xhrResponse.result.method.split(".")[0] == 'commands')){
                   try {
+                      //Wait/open needs to not grab the next action immediately
+                      if ((windmill.xhr.xhrResponse.result.method.split(".")[0] == 'waits') || (windmill.xhr.xhrResponse.result.method == 'open')){
+                        windmill.xhr.loopState = 0;
+                      }
                       if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1){
                           var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
-                          result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);
+                          var result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);
                       }
                       else{  
-                        //Wait/open needs to not grab the next action immediately
-                        if ((windmill.xhr.xhrResponse.result.method == 'wait') || (windmill.xhr.xhrResponse.result.method == 'open')){
-                          windmill.xhr.loopState = 0;
-                        }
-                        result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params);
+                        var result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params);
                       }
                   }
                   catch (error) { 
@@ -161,7 +162,7 @@ windmill.xhr = new function () {
 
                     //action stuff only exists if we have an action in the UI, if we do:
                     //if we had an error display in UI
-                    if (result == false){
+                    if (result != true){
                         if (typeof(action) != 'undefined'){ action.style.background = '#FF9692'; }
                         windmill.ui.results.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + 
                         "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');   

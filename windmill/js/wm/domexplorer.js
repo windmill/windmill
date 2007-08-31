@@ -56,7 +56,10 @@ windmill.ui.domexplorer = new function () {
     }
     
     this.explorerClick = function(e){
-      	windmill.remote.window.focus();
+        e.cancelBubble = true;
+        e.stopPropagation();
+        e.preventDefault();      	
+        windmill.remote.window.focus();
         //if an element in the remote has been selected
         if (windmill.ui.remote.selectedElement != null){
           var id = windmill.ui.remote.selectedElement.replace('locator', '');

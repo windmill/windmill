@@ -1,18 +1,19 @@
+
   //Wait a specified number of milliseconds
   windmill.controller.waits.sleep = function (param_object) { 
-    windmill.xhr.loopState = 0;
-    //make sure the current iteration has time to stop
     done = function(){
-      windmill.xhr.loopState = 1;
-      windmill.xhr.getNext();
+      windmill.controller.continueLoop();
       return true;
     }    
     setTimeout('done()', param_object.milliseconds);
+    return true;
   };
   
   //wait for an element to show up on the page
   //if it doesn't after a provided timeout, defaults to 20 seconds
   windmill.controller.waits.forElement = function (param_object) { 
+    _this = this;
+
     var timeout = 20000;
     var count = 0;
     var p = param_object;
@@ -22,27 +23,31 @@
     }
 
     this.lookup = function(){
-      //if we have reached the timeout
-      if (count == 20000){
+       if (count >= timeout){
+        windmill.controller.continueLoop();
         return false;
       }
-      else {
-        var n = windmill.controller._lookupDispatch(p);
-        count += 2500;
-        console.log(count);
-      }
-      check(n);
+      var n = windmill.controller._lookupDispatch(p);
+      count += 2500;
+      
+      this.check(n);
     }
     
     this.check = function(n){   
       if (!n){
-        console.log(n);
-        setTimeout('this.lookup()', 2500);
+        var x = setTimeout(function () { _this.lookup(); }, 2500);
       }
-      else { return true; }
+      else{
+        windmill.controller.continueLoop();
+        return true;
+      }
    }
    
    this.lookup();
-    
+   
+   //waits are going to wait, so I return true
+   //Optimally it would return false if it times out, so when it does return false
+   //the calling code will jump back up and process the ui accordingly
+   return true;
   };
   
