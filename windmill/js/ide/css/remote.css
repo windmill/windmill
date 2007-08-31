@@ -35,10 +35,11 @@
 }
 
 #ide {
+ position: relative;
  width:100%;
- height:85%;
+ height: 85%;
  border:1px solid #aaa;
- overflow:auto; 
+ overflow: auto; overflow-y: auto; overflow-x: hidden;
 }
 
 #ideForm {

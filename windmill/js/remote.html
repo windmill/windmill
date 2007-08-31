@@ -130,11 +130,17 @@
 					$('autoScroll').checked = false;
 				}
 		}
-		
+
+    windmill.remote.init = function () {
+      interpreterManager.initialize();
+      opener.windmill.Start();
+    };
+
+	  fleegix.event.listen(window, 'onload', windmill.remote, 'init');
 	</script>
 </head>
 		
-<body onload="javascript:interpreterManager.initialize();opener.windmill.Start();">
+<body>
 <div id="main">
 	&nbsp
 	<img border=no style="height:41px;width:40px;" src="ide/img/wmIcon.png" alt="Welcome to Windmill!">

@@ -94,20 +94,26 @@ windmill.ui.remote = new function () {
      this.getSuite = function(){
        var suite = windmill.remote.$('recordingSuite'+windmill.ui.recordSuiteNum);
        if (suite == null){
-           var ide = windmill.remote.$('ideForm');
-           suite = windmill.remote.document.createElement('div');
-           suite.id = 'recordingSuite' + windmill.ui.recordSuiteNum;
-           suite.style.width = "99%";
-           suite.style.background = "lightblue";
-           suite.style.overflow = 'hidden';
-           //suite.style.height='40px';
-           suite.style.border = '1px solid black';
-           suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
-           "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+suite.id+
-           "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+suite.id+
-           "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+suite.id+
-           "\')\">[toggle]</a></span></td></tr></table></div>";
-           windmill.remote.$('ideForm').appendChild(suite);
+          var ide = windmill.remote.$('ideForm');
+          suite = windmill.remote.document.createElement('div');
+          suite.id = 'recordingSuite' + windmill.ui.recordSuiteNum;
+          if (document.all) {
+            var vWidth = windmill.remote.fleegix.dom.getViewportWidth();
+            suite.style.width = (vWidth - 20) + 'px';
+          }
+          else {
+            suite.style.width = "100%";
+          }
+          suite.style.background = "lightblue";
+          //suite.style.overflow = 'hidden';
+          //suite.style.height='40px';
+          suite.style.border = '1px solid black';
+          suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
+          "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+suite.id+
+          "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+suite.id+
+          "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+suite.id+
+          "\')\">[toggle]</a></span></td></tr></table></div>";
+          windmill.remote.$('ideForm').appendChild(suite);
       }
       return suite;
      }
