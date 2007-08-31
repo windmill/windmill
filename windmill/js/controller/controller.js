@@ -161,6 +161,7 @@ windmill.controller = new function () {
         return true;
       }
       setTimeout('done()', 5000);
+      return true;
   };
 
 
