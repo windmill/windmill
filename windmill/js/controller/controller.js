@@ -48,6 +48,8 @@ windmill.controller = new function () {
     this.extensions           = {};
     this.commands             = {};
     this.asserts              = {};
+    this.waits                = {};
+    
     this.optionLocatorFactory = new OptionLocatorFactory();
 
     
@@ -197,19 +199,6 @@ windmill.controller = new function () {
          
          return true;
    };
-       
-    //Wait function
-    this.wait = function (param_object){
-        windmill.xhr.loopState = 0;
-        //make sure the current iteration has time to stop
-        done = function(){
-          windmill.xhr.loopState = 1;
-          windmill.xhr.getNext();
-          return true;
-        }
-        
-        setTimeout('done()', param_object.milliseconds);
-    };
     
     //Initial stab at selector functionality, taken from selenium-browserbot.js
     /*

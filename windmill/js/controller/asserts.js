@@ -1,60 +1,60 @@
-    //Currently only does one level below the provided div
-    //To make it more thorough it needs recursion to be implemented later
-    windmill.controller.asserts.text = function (param_object) { 
-        
-        var n = windmill.controller._lookupDispatch(param_object);
-        var validator = param_object.validator;
-      try{
-       if (n.innerHTML.indexOf(validator) != -1){
-         return true;
-       }
-       if (n.hasChildNodes()){
-          for(var m = n.firstChild; m != null; m = m.nextSibling) {       
-           if (m.innerHTML.indexOf(validator) != -1){
-            return true;
-           }
-           if (m.value.indexOf(validator) != -1){
-             return true;  
-           }
-          }
+  //Currently only does one level below the provided div
+  //To make it more thorough it needs recursion to be implemented later
+  windmill.controller.asserts.text = function (param_object) { 
+      
+      var n = windmill.controller._lookupDispatch(param_object);
+      var validator = param_object.validator;
+    try{
+     if (n.innerHTML.indexOf(validator) != -1){
+       return true;
+     }
+     if (n.hasChildNodes()){
+        for(var m = n.firstChild; m != null; m = m.nextSibling) {       
+         if (m.innerHTML.indexOf(validator) != -1){
+          return true;
+         }
+         if (m.value.indexOf(validator) != -1){
+           return true;  
+         }
         }
       }
-      catch(error){
-       return false;
-      } 
-       return false;
-   }; 
+    }
+    catch(error){
+     return false;
+    } 
+     return false;
+ }; 
    
-    //Assert that a specified node exists
-    windmill.controller.asserts.node = function (param_object) { 
-   
+     //Assert that a specified node exists
+  windmill.controller.asserts.node = function (param_object) { 
+ 
      var element = windmill.controller._lookupDispatch(param_object);
      if (!element){
       return false;
      }
       return true;
    };   
-   
-   //Assert that a form element contains the expected value
-   windmill.controller.asserts.value = function (param_object) { 
+ 
+  //Assert that a form element contains the expected value
+  windmill.controller.asserts.value = function (param_object) { 
      var n = windmill.controller._lookupDispatch(param_object);
      var validator = param_object.validator;
-     
+   
      if (n.value.indexOf(validator) != -1){
       return true;
      }
      return false;
    };
-   
+ 
    // Assert that a an element's property is a particular
     // value
     windmill.controller.asserts.property = function (param_object) { 
-   
+ 
      var element = windmill.controller._lookupDispatch(param_object);
      if (!element){
       return false;
      }
-     
+   
      var vArray = param_object.validator.split('|');
      var value = eval ('element.' + vArray[0]);
      if (value.indexOf(vArray[1]) != -1){

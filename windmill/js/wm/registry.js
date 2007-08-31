@@ -26,7 +26,7 @@ windmill.registry.option.push('text','url','option','validator','destination','s
 
 //Setup method registry
 windmill.registry.methods['open']           = {'locator': false, 'option': 'url' };
-windmill.registry.methods['wait']           = {'locator': false, 'option': 'milliseconds' };
+windmill.registry.methods['waits.sleep']           = {'locator': false, 'option': 'milliseconds' };
 windmill.registry.methods['click']          = {'locator': true, 'option': false };
 windmill.registry.methods['doubleClick']    = {'locator': true, 'option': false};
 windmill.registry.methods['type']           = {'locator': true, 'option': 'text'};
