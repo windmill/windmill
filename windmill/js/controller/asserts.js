@@ -1,6 +1,6 @@
   //Currently only does one level below the provided div
   //To make it more thorough it needs recursion to be implemented later
-  windmill.controller.asserts.text = function (param_object) { 
+  windmill.controller.asserts.assertText = function (param_object) { 
       
       var n = windmill.controller._lookupDispatch(param_object);
       var validator = param_object.validator;
@@ -26,7 +26,7 @@
  }; 
    
      //Assert that a specified node exists
-  windmill.controller.asserts.node = function (param_object) { 
+  windmill.controller.asserts.assertNode = function (param_object) { 
  
      var element = windmill.controller._lookupDispatch(param_object);
      if (!element){
@@ -36,7 +36,7 @@
    };   
  
   //Assert that a form element contains the expected value
-  windmill.controller.asserts.value = function (param_object) { 
+  windmill.controller.asserts.assertValue = function (param_object) { 
      var n = windmill.controller._lookupDispatch(param_object);
      var validator = param_object.validator;
    
@@ -48,7 +48,7 @@
  
    // Assert that a an element's property is a particular
     // value
-    windmill.controller.asserts.property = function (param_object) { 
+    windmill.controller.asserts.assertProperty = function (param_object) { 
  
      var element = windmill.controller._lookupDispatch(param_object);
      if (!element){
@@ -66,7 +66,7 @@
   // Assert that a specified image has actually loaded
   // The Safari workaround results in additional requests
   // for broken images (in Safari only) but works reliably
-  windmill.controller.asserts.imageLoaded = function (param_object) {
+  windmill.controller.asserts.assertImageLoaded = function (param_object) {
     var img = windmill.controller._lookupDispatch(param_object);
     if (!img || img.tagName != 'IMG') {
       return false;

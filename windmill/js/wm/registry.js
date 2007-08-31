@@ -22,22 +22,22 @@ windmill.registry = new function () {
 
 //Setup all the current methods supported
 windmill.registry.locator.push('id','link','xpath','jsid', 'name');
-windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure','showRemote', 'milliseconds');
+windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure','showRemote', 'milliseconds', 'timeout');
 
 //Setup method registry
 windmill.registry.methods['open']           = {'locator': false, 'option': 'url' };
-windmill.registry.methods['waits.sleep']           = {'locator': false, 'option': 'milliseconds' };
+windmill.registry.methods['waits.sleep']    = {'locator': false, 'option': 'milliseconds' };
 windmill.registry.methods['click']          = {'locator': true, 'option': false };
 windmill.registry.methods['doubleClick']    = {'locator': true, 'option': false};
 windmill.registry.methods['type']           = {'locator': true, 'option': 'text'};
 windmill.registry.methods['radio']          = {'locator': true, 'option': false };
 windmill.registry.methods['check']          = {'locator': true, 'option': false };
 windmill.registry.methods['select']         = {'locator': true, 'option': 'option'};
-windmill.registry.methods['asserts.property'] = {'locator': true, 'option': 'validator' };
-windmill.registry.methods['asserts.text']     = {'locator': true, 'option': 'validator' };
-windmill.registry.methods['asserts.value']     = {'locator': true, 'option': 'validator' } ;
-windmill.registry.methods['asserts.node']     = {'locator': true, 'option': false } ;
-windmill.registry.methods['asserts.imageLoaded']     = {'locator': true, 'option': false } ;
+windmill.registry.methods['asserts.assertProperty'] = {'locator': true, 'option': 'validator' };
+windmill.registry.methods['asserts.assertText']     = {'locator': true, 'option': 'validator' };
+windmill.registry.methods['asserts.assertValue']     = {'locator': true, 'option': 'validator' } ;
+windmill.registry.methods['asserts.assertNode']     = {'locator': true, 'option': false } ;
+windmill.registry.methods['asserts.assertImageLoaded']     = {'locator': true, 'option': false } ;
 windmill.registry.methods['extensions.clickLozenge']   = {'locator': true, 'option': false };
 windmill.registry.methods['cosmoDragDrop']  = {'locator': true, 'option':'destination'};
 windmill.registry.methods['setOptions']     = {'locator': false, 'option':'stopOnFailure'};
