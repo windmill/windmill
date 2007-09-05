@@ -144,17 +144,37 @@ windmill.controller.asserts.assertValue = function (param_object) {
    return false;
  };
 
- // Assert that a an element's property is a particular
-  // value
-  windmill.controller.asserts.assertProperty = function (param_object) { 
+//Assert that a provided value is selected in a select element
+windmill.controller.asserts.assertSelected = function (param_object) { 
+   var n = windmill.controller._lookupDispatch(param_object);
+   var validator = param_object.validator;
+ 
+   if (n.options[n.selectedIndex].value == validator){
+    return true;
+   }
+   return false;
+ };
+ 
+//Assert that a provided value is selected in a select element
+windmill.controller.asserts.assertChecked = function (param_object) { 
+   var n = windmill.controller._lookupDispatch(param_object);
+   var validator = param_object.validator;
+ 
+   if (n.checked == true){
+    return true;
+   }
+   return false;
+ };
 
+// Assert that a an element's property is a particular
+// value
+windmill.controller.asserts.assertProperty = function (param_object) { 
    var element = windmill.controller._lookupDispatch(param_object);
    if (!element){
     return false;
    }
- 
    var vArray = param_object.validator.split('|');
-   var value = eval ('element.' + vArray[0]);
+   var value = eval ('element.' + vArray[0]+';');
    if (value.indexOf(vArray[1]) != -1){
      return true;
    }
