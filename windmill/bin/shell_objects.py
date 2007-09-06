@@ -50,7 +50,7 @@ def run_json_test_file(*args):
             run_json_test_file(testfile)
         return
     f = open(filename)
-    test_strings = f.read().splitlines()
+    test_strings = [line for line in f.read().splitlines() if line.startswith('{')]
     jsonrpc_client.start_suite(filename.split(os.path.sep)[-1])
     jsonrpc_client.run_json_tests(test_strings)
     jsonrpc_client.stop_suite()
