@@ -49,6 +49,9 @@ PYTHON_TEST_FRAME = False
 PYTHON_TEST_FILE  = None
 
 # Browser prefs
+MOZILLA_COMMAND = None
+SAFARI_BINARY = None
+SAFARI_COMMAND = None
 
 # Mozilla prefs
 MOZILLA_CREATE_NEW_PROFILE     = True
@@ -69,6 +72,8 @@ if PLATFORM == 'darwin':
 
     MOZILLA_DEFAULT_PROFILE = os.path.join(firefoxDir, 'Contents', 'MacOS', 'defaults', 'profile')
     MOZILLA_BINARY          = os.path.join(firefoxDir, 'Contents', 'MacOS', 'firefox-bin')
+    SAFARI_BINARY           = '/Applications/Safari.app/Contents/MacOS/Safari'
+    SAFARI_COMMAND          = [SAFARI_BINARY, TEST_URL]
 
 elif sys.platform == 'linux2':
     firefoxBin = findInPath('firefox')
@@ -78,6 +83,8 @@ elif sys.platform == 'linux2':
 
     if os.path.isdir('/usr/share/firefox/defaults/profile'):
         MOZILLA_DEFAULT_PROFILE = '/usr/share/firefox/defaults/profile'
+    
+    MOZILLA_COMMAND = [MOZILLA_BINARY, TEST_URL+'/windmill-serv/start.html']
 
 elif os.name == 'nt' or sys.platform == 'cygwin':
     IE_BINARY  = findInPath('iexplore')

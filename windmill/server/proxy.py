@@ -41,7 +41,9 @@ class WindmillProxyApplication(object):
         """Proxy for requests to the actual http server"""
         url = urlparse(environ['reconstructed_url'])
 
-        if windmill.settings['FORWARDING_TEST_URL'] is not None:
+        if windmill.settings['FORWARDING_TEST_URL'] is not None and (
+           not url.netloc.starswith('localhost') ) and (
+           not url.netloc.startswith('127.0.0.1') ):
             # Do our domain change magic
             def change_environ_domain(original_netloc, new_netloc, environ):
                 for key, value in environ.items():
@@ -81,13 +83,11 @@ class WindmillProxyApplication(object):
             logger.exception('Could not Connect')
             return ['<H1>Could not connect</H1>']
 
-
         # Read in request body if it exists    
         body = None
         if environ.get('CONTENT_LENGTH'):
             length = int(environ['CONTENT_LENGTH'])
             body = environ['wsgi.input'].read(length)
-
 
         # Build headers
         headers = {}

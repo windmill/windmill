@@ -35,11 +35,15 @@ def ipfw_remove_transparent_proxy():
 			commands.getoutput(cmd)
 			cmd = 'sudo ipfw delete'
 			assert commands.getoutput(cmd) == ''			
+
+SAFARI_COMMAND = windmill.settings['SAFARI_COMMAND']
+SAFARI_BINARY = windmill.settings['SAFARI_BINARY']
+TEST_URL = windmil.settings['TEST_URL']			
 			
 class Safari(object):
 	
-	def __init__(self, safari_binary, test_url):
-		
+	def __init__(self, safari_binary=SAFARI_BINARY, test_url=TEST_URL, command=SAFARI_COMMAND):
 		self.safari_binary = safari_binary
 		self.test_url = test_url
+		self.command = command
 

@@ -35,7 +35,7 @@ else:
 MOZILLA_PROFILE_PATH = windmill.settings['MOZILLA_PROFILE_PATH']
 MOZILLA_DEFAULT_PROFILE = windmill.settings['MOZILLA_DEFAULT_PROFILE']
 MOZILLA_BINARY = windmill.settings['MOZILLA_BINARY']
-
+MOZILLA_COMMAND = windmill.settings['MOZILLA_COMMAND']
 
 def setpgid_preexec_fn():
     os.setpgid(0, 0)
@@ -150,8 +150,11 @@ class MozillaBrowser(object):
             profile_path = convertPath(self.profile.profile_path)
         else:
             profile_path = self.profile.profile_path
-
-        self.command = [self.mozilla_bin, '-profile', profile_path]
+            
+        if MOZILLA_COMMAND is None:
+            self.command = [self.mozilla_bin, '-profile', profile_path]
+        else:
+            self.command = MOZILLA_COMMAND
 
     def start(self):
 
