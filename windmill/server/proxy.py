@@ -116,7 +116,7 @@ class WindmillProxyApplication(object):
         except:
             # We need extra exception handling in the case the server fails in mid connection, it's an edge case but I've seen it
             start_response("501 Gateway error", [('Content-Type', 'text/html')])
-            logger.exception('Could not Connect')
+            logger.info('Could not fullfill proxy request to %s' % url.geturl())
             return ['<H1>Could not connect</H1>']
 
         response = connection.getresponse()
