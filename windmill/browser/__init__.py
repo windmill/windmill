@@ -18,15 +18,17 @@ import webbrowser
 windmill.browser_registry = {}
 
 def get_firefox_controller():
-    
     import firefox
     profile = firefox.MozillaProfile()
-    
     browser = firefox.MozillaBrowser(profile)
     return browser
     
 def get_ie_controller():
     import ie
     browser = ie.InternetExplorer()
+    return browser
     
+def get_safari_controller():
+    import safari
+    browser = safari.Safari()
     return browser

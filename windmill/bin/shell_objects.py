@@ -43,6 +43,12 @@ def start_ie():
     windmill.settings['controllers'].append(controller)
     return controller
     
+def start_safari():
+    controller = windmill.browser.get_safari_controller()
+    controller.start()
+    windmill.settings['controllers'].append(controller)
+    return controller
+    
 def run_json_test_file(*args):
     filename = ','.join(args)
     if filename.find(',') is not -1:
