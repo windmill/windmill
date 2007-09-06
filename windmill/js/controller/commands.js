@@ -149,13 +149,13 @@
 
   windmill.controller.commands.jsTests = function (paramObj) {
     console.log(windmill.controller.asserts);
-    var tests = paramObj.tests;
-    if (!tests.length) {
+    var testFiles = paramObj.tests;
+    if (!testFiles.length) {
       throw('No JavaScript tests to run.');
     }
     var _j = windmill.jsTest;
     windmill.controller.stopLoop();
-    if (_j.run(tests)) {
+    if (_j.run(testFiles)) {
       var s = '';
       s += 'Number of tests run: ' + _j.testCount + '\n';
       s += 'Number of tests failures: ' + _j.testFailureCount + '\n';

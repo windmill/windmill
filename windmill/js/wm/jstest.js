@@ -57,9 +57,10 @@ windmill.jsTest = new function () {
   this.doTestInit = function(initPath) {
       var str = fleegix.xhr.doReq({ url: initPath,
         async: false });
-      eval(str);
-      if (typeof testOrder != 'undefined') {
-        this.testOrder = testOrder;
+      window.eval.apply(window, [str]);
+      if (typeof window.testOrder != 'undefined') {
+        this.testOrder = window.testOrder;
+        delete window.testOrder;
       }
       return true;
   };
@@ -85,6 +86,7 @@ windmill.jsTest = new function () {
         var fail = new windmill.jsTest.TestFailure(t, e);
         this.testFailures.push(fail);
       }
+      delete window[t];
     }
     this.testCount = order.length;
     this.testFailureCount = this.testFailures.length;
