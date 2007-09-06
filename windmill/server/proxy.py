@@ -42,7 +42,7 @@ class WindmillProxyApplication(object):
         url = urlparse(environ['reconstructed_url'])
 
         if windmill.settings['FORWARDING_TEST_URL'] is not None and (
-           not url.netloc.starswith('localhost') ) and (
+           not url.netloc.startswith('localhost') ) and (
            not url.netloc.startswith('127.0.0.1') ):
             # Do our domain change magic
             def change_environ_domain(original_netloc, new_netloc, environ):
