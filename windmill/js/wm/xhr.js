@@ -50,7 +50,7 @@ windmill.xhr = new function () {
         //clearTimeout(timeoutId);
         
         //If the are variables passed we need to do our lex and replace
-        if (str.indexOf('{$') != -1){
+        if ((str.indexOf('{$') != -1) && (windmill.runTests == true)){
           str = windmill.controller._handleVariable(str); 
         }
         
@@ -156,8 +156,8 @@ windmill.xhr = new function () {
                 action_timer.endTime();
                 var to_write = fleegix.json.serialize(windmill.xhr.xhrResponse.result);
 
-                //Send the report if its not in the commands namespace, we only call report for test actions
-                if(windmill.xhr.xhrResponse.result.method.split(".")[0] != 'commands'){
+                //Send the report if it's not in the commands namespace, we only call report for test actions
+                if ((windmill.xhr.xhrResponse.result.method.split(".")[0] != 'commands') && (windmill.runTests == true)){
                     windmill.xhr.sendReport(windmill.xhr.xhrResponse.result.method, result, action_timer);
 
                     //action stuff only exists if we have an action in the UI, if we do:
