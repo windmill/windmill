@@ -96,32 +96,29 @@ HTTPConnection = httplib.HTTPConnection
 WindmillProxyApplication = proxy.WindmillProxyApplication
 WindmillProxyApplication.ConnectionClass = HTTPConnection            
 
+add_namespace = None
 
 class WindmillChooserApplication(object):
     """Application to handle choosing the proper application to handle each request"""
-    def __init__(self, windmill_serv_app, windmill_jsonrpc_app, windmill_xmlrpc_app, windmill_proxy_app):
-        self.windmill_serv_app = windmill_serv_app
-        self.windmill_jsonrpc_app = windmill_jsonrpc_app
-        self.windmill_xmlrpc_app = windmill_xmlrpc_app
-        self.windmill_proxy_app = windmill_proxy_app
+    def __init__(self, apps, proxy):
+        self.namespaces = dict([ (arg.ns, arg) for arg in apps ])
+        self.proxy = proxy
+        
+    def add_namespace(self, name, application):
+        self.namespaces[name] = application
 
     def handler(self, environ, start_response):
         """Windmill app chooser"""
         
         reconstruct_url(environ)
         
-        if environ['PATH_INFO'].find('/windmill-serv/') is not -1:
-            logger.debug('dispatching request %s to WindmillServApplication' % environ['reconstructed_url'])
-            return self.windmill_serv_app(environ, start_response)
-        elif environ['PATH_INFO'].find('/windmill-jsonrpc/') is not -1:
-            logger.debug('dispatching request %s to WindmillJSONRPCApplication' % environ['reconstructed_url'])
-            return self.windmill_jsonrpc_app(environ, start_response)
-        elif environ['PATH_INFO'].find('/windmill-xmlrpc/') is not -1:
-            logger.debug('dispatching request %s to WindmillXMLRPCApplication' % environ['reconstructed_url'])
-            return self.windmill_xmlrpc_app(environ, start_response)
-        else:
-            logger.debug('dispatching request %s to WindmillProxyApplication' % reconstruct_url(environ))
-            return self.windmill_proxy_app(environ, start_response)
+        for key in self.namespaces.keys():
+            if environ['PATH_INFO'].find('/'+key+'/') is not -1:
+                logger.debug('dispatching request %s to %s' % (environ['reconstructed_url'], key))
+                return self.namespaces[key](environ, start_response)
+
+        logger.debug('dispatching request %s to WindmillProxyApplication' % reconstruct_url(environ))
+        return self.proxy(environ, start_response)
             
     def __call__(self, environ, start_response):
         return self.handler(environ, start_response)
@@ -145,8 +142,14 @@ def make_windmill_server(http_port=None, js_path=None):
     windmill_proxy_app = WindmillProxyApplication()
     windmill_xmlrpc_app =  wsgi_xmlrpc.WSGIXMLRPCApplication(instance=xmlrpc_methods_instance)
     windmill_jsonrpc_app = wsgi_jsonrpc.WSGIJSONRPCApplication(instance=jsonrpc_methods_instance)
-    windmill_chooser_app = WindmillChooserApplication(windmill_serv_app, windmill_jsonrpc_app,
-                                                      windmill_xmlrpc_app, windmill_proxy_app)
+    windmill_serv_app.ns = 'windmill-serv'
+    windmill_xmlrpc_app.ns = 'windmill-xmlrpc'
+    windmill_jsonrpc_app.ns = 'windmill-jsonrpc'
+    windmill_chooser_app = WindmillChooserApplication(apps=[windmill_serv_app, windmill_jsonrpc_app,
+                                                      windmill_xmlrpc_app], proxy=windmill_proxy_app)
+    
+    global add_namespace
+    add_namespace = windmill_chooser_app.add_namespace
     
     import cherrypy
     httpd = cherrypy.wsgiserver.CherryPyWSGIServer(('', http_port), windmill_chooser_app, server_name='windmill-http')

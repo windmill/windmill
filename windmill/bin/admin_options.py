@@ -82,6 +82,14 @@ class RunPythonTests(object):
         windmill.settings[self.setting] = True
         windmill.settings['PYTHON_TEST_FILE'] = value
 
+class RunJavascriptTest(object):
+    """Run a directory of javascript tests.
+        javascript tests use the unittest framework for test ordering and exclusions."""
+    option_names = (None, 'jstests')
+    setting = 'JAVASCRIPT_TEST_DIR'
+    def __call__(self, value):
+        windmill.settings[self.setting] = value
+
 class PDB(GeneralBoolSettingToTrue):
     """Enable pdb debugging when running python tests."""
     option_names = ('p', 'pdb')

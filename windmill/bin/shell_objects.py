@@ -80,6 +80,18 @@ def load_json_test_dir(filename):
     run_json_test_dir(filename)
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
     
+def load_js_tests(dirname):
+    # Mount the fileserver application for tests
+    from wsgi_fileserver import WSGIFileServerApplication
+    application = WSGIFileServerApplication(root_path=os.path.abspath(dirname), mount_point='/windmill-jstest/')
+    from windmill.server import wsgi
+    wsgi.add_namespace('windmill-jstest', application)
+    # Build list of files and send to IDE
+    base_url = windmill.settings['TEST_URL']+'/windmill-jstest/'
+    xmlrpc_client.add_command({'method':'commands.jsTests', 
+                               'params':{'tests':[base_url+f for f in os.listdir(dirname) if f.endswith('.js') ]}})
+    
+    
 def run_json_test_dir(*args):
     # Try to import test_conf
     directory = ','.join(args)

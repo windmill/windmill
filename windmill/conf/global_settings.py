@@ -48,6 +48,8 @@ START_FIREFOX       = False
 PYTHON_TEST_FRAME = False
 PYTHON_TEST_FILE  = None
 
+JAVASCRIPT_TEST_DIR = None
+
 # Browser prefs
 MOZILLA_COMMAND = None
 SAFARI_BINARY = None

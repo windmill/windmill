@@ -106,6 +106,20 @@ class TestResolutionSuite(object):
                 self.result_processor.failure(test, debug=debug)
             elif result is True:
                 self.result_processor.success(test, debug=debug)
+    
+    def report_without_resolve(self, result, uuid, starttime, endtime, suite_name, debug=None):
+        test = {'result':result, 'uuid':uuid, 'starttime':starttime, 'endtime':endtime, 
+                'suite_name':suite_name, 'debug':debug}
+        if result is False:
+            test_results_logger.error('Test Failue in test %s' % test)
+        elif result is True:
+            test_results_logger.debug('Test Success in test %s' % test)
+    
+        if self.result_processor is not None:
+            if result is False:
+                self.result_processor.failure(test, debug=debug)
+            elif result is True:
+                self.result_processor.success(test, debug=debug)
             
     def start_suite(self, suite_name):
         self.current_suite = suite_name
@@ -271,6 +285,10 @@ class JSONRPCMethods(RPCMethods):
     def report(self, uuid, result, starttime, endtime, debug=None):
         """Report fass/fail for a test"""
         self._test_resolution_suite.resolve(result, uuid, starttime, endtime, debug)
+        return 200
+        
+    def report_without_resolve(self, uuid, result, starttime, endtime, suite_name, debug=None):
+        self._test_resolution_suite.report_without_resolve(result, uuid, starttime, endtime, suite_name, debug)
         return 200
         
     def command_result(self, status, uuid, result):
