@@ -284,8 +284,7 @@ windmill.controller.asserts.AssertFactory = new function () {
     else {
       var message = meth + ' -- ' +
         createErrMsg(asrt.errMsg, args);
-      //throw new windmill.controller.asserts.WindmillAssertException(comment, message);
-      return false;
+      throw new windmill.controller.asserts.WindmillAssertException(comment, message);
     }
   };
 };

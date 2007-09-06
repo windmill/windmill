@@ -146,3 +146,27 @@
     resp(result);
     
   }
+
+  windmill.controller.commands.jsTests = function (paramObj) {
+    console.log(windmill.controller.asserts);
+    var tests = paramObj.tests;
+    if (!tests.length) {
+      throw('No JavaScript tests to run.');
+    }
+    var _j = windmill.jsTest;
+    windmill.controller.stopLoop();
+    if (_j.run(tests)) {
+      var s = '';
+      s += 'Number of tests run: ' + _j.testCount + '\n';
+      s += 'Number of tests failures: ' + _j.testFailureCount + '\n';
+      s += 'Test failures' + '\n';
+      var fail = _j.testFailures;
+      for (var i = 0; i < fail.length; i++) {
+        s += fail[i].message + '\n';
+      }
+      console.log(s);
+      windmill.controller.continueLoop();
+    }
+  };
+
+

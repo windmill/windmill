@@ -143,6 +143,9 @@ windmill.controller = new function () {
     //Just making sure the page is fully loaded
     setTimeout("cont()", 1000);
   };
+  this.stopLoop = function () {
+    windmill.xhr.loopState = 0;
+  };
 
   //open an url in the webapp iframe
   this.open = function (param_object) {
