@@ -148,7 +148,6 @@
   }
 
   windmill.controller.commands.jsTests = function (paramObj) {
-    console.log(windmill.controller.asserts);
     var testFiles = paramObj.tests;
     if (!testFiles.length) {
       throw('No JavaScript tests to run.');

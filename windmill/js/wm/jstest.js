@@ -23,6 +23,7 @@ windmill.jsTest = new function () {
   this.testCount = 0;
   this.testFailureCount = 0;
 
+  // Initialize everything to starting vals
   this.init = function () {
     this.tests = null;
     this.testOrder = null;
@@ -30,6 +31,7 @@ windmill.jsTest = new function () {
     this.testCount = 0;
     this.testFailureCount = 0;
   }
+  // Main function to run a directory of JS tests
   this.run = function (tests) {
     this.init();
     this.doSetup(tests);
@@ -37,6 +39,8 @@ windmill.jsTest = new function () {
     this.runTests();
     return true;
   };
+  // Pull out the init file from the list of files
+  // if there is one
   this.doSetup = function (tests) {
     var initIndex = null;
     for (var i = 0; i < tests.length; i++) {
@@ -54,22 +58,29 @@ windmill.jsTest = new function () {
       }
     }
   };
+  // Run any init code in the init file, and grab
+  // the ordered list of tests to run
   this.doTestInit = function(initPath) {
       var str = fleegix.xhr.doReq({ url: initPath,
         async: false });
+      // Eval in window scope
       window.eval.apply(window, [str]);
       if (typeof window.testOrder != 'undefined') {
         this.testOrder = window.testOrder;
+        // Clean up after ourselves 
         delete window.testOrder;
       }
       return true;
   };
+  // Grab the contents of the test files, and eval
+  // them in window scope
   this.loadTests = function () {
     var tests = this.tests;
     for (var i = 0; i < tests.length; i++) {
       var path = tests[i];
       var str = fleegix.xhr.doReq({ url: path,
         async: false });
+      // Eval in window scope
       window.eval.apply(window, [str]);
     }
     return true;
@@ -77,15 +88,20 @@ windmill.jsTest = new function () {
   this.runTests = function () {
     var order = this.testOrder;
     for (var i = 0; i < order.length; i++) {
+      // Get the test name
       var t = order[i];
+      // Run the test
       try {
-        console.log('Running ' + t + ' ...');
+        //console.log('Running ' + t + ' ...');
         window[t]();
       }
+      // For each failure, create a TestFailure obj, add
+      // to the failures list
       catch (e) {
         var fail = new windmill.jsTest.TestFailure(t, e);
         this.testFailures.push(fail);
       }
+      // Clean up after ourselves
       delete window[t];
     }
     this.testCount = order.length;
@@ -95,6 +111,10 @@ windmill.jsTest = new function () {
 };
 
 windmill.jsTest.TestFailure = function (testName, errObj) {
+  // Failure message will contain:
+  // 1. Name of the test, 2. Optional error comment from
+  // the failed assert, and 3. Error message from the
+  // failed assert
   function getMessage() {
     var msg = '';
     msg += testName + ': ';
