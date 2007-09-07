@@ -17,7 +17,7 @@ Copyright 2007, Open Source Applications Foundation
 var jum = windmill.controller.asserts;
 
 windmill.jsTest = new function () {
-  this.tests = null;
+  this.testFiles = null;
   this.testOrder = null;
   this.testFailures = [];
   this.testCount = 0;
@@ -25,7 +25,7 @@ windmill.jsTest = new function () {
 
   // Initialize everything to starting vals
   this.init = function () {
-    this.tests = null;
+    this.testFiles = null;
     this.testOrder = null;
     this.testFailures = [];
     this.testCount = 0;
@@ -52,7 +52,7 @@ windmill.jsTest = new function () {
     if (typeof initIndex == 'number') {
       var initPath = tests[initIndex];
       tests.splice(initIndex, 1);
-      this.tests = tests;
+      this.testFiles = tests;
       if (this.doTestInit(initPath)) {
         return true;
       }
@@ -65,17 +65,17 @@ windmill.jsTest = new function () {
         async: false });
       // Eval in window scope
       window.eval.apply(window, [str]);
-      if (typeof window.testOrder != 'undefined') {
-        this.testOrder = window.testOrder;
-        // Clean up after ourselves 
-        delete window.testOrder;
-      }
       return true;
+  };
+  // Called from the eval of initialize.js,
+  // registers all the tests to be run, in order
+  this.registerTests = function (arr) {
+    this.testOrder = arr;
   };
   // Grab the contents of the test files, and eval
   // them in window scope
   this.loadTests = function () {
-    var tests = this.tests;
+    var tests = this.testFiles;
     for (var i = 0; i < tests.length; i++) {
       var path = tests[i];
       var str = fleegix.xhr.doReq({ url: path,
@@ -87,22 +87,40 @@ windmill.jsTest = new function () {
   };
   this.runTests = function () {
     var order = this.testOrder;
+    var arr = null; // parseTestName recurses through this
+    var p = null; // Appended to by parseTestName
+    var testName = '';
+    var testFunc = null;
+    var parseTestName = function (n) {
+      p = !n ? window : p[n];
+      return arr.length ? parseTestName(arr.shift()) : p;
+    };
     for (var i = 0; i < order.length; i++) {
       // Get the test name
-      var t = order[i];
+      testName = order[i];
+      // Split into array of string keys keys on dot-properties
+      arr = testName.split('.');
+      // call parseTestName recursively to append each
+      // property/key onto the window obj from the array
+      // 'foo.bar.baz' => arr = ['foo', 'bar', 'baz']
+      // parseTestName:
+      // p = window['foo'] =>
+      // p = window['foo']['bar'] =>
+      // p = window['foo']['bar']['baz']
+      testFunc = parseTestName();
       // Run the test
       try {
-        //console.log('Running ' + t + ' ...');
-        window[t]();
+        //console.log('Running ' + testName + ' ...');
+        testFunc();
       }
       // For each failure, create a TestFailure obj, add
       // to the failures list
       catch (e) {
-        var fail = new windmill.jsTest.TestFailure(t, e);
+        var fail = new windmill.jsTest.TestFailure(testName, e);
         this.testFailures.push(fail);
       }
       // Clean up after ourselves
-      delete window[t];
+      delete testFunc;
     }
     this.testCount = order.length;
     this.testFailureCount = this.testFailures.length;
