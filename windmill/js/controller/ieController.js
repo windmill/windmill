@@ -30,9 +30,8 @@ windmill.controller.what = function() {
   windmill.controller.click = function(param_object){
         
          var element = this._lookupDispatch(param_object);
-         if (!element){
-             
-                return false;
+         if (!element){ 
+            return false;
          }
           // Trigger the event.
             // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
@@ -43,22 +42,18 @@ windmill.controller.what = function() {
          if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
              windmill.xhr.loopState = 0;
          }
-         
          return true;
   };
   
   //there is a problem with checking via click in safari
   windmill.controller.check = function(param_object){
-
-      return windmill.controller.click(param_object);
-
+    return windmill.controller.click(param_object);
   }
 
   //Radio buttons are even WIERDER in safari, not breaking in FF
   windmill.controller.radio = function(param_object){
       //var element = this._lookupDispatch(param_object);
       return windmill.controller.click(param_object);
-
   }
   
   //double click for ie, needs to be tested
@@ -68,18 +63,15 @@ windmill.controller.what = function() {
          if (!element){
                 return false;
          }
-
          windmill.events.triggerEvent(element, 'focus', false);
 
            // Trigger the mouse event.
            //windmill.events.triggerMouseEvent(element, 'dblclick', true, clientX, clientY);
-           windmill.events.triggerMouseEvent(element, 'dblclick', true);
-          
+           windmill.events.triggerMouseEvent(element, 'dblclick', true);   
          /* if (this.windowClosed()) {
                return;
            }*/
-           windmill.events.triggerEvent(element, 'blur', false);
-           
+           windmill.events.triggerEvent(element, 'blur', false);       
         return true;
   };
  

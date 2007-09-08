@@ -30,7 +30,7 @@ windmill.ui.results = new function () {
       //this makes sure, and is set by the remote onload
       if (windmill.remoteLoaded == true){
         var status = windmill.remote.$("runningStatus");
-        status.innerHTML = str;
+        status.innerHTML = '<b>Status:</b> '+str;
       }
     }
     

@@ -35,14 +35,14 @@ windmill.xhr = new function () {
         this.version = version || null;
         this.method  = method || null;
         this.params  = params || [];
-    }
+    };
 
      this.toggleCollapse = function(id){
         if (windmill.remote.document.getElementById(id).style.height == '18px'){
             windmill.remote.document.getElementById(id).style.height = '';
         }
         else{ windmill.remote.document.getElementById(id).style.height = '18px'; }            
-    }
+    };
     
     //action callback
     this.actionHandler = function(str){
@@ -62,9 +62,9 @@ windmill.xhr = new function () {
         }
         else{
             if (windmill.xhr.xhrResponse.result.method != 'defer'){
-              windmill.ui.results.writeStatus("<b>Status:</b> Running " + windmill.xhr.xhrResponse.result.method + "...");
+              windmill.ui.results.writeStatus("Running " + windmill.xhr.xhrResponse.result.method + "...");
             }
-            else{ windmill.ui.results.writeStatus("<b>Status:</b> Waiting for tests..."); }
+            else{ windmill.ui.results.writeStatus("Waiting for tests..."); }
             
             //Init and start performance but not if the protocol defer
             if (windmill.xhr.xhrResponse.result.method != 'defer'){
@@ -169,7 +169,7 @@ windmill.xhr = new function () {
                         //if the continue on error flag has been set by the shell.. then we just keep on going
                         if (windmill.stopOnFailure == true){
                             windmill.xhr.loopState = 0;
-                            windmill.ui.results.writeStatus("<b>Status:</b> Paused, error?...");    
+                            windmill.ui.results.writeStatus("Paused, error?...");    
                         }
                     }
                     else {
@@ -187,42 +187,22 @@ windmill.xhr = new function () {
             //Sleep for a few seconds before doing the next xhr call
             setTimeout("windmill.xhr.getNext()", 3000);  
         }
-    }
-      
-    //Make sure we get back a confirmation
-    this.reportHandler = function(str){
-        response = eval('(' + str + ')');
-        
-        if (!response.result == 200){
-            windmill.ui.results.writeResult('Error: Report receiving non 200 response.');
-        }
-    }
-    
+    };
+          
     //Send the report
     this.sendReport = function(method, result, timer){
-        
-        //Get the result into a string
+        var reportHandler = function(str){
+          response = eval('(' + str + ')');
+          if (!response.result == 200){ windmill.ui.results.writeResult('Error: Report receiving non 200 response.'); }
+        }
         var result_string = fleegix.json.serialize(windmill.xhr.xhrResponse.result)
-        
-        //Append the results of the test run
-        var object_string = '{"result": '+result+',"uuid": "'+ windmill.xhr.xhrResponse.result.params.uuid +'", "starttime":"'+ timer.getStart() + '", "endtime":"'+ timer.getEnd() +'"}';
-        //var object_string = '{"test":'+ result_string + ',"uuid": "", "starttime":"'+ timer.getStart() + '", "endtime":"'+ timer.getEnd() +'"}';
-        //Turn this into an object
-        //console.log(object_string);
-        var test_obj = eval('(' + object_string + ')');
-        
-        //Create the json call object
+        var test_obj = {"result":result,"uuid": windmill.xhr.xhrResponse.result.params.uuid,"starttime":timer.getStart(),"endtime":timer.getEnd() };        
         var json_object = new this.json_call('1.1', 'report');
-        
-        //Set the params
         json_object.params = test_obj;
-        
-        //Serialze the whole thing
-        var json_string = fleegix.json.serialize(json_object);
-       
+        var json_string = fleegix.json.serialize(json_object);       
         //Actually send the report
-        fleegix.xhr.doPost(this.reportHandler, '/windmill-jsonrpc/', json_string);
-    }
+        fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', json_string);
+    };
     
     //Get the next action from the server
     this.getNext = function(){
@@ -237,12 +217,12 @@ windmill.xhr = new function () {
           this.getNext();
         }
         this.timeoutId = setTimeout(cancelXhr, 60000);*/
-    }
+    };
     
     //Start the json loop running
     this.startJsonLoop = function(){
         this.getNext();
-    }
+    };
     
     //Handle the toggle of the loop paused/running
     this.togglePauseJsonLoop = function(){
@@ -255,5 +235,5 @@ windmill.xhr = new function () {
             windmill.ui.toggleLoopButtonText();
             windmill.xhr.getNext();
         }
-    }    
+    };   
 }

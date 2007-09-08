@@ -4,7 +4,6 @@
  
  //Create lots of variables
  windmill.controller.commands.createVariables = function(param_object){
-  
   for (var i = 0;i<param_object.variables.length;i++){
    windmill.varRegistry.addItem('{$'+param_object.variables[i].split('|')[0] +'}',param_object.variables[i].split('|')[1]);
   }
@@ -47,7 +46,6 @@
 
  //This function allows the user to specify a string of JS and execute it
  windmill.controller.commands.execJS = function(param_object){
-    
     //Lets send the result now to the server
     var json_object = new windmill.xhr.json_call('1.1', 'command_result');
     var params_obj = {};
@@ -116,7 +114,7 @@
  };
   
   //Keeping the suites running 
-  windmill.controller.commands.setOptions = function (param_object){
+ windmill.controller.commands.setOptions = function (param_object){
       if(typeof param_object.stopOnFailure != "undefined") {
           windmill.stopOnFailure = param_object.stopOnFailure;
       }
@@ -131,7 +129,7 @@
   };
   
   //
-  windmill.controller.commands.getDOM = function (param_object){
+ windmill.controller.commands.getDOM = function (param_object){
     var dom = windmill.testingApp.document.documentElement.innerHTML.replace('\n','');
     
     //Send to the server
@@ -147,7 +145,7 @@
     
   }
 
-  windmill.controller.commands.jsTests = function (paramObj) {
+ windmill.controller.commands.jsTests = function (paramObj) {
     var testFiles = paramObj.tests;
     if (!testFiles.length) {
       throw('No JavaScript tests to run.');

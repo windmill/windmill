@@ -108,14 +108,29 @@ windmill.jsTest = new function () {
       // p = window['foo']['bar'] =>
       // p = window['foo']['bar']['baz']
       testFunc = parseTestName();
+      //Tell IDE what is going on
+      windmill.ui.results.writeStatus('Running '+ testName + '...');
+      //Do some timing of test run
+      var jsTestTimer = new TimeObj();
+      jsTestTimer.setName(testName);
+      jsTestTimer.startTime();
       // Run the test
       try {
         //console.log('Running ' + testName + ' ...');
         testFunc();
+        jsTestTimer.endTime();
+        //write to the results tab in the IDE
+        windmill.ui.results.writeResult("<br>Test: <b>" + testName + "<br>Test Result:" + true);
+        //send report for pass
+        windmill.jsTest.sendJSReport(testName, true, null,jsTestTimer);
       }
       // For each failure, create a TestFailure obj, add
       // to the failures list
       catch (e) {
+        jsTestTimer.endTime();
+        windmill.ui.results.writeResult("<br>Test: <b>" + testName + "<br>Test Result:" + false + '<br>Error: '+ e);     
+        windmill.jsTest.sendJSReport(testName, false, e, jsTestTimer);
+        
         var fail = new windmill.jsTest.TestFailure(testName, e);
         this.testFailures.push(fail);
       }
@@ -143,5 +158,20 @@ windmill.jsTest.TestFailure = function (testName, errObj) {
   this.message = getMessage() || '';
   this.error = errObj;
 };
-
+    
+//Send the report
+windmill.jsTest.sendJSReport = function(testname, result, error, timer){
+    var reportHandler = function(str){
+      response = eval('(' + str + ')');
+      if (!response.result == 200){ windmill.ui.results.writeResult('Error: Report receiving non 200 response.'); }
+    }
+    var result_string = fleegix.json.serialize(windmill.xhr.xhrResponse.result)
+    var test_obj = {"result":result,"starttime":timer.getStart(),"endtime":timer.getEnd(),"debug":testName+','+error };
+    var json_object = new windmill.xhr.json_call('1.1', 'report_without_resolve');
+    json_object.params = test_obj;
+    var json_string = fleegix.json.serialize(json_object);
+   
+    //Actually send the report
+    fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', json_string);
+};
 

@@ -414,15 +414,14 @@ windmill.ui.remote = new function () {
               
              //Add the text box
              var i1 = windmill.remote.document.createElement('input');
-                 i1.name      = 'optValue';
+                 i1.name = 'optValue';
                  i1.className = 'texta';
-                 i1.size      = '40';
+                 i1.size = '40';
                  if (typeof(params[windmill.registry.methods[method].option]) != 'undefined'){
                    i1.setAttribute("value", params[windmill.registry.methods[method].option]);
                  }
-                 i1.id        = action.id + 'option';
+                 i1.id = action.id + 'option';
                  i1.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElem(\''+i1.id+'\')');
-
 
              var c = windmill.remote.document.createElement("td");  
              c.appendChild(i1);
