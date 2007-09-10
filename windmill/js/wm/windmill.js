@@ -62,7 +62,7 @@ var windmill = new function () {
 
      delayed = function(){
        windmill.controller.continueLoop();
-       windmill.service.setTestURL();
+       //windmill.service.setTestURL();
      }
      setTimeout('delayed()', 2000);
      
