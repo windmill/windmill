@@ -124,7 +124,7 @@ def setup():
     from windmill.bin import shell_objects
     
     if windmill.settings['CONTINUE_ON_FAILURE'] is not False:
-        jsonrpc_client.add_json_command('{"method": "setOptions", "params": {"stopOnFailure" : false}}')
+        jsonrpc_client.add_json_command('{"method": "commands.setOptions", "params": {"stopOnFailure" : false}}')
 
     if windmill.settings['TEST_FILE'] is not None:
          shell_objects.run_json_test_file(windmill.settings['TEST_FILE'])
@@ -235,7 +235,7 @@ def wxui_action(shell_objects):
     
 def tinderbox_action(shell_objects):
     """Tinderbox action for continuous integration"""
-    shell_objects['jsonrpc_client'].add_json_command('{"method": "setOptions", "params": {"stopOnFailure" : false}}')
+    shell_objects['jsonrpc_client'].add_json_command('{"method": "commands.setOptions", "params": {"stopOnFailure" : false}}')
     
     class ResultsProcessor(object):
         passed = 0
