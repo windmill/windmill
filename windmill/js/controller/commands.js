@@ -161,7 +161,7 @@
       for (var i = 0; i < fail.length; i++) {
         s += fail[i].message + '\n';
       }
-      console.log(s);
+      //console.log(s);
       windmill.controller.continueLoop();
     }
   };
