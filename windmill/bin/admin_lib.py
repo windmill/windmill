@@ -136,7 +136,7 @@ def setup():
          windmill.settings['TEST_FRAME'] = python_test_frame
          
     if windmill.settings['JAVASCRIPT_TEST_DIR']:
-        shell_objects.load_js_tests(windmill.settings['JAVASCRIPT_TEST_DIR'])
+        shell_objects.run_js_test_dir(windmill.settings['JAVASCRIPT_TEST_DIR'])
          
     browser = [setting for setting in windmill.settings.keys() if setting.startswith('START_') and \
                                                                   windmill.settings[setting] is True]
