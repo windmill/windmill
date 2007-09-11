@@ -175,3 +175,20 @@ windmill.jsTest.sendJSReport = function(testname, result, error, timer){
     fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', json_string);
 };
 
+//Controller wrapper, allowing the javascript tests
+//to drive the UI and report back correctly
+//Ex: windmill.jsTest.cw('click', {"link": "Sign up."});
+windmill.jsTest.cw = function(method, params){
+  //We want to time how long this takes
+  var cwTimer = new TimeObj();
+  cwTimer.setName(method);
+  cwTimer.startTime();
+  //Run the action in the UI
+  var result = windmill.controller[method](params);
+  //End the timer
+  cwTimer.endTime();
+  //Send a report to the backend
+  windmill.jsTest.sendJSReport(method, result, null, cwTimer);
+  //Continue on with the test running
+  return;
+};
