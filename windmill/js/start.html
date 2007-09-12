@@ -74,13 +74,15 @@ Copyright 2006, Open Source Applications Foundation
 		
 			//Set the title
 			document.title = 'Windmill Testing Framework: ' + windmill.initURL;
+        
+      fleegix.event.listen(window, 'onload', Load);
 			
 		</script>
 	</head>
 	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 	<title>Windmill Testing Framework</title>
 	
-	<body topmargin="0" leftmargin="0" onload="javascript:Load()">
+	<body topmargin="0" leftmargin="0">
 	
 	<script type="text/javascript">
 		document.write("<div id=\"pagediv\">"+

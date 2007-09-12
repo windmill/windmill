@@ -183,27 +183,12 @@ windmill.jsTest.sendJSReport = function (testname, result, error, timer) {
     reportHandler(res);
 };
 
-//Controller wrapper, allowing the javascript tests
-//to drive the UI and report back correctly
-//Ex: windmill.jsTest.cw('click', {"link": "Sign up."});
-windmill.jsTest.cw = function(method, params){
-  //We want to time how long this takes
-  var cwTimer = new TimeObj();
-  cwTimer.setName(method);
-  cwTimer.startTime();
-  //Run the action in the UI
-  var result = windmill.controller[method](params);
-  //End the timer
-  cwTimer.endTime();
-  //Send a report to the backend
-  windmill.jsTest.sendJSReport(method, result, null, cwTimer);
-  //Continue on with the test running
-  return;
-};
-
-windmill.jsTest.actions = new function () {
-  var contr = windmill.controller;
-  var wrapperMethodBuilder = function (meth) {
+windmill.jsTest.actions = {};
+// Extensions load last -- wait until everything has
+// loaded before building all the wrapper methods
+windmill.jsTest.actions.loadActions = function () {
+  var wrapperMethodBuilder = function (name, meth) {
+    var namespace = name ? windmill.controller[name] : windmill.controller;
     return function () {
       var args = Array.prototype.slice.call(arguments);
       //We want to time how long this takes
@@ -211,7 +196,7 @@ windmill.jsTest.actions = new function () {
       cwTimer.setName(meth);
       cwTimer.startTime();
       //Run the action in the UI
-      var result = contr[meth].apply(contr, args);
+      var result = namespace[meth].apply(namespace, args);
       //End the timer
       cwTimer.endTime();
       //Send a report to the backend
@@ -220,12 +205,32 @@ windmill.jsTest.actions = new function () {
       return;
     };
   };
-  for (var n in contr) {
-    var prop = contr[n];
-    if (typeof prop == 'function' && n.indexOf('_') != 0) {
-      this[n] = wrapperMethodBuilder(n);
+  // Build wrappers for controller, controller.extensions,
+  // controller.waits
+  var names = ['', 'extensions', 'waits'];
+  for (var i = 0; i < names.length; i++) {
+    var name = names[i];
+    var namespace = name ? windmill.controller[name] : windmill.controller;
+    for (var methodName in namespace) {
+      var methodFunc = namespace[methodName];
+      // We only want functions -- non-private ones
+      if (typeof methodFunc == 'function' && methodName.indexOf('_') != 0) {
+        if (name) {
+          // Create the namespace object if it doesn't exist
+          if (!this[name]) { this[name] = {}; }
+          base = this[name];
+        }
+        else {
+          base = this;
+        }
+        // Create a wrapper method for each controller
+        // method we're interested in
+        base[methodName] =
+          wrapperMethodBuilder(name, methodName);
+      }
     }
   }
-}
+};
+fleegix.event.listen(window, 'onload', windmill.jsTest.actions, 'loadActions');
 
 wm = windmill.jsTest.actions;
