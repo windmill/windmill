@@ -23,19 +23,6 @@ import urlparse
 logger = logging.getLogger(__name__)
 
 os.environ['MOZ_NO_REMOTE'] = str(1)
-PROXY_PORT = windmill.settings['SERVER_HTTP_PORT']
-
-# Deal with queries in urls
-url_split = windmill.settings['TEST_URL'].split('?')
-if len(url_split) > 1:
-    DEFAULT_TEST_URL = url_split[0]+'/windmill-serv/start.html'+'?'+url_split[1]
-else:
-    DEFAULT_TEST_URL = windmill.settings['TEST_URL']+'/windmill-serv/start.html'
-    
-MOZILLA_PROFILE_PATH = windmill.settings['MOZILLA_PROFILE_PATH']
-MOZILLA_DEFAULT_PROFILE = windmill.settings['MOZILLA_DEFAULT_PROFILE']
-MOZILLA_BINARY = windmill.settings['MOZILLA_BINARY']
-MOZILLA_COMMAND = windmill.settings['MOZILLA_COMMAND']
 
 def setpgid_preexec_fn():
     os.setpgid(0, 0)
@@ -48,15 +35,19 @@ def runCommand(cmd):
 
 class MozillaProfile(object):
     
-    def __init__(self, path=MOZILLA_PROFILE_PATH, default_profile=MOZILLA_DEFAULT_PROFILE,
-                  proxy_port=PROXY_PORT, test_url=DEFAULT_TEST_URL):
+    def __init__(self):
         """Create profile dir, and populate it"""
         
         self.proxy_host = 'localhost'
-        self.proxy_port = proxy_port
-        self.test_url = test_url
+        self.proxy_port = windmill.settings['SERVER_HTTP_PORT']
         
-        self.profile_path = path
+        url_split = windmill.settings['TEST_URL'].split('?')
+        if len(url_split) > 1:
+            self.test_url = url_split[0]+'/windmill-serv/start.html'+'?'+url_split[1]
+        else:
+            self.test_url = windmill.settings['TEST_URL']+'/windmill-serv/start.html'
+        
+        self.profile_path = windmill.settings['MOZILLA_PROFILE_PATH']
         
         if windmill.settings['MOZILLA_CREATE_NEW_PROFILE']:
             if sys.platform == 'linux2':
@@ -65,7 +56,7 @@ class MozillaProfile(object):
             if os.path.exists(self.profile_path) is True:
                 shutil.rmtree(self.profile_path)
         
-            shutil.copytree(default_profile, self.profile_path)
+            shutil.copytree(windmill.settings['MOZILLA_DEFAULT_PROFILE'], self.profile_path)
         
             self.prefs_js_filename = self.profile_path + '/prefs.js'
             self.prefs_js_f = open( self.prefs_js_filename, 'w')
@@ -140,10 +131,10 @@ def convertPath(linuxPath):
 
 class MozillaBrowser(object):
     """MozillaBrowser class, init requires MozillaProfile instance"""
-    def __init__(self, profile, mozilla_bin=MOZILLA_BINARY):
+    def __init__(self, profile):
 
         self.profile = profile
-        self.mozilla_bin = mozilla_bin
+        self.mozilla_bin = windmill.settings['MOZILLA_BINARY']
         self.p_handle = None
         
         if sys.platform == 'cygwin':
@@ -151,10 +142,10 @@ class MozillaBrowser(object):
         else:
             profile_path = self.profile.profile_path
             
-        if MOZILLA_COMMAND is None:
+        if windmill.settings['MOZILLA_COMMAND'] is None:
             self.command = [self.mozilla_bin, '-profile', profile_path]
         else:
-            self.command = MOZILLA_COMMAND
+            self.command = windmill.settings['MOZILLA_COMMAND']
 
     def start(self):
 
