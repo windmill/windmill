@@ -328,7 +328,6 @@ function triggerMouseEvent (element, eventType, canBubble, clientX, clientY, con
 
     if (element.fireEvent) {
         //LOG.info("element has fireEvent");
-       
         var evt = createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
         evt.detail = 0;
         evt.button = 1;
@@ -367,7 +366,6 @@ function triggerMouseEvent (element, eventType, canBubble, clientX, clientY, con
         }
     }
     else {
-        
         //LOG.info("element doesn't have fireEvent");
         var evt = document.createEvent('MouseEvents');
         if (evt.initMouseEvent)

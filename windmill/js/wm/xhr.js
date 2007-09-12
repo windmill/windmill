@@ -134,8 +134,8 @@ windmill.xhr = new function () {
                         windmill.xhr.loopState = 0;
                       }
                       if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1){
-                          var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
-                          var result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);
+                        var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
+                        var result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);
                       }
                       else{  
                         var result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params);

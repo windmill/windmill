@@ -24,25 +24,22 @@ windmill.controller.what = function() {
    * In IE, getElementById() also searches by name - this is an optimisation for IE.
    */
   windmill.controller.locateElementByIdentifer = function(identifier, inDocument, inWindow) {
-      return inDocument.getElementById(identifier);
+    return inDocument.getElementById(identifier);
   };
   
-  windmill.controller.click = function(param_object){
+  windmill.controller.click = function(param_object){        
+     var element = this._lookupDispatch(param_object);
+     if (!element){ return false; }
+     // Trigger the event.
+     // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
+     windmill.events.triggerMouseEvent(element, 'mousedown', true);
+     windmill.events.triggerMouseEvent(element, 'mouseup', true);
+     windmill.events.triggerMouseEvent(element, 'click', true);
         
-         var element = this._lookupDispatch(param_object);
-         if (!element){ 
-            return false;
-         }
-          // Trigger the event.
-            // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-            //windmill.events.triggerMouseEvent(element, 'mousedown', true);
-            //windmill.events.triggerMouseEvent(element, 'mouseup', true);
-            windmill.events.triggerMouseEvent(element, 'click', true);
-
-         if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
-             windmill.xhr.loopState = 0;
-         }
-         return true;
+     if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
+         windmill.xhr.loopState = 0;
+     }
+     return true;
   };
   
   //there is a problem with checking via click in safari
@@ -61,7 +58,7 @@ windmill.controller.what = function() {
          
          var element = this._lookupDispatch(param_object);
          if (!element){
-                return false;
+           return false;
          }
          windmill.events.triggerEvent(element, 'focus', false);
 

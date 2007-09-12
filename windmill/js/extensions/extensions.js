@@ -36,6 +36,7 @@ windmill.controller.extensions.clickLozenge =function (param_object){
     
     //Since id comes before jsid in the lookup order
     //we don't need to reset it, now go ahead and click it!
+    
     return windmill.controller.click(param_object);
 };
 

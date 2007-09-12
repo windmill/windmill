@@ -60,8 +60,7 @@ windmill.controller.click = function(param_object){
            }*/
        }
  
-       return true;
-     
+       return true;     
 };
 
 //there is a problem with checking via click in safari

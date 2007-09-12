@@ -114,7 +114,6 @@ windmill.events = new function (){
 
         if (element.fireEvent) {
             //LOG.info("element has fireEvent");
-
             var evt = windmill.events.createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
             evt.detail = 0;
             evt.button = 1;
@@ -124,7 +123,8 @@ windmill.events = new function (){
                 if(eventType == "click"){
                     element.click();
                 }
-                element.fireEvent('on' + eventType);
+                else{ element.fireEvent('on' + eventType); }
+                
                 //eval("element." + eventType + "();");
             }
             else {
@@ -153,7 +153,6 @@ windmill.events = new function (){
             }
         }
         else {
-
             //LOG.info("element doesn't have fireEvent");
             var evt = document.createEvent('MouseEvents');
             if (evt.initMouseEvent)
