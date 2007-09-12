@@ -51,8 +51,7 @@
     var params_obj = {};
     
     try {
-      params_obj.result = eval(param_object.code); 
-     
+      params_obj.result = eval(param_object.code);
     }
     catch(error){
       params_obj.result = error;
@@ -141,8 +140,7 @@
     var resp = function(str){ return true; }
     
     result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-    resp(result);
-    
+    resp(result); 
   }
 
  windmill.controller.commands.jsTests = function (paramObj) {
@@ -152,6 +150,12 @@
     }
     var _j = windmill.jsTest;
     windmill.controller.stopLoop();
+    
+    //Timing the suite
+    var jsSuiteSummary = new TimeObj();
+    jsSuiteSummary.setName('jsSummary');
+    jsSuiteSummary.startTime();
+    
     if (_j.run(testFiles)) {
       var s = '';
       s += 'Number of tests run: ' + _j.testCount + '\n';
@@ -161,7 +165,14 @@
       for (var i = 0; i < fail.length; i++) {
         s += fail[i].message + '\n';
       }
-      //console.log(s);
+  
+      jsSuiteSummary.endTime();
+      windmill.ui.results.writeResult(s);
+      //We want the summary to have a concept of success/failure
+      var result = true;
+      if (_j.testFailureCount != 0){ result = false; }
+      windmill.jsTest.sendJSReport(method, result, null, jsSuiteSummary);
+
       windmill.controller.continueLoop();
     }
   };

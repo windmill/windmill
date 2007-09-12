@@ -210,10 +210,7 @@ windmill.controller = new function () {
   */
   this.select = function (param_object) {
       var element = this._lookupDispatch(param_object);
-    
-      if (!element){
-             return false;
-       }
+      if (!element){ return false; }
        
       /*if (!("options" in element)) {
              //throw new WindmillError("Specified element is not a Select (has no options)");
@@ -221,7 +218,7 @@ windmill.controller = new function () {
        }*/
     
       var locator = this.optionLocatorFactory.fromLocatorString('label=' + param_object.option);
-    
+
       var optionToSelect = locator.findOption(element);
     
       windmill.events.triggerEvent(element, 'focus', false);

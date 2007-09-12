@@ -166,10 +166,12 @@ windmill.jsTest.sendJSReport = function (testname, result, error, timer) {
       if (!response.result == 200){ windmill.ui.results.writeResult('Error: Report receiving non 200 response.'); }
     };
     var result_string = fleegix.json.serialize(result);
+    var dt = new Date();
     var test_obj = { "result": result,
       "starttime": timer.getStart(),
       "endtime": timer.getEnd(),
-      "debug": error };
+      "debug": error,
+      "uuid": dt.UTC() };
     var json_object = new windmill.xhr.json_call('1.1', 'report_without_resolve');
     json_object.params = test_obj;
     var json_string = fleegix.json.serialize(json_object);
