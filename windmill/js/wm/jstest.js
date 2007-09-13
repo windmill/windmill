@@ -171,7 +171,8 @@ windmill.jsTest.sendJSReport = function (testname, result, error, timer) {
       "starttime": timer.getStart(),
       "endtime": timer.getEnd(),
       "debug": error,
-      "uuid": dt.UTC() };
+      "uuid": dt.getTime(),
+      "suite_name": "jsTest" };
     var json_object = new windmill.xhr.json_call('1.1', 'report_without_resolve');
     json_object.params = test_obj;
     var json_string = fleegix.json.serialize(json_object);
