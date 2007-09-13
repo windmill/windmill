@@ -161,27 +161,25 @@ windmill.jsTest.TestFailure = function (testName, errObj) {
 
 //Send the report
 windmill.jsTest.sendJSReport = function (testname, result, error, timer) {
-    var reportHandler = function (str) {
-      response = eval('(' + str + ')');
-      if (!response.result == 200){ windmill.ui.results.writeResult('Error: Report receiving non 200 response.'); }
-    };
-    var result_string = fleegix.json.serialize(result);
-    var dt = new Date();
-    var test_obj = { "result": result,
-      "starttime": timer.getStart(),
-      "endtime": timer.getEnd(),
-      "debug": error,
-      "uuid": dt.getTime(),
-      "suite_name": "jsTest" };
-    var json_object = new windmill.xhr.json_call('1.1', 'report_without_resolve');
-    json_object.params = test_obj;
-    var json_string = fleegix.json.serialize(json_object);
-    //Actually send the report
-    res = fleegix.xhr.doReq({ url: '/windmill-jsonrpc/',
-      method: 'POST',
-      dataPayload: json_string,
-      async: true });
-    reportHandler(res);
+  var reportHandler = function (str) {
+    response = eval('(' + str + ')');
+    if (!response.result || response.result != 200) {
+      windmill.ui.results.writeResult('Error: Report receiving non 200 response.');
+    }
+  };
+  var result_string = fleegix.json.serialize(result);
+  var dt = new Date();
+  var test_obj = { "result": result,
+    "starttime": timer.getStart(),
+    "endtime": timer.getEnd(),
+    "debug": error,
+    "uuid": dt.getTime(),
+    "suite_name": "jsTest" };
+  var json_object = new windmill.xhr.json_call('1.1', 'report_without_resolve');
+  json_object.params = test_obj;
+  var json_string = fleegix.json.serialize(json_object);
+  //Actually send the report
+  fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', json_string);
 };
 
 windmill.jsTest.actions = {};

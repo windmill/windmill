@@ -169,10 +169,10 @@
       jsSuiteSummary.endTime();
       windmill.ui.results.writeResult(s);
       //We want the summary to have a concept of success/failure
-      var result = true;
-      if (_j.testFailureCount != 0){ result = false; }
+      var result = !(_j.testFailureCount > 0);
+      var method = 'JS Test Suite Completion';
       windmill.jsTest.sendJSReport(method, result, null, jsSuiteSummary);
-
+      // Fire the polling loop back up
       windmill.controller.continueLoop();
     }
   };
