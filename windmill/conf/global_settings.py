@@ -86,7 +86,7 @@ elif sys.platform == 'linux2':
     if os.path.isdir('/usr/share/firefox/defaults/profile'):
         MOZILLA_DEFAULT_PROFILE = '/usr/share/firefox/defaults/profile'
     
-    MOZILLA_COMMAND = [MOZILLA_BINARY, TEST_URL+'/windmill-serv/start.html']
+    MOZILLA_COMMAND = 'linux'
 
 elif os.name == 'nt' or sys.platform == 'cygwin':
     IE_BINARY  = findInPath('iexplore')

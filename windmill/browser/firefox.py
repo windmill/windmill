@@ -144,6 +144,9 @@ class MozillaBrowser(object):
             
         if windmill.settings['MOZILLA_COMMAND'] is None:
             self.command = [self.mozilla_bin, '-profile', profile_path]
+        elif windmill.settings['MOZILLA_COMMAND'] == 'linux':
+            self.command = [windmill.settings['MOZILLA_BINARY'],
+                            windmill.settings['TEST_URL']+'/windmill-serv/start.html']
         else:
             self.command = windmill.settings['MOZILLA_COMMAND']
 
