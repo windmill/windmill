@@ -89,6 +89,8 @@ def run_threaded(console_level=logging.INFO):
     
     httpd_thread = Thread(target=httpd.start)
     httpd_thread.start()
+    while not httpd.ready:
+        sleep(.5)
     
     return httpd, httpd_thread, console_handler
 
