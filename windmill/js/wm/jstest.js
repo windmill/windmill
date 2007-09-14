@@ -17,6 +17,19 @@ Copyright 2007, Open Source Applications Foundation
 var jum = windmill.controller.asserts;
 
 windmill.jsTest = new function () {
+
+  function globalEval(code) {
+    if (window.execScript) {
+      window.execScript(code);
+    }
+    else if (navigator.userAgent.indexOf('Safari/41') > -1) {
+      window.setTimeout(data, 0);
+    }
+    else {
+      window.eval.call(window, code);
+    }
+  };
+
   this.testFiles = null;
   this.testList = '';
   this.testOrder = null;
@@ -73,7 +86,7 @@ windmill.jsTest = new function () {
       var str = fleegix.xhr.doReq({ url: initPath,
         async: false });
       // Eval in window scope
-      window.eval.apply(window, [str]);
+      globalEval(str);
       return true;
   };
   // Called from the eval of initialize.js,
@@ -91,7 +104,7 @@ windmill.jsTest = new function () {
       var str = fleegix.xhr.doReq({ url: path,
         async: false });
       // Eval in window scope
-      window.eval.apply(window, [str]);
+      globalEval(str);
     }
     return true;
   };
@@ -120,13 +133,14 @@ windmill.jsTest = new function () {
       // p = window['foo']['bar'] =>
       // p = window['foo']['bar']['baz']
       testFunc = parseTestName();
-      //Tell IDE what is going on
+      //alert(testFunc);
+      // Tell IDE what is going on
       windmill.ui.results.writeStatus('Running '+ testName + '...');
       if (typeof testFunc == 'function') {
         this.runTest(testName, testFunc);
         this.runTests();
       }
-      else if (testFunc instanceof Array) {
+      else if (testFunc.length > 0) {
         this.testItemArray = { name: testName, funcs: testFunc }
         this.runTestItemArray();
       }
@@ -144,7 +158,8 @@ windmill.jsTest = new function () {
       testFunc();
       jsTestTimer.endTime();
       //write to the results tab in the IDE
-      windmill.ui.results.writeResult("<br>Test: <b>" + testName + "<br>Test Result:" + true);
+      windmill.ui.results.writeResult("<br>Test: <b>" +
+        testName + "<br>Test Result:" + true);
       //send report for pass
       windmill.jsTest.sendJSReport(testName, true, null,jsTestTimer);
     }
@@ -153,7 +168,8 @@ windmill.jsTest = new function () {
     catch (e) {
       jsTestTimer.endTime();
       var fail = new windmill.jsTest.TestFailure(testName, e);
-      windmill.ui.results.writeResult("<br>Test: <b>" + testName + "<br>Test Result:" + false + '<br>Error: '+ fail.message);
+      windmill.ui.results.writeResult("<br>Test: <b>" +
+        testName + "<br>Test Result:" + false + '<br>Error: '+ fail.message);
       windmill.jsTest.sendJSReport(testName, false, e, jsTestTimer);
       this.testFailures.push(fail);
     }
@@ -271,20 +287,8 @@ windmill.jsTest.actions.loadActions = function () {
     }
   }
 };
-windmill.jsTest.actions.waits = new function () {
-  this.sleep = function (p) {
-    var jsonObj = new windmill.xhr.json_call('1.1', 'sleep');
-    jsonObj.params = p;
-    var jsonString = fleegix.json.serialize(jsonObj);
-    var res = fleegix.xhr.doReq({ url: '/windmill-jsonrpc/',
-      method: 'POST',
-      async: false,
-      dataPayload: jsonString }
-    );
-    return res;
-  };
-};
 
 fleegix.event.listen(window, 'onload', windmill.jsTest.actions, 'loadActions');
 
-wm = windmill.jsTest.actions;
+// Alias for use in test actions
+var wm = windmill.jsTest.actions;
