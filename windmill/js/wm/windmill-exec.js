@@ -17,18 +17,17 @@ Copyright 2006, Open Source Applications Foundation
 
 //Loader function
 function Load(){
-        //Set the app your testing
-       windmill.testingApp = parent.frames['webapp'];
-           
-       if (windmill.showRemote == true){           
-        windmill.remote = window.open('remote.html','windmill_Remote','width=465,height=500,toolbar=no,'+
-        'location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');
-        
-        if (!windmill.remote){
-          alert('We detected a popup blocker, please disable it while you are using Windmill as we load the UI in a popup window.');
-        }
-       } 
-      
-       setTimeout("windmill.controller.continueLoop()", 4000);
-       
+  //Index page load report
+  load_timer.endTime();
+  
+  if (windmill.showRemote == true){           
+    windmill.remote = window.open('remote.html','windmill_Remote','width=465,height=500,toolbar=no,'+
+    'location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');
+
+    if (!windmill.remote){
+      alert('We detected a popup blocker, please disable it while ' +
+      'you are using Windmill as we load the UI in a popup window.');
+    }
+  }  
+   
 }

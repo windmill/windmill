@@ -173,7 +173,7 @@ windmill.ui.recorder = new function () {
          }
          }
          catch(error){
-           alert('You left your testing domain, and we do not yet support cross domain testing in the same session.');
+           alert('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
            windmill.remote.$('record').src = 'ide/img/record.png';
            this.recordState = false;
          }
@@ -225,7 +225,7 @@ windmill.ui.recorder = new function () {
          catch(error){
           //alert('You left your testing domain, and we do not yet support cross domain testing in the same session.');
           //windmill.remote.toggleRec();
-          windmill.ui.results.writeResult('There was a problem unbinding, must be cross domain.' + error);          
+          windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.' + error);          
 
          }      
      }

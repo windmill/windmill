@@ -130,12 +130,13 @@
 					$('autoScroll').checked = false;
 				}
 		}
-
+		
+		windmill.remote = parent.window;
     windmill.remote.init = function () {
       interpreterManager.initialize();
-      opener.windmill.Start();
-    };
+  		opener.windmill.Start();
 
+    };
 	  fleegix.event.listen(window, 'onload', windmill.remote, 'init');
 	</script>
 </head>

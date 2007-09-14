@@ -36,8 +36,11 @@ windmill.ui.results = new function () {
     
     //Writing to the results tab
     this.writeResult = function(str){
-        var resultsDiv = windmill.remote.$("tab4");
-        resultsDiv.innerHTML = str + "<br>" + resultsDiv.innerHTML;
+        try { 
+          var resultsDiv = windmill.remote.$("tab4");
+          resultsDiv.innerHTML = str + "<br>" + resultsDiv.innerHTML; 
+        }
+        catch(err) { }
         //resultsDiv.scrollTop = resultsDiv.scrollHeight;
     }
 
