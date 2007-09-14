@@ -35,13 +35,15 @@ var windmill = new function () {
     this.remoteLoaded = false;
     this.Start = function(){
       //Index page load report
-  load_timer.endTime();
-  windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
-  browser.current_ua + ".</b><br>");
-  windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + 
-  browser.current_ua + ".</b><br>");
-  load_timer.write();
-  setTimeout("windmill.controller.continueLoop()", 4000);  
+      try { load_timer.endTime();
+      windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
+      browser.current_ua + ".</b><br>");
+      windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + 
+      browser.current_ua + ".</b><br>");
+      load_timer.write();}
+      catch(err){}
+      
+      setTimeout("windmill.controller.continueLoop()", 4000);  
       //Set a variable so that windmill knows that the remote has fully loaded
       this.remoteLoaded = true;
     }
