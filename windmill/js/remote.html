@@ -131,8 +131,8 @@
 				}
 		}
 		var doSubmit = function(){ return false; }
-		
-		windmill.remote = parent.window;
+		try { windmill.remote = parent.window; } catch(err){}
+
     windmill.remote.init = function () {
       interpreterManager.initialize();
   		opener.windmill.Start();
