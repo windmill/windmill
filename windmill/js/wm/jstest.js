@@ -16,18 +16,22 @@ Copyright 2007, Open Source Applications Foundation
 
 var jum = windmill.controller.asserts;
 
-
 windmill.jsTest = new function () {
   this.testFiles = null;
+  this.testList = '';
   this.testOrder = null;
+  this.testItemArray = null;
   this.testFailures = [];
   this.testCount = 0;
   this.testFailureCount = 0;
+  this.jsSuiteSummary = null;
 
   // Initialize everything to starting vals
   this.init = function () {
     this.testFiles = null;
+    this.testList = '';
     this.testOrder = null;
+    this.testItemArray = null;
     this.testFailures = [];
     this.testCount = 0;
     this.testFailureCount = 0;
@@ -38,7 +42,11 @@ windmill.jsTest = new function () {
     this.doSetup(tests);
     this.loadTests();
     this.runTests();
-    return true;
+  };
+  this.finish = function () {
+    this.testCount = this.testOrder.length;
+    this.testFailureCount = this.testFailures.length;
+    windmill.controller.commands.jsTestResults();
   };
   // Pull out the init file from the list of files
   // if there is one
@@ -71,6 +79,7 @@ windmill.jsTest = new function () {
   // Called from the eval of initialize.js,
   // registers all the tests to be run, in order
   this.registerTests = function (arr) {
+    this.testList = arr.join();
     this.testOrder = arr;
   };
   // Grab the contents of the test files, and eval
@@ -87,7 +96,6 @@ windmill.jsTest = new function () {
     return true;
   };
   this.runTests = function () {
-    var order = this.testOrder;
     var arr = null; // parseTestName recurses through this
     var p = null; // Appended to by parseTestName
     var testName = '';
@@ -96,9 +104,12 @@ windmill.jsTest = new function () {
       p = !n ? window : p[n];
       return arr.length ? parseTestName(arr.shift()) : p;
     };
-    for (var i = 0; i < order.length; i++) {
+    if (this.testOrder.length == 0) {
+      this.finish();
+    }
+    else {
       // Get the test name
-      testName = order[i];
+      testName = this.testOrder.shift();
       // Split into array of string keys keys on dot-properties
       arr = testName.split('.');
       // call parseTestName recursively to append each
@@ -111,35 +122,65 @@ windmill.jsTest = new function () {
       testFunc = parseTestName();
       //Tell IDE what is going on
       windmill.ui.results.writeStatus('Running '+ testName + '...');
-      //Do some timing of test run
-      var jsTestTimer = new TimeObj();
-      jsTestTimer.setName(testName);
-      jsTestTimer.startTime();
-      // Run the test
-      try {
-        //console.log('Running ' + testName + ' ...');
-        testFunc();
-        jsTestTimer.endTime();
-        //write to the results tab in the IDE
-        windmill.ui.results.writeResult("<br>Test: <b>" + testName + "<br>Test Result:" + true);
-        //send report for pass
-        windmill.jsTest.sendJSReport(testName, true, null,jsTestTimer);
+      if (typeof testFunc == 'function') {
+        this.runTest(testName, testFunc);
+        this.runTests();
       }
-      // For each failure, create a TestFailure obj, add
-      // to the failures list
-      catch (e) {
-        jsTestTimer.endTime();
-        var fail = new windmill.jsTest.TestFailure(testName, e);
-        windmill.ui.results.writeResult("<br>Test: <b>" + testName + "<br>Test Result:" + false + '<br>Error: '+ fail.message);
-        windmill.jsTest.sendJSReport(testName, false, e, jsTestTimer);
-        this.testFailures.push(fail);
+      else if (testFunc instanceof Array) {
+        this.testItemArray = { name: testName, funcs: testFunc }
+        this.runTestItemArray();
       }
-      // Clean up after ourselves
-      delete testFunc;
     }
-    this.testCount = order.length;
-    this.testFailureCount = this.testFailures.length;
     return true;
+  };
+  this.runTest = function (testName, testFunc) {
+    //Do some timing of test run
+    var jsTestTimer = new TimeObj();
+    jsTestTimer.setName(testName);
+    jsTestTimer.startTime();
+    // Run the test
+    try {
+      //console.log('Running ' + testName + ' ...');
+      testFunc();
+      jsTestTimer.endTime();
+      //write to the results tab in the IDE
+      windmill.ui.results.writeResult("<br>Test: <b>" + testName + "<br>Test Result:" + true);
+      //send report for pass
+      windmill.jsTest.sendJSReport(testName, true, null,jsTestTimer);
+    }
+    // For each failure, create a TestFailure obj, add
+    // to the failures list
+    catch (e) {
+      jsTestTimer.endTime();
+      var fail = new windmill.jsTest.TestFailure(testName, e);
+      windmill.ui.results.writeResult("<br>Test: <b>" + testName + "<br>Test Result:" + false + '<br>Error: '+ fail.message);
+      windmill.jsTest.sendJSReport(testName, false, e, jsTestTimer);
+      this.testFailures.push(fail);
+    }
+  };
+  this.runTestItemArray = function () {
+    var _this = this;
+    var t = 0;
+    if (this.testItemArray.funcs.length == 0) {
+      this.runTests();
+    }
+    else {
+      var item = this.testItemArray.funcs.shift();
+      if (typeof item == 'function') {
+        this.runTest(this.testItemArray.name, item);
+      }
+      else {
+        if (item.method == 'waits.sleep') {
+          t = item.params.milliseconds;
+        }
+        else {
+          var func = eval('windmill.jsTest.actions.' + item.method);
+          func(item.params);
+        }
+      }
+      var f = function () { _this.runTestItemArray.apply(_this); };
+      setTimeout(f, t);
+    }
   };
 };
 
@@ -206,7 +247,7 @@ windmill.jsTest.actions.loadActions = function () {
   };
   // Build wrappers for controller, controller.extensions,
   // controller.waits
-  var names = ['', 'extensions', 'waits'];
+  var names = ['', 'extensions'];
   for (var i = 0; i < names.length; i++) {
     var name = names[i];
     var namespace = name ? windmill.controller[name] : windmill.controller;
@@ -230,6 +271,20 @@ windmill.jsTest.actions.loadActions = function () {
     }
   }
 };
+windmill.jsTest.actions.waits = new function () {
+  this.sleep = function (p) {
+    var jsonObj = new windmill.xhr.json_call('1.1', 'sleep');
+    jsonObj.params = p;
+    var jsonString = fleegix.json.serialize(jsonObj);
+    var res = fleegix.xhr.doReq({ url: '/windmill-jsonrpc/',
+      method: 'POST',
+      async: false,
+      dataPayload: jsonString }
+    );
+    return res;
+  };
+};
+
 fleegix.event.listen(window, 'onload', windmill.jsTest.actions, 'loadActions');
 
 wm = windmill.jsTest.actions;

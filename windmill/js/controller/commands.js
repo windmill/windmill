@@ -155,26 +155,31 @@
     var jsSuiteSummary = new TimeObj();
     jsSuiteSummary.setName('jsSummary');
     jsSuiteSummary.startTime();
-    
-    if (_j.run(testFiles)) {
-      var s = '';
-      s += 'Number of tests run: ' + _j.testCount + '\n';
-      s += 'Number of tests failures: ' + _j.testFailureCount + '\n';
-      s += 'Test failures' + '\n';
-      var fail = _j.testFailures;
-      for (var i = 0; i < fail.length; i++) {
-        s += fail[i].message + '\n';
-      }
-  
-      jsSuiteSummary.endTime();
-      windmill.ui.results.writeResult(s);
-      //We want the summary to have a concept of success/failure
-      var result = !(_j.testFailureCount > 0);
-      var method = 'JS Test Suite Completion';
-      windmill.jsTest.sendJSReport(method, result, null, jsSuiteSummary);
-      // Fire the polling loop back up
-      windmill.controller.continueLoop();
-    }
+    _j.jsSuiteSummary = jsSuiteSummary;
+
+    _j.run(testFiles);
   };
 
+ windmill.controller.commands.jsTestResults = function () {
+    var _j = windmill.jsTest;
+    var jsSuiteSummary = _j.jsSuiteSummary;
+    var s = '';
+    s += 'Number of tests run: ' + _j.testCount + '\n';
+    s += 'Number of tests failures: ' + _j.testFailureCount + '\n';
+    s += 'Test failures' + '\n';
+    var fail = _j.testFailures;
+    for (var i = 0; i < fail.length; i++) {
+      s += fail[i].message + '\n';
+    }
+
+    jsSuiteSummary.endTime();
+    windmill.ui.results.writeResult(s);
+    //We want the summary to have a concept of success/failure
+    var result = !(_j.testFailureCount > 0);
+    var method = 'JS Test Suite Completion';
+    windmill.jsTest.sendJSReport(method, result, null, jsSuiteSummary);
+    // Fire the polling loop back up
+    windmill.controller.continueLoop();
+
+ };
 
