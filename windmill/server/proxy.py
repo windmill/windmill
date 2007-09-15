@@ -40,16 +40,20 @@ class WindmillProxyApplication(object):
     def handler(self, environ, start_response):
         """Proxy for requests to the actual http server"""
         url = urlparse(environ['reconstructed_url'])
+        
+        def change_environ_domain(original_netloc, new_netloc, environ):
+            new_environ = {}
+            for key, value in environ.items():
+                if ( type(value) is str ) and ( value.find(original_netloc) is not -1 ):
+                    new_environ[key] = value.replace(original_netloc, new_netloc)
+                else:
+                    new_environ[key] = value
+            return new_environ
 
         if windmill.settings['FORWARDING_TEST_URL'] is not None and (
            not url.netloc.startswith('localhost') ) and (
            not url.netloc.startswith('127.0.0.1') ):
             # Do our domain change magic
-            def change_environ_domain(original_netloc, new_netloc, environ):
-                for key, value in environ.items():
-                    if ( type(value) is str ) and ( value.find(original_netloc) is not -1 ):
-                         environ[key] = value.replace(original_netloc, new_netloc)
-                return environ
             
             test_netloc = urlparse(windmill.settings['FORWARDING_TEST_URL']).netloc
             referer = environ.get('HTTP_REFERER', None)
@@ -62,7 +66,7 @@ class WindmillProxyApplication(object):
                 return ['Windmill is forwarding you to a new url at the proper test domain']
         
             elif ( url.geturl() in initial_forwarding_registry.keys() ):
-                host_netloc = initial_forwarding_registry.pop(url.geturl())
+                host_netloc = initial_forwarding_registry.get(url.geturl())
                 forwarding_registry[url.geturl()] = host_netloc
                 environ = change_environ_domain(url.netloc, host_netloc, environ)
                 url = urlparse(url.geturl().replace(url.netloc, host_netloc))
@@ -72,54 +76,82 @@ class WindmillProxyApplication(object):
                 forwarding_registry[url.geturl()] = host_netloc
                 environ = change_environ_domain(url.netloc, host_netloc, environ)
                 url = urlparse(url.geturl().replace(url.netloc, host_netloc))
-            
-        # Create connection object
-        try:
-            connection = self.ConnectionClass(url.netloc)
-            # Build path
-            path = url.geturl().replace('%s://%s' % (url.scheme, url.netloc), '')
-        except Exception, e:
-            start_response("501 Gateway error", [('Content-Type', 'text/html')])
-            logger.exception('Could not Connect')
-            return ['<H1>Could not connect</H1>']
+        
+        def make_remote_connection(url, environ):
+            # Create connection object
+            try:
+                connection = self.ConnectionClass(url.netloc)
+                # Build path
+                path = url.geturl().replace('%s://%s' % (url.scheme, url.netloc), '')
+            except Exception, e:
+                logger.exception('Could not Connect')
+                return [("501 Gateway error", [('Content-Type', 'text/html')],), '<H1>Could not connect</H1>']
 
-        # Read in request body if it exists    
-        body = None
-        if environ.get('CONTENT_LENGTH'):
-            length = int(environ['CONTENT_LENGTH'])
-            body = environ['wsgi.input'].read(length)
+            # Read in request body if it exists    
+            body = None
+            if environ.get('CONTENT_LENGTH'):
+                length = int(environ['CONTENT_LENGTH'])
+                body = environ['wsgi.input'].read(length)
 
-        # Build headers
-        headers = {}
-        logger.debug('Environ ; %s' % str(environ))
-        for key in environ.keys():
-            # Keys that start with HTTP_ are all headers
-            if key.startswith('HTTP_'):
-                # This is a hacky way of getting the header names right
-                value = environ[key]
-                key = key.replace('HTTP_', '', 1).swapcase().replace('_', '-')
-                if is_hop_by_hop(key) is False:
-                    headers[key] = value
+            # Build headers
+            headers = {}
+            logger.debug('Environ ; %s' % str(environ))
+            for key in environ.keys():
+                # Keys that start with HTTP_ are all headers
+                if key.startswith('HTTP_'):
+                    # This is a hacky way of getting the header names right
+                    value = environ[key]
+                    key = key.replace('HTTP_', '', 1).swapcase().replace('_', '-')
+                    if is_hop_by_hop(key) is False:
+                        headers[key] = value
 
-        # Handler headers that aren't HTTP_ in environ
-        if environ.get('CONTENT_TYPE'):
-            headers['content-type'] = environ['CONTENT_TYPE']
+            # Handler headers that aren't HTTP_ in environ
+            if environ.get('CONTENT_TYPE'):
+                headers['content-type'] = environ['CONTENT_TYPE']
 
-        # Add our host if one isn't defined
-        if not headers.has_key('host'):
-            headers['host'] = environ['SERVER_NAME']   
+            # Add our host if one isn't defined
+            if not headers.has_key('host'):
+                headers['host'] = environ['SERVER_NAME']   
 
-        # Make the remote request
-        try:
-            logger.debug('%s %s %s' % (environ['REQUEST_METHOD'], path, str(headers)))
-            connection.request(environ['REQUEST_METHOD'], path, body=body, headers=headers)
-        except:
-            # We need extra exception handling in the case the server fails in mid connection, it's an edge case but I've seen it
-            start_response("501 Gateway error", [('Content-Type', 'text/html')])
-            logger.info('Could not fullfill proxy request to %s' % url.geturl())
-            return ['<H1>Could not connect</H1>']
-
-        response = connection.getresponse()
+            # Make the remote request
+            try:
+                logger.debug('%s %s %s' % (environ['REQUEST_METHOD'], path, str(headers)))
+                connection.request(environ['REQUEST_METHOD'], path, body=body, headers=headers)
+                return connection
+            except:
+                # We need extra exception handling in the case the server fails in mid connection, it's an edge case but I've seen it
+                logger.info('Could not fullfill proxy request to %s' % url.geturl())
+                return [("501 Gateway error", [('Content-Type', 'text/html')],), '<H1>Could not connect</H1>']
+                
+        def retry_known_hosts(url, environ):
+            hosts = copy.copy(initial_forwarding_registry.values())
+            hosts.reverse()
+            current_host = url.netloc
+            for host in hosts:
+                connection = make_remote_connection(urlparse(url.geturl().replace(current_host, host)), 
+                                                    change_environ_domain(current_host, host, environ))
+                if isinstance(connection, HTTPConnection):
+                    new_response = connection.getresponse()
+                    if new_response.status > 199 and new_response.status < 399:
+                        logger.debug('retry success, '+url.geturl()+' to '+host)
+                        return new_response
+            return None
+                
+        connection = make_remote_connection(url, environ)
+        if not isinstance(connection, HTTPConnection):
+            new_response = retry_known_hosts(url, environ)
+            if new_response is not None: 
+                response = new_response
+            else:
+                start_response(connection.pop(0))
+                return [connection.pop(0)]
+        else:
+            response = connection.getresponse()
+        
+        if response.status == 404:
+            new_response = retry_known_hosts(url, environ)
+            if new_response is not None:
+                response = new_response
 
         hopped_headers = response.getheaders()
         headers = copy.copy(hopped_headers)
