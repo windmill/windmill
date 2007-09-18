@@ -44,7 +44,7 @@ var windmill = new function () {
         browser.current_ua + ".</b><br>");
       }
       catch(err){}
-      setTimeout("windmill.controller.continueLoop()", 2000);  
+      //setTimeout("windmill.controller.continueLoop()", 2000);  
       //Set a variable so that windmill knows that the remote has fully loaded
       this.remoteLoaded = true;
     }

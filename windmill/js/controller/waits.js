@@ -128,7 +128,8 @@
       }
       else{
         //reattach all the listeners etc.
-        windmill.loaded();
+        fleegix.event.listen(windmill.testingApp, 'onunload', windmill, 'unloaded');
+        windmill.controller.continueLoop();
         return true;
       }
    }
