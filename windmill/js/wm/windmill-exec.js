@@ -27,5 +27,5 @@ function Load(){
   	redirect = function(){
   	  window.location = urlSTR;
     }
-    setTimeout('redirect()', 4000);
+    setTimeout('redirect()', 2500);
 }
