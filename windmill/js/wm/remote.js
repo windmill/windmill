@@ -88,7 +88,8 @@ windmill.ui.remote = new function () {
        
        //A hack to make it draw the UI correctly in IE
        suite.appendChild(action);
-       windmill.remote.$(action.id).innerHTML = action.innerHTML; 
+       windmill.remote.$(action.id).innerHTML = action.innerHTML;
+       return action.id;
      }
         
      this.getSuite = function(){
@@ -185,7 +186,10 @@ windmill.ui.remote = new function () {
             method = 'click';
             params.id = ' ';
          }
-
+         //If no params were passed
+         if ( typeof(params) == 'undefined'){
+           var params = {};
+         }
          //var action = this.constructAction(method,'','',windmill.registry.methods[method].option,parms[windmill.registry.methods[method].option]);
          var action = windmill.remote.document.createElement('div');
          if (typeof(params.uuid) == 'undefined'){

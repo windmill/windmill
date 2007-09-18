@@ -51,7 +51,7 @@ var windmill = new function () {
     
     //When the page is unloaded turn off the loop until it loads the new one
     this.unloaded = function(){
-      windmill.controller.stopLoop();
+      this.controller.stopLoop();
       checkPage = function(){ windmill.controller.waits.forPageLoad({}); }
       setTimeout('checkPage()', 1000);
     }

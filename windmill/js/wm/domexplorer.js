@@ -43,7 +43,6 @@ windmill.ui.domexplorer = new function () {
         }
         else if (e.target.nodeName == "A"){
             windmill.remote.$("domExp").innerHTML = "Link: "+ e.target.innerHTML;  
-
         }
         else {
            //windmill.remote.$("domExp").innerHTML = "No identfier available.";
@@ -57,8 +56,10 @@ windmill.ui.domexplorer = new function () {
     
     this.explorerClick = function(e){
         e.cancelBubble = true;
-        e.stopPropagation();
-        e.preventDefault();      	
+        if (windmill.browser.isIE == false){
+          e.stopPropagation();
+          e.preventDefault();      	
+        }
         windmill.remote.window.focus();
         //if an element in the remote has been selected
         if (windmill.ui.remote.selectedElement != null){

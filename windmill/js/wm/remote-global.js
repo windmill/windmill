@@ -67,8 +67,6 @@
 		var toggleAExplore = function(){
 
 			if ($('assertx').src.indexOf("ide/img/axon.png")  != -1){
-				windmill.remote.alert('This feature is currently under development, and only about 1/4 implemented');
-
 				$('domExp').style.visibility = 'visible';
 				$('domExp').innerHTML = '';
 				windmill.ui.assertexplorer.assertExplorerOn();

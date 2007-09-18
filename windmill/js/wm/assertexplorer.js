@@ -62,9 +62,69 @@ windmill.ui.assertexplorer = new function () {
     
     this.aexplorerClick = function(e){
         e.cancelBubble = true;
-        e.stopPropagation();
-        e.preventDefault();      	
-        windmill.remote.window.focus();  
+        if (windmill.browser.isIE == false){
+          e.stopPropagation();
+          e.preventDefault();      	
+        }        
+        windmill.remote.window.focus();
+
+        //Setup the params
+         var locator = '';
+         var locValue = '';
+         var params = {};
+
+         if (e.target.id != ""){
+            locator = 'id';
+            locValue = e.target.id;
+         }
+         else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")){
+            locator = 'name';
+            locValue = e.target.name;
+         }
+         else if (e.target.tagName == "A"){
+            locator = 'link';
+            locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig,"");
+            locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
+         }
+         else{
+           var xpArray = getXPath(e.target);
+           var stringXpath = xpArray.join('/');
+           
+           locator = 'xpath';
+           locValue = stringXpath;
+         } 
+         if (locValue != ""){
+            params[locator] = locValue;
+         }
+        
+        if (e.target.tagName == "OPTION"){
+          //Drop down, assertSelected
+          windmill.ui.remote.addAction(windmill.ui.remote.buildAction('asserts.assertSelected', params));
+        } 
+        else if (e.target.tagName == "INPUT"){
+          //Input box, assertValue
+          //e.target.type = "text" or e.target.type = "password"
+          params['validator'] = e.target.value;
+          windmill.ui.remote.addAction(windmill.ui.remote.buildAction('asserts.assertValue', params));
+        }
+        else if (e.target.type == "checkbox"){
+          //Assert checked
+          windmill.ui.remote.addAction(windmill.ui.remote.buildAction('asserts.assertChecked', params));
+        }
+        else if (e.target.tagName == "DIV"){
+          //Assert text
+         windmill.ui.remote.addAction(windmill.ui.remote.buildAction('asserts.assertNode', params));
+          params['validator'] = e.target.innerHTML;
+          windmill.ui.remote.addAction(windmill.ui.remote.buildAction('asserts.assertText', params));
+        }
+        else if (e.target.tagName == "IMG"){
+          //Assert Image Loaded
+          windmill.ui.remote.addAction(windmill.ui.remote.buildAction('asserts.assertImageLoaded', params));
+        }
+        else {
+          //Assert Node exists
+          windmill.ui.remote.addAction(windmill.ui.remote.buildAction('asserts.assertNode', params));
+        }
     }
     
     //Set the listeners for the dom explorer
@@ -73,7 +133,7 @@ windmill.ui.assertexplorer = new function () {
       //fleegix.event.listen(windmill.testingApp.document, 'onmouseover', this, 'setIdInRemote');
       fleegix.event.listen(windmill.testingApp.document, 'onmouseover', this, 'setIdInRemote');
       fleegix.event.listen(windmill.testingApp.document, 'onmouseout', this, 'resetBorder');
-      fleegix.event.listen(windmill.testingApp.document, 'onclick', this, 'aexploreClick');
+      fleegix.event.listen(windmill.testingApp.document, 'onclick', this, 'aexplorerClick');
       windmill.remote.$('assertx').src = 'ide/img/axoff.png';
       windmill.remote.$('domExp').style.visibility = 'visible';
 			windmill.remote.$('domExp').innerHTML = '';
@@ -85,7 +145,7 @@ windmill.ui.assertexplorer = new function () {
        this.exploreState = false;
        fleegix.event.unlisten(windmill.testingApp.document, 'onmouseover', this, 'setIdInRemote');
        fleegix.event.unlisten(windmill.testingApp.document, 'onmouseout', this, 'resetBorder');
-       fleegix.event.unlisten(windmill.testingApp.document, 'onclick', this, 'aexploreClick');
+       fleegix.event.unlisten(windmill.testingApp.document, 'onclick', this, 'aexplorerClick');
        
        //Reset the selected element
        windmill.ui.remote.selectedElement = null;
