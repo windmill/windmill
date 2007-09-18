@@ -37,7 +37,7 @@ windmill.controller.what = function() {
      windmill.events.triggerMouseEvent(element, 'click', true);
         
      if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
-         windmill.xhr.loopState = 0;
+       windmill.controller.open({"url":element.href});
      }
      return true;
   };

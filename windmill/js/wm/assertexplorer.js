@@ -35,24 +35,37 @@ windmill.ui.assertexplorer = new function () {
     //Display the id in the remote
     this.setIdInRemote = function(e){
         //console.log  (typeof(e.target.name));
-        if(e.target.id != ""){
-            windmill.remote.$("domExp").innerHTML = "ID: "+ e.target.id+"<br> innerHTML: "+e.target.innerHTML;  
+        var v = null;
+        if (e.target.nodeName == "INPUT"){
+          v = e.target.value;
+        }
+        else {
+          v = e.target.innerHTML;
+        }
+        if (e.target.id != ""){
+            windmill.remote.$("domExp").innerHTML = "ID: "+ e.target.id+"<br> Content: "+ v;  
         }
         else if ((e.target.name != "") && (typeof(e.target.name) != "undefined")){
-            windmill.remote.$("domExp").innerHTML = "Name: "+ e.target.name +"<br> InnerHTML: "+e.target.innerHTML;  
+            windmill.remote.$("domExp").innerHTML = "Name: "+ e.target.name +"<br> Content: "+ v;  
         }
         else if (e.target.nodeName == "A"){
-            windmill.remote.$("domExp").innerHTML = "Link: "+ e.target.innerHTML+"<br> InnerHTML: "+e.target.innerHTML; 
+            windmill.remote.$("domExp").innerHTML = "Link: "+ e.target.innerHTML+"<br> Content: "+ v; 
         }
         else {
            var xpArray = getXPath(e.target);
            var stringXpath = xpArray.join('/');
-           windmill.remote.$("domExp").innerHTML = 'XPath: ' + stringXpath;
+           windmill.remote.$("domExp").innerHTML = 'XPath: ' + stringXpath +"<br> Content: "+ v;
         }
         //this.domExplorerBorder = e.target.style.border;
         e.target.style.border = "1px solid yellow";
     }
     
+    this.aexplorerClick = function(e){
+        e.cancelBubble = true;
+        e.stopPropagation();
+        e.preventDefault();      	
+        windmill.remote.window.focus();  
+    }
     
     //Set the listeners for the dom explorer
     this.assertExplorerOn = function(){
@@ -60,7 +73,7 @@ windmill.ui.assertexplorer = new function () {
       //fleegix.event.listen(windmill.testingApp.document, 'onmouseover', this, 'setIdInRemote');
       fleegix.event.listen(windmill.testingApp.document, 'onmouseover', this, 'setIdInRemote');
       fleegix.event.listen(windmill.testingApp.document, 'onmouseout', this, 'resetBorder');
-      //fleegix.event.listen(windmill.testingApp.document, 'onclick', this, 'explorerClick');
+      fleegix.event.listen(windmill.testingApp.document, 'onclick', this, 'aexploreClick');
       windmill.remote.$('assertx').src = 'ide/img/axoff.png';
       windmill.remote.$('domExp').style.visibility = 'visible';
 			windmill.remote.$('domExp').innerHTML = '';
@@ -72,7 +85,7 @@ windmill.ui.assertexplorer = new function () {
        this.exploreState = false;
        fleegix.event.unlisten(windmill.testingApp.document, 'onmouseover', this, 'setIdInRemote');
        fleegix.event.unlisten(windmill.testingApp.document, 'onmouseout', this, 'resetBorder');
-       //fleegix.event.unlisten(windmill.testingApp.document, 'onclick', this, 'explorerClick');
+       fleegix.event.unlisten(windmill.testingApp.document, 'onclick', this, 'aexploreClick');
        
        //Reset the selected element
        windmill.ui.remote.selectedElement = null;

@@ -14,130 +14,46 @@
 	  <script type="text/javascript" src="lib/browserdetect.js"></script>
   	<script type="text/javascript" src="lib/fleegix.js"></script>
     <script type="text/javascript" src="lib/interpreter.js"></script>
+		<script type="text/javascript" src="lib/hash.js"></script>
+		<script type="text/javascript" src="lib/getXPath.js"></script>
+		<script type="text/javascript" src="wm/windmill.js"></script>
+		<script type="text/javascript" src="wm/registry.js"></script>
+		<script type="text/javascript" src="wm/service.js"></script>
+		<script type="text/javascript" src="controller/controller.js"></script>
+		<script type="text/javascript">
+			var url = 'controller/mozController.js';
+
+			if (browser.isIE){
+				url = 'controller/ieController.js';
+			}
+			else if(browser.isSafari){
+				url = 'controller/safController.js';
+			}
+			document.write('<script src="', url, '" type="text/javascript"><\/script>');
+		</script>
+		<script type="text/javascript" src="controller/commands.js"></script>
+		<script type="text/javascript" src="controller/asserts.js"></script>
+		<script type="text/javascript" src="controller/waits.js"></script>
+		<script type="text/javascript" src="wm/timing.js"></script>
+		<script type="text/javascript" src="wm/performance.js"></script>
+		<script type="text/javascript" src="wm/events.js"></script>
+		<script type="text/javascript" src="wm/ui.js"></script>
+		<script type="text/javascript" src="wm/playback.js"></script>
+		<script type="text/javascript" src="wm/remote.js"></script>
+		<script type="text/javascript" src="wm/recorder.js"></script>
+		<script type="text/javascript" src="wm/domexplorer.js"></script>
+		<script type="text/javascript" src="wm/assertexplorer.js"></script>
+		<script type="text/javascript" src="wm/results.js"></script>
+		<script type="text/javascript" src="wm/xhr.js"></script>
+		<script type="text/javascript" src="wm/jstest.js"></script>
+		<script type="text/javascript" src="lib/xpath/misc.js"></script>
+		<script type="text/javascript" src="lib/xpath/dom.js"></script>
+		<script type="text/javascript" src="lib/xpath/xpath.js"></script>
+	  <script type="text/javascript" src="lib/helpers.js"></script>
+		<script type="text/javascript" src="extensions/extensions.js"></script>
+		<script type="text/javascript" src="wm/remote-global.js"></script>
 
 	<script type="text/javascript" charset="utf-8">
-		//If the user went directly to remote.html
-		try {
-			var windmill = opener.windmill;
-			var testingApp = opener.windmill.testingApp;
-		}
-		catch(error){
-			document.location = '/windmill-serv/start.html';
-		}
-		var $ = function(id) {
-		  return document.getElementById(id);
-		};
-		
-		var closeDialog = function(id){
-			$(id).style.display = 'none';
-			$('gray').style.visibility = 'hidden';
-		};
-		var openDialog = function(id){
-			$(id).style.display = 'block';
-			$('gray').style.visibility = 'visible';
-		};
-		
-		var toggleRec = function(){
-			if ($('record').src.indexOf("ide/img/record.png")  != -1){
-				opener.windmill.ui.recorder.recordOn();
-				opener.window.focus();
-				$('record').src = 'ide/img/stoprecord.png';
-			}
-			else{
-				opener.windmill.ui.recorder.recordOff();
-				$('record').src = 'ide/img/record.png';
-			}
-		}
-		var togglePlay = function(){
-			if ($('playback').src.indexOf("ide/img/playback.png")  != -1){
-				opener.windmill.xhr.startJsonLoop();
-				opener.windmill.ui.playback.sendPlayBack();				
-				$('playback').src = 'ide/img/playbackstop.png';
-			}
-			else{
-				$('playback').src = 'ide/img/playback.png';
-			}
-		}
-		var toggleLoop = function(){
-			if ($('loopLink').innerHTML.indexOf('Pause') != -1){
-				$('loopLink').innerHTML = 'Resume Loop';
-				opener.windmill.xhr.togglePauseJsonLoop();
-			}
-			else{
-				$('loopLink').innerHTML = 'Pause Loop';
-				opener.windmill.xhr.togglePauseJsonLoop();
-			}
-			
-		}
-		var toggleExplore = function(){
-			if ($('explorer').src.indexOf("ide/img/xon.png")  != -1){
-				$('domExp').style.visibility = 'visible';
-				$('domExp').innerHTML = '';
-				opener.windmill.ui.domexplorer.domExplorerOn();
-				opener.window.focus();
-				$('explorer').src = 'ide/img/xoff.png';
-
-			}
-			else {
-				$('domExp').style.visibility = 'hidden';
-				opener.windmill.ui.domexplorer.domExplorerOff();
-				$('explorer').src = 'ide/img/xon.png';
-				$('domExp').innerHTML = '';
-
-			}
-		}
-		var toggleAExplore = function(){
-
-			if ($('assertx').src.indexOf("ide/img/axon.png")  != -1){
-				windmill.remote.alert('This feature is currently under development, and only about 1/4 implemented');
-
-				$('domExp').style.visibility = 'visible';
-				$('domExp').innerHTML = '';
-				opener.windmill.ui.assertexplorer.assertExplorerOn();
-				opener.window.focus();
-				$('assertx').src = 'ide/img/axoff.png';
-
-			}
-			else {
-				$('domExp').style.visibility = 'hidden';
-				opener.windmill.ui.assertexplorer.assertExplorerOff();
-				$('assertx').src = 'ide/img/axon.png';
-				$('domExp').innerHTML = '';
-
-			}
-		}
-		
-		//Scrolling rules when using the IDE
-		//This is a pretty insane hack, description inline
-		var scroll = function(){
-				//When someone scrolls we are assuming they no longer want it to jump to the bottom
-				//So here I am turning the auto scrolling off
-				//However if they scroll back to the bottom, we want to turn auto scroll on
-				$('autoScroll').checked = false;
-
-				var ide = $('ide');
-				var a = ide.scrollTop;
-				var b = ide.scrollHeight - ide.offsetHeight + 1;
-				var c = a - b;
-				
-				//If this offset that I get from the above math is less than 4
-				//Then they are back at the bottom and we turn auto scroll back on
-				if (Math.abs(c) < 4){
-					$('autoScroll').checked = true;
-				}
-				//If not we keep auto scroll off
-				else{
-					$('autoScroll').checked = false;
-				}
-		}
-		var doSubmit = function(){ return false; }
-		try { windmill.remote = parent.window; } catch(err){}
-
-    windmill.remote.init = function () {
-      interpreterManager.initialize();
-  		opener.windmill.Start();
-
-    };
 	  fleegix.event.listen(window, 'onload', windmill.remote, 'init');
 	</script>
 </head>
@@ -170,7 +86,7 @@
 			<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
 		</span>
 		<span>|
-			<a href="#" onclick="opener.windmill.ui.incRecSuite();windmill.ui.remote.getSuite();">New Suite</a>&nbsp
+			<a href="#" onclick="windmill.ui.incRecSuite();windmill.ui.remote.getSuite();">New Suite</a>&nbsp
 			<a href="#" onclick="windmill.ui.remote.addAction();">New Action</a>&nbsp | &nbsp
 		  <a href="#" onclick="windmill.ui.remote.clearIDE()">Clear IDE</a>&nbsp
 		</span>
@@ -250,7 +166,7 @@
 		<table style="font:14px arial;">
 			<tr>
 				<td>Break on failure:</td>
-				<td> <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="opener.windmill.ui.toggleBreak();"></td>
+				<td> <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="windmill.ui.toggleBreak();"></td>
 			</tr>
 			<tr>
 				<td>Suppress Javascript Alerts:</td><td> <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts'></td>
@@ -282,7 +198,7 @@
 			</tr>
 		</table>
 		<br><br>
-		<a href='#' onclick="opener.windmill.testingApp.document.location.reload()">Reload Testing Application</a>: This reloads your page, without resetting Windmill.
+		<a href='#' onclick="windmill.testingApp.document.location.reload()">Reload Testing Application</a>: This reloads your page, without resetting Windmill.
 		<br><br><br><br>
 		<div id="loopButton" style="font:18px arial;width:100%;">
 			<center>

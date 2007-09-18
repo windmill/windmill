@@ -6,11 +6,11 @@ h1 {
 
 .data {
  font-family: Monaco, "lucida console", Courier;
-    font-size: 9px;
+    font-size: 10px;
 }
 .error {
  font-family: Monaco, "lucida console", Courier;
-    font-size: 9px;
+    font-size: 10px;
 }
 textarea.textbox {
     font-family: Monaco, "lucida console", Courier;
@@ -55,8 +55,8 @@ input.textbox {
 
 input.textbox:focus { background-color: #FFFEE3; }
 
-.code { color: blue; }
-.data { color: black; }
-.error { color: red; }
-.banner { color: green; }
+.code { color: blue; font-size: 10px;}
+.data { color: black; font-size: 10px;}
+.error { color: red; font-size: 10px;}
+.banner { color: green; font-size: 10px;}
 .invisible { display: none; }

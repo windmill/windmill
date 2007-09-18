@@ -30,44 +30,43 @@ var windmill = new function () {
     this.varRegistry = new fleegix.hash.Hash();
     
     //The app your testing
-     this.testingApp = parent.frames['webapp'];
-    
+    this.testingApp = opener;
     this.remoteLoaded = false;
+    this.remote = parent.window;
+    
     this.Start = function(){
-      //Index page load report
-      try { load_timer.endTime();
-      windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
-      browser.current_ua + ".</b><br>");
-      windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + 
-      browser.current_ua + ".</b><br>");
-      load_timer.write();}
+      windmill.service.setStartURL();
+      windmill.controller.waits.forNotTitle({"title":"Windmill Testing Framework"});
+      try {
+        windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
+        browser.current_ua + ".</b><br>");
+        windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + 
+        browser.current_ua + ".</b><br>");
+      }
       catch(err){}
-      
-      setTimeout("windmill.controller.continueLoop()", 4000);  
+      setTimeout("windmill.controller.continueLoop()", 2000);  
       //Set a variable so that windmill knows that the remote has fully loaded
       this.remoteLoaded = true;
     }
     
     //When the page is unloaded turn off the loop until it loads the new one
     this.unloaded = function(){
-      windmill.xhr.loopState = 0;
+      windmill.controller.stopLoop();
+      checkPage = function(){ windmill.controller.waits.forPageLoad({}); }
+      setTimeout('checkPage()', 1000);
     }
     
     //On load setup all the listener stuff
     //Set the listener on the testingApp on unload
     this.loaded = function(){
-     windmill.testingApp = parent.frames['webapp'];
-     windmill.ui.domexplorer.setExploreState();
-     windmill.ui.recorder.setRecState();
-     try { fleegix.event.listen(windmill.testingApp, 'onunload', windmill, 'unloaded'); }
-     catch(er){}
+       windmill.ui.domexplorer.setExploreState();
+       windmill.ui.recorder.setRecState();
+       fleegix.event.listen(windmill.testingApp, 'onunload', windmill, 'unloaded');
 
      delayed = function(){
        windmill.controller.continueLoop();
-       //windmill.service.setTestURL();
      }
      setTimeout('delayed()', 2000);
-     
     }
     
     //windmill Options to be set

@@ -66,9 +66,9 @@ windmill.controller.click = function(param_object){
       windmill.events.triggerMouseEvent(element, 'mouseup', true);
       windmill.events.triggerMouseEvent(element, 'click', true);
       
-   if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
-       windmill.xhr.loopState = 0;
-   }
+    if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
+       windmill.controller.open({"url":element.href});
+     }
    
    return true;
 };

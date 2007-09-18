@@ -99,7 +99,6 @@ windmill.controller = new function () {
         if(typeof param_object.name != "undefined") {
             element = this.findElement("name=" + param_object.name)
         }        
-        
 
         return element;
     };
@@ -151,16 +150,18 @@ windmill.controller = new function () {
   this.open = function (param_object) {
       //We need to tell the service where we are before we
       //head to a new page
-      windmill.service.setTestURL();
+      //windmill.service.setTestURL();
     
       //Turn the loop off until the page loads
-      windmill.xhr.loopState = 0;
-      webappframe = document.getElementById('webapp');        
-      webappframe.src = param_object.url;
-    
+      windmill.controller.stopLoop();
+      //webappframe = document.getElementById('webapp');        
+      //webappframe.src = param_object.url;
+      try{ windmill.testingApp.location = param_object.url; }
+      catch(err){}
       //Turn off loop until the onload for the iframe restarts it
       //windmill.xhr.togglePauseJsonLoop();
       done = function(){
+        windmill.controller.waits.forPageLoad({});
         return true;
       }
       setTimeout('done()', 5000);
@@ -281,7 +282,7 @@ windmill.controller = new function () {
           var mouseDownPos = getPos(dragged, 'mouseDown');
           var mouseUpPos = getPos(dest, 'mouseUp');
     
-          var webApp = parent.frames['webapp'];
+          var webApp = windmill.testingApp;
           windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
           windmill.events.triggerMouseEvent(dragged, 'mousedown', true);
           windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
@@ -295,7 +296,7 @@ windmill.controller = new function () {
      this.dragDropXY = function (param_object){
 
          var p = param_object;
-         var webApp = parent.frames['webapp'];
+         var webApp = windmill.testingApp;
          windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.source[0], p.source[1]);
          windmill.events.triggerMouseEvent(webApp.document.body, 'mousedown', true);
          windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.destination[0], p.destination[1]);

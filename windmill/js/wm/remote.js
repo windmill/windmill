@@ -111,7 +111,7 @@ windmill.ui.remote = new function () {
           suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
           "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+suite.id+
           "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+suite.id+
-          "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+suite.id+
+          "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.xhr.toggleCollapse(\'"+suite.id+
           "\')\">[toggle]</a></span></td></tr></table></div>";
           windmill.remote.$('ideForm').appendChild(suite);
       }

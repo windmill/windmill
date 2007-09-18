@@ -175,6 +175,4 @@ windmill.events = new function (){
             element.dispatchEvent(evt);
         }
     }
-
-
 };

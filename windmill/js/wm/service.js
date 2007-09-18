@@ -18,7 +18,7 @@ Copyright 2006, Open Source Applications Foundation
 /***************************************/
 windmill.service = new function () {
 
-    function getParsedLocation(loc) {
+    this.getParsedLocation = function(loc) {
       var str = '';
       str += loc.protocol + '//' + loc.hostname;
       str += loc.port ? ':' + loc.port : '';
@@ -30,7 +30,7 @@ windmill.service = new function () {
       var json_object = new windmill.xhr.json_call('1.1', 'set_test_url');
       var params_obj = {};
       var loc = window.location;
-      params_obj.url = getParsedLocation(loc);
+      params_obj.url = windmill.service.getParsedLocation(loc);
       json_object.params = params_obj;
       var json_string = fleegix.json.serialize(json_object)
 
@@ -48,7 +48,7 @@ windmill.service = new function () {
         var json_object = new windmill.xhr.json_call('1.1', 'set_test_url');
         var params_obj = {};
         var loc = windmill.testingApp.location;
-        params_obj.url = getParsedLocation(loc);
+        params_obj.url =  windmill.service.getParsedLocation(loc);
         json_object.params = params_obj;
         var json_string = fleegix.json.serialize(json_object)
 

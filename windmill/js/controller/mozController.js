@@ -40,24 +40,9 @@ windmill.controller.click = function(param_object){
           
        //Apparently there is some annoying issue with chrome..and this fixes it. Concept from selenium browerbot.
        if (!browser.isChrome && !preventDefault) {
-           if (element.href) {
-               document.getElementById('webapp').src = element.href;
-               
-               //if the url is calling JS then its ajax and we don't need to wait for any full page load.. hopefully.
-               if (element.href.indexOf('javascript:', 0) == -1){
-                    windmill.xhr.loopState = 0;
-                    return true;
-                }
-           } 
-     /*   else if (element.parentNode.href){
-               document.getElementById('webapp').src = element.parentNode.href;
-               
-               if (element.href.indexOf('javascript:', 0) == -1){
-                    windmill.xhr.loopState = 0;
-                    //element = "true";
-                    return true;
-               }
-           }*/
+        if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
+           windmill.controller.open({"url":element.href});
+         }
        }
  
        return true;     
@@ -65,7 +50,6 @@ windmill.controller.click = function(param_object){
 
 //there is a problem with checking via click in safari
 windmill.controller.check = function(param_object){
-    
     return windmill.controller.click(param_object);    
 }
 

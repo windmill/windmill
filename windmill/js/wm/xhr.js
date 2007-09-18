@@ -104,7 +104,7 @@ windmill.xhr = new function () {
                           windmill.xhr.xhrResponse.result.suite_name+"</td><td><span align=\"right\" style='top:0px;float:right;'>"+
                           "<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+windmill.xhr.xhrResponse.result.suite_name+
                            "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+windmill.xhr.xhrResponse.result.suite_name+
-                           "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:opener.windmill.xhr.toggleCollapse(\'"+
+                           "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.xhr.toggleCollapse(\'"+
                            windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table></div>";
                        windmill.remote.$('ideForm').appendChild(suite);
                      }
