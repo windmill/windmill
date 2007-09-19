@@ -39,6 +39,15 @@ windmill.controller.what = function() {
      if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
        windmill.controller.open({"url":element.href});
      }
+     /*else {
+      if (element.hasChildNodes()){
+         var children = element.childNodes;
+         for (var i = 0; i < children.length; i++){
+           windmill.controller.open({"url":children[i].href});
+           return true;
+         }
+       }
+     }*/
      return true;
   };
   

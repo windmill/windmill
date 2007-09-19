@@ -22,48 +22,50 @@ windmill.controller.what = function() {
 
 //Click function for Mozilla with Chrome
 windmill.controller.click = function(param_object){
-      
-       var element = this._lookupDispatch(param_object);
-       if (!element){
-          return false;
-        }
-          
-       element.addEventListener('click', function(evt) {
+      var element = this._lookupDispatch(param_object);
+      if (!element){ return false; }
+      element.addEventListener('click', function(evt) {
            preventDefault = evt.getPreventDefault();
        }, false);
 
        // Trigger the event.
        // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-         windmill.events.triggerMouseEvent(element, 'mousedown', true);
-         windmill.events.triggerMouseEvent(element, 'mouseup', true);
-         windmill.events.triggerMouseEvent(element, 'click', true);
+       windmill.events.triggerMouseEvent(element, 'mousedown', true);
+       windmill.events.triggerMouseEvent(element, 'mouseup', true);
+       windmill.events.triggerMouseEvent(element, 'click', true);
           
        //Apparently there is some annoying issue with chrome..and this fixes it. Concept from selenium browerbot.
-       	    if (!browser.isChrome && !preventDefault) {
- 	           if (element.href) {
-               windmill.controller.open({"url":element.href});
- 	               
- 	               //if the url is calling JS then its ajax and we don't need to wait for any full page load.. hopefully.
- 	               if (element.href.indexOf('javascript:', 0) == -1){
- 	                    windmill.xhr.loopState = 0;
- 	                    return true;
- 	                }
-	           }
+       	if (!browser.isChrome && !preventDefault) {
+	        if (element.href) {
+             windmill.controller.open({"url":element.href});
+               
+             //if the url is calling JS then its ajax and we don't need to wait for any full page load.. hopefully.
+             if (element.href.indexOf('javascript:', 0) == -1){
+                  windmill.xhr.loopState = 0;
+                  return true;
+              }
            }
- 
+           /*else {
+            if (element.hasChildNodes()){
+               var children = element.childNodes;
+               for (var i = 0; i < children.length; i++){
+                 windmill.controller.open({"url":children[i].href});
+                 return true;
+               }
+             }
+           }*/
+        }
        return true;     
 };
 
 //there is a problem with checking via click in safari
 windmill.controller.check = function(param_object){
-    return windmill.controller.click(param_object);    
+  return windmill.controller.click(param_object);    
 }
 
 //Radio buttons are even WIERDER in safari, not breaking in FF
 windmill.controller.radio = function(param_object){
-
-    return windmill.controller.click(param_object);
-        
+  return windmill.controller.click(param_object);      
 }
 
 //Double click for Mozilla

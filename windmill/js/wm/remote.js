@@ -184,7 +184,7 @@ windmill.ui.remote = new function () {
          //default to type for now so everything gets displayed
          if (method == null){
             method = 'click';
-            params.id = ' ';
+            params.id = '';
          }
          //If no params were passed
          if ( typeof(params) == 'undefined'){
