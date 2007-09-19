@@ -89,6 +89,7 @@ windmill.ui.remote = new function () {
        //A hack to make it draw the UI correctly in IE
        suite.appendChild(action);
        windmill.remote.$(action.id).innerHTML = action.innerHTML;
+       windmill.remote.$(action.id+"locator").focus();
        return action.id;
      }
         

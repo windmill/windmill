@@ -35,6 +35,7 @@ windmill.ui.domexplorer = new function () {
     //Display the id in the remote
     this.setIdInRemote = function(e){
         //console.log  (typeof(e.target.name));
+         windmill.remote.$("domExp").style.visibility = 'hidden';
         if(e.target.id != ""){
             windmill.remote.$("domExp").innerHTML = "ID: "+ e.target.id;  
         }
@@ -52,15 +53,16 @@ windmill.ui.domexplorer = new function () {
         }
         //this.domExplorerBorder = e.target.style.border;
         e.target.style.border = "1px solid yellow";
+        this.explorerUpdate(e);
     }
     
-    this.explorerClick = function(e){
+    this.explorerUpdate = function(e){
         e.cancelBubble = true;
         if (windmill.browser.isIE == false){
           e.stopPropagation();
           e.preventDefault();      	
         }
-        windmill.remote.window.focus();
+        //windmill.remote.window.focus();
         //if an element in the remote has been selected
         if (windmill.ui.remote.selectedElement != null){
           var id = windmill.ui.remote.selectedElement.replace('locator', '');
@@ -74,11 +76,17 @@ windmill.ui.domexplorer = new function () {
             }
             windmill.remote.$(id+'locatorType').value =  a[0].toLowerCase(); 
             windmill.remote.$(id+'locator').value = a[1];
+            windmill.remote.$(id+'locator').focus();
           }
           catch(error){
             windmill.ui.results.writeResult('Error in dom explorer');
           }
         }
+    }
+    this.explorerClick = function(e){
+      windmill.remote.window.focus();
+      this.domExplorerOff();
+      this.resetBorder(e);
     }
     
     //Set the listeners for the dom explorer

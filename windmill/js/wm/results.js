@@ -20,7 +20,7 @@ windmill.ui.results = new function () {
     
     //Writing to the performance tab
     this.writePerformance = function(str){
-      var resultsDiv = windmill.remote.$("tab3");
+      var resultsDiv = windmill.remote.$("perfOut");
       resultsDiv.innerHTML =  str + "<br>" + resultsDiv.innerHTML
     }
     
@@ -36,12 +36,8 @@ windmill.ui.results = new function () {
     
     //Writing to the results tab
     this.writeResult = function(str){
-        try { 
-          var resultsDiv = windmill.remote.$("tab4");
+          var resultsDiv = windmill.remote.$("resOut");
           resultsDiv.innerHTML = str + "<br>" + resultsDiv.innerHTML; 
-        }
-        catch(err) { }
-        //resultsDiv.scrollTop = resultsDiv.scrollHeight;
     }
 
 };

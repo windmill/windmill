@@ -63,7 +63,7 @@ function TimeObj() {
     //Write to the log div
     this.write = function(parameters){
          this.calculateTime(); 
-         var perf_tab = windmill.remote.document.getElementById("tab3");
+         var perf_tab = windmill.remote.document.getElementById("perfOut");
         
          perf_tab.innerHTML = "<br>Total: " + this.identifier + " : " + runTime + " ms<br>" + perf_tab.innerHTML;
          perf_tab.innerHTML = "<br>Ending: " + this.identifier + " : " + timeEnded + perf_tab.innerHTML;

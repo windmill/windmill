@@ -30,7 +30,7 @@ windmill.ui.recorder = new function () {
          if( this.recordState == false){ return; }
          var locator = '';
          var locValue = '';
-         console.log(e);
+
          if (e.target.id != ""){
             locator = 'id';
             locValue = e.target.id;

@@ -125,6 +125,8 @@ windmill.ui.assertexplorer = new function () {
           //Assert Node exists
           windmill.ui.remote.addAction(windmill.ui.remote.buildAction('asserts.assertNode', params));
         }
+        this.assertExplorerOff();
+        this.resetBorder(e);
     }
     
     //Set the listeners for the dom explorer
