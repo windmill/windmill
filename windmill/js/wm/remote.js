@@ -69,15 +69,15 @@ windmill.ui.remote = new function () {
       fleegix.fx.fadeIn(windmill.remote.$(newAction.id));
      }
      this.deleteAction = function(uuid){
-      input_box=windmill.remote.confirm("Are you sure you want to continue deleting?");
-      if (input_box==true) {
+      //input_box=windmill.remote.confirm("Are you sure you want to continue deleting?");
+      //if (input_box==true) {
         fleegix.fx.fadeOut(windmill.remote.$(uuid));
         d = function(){ 
         var pElement = windmill.remote.$(uuid).parentNode;
         pElement.removeChild(windmill.remote.$(uuid));
        }
        setTimeout("d()",800);
-      }
+      //}
      }
      
      this.addAction = function(action){
