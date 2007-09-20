@@ -166,7 +166,6 @@
     var s = '';
     s += 'Number of tests run: ' + _j.testCount + '\n';
     s += 'Number of tests failures: ' + _j.testFailureCount + '\n';
-    s += 'Test failures' + '\n';
     var fail = _j.testFailures;
     for (var i = 0; i < fail.length; i++) {
       s += fail[i].message + '\n';

@@ -31,7 +31,7 @@ windmill.jsTest = new function () {
   };
 
   this.testFiles = null;
-  this.testList = '';
+  this.testList = null;
   this.testOrder = null;
   this.testItemArray = null;
   this.testFailures = [];
@@ -42,7 +42,7 @@ windmill.jsTest = new function () {
   // Initialize everything to starting vals
   this.init = function () {
     this.testFiles = null;
-    this.testList = '';
+    this.testList = null;
     this.testOrder = null;
     this.testItemArray = null;
     this.testFailures = [];
@@ -57,7 +57,7 @@ windmill.jsTest = new function () {
     this.runTests();
   };
   this.finish = function () {
-    this.testCount = this.testOrder.length;
+    this.testCount = this.testList.length;
     this.testFailureCount = this.testFailures.length;
     windmill.controller.commands.jsTestResults();
   };
@@ -92,7 +92,7 @@ windmill.jsTest = new function () {
   // Called from the eval of initialize.js,
   // registers all the tests to be run, in order
   this.registerTests = function (arr) {
-    this.testList = arr.join();
+    this.testList = arr.slice();
     this.testOrder = arr;
   };
   // Grab the contents of the test files, and eval
