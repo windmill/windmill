@@ -82,10 +82,10 @@ class MozillaProfile(object):
         self.user_pref('"network.proxy.no_proxies_on", ""')
         self.user_pref('"network.proxy.type", 1')
         
-        self.user_pref('"network.http.max-connections", 40')
-        self.user_pref('"network.http.max-connections-per-server", 16')
-        self.user_pref('"network.http.max-persistent-connections-per-proxy", 12')
-        self.user_pref('"network.http.max-persistent-connections-per-server", 6')
+        self.user_pref('"network.http.max-connections", 10')
+        self.user_pref('"network.http.max-connections-per-server", 8')
+        self.user_pref('"network.http.max-persistent-connections-per-proxy", 1')
+        self.user_pref('"network.http.max-persistent-connections-per-server", 1')
         self.user_pref('"network.http.pipelining.maxrequests", 6')
         
         # Turn off favicon requests, no need for even more requests
@@ -111,6 +111,7 @@ class MozillaProfile(object):
         # Disable "do you want to remember this password?"
         self.user_pref('"signon.rememberSignons", false')
         self.user_pref('"dom.max_script_run_time", 20')
+        return
         
     def user_pref(self, string):
         self.prefs_js_f.write('user_pref(' + string + ');\n')
@@ -173,7 +174,10 @@ class MozillaBrowser(object):
             try:
                 os.kill(self.p_handle.pid+1, kill_signal)
             except:
-                logger.error('Cannot kill firefox')
+                try:
+                    os.kill(self.p_handle.pid, kill_signal)
+                except:
+                    logger.error('Cannot kill firefox')
         else:
             try:
                 self.p_handle.kill(group=True)
