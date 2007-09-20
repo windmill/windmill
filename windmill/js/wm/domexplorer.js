@@ -35,7 +35,9 @@ windmill.ui.domexplorer = new function () {
     //Display the id in the remote
     this.setIdInRemote = function(e){
         //console.log  (typeof(e.target.name));
-         windmill.remote.$("domExp").style.visibility = 'hidden';
+        if (windmill.ui.remote.selectedElement != null){
+          windmill.remote.$("domExp").style.visibility = 'hidden';
+        }
         if(e.target.id != ""){
             windmill.remote.$("domExp").innerHTML = "ID: "+ e.target.id;  
         }

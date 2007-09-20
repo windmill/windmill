@@ -1,16 +1,13 @@
 h1 {
-    font-size: 2em;
     color: #4B4545;
     text-align: center;
 }
 
 .data {
  font-family: Monaco, "lucida console", Courier;
-    font-size: 10px;
 }
 .error {
  font-family: Monaco, "lucida console", Courier;
-    font-size: 10px;
 }
 textarea.textbox {
     font-family: Monaco, "lucida console", Courier;
@@ -23,7 +20,6 @@ textarea.textbox {
 input.textbox {
     font-family: Monaco, "lucida console", Courier;
     border: 1px solid #CCCCCC;
-    font-size: .60em; 
     padding: 2px 4px;
     margin-top: .3em;
 }
@@ -41,7 +37,6 @@ input.textbox {
 #interpreter_output {
     display: inline;
     font-family: Monaco, "lucida console", Courier;
-    font-size: .60em;
 }
 
 #interpreter_output span {
@@ -55,8 +50,8 @@ input.textbox {
 
 input.textbox:focus { background-color: #FFFEE3; }
 
-.code { color: blue; font-size: 10px;}
-.data { color: black; font-size: 10px;}
-.error { color: red; font-size: 10px;}
-.banner { color: green; font-size: 10px;}
+.code { color: blue; }
+.data { color: black; }
+.error { color: red; }
+.banner { color: green; }
 .invisible { display: none; }

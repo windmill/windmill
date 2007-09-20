@@ -61,12 +61,12 @@ var windmill = new function () {
     this.loaded = function(){
        windmill.ui.domexplorer.setExploreState();
        windmill.ui.recorder.setRecState();
-       fleegix.event.listen(windmill.testingApp, 'onunload', windmill, 'unloaded');
+       fleegix.event.listen(windmill.testingApp, 'onbeforeunload', windmill, 'unloaded');
 
      delayed = function(){
        windmill.controller.continueLoop();
      }
-     setTimeout('delayed()', 2000);
+     setTimeout('delayed()', 1000);
     }
     
     //windmill Options to be set
