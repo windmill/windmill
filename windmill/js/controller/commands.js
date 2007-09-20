@@ -164,11 +164,14 @@
     var _j = windmill.jsTest;
     var jsSuiteSummary = _j.jsSuiteSummary;
     var s = '';
-    s += 'Number of tests run: ' + _j.testCount + '\n';
-    s += 'Number of tests failures: ' + _j.testFailureCount + '\n';
-    var fail = _j.testFailures;
-    for (var i = 0; i < fail.length; i++) {
-      s += fail[i].message + '\n';
+    s += 'Number of tests run: ' + _j.testCount + '<br/>';
+    s += 'Number of tests failures: ' + _j.testFailureCount + '<br/>';
+    if (_j.testFailureCount > 0) {
+      s += 'Test failures:<br/>';
+      var fail = _j.testFailures;
+      for (var i = 0; i < fail.length; i++) {
+        s += fail[i].message + '<br/>';
+      }
     }
 
     jsSuiteSummary.endTime();
