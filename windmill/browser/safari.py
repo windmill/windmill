@@ -12,6 +12,25 @@ logger = logging.getLogger(__name__)
 SAFARI_COMMAND = windmill.settings['SAFARI_COMMAND']
 SAFARI_BINARY = windmill.settings['SAFARI_BINARY']
 TEST_URL = windmill.settings['TEST_URL']			
+# 
+# Colossus:/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support mikeal$ ./networksetup -getwebproxy "AirPort"                                          [14:12]
+# cp: /Library/Preferences/SystemConfiguration/preferences.plist.old: Permission denied
+# Enabled: No
+# Server: localhost
+# Port: 4444
+# Authenticated Proxy Enabled: 0
+# Colossus:/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support mikeal$ ./networksetup -setwebproxystate "AirPort" on                                  [14:12]
+# cp: /Library/Preferences/SystemConfiguration/preferences.plist.old: Permission denied
+# Colossus:/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support mikeal$ ./networksetup -getwebproxy "AirPort"                                          [14:13]
+# cp: /Library/Preferences/SystemConfiguration/preferences.plist.old: Permission denied
+# Enabled: Yes
+# Server: localhost
+# Port: 4444
+# Authenticated Proxy Enabled: 0
+# Colossus:/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support mikeal$ whoami                                                                         [14:13]
+# mikeal
+
+
 			
 class Safari(object):
 	

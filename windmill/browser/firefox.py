@@ -84,8 +84,8 @@ class MozillaProfile(object):
         
         self.user_pref('"network.http.max-connections", 10')
         self.user_pref('"network.http.max-connections-per-server", 8')
-        self.user_pref('"network.http.max-persistent-connections-per-proxy", 1')
-        self.user_pref('"network.http.max-persistent-connections-per-server", 1')
+        self.user_pref('"network.http.max-persistent-connections-per-proxy", 2')
+        self.user_pref('"network.http.max-persistent-connections-per-server", 2')
         self.user_pref('"network.http.pipelining.maxrequests", 6')
         
         # Turn off favicon requests, no need for even more requests
@@ -107,7 +107,7 @@ class MozillaProfile(object):
         self.user_pref('"security.warn_viewing_mixed.show_once", false')
         # Disable cache
         self.user_pref('"browser.cache.disk.enable", false')
-        self.user_pref('"browser.cache.memory.enable", false')
+        # self.user_pref('"browser.cache.memory.enable", false')
         # Disable "do you want to remember this password?"
         self.user_pref('"signon.rememberSignons", false')
         self.user_pref('"dom.max_script_run_time", 20')
