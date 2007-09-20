@@ -212,13 +212,15 @@ windmill.controller = new function () {
   this.select = function (param_object) {
       var element = this._lookupDispatch(param_object);
       if (!element){ return false; }
-       
+      
+      var locatorType = param_object.locatorType || 'LABEL';
       /*if (!("options" in element)) {
              //throw new WindmillError("Specified element is not a Select (has no options)");
            
        }*/
     
-      var locator = this.optionLocatorFactory.fromLocatorString('label=' + param_object.option);
+      var locator = this.optionLocatorFactory.fromLocatorString(
+        locatorType.toLowerCase() + '=' + param_object.option);
 
       var optionToSelect = locator.findOption(element);
     
