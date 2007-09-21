@@ -108,6 +108,6 @@
 		}
 		var doSubmit = function(){ return false; }    
     windmill.remote.init = function () {
-      interpreterManager.initialize();
-  		windmill.Start();
+      windmill.remote.shell = new fleegix.shell.Shell($('shellForm').shellInput,$('shellOutput'));  		
+      windmill.Start();
     };

@@ -7,14 +7,14 @@
 	
 	<link rel="stylesheet" type="text/css" href="ide/css/windmill.css"/>
 	<link rel="stylesheet" type="text/css" href="ide/css/remote.css"/>
-  <link rel="stylesheet" type="text/css" href="ide/css/interpreter.css"/>
+	<link rel="stylesheet" type="text/css" href="ide/css/shell.css"/>
+
 	
     <script type="text/javascript" src="lib/MochiKit/MochiKit.js"></script>
-    <script type="text/javascript" src="lib/interpreter.js"></script>
 	  <script type="text/javascript" src="lib/browserdetect.js"></script>
   	<script type="text/javascript" src="lib/fleegix.js"></script>
-    <script type="text/javascript" src="lib/interpreter.js"></script>
-		<script type="text/javascript" src="lib/hash.js"></script>
+		<script type="text/javascript" src="lib/fleegix_plugins/hash.js"></script>
+		<script type="text/javascript" src="lib/fleegix_plugins/shell.js"></script>
 		<script type="text/javascript" src="lib/getXPath.js"></script>
 		<script type="text/javascript" src="wm/windmill.js"></script>
 		<script type="text/javascript" src="wm/registry.js"></script>
@@ -118,7 +118,7 @@
 		<div id="perfOut" class="tab"></div>
 </div>
 <div id="console" class="dialog">
-		<div align="right">
+	<div align="right">
 			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
 				<tr>
 					<td align="left" style="width:92%;color:#456068;">
@@ -129,22 +129,14 @@
 					</td>
 				</tr>
 			</table>
-		</div>
-		<br>
-	  <form id="interpreter_form" autocomplete="off">
-	  	<div id="interpreter_area">
-	    	<div id="interpreter_output">
-	    	</div>
-	   </div>
-	   <div id="oneline">
-	       <input style="width:80%;height:5%" id="interpreter_text" name="input_text" type="text" class="textbox" size="58" />
-	   </div>
-	   <div id="multiline">
-	     <textarea style="width:80%;height:10%;" id="interpreter_textarea" name="input_textarea" type="text" class="textbox" cols="55" rows="4">
-	     </textarea>
-	     <br />
-	   </div>
-	 </form>
+	</div>
+	<br>
+	 <div id="container">
+      <form id="shellForm" onsubmit="return false;">
+        <div id="shellOutput"></div>
+        <input id="shellInput" name="shellInput" type="text" />
+      </form>
+    </div>
 </div>
 
 <div id="settings" class="dialog">
