@@ -85,6 +85,7 @@ windmill.ui.domexplorer = new function () {
           }
         }
     }
+    
     this.explorerClick = function(e){
       windmill.remote.window.focus();
       this.domExplorerOff();
@@ -94,28 +95,80 @@ windmill.ui.domexplorer = new function () {
     //Set the listeners for the dom explorer
     this.domExplorerOn = function(){
       this.exploreState = true;
-      //fleegix.event.listen(windmill.testingApp.document, 'onmouseover', this, 'setIdInRemote');
-      fleegix.event.listen(windmill.testingApp.document, 'onmouseover', this, 'setIdInRemote');
-      fleegix.event.listen(windmill.testingApp.document, 'onmouseout', this, 'resetBorder');
-      fleegix.event.listen(windmill.testingApp.document, 'onclick', this, 'explorerClick');
-      windmill.remote.$('explorer').src = 'ide/img/xoff.png';
-      windmill.remote.$('domExp').style.visibility = 'visible';
-			windmill.remote.$('domExp').innerHTML = '';
-      
+      try {
+        windmill.remote.$('explorer').src = 'ide/img/xoff.png';
+        windmill.remote.$('domExp').style.visibility = 'visible';
+			  windmill.remote.$('domExp').innerHTML = '';
+			  this.dxRecursiveBind(windmill.testingApp);
+      }
+      catch(error){
+           this.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
+           windmill.remote.$('explorer').src = 'ide/img/xon.png';
+           this.exploreState = false;
+      }
     }
     
     //Remove the listeners for the dom explorer
     this.domExplorerOff = function(){
        this.exploreState = false;
-       fleegix.event.unlisten(windmill.testingApp.document, 'onmouseover', this, 'setIdInRemote');
-       fleegix.event.unlisten(windmill.testingApp.document, 'onmouseout', this, 'resetBorder');
-       fleegix.event.unlisten(windmill.testingApp.document, 'onclick', this, 'explorerClick');
        
-       //Reset the selected element
-       windmill.ui.remote.selectedElement = null;
-       windmill.remote.$('explorer').src = 'ide/img/xon.png';
-       windmill.remote.$('domExp').style.visibility = 'hidden';
-       windmill.remote.$('domExp').innerHTML = '';
-
-    }  
+       try{
+         //Reset the selected element
+         windmill.ui.remote.selectedElement = null;
+         windmill.remote.$('explorer').src = 'ide/img/xon.png';
+         windmill.remote.$('domExp').style.visibility = 'hidden';
+         windmill.remote.$('domExp').innerHTML = '';
+         this.dxRecursiveUnBind(windmill.testingApp);
+       }
+       catch(error){
+         this.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
+         windmill.remote.$('explorer').src = 'ide/img/xon.png';
+         this.exploreState = false;
+      }
+    } 
+     
+    //Recursively bind to all the iframes and frames within
+    this.dxRecursiveBind = function(frame){
+      fleegix.event.listen(frame.document, 'onmouseover', this, 'setIdInRemote');
+      fleegix.event.listen(frame.document, 'onmouseout', this, 'resetBorder');
+      fleegix.event.listen(frame.document, 'onclick', this, 'explorerClick');
+      
+			var iframeCount = frame.window.frames.length;
+      var iframeArray = frame.window.frames;
+      
+			for (var i=0;i<iframeCount;i++)
+       {
+        try{
+           fleegix.event.listen(iframeArray[i].document, 'onmouseover', this, 'setIdInRemote');
+           fleegix.event.listen(iframeArray[i].document, 'onmouseout', this, 'resetBorder');
+           fleegix.event.listen(iframeArray[i].document, 'onclick', this, 'explorerClick');
+           this.dxRecursiveBind(iframeArray[i]);
+        }
+        catch(error){             
+          this.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);     
+        }
+       }
+    }
+    
+    this.dxRecursiveUnBind = function(frame){
+      fleegix.event.unlisten(frame.document, 'onmouseover', this, 'setIdInRemote');
+      fleegix.event.unlisten(frame.document, 'onmouseout', this, 'resetBorder');
+      fleegix.event.unlisten(frame.document, 'onclick', this, 'explorerClick');
+      
+			var iframeCount = frame.window.frames.length;
+      var iframeArray = frame.window.frames;
+      
+			for (var i=0;i<iframeCount;i++)
+       {
+        try{
+           fleegix.event.unlisten(iframeArray[i].document, 'onmouseover', this, 'setIdInRemote');
+           fleegix.event.unlisten(iframeArray[i].document, 'onmouseout', this, 'resetBorder');
+           fleegix.event.unlisten(iframeArray[i].document, 'onclick', this, 'explorerClick');
+           this.dxRecursiveUnBind(iframeArray[i]);
+        }
+        catch(error){             
+          this.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);     
+        }
+       }
+    }
 };

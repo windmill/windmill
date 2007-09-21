@@ -130,57 +130,20 @@ windmill.ui.recorder = new function () {
 
       }
       
-      //Turn on the recorder
+     //Turn on the recorder
      //Since the click event does things like firing twice when a double click goes also
      //and can be obnoxious im enabling it to be turned off and on with a toggle check box
      this.recordOn = function(){
-        
          //Turn off the listeners so that we don't have multiple attached listeners for the same event
          this.recordOff();
          //keep track of the recorder state, for page refreshes
          this.recordState = true;
          windmill.ui.remote.getSuite();
-         
-         //IE's onChange support doesn't bubble so we have to manually
-         //Attach a listener to every select and input in the app
-         if (windmill.browser.isIE != false){
-           var inp = windmill.testingApp.document.getElementsByTagName('input');
-           for (var i = 0; i < inp.length; i++) { 
-              fleegix.event.listen(inp[i], 'onchange', this, 'writeJsonChange');
-           }
-           var se = windmill.testingApp.document.getElementsByTagName('select');
-           for (var i = 0; i < se.length; i++) { 
-              fleegix.event.listen(se[i], 'onchange', this, 'writeJsonChange');
-           }
-         }
-         
-          try{
-
-           fleegix.event.listen(windmill.testingApp.document, 'ondblclick', this, 'writeJsonClicks');
-           fleegix.event.listen(windmill.testingApp.document, 'onchange', this, 'writeJsonChange');
-           //fleegix.event.listen(windmill.testingApp.document, 'onblur', this, 'writeJsonChange');
-           fleegix.event.listen(windmill.testingApp.document, 'onclick', this, 'writeJsonClicks');
-         
-         //We need to set these listeners on all iframes inside the testing app, per bug 32
-         var iframeCount = windmill.testingApp.window.frames.length;
-         var iframeArray = windmill.testingApp.window.frames;
-         
-         for (var i=0;i<iframeCount;i++)
-         {
-             try{
-                 fleegix.event.listen(iframeArray[i], 'ondblclick', this, 'writeJsonClicks');
-                 fleegix.event.listen(iframeArray[i], 'onchange', this, 'writeJsonChange');
-                 fleegix.event.listen(iframeArray[i], 'onclick', this, 'writeJsonClicks');
-                 //fleegix.event.listen(iframeArray[i], 'onblur', this, 'writeJsonChange');
-
-            }
-            catch(error){             
-                this.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);     
-            }
-         }
+         try{
+           this.recRecursiveBind(windmill.testingApp);
          }
          catch(error){
-           alert('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
+           this.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
            windmill.remote.$('record').src = 'ide/img/record.png';
            this.recordState = false;
          }
@@ -188,52 +151,86 @@ windmill.ui.recorder = new function () {
      
      this.recordOff = function(){
          this.recordState = false;
-         
-          //IE's onChange support doesn't bubble so we have to manually
-         //Attach a listener to every select and input in the app
-         if (windmill.browser.isIE != false){
-           var inp = windmill.testingApp.document.getElementsByTagName('input');
-           for (var i = 0; i < inp.length; i++) { 
-              fleegix.event.unlisten(inp[i], 'onchange', this, 'writeJsonChange');
-           }
-           var se = windmill.testingApp.document.getElementsByTagName('select');
-           for (var i = 0; i < se.length; i++) { 
-              fleegix.event.unlisten(se[i], 'onchange', this, 'writeJsonChange');
-           }
-         }
          try{
-           fleegix.event.unlisten(windmill.testingApp.document, 'ondblclick', this, 'writeJsonClicks');
-           fleegix.event.unlisten(windmill.testingApp.document, 'onchange', this, 'writeJsonChange');
-           fleegix.event.unlisten(windmill.testingApp.document, 'onclick', this, 'writeJsonClicks');
-        
-         //fleegix.event.unlisten(windmill.testingApp.document, 'onblur', this, 'writeJsonChange');
-
-         //fleegix.event.unlisten(windmill.testingApp.document, 'onmousedown', this, 'writeJsonDragDown');
-         //fleegix.event.unlisten(windmill.testingApp.document, 'onmouseup', this, 'writeJsonDragUp');
-         
-          //We need to disable these listeners on all iframes inside the testing app, per bug 32
-         var iframeCount = windmill.testingApp.window.frames.length;
-         var iframeArray = windmill.testingApp.window.frames;
-         
-         for (var i=0;i<iframeCount;i++)
-         {
-            try{
-               fleegix.event.unlisten(iframeArray[i], 'ondblclick', this, 'writeJsonClicks');
-               fleegix.event.unlisten(iframeArray[i], 'onchange', this, 'writeJsonChange');
-               fleegix.event.unlisten(iframeArray[i], 'onclick', this, 'writeJsonClicks');
-               //fleegix.event.unlisten(iframeArray[i], 'onblur', this, 'writeJsonClicks');
-           }
-           catch(error){ 
-              windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);          
-           }
-         }
-         
+           this.recRecursiveUnBind(windmill.testingApp);
          }
          catch(error){
-          //alert('You left your testing domain, and we do not yet support cross domain testing in the same session.');
-          //windmill.remote.toggleRec();
-          windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.' + error);          
-
+           windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill,'+ 
+           'we are getting cross domain exceptions.' + error);          
          }      
      }
+     
+    //Recursively bind to all the iframes and frames within
+    this.recRecursiveBind = function(frame){
+      //IE's onChange support doesn't bubble so we have to manually
+      //Attach a listener to every select and input in the app
+      if (windmill.browser.isIE != false){
+         var inp = frame.document.getElementsByTagName('input');
+         for (var i = 0; i < inp.length; i++) { 
+            fleegix.event.listen(inp[i], 'onchange', this, 'writeJsonChange');
+         }
+         var se = frame.document.getElementsByTagName('select');
+         for (var i = 0; i < se.length; i++) { 
+            fleegix.event.listen(se[i], 'onchange', this, 'writeJsonChange');
+         }
+      }
+       
+      fleegix.event.listen(frame.document, 'ondblclick', this, 'writeJsonClicks');
+      fleegix.event.listen(frame.document, 'onchange', this, 'writeJsonChange');
+      fleegix.event.listen(frame.document, 'onclick', this, 'writeJsonClicks');
+      
+			var iframeCount = frame.window.frames.length;
+      var iframeArray = frame.window.frames;
+      
+			for (var i=0;i<iframeCount;i++)
+       {
+        try{
+           fleegix.event.listen(iframeArray[i].document, 'ondblclick', this, 'writeJsonClicks');
+           fleegix.event.listen(iframeArray[i].document, 'onchange', this, 'writeJsonChange');
+           fleegix.event.listen(iframeArray[i].document, 'onclick', this, 'writeJsonClicks');
+           this.recRecursiveBind(iframeArray[i]);
+        }
+        catch(error){             
+          this.writeResult('There was a problem binding to one of your iframes, is it cross domain?' +
+          'Binding to all others.' + error);     
+        }
+       }
+    }
+    
+    //Recursively bind to all the iframes and frames within
+    this.recRecursiveUnBind = function(frame){
+      //IE's onChange support doesn't bubble so we have to manually
+      //Attach a listener to every select and input in the app
+      if (windmill.browser.isIE != false){
+         var inp = frame.document.getElementsByTagName('input');
+         for (var i = 0; i < inp.length; i++) { 
+            fleegix.event.unlisten(inp[i], 'onchange', this, 'writeJsonChange');
+         }
+         var se = frame.document.getElementsByTagName('select');
+         for (var i = 0; i < se.length; i++) { 
+            fleegix.event.unlisten(se[i], 'onchange', this, 'writeJsonChange');
+         }
+      }
+       
+      fleegix.event.unlisten(frame.document, 'ondblclick', this, 'writeJsonClicks');
+      fleegix.event.unlisten(frame.document, 'onchange', this, 'writeJsonChange');
+      fleegix.event.unlisten(frame.document, 'onclick', this, 'writeJsonClicks');
+      
+			var iframeCount = frame.window.frames.length;
+      var iframeArray = frame.window.frames;
+      
+			for (var i=0;i<iframeCount;i++)
+       {
+        try{
+           fleegix.event.unlisten(iframeArray[i].document, 'ondblclick', this, 'writeJsonClicks');
+           fleegix.event.unlisten(iframeArray[i].document, 'onchange', this, 'writeJsonChange');
+           fleegix.event.unlisten(iframeArray[i].document, 'onclick', this, 'writeJsonClicks');
+           this.recRecursiveUnBind(iframeArray[i]);
+        }
+        catch(error){             
+          this.writeResult('There was a problem binding to one of your iframes, is it cross domain?' +
+          'Binding to all others.' + error);     
+        }
+       }
+    }
 };

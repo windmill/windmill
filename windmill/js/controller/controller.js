@@ -704,7 +704,6 @@ OptionLocatorFactory.prototype.fromLocatorString = function (locatorString) {
     }
 
       windmill.ui.results.writeResult("Unrecognised locator type: '" + locatorType + "'");
-      
 };
 
 /**
@@ -737,8 +736,6 @@ OptionLocatorFactory.prototype.OptionLocatorByLabel = function (label) {
             }
         }
         windmill.ui.results.writeResult("Option with label '" + this.label + "' not found");
-        
-   
     };
 
     this.assertSelected = function (element) {
@@ -761,7 +758,6 @@ OptionLocatorFactory.prototype.OptionLocatorByValue = function (value) {
         }
        
        windmill.ui.results.writeResult("Option with value '" + this.value + "' not found");
-        
     };
 
     this.assertSelected = function (element) {
@@ -780,7 +776,6 @@ OptionLocatorFactory.prototype.OptionLocatorByIndex = function (index) {
         windmill.ui.results.writeResult("Illegal Index: " + index);
     
     }
-
     this.findOption = function (element) {
         if (element.options.length <= this.index) {
             
