@@ -166,6 +166,8 @@ windmill.ui.assertexplorer = new function () {
     
     //Recursively bind to all the iframes and frames within
     this.axRecursiveBind = function(frame){
+      this.axRecursiveUnBind(frame);
+      
       fleegix.event.listen(frame.document, 'onmouseover', this, 'setIdInRemote');
       fleegix.event.listen(frame.document, 'onmouseout', this, 'resetBorder');
       fleegix.event.listen(frame.document, 'onclick', this, 'aexplorerClick');

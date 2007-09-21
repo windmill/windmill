@@ -18,7 +18,7 @@ var windmill = new function () {
     this.browser = null;
     
     this.init = function (b){
-        this.browser = b;
+      this.browser = b;
     }
     
     //More namespacing
@@ -31,6 +31,10 @@ var windmill = new function () {
     
     //The app your testing
     this.testingApp = opener;
+    //This is so that if you are doing multiple frame testing
+    //And you have to change testingApp to point at various frames
+    //You can still keep track of the base window
+    this.baseTestingApp = opener;
     this.remoteLoaded = false;
     this.remote = parent.window;
     

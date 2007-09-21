@@ -102,7 +102,7 @@ windmill.ui.domexplorer = new function () {
 			  this.dxRecursiveBind(windmill.testingApp);
       }
       catch(error){
-           this.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
+           windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
            windmill.remote.$('explorer').src = 'ide/img/xon.png';
            this.exploreState = false;
       }
@@ -121,7 +121,7 @@ windmill.ui.domexplorer = new function () {
          this.dxRecursiveUnBind(windmill.testingApp);
        }
        catch(error){
-         this.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
+         windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
          windmill.remote.$('explorer').src = 'ide/img/xon.png';
          this.exploreState = false;
       }
@@ -129,6 +129,8 @@ windmill.ui.domexplorer = new function () {
      
     //Recursively bind to all the iframes and frames within
     this.dxRecursiveBind = function(frame){
+      this.dxRecursiveUnBind(frame);
+      
       fleegix.event.listen(frame.document, 'onmouseover', this, 'setIdInRemote');
       fleegix.event.listen(frame.document, 'onmouseout', this, 'resetBorder');
       fleegix.event.listen(frame.document, 'onclick', this, 'explorerClick');
@@ -145,7 +147,7 @@ windmill.ui.domexplorer = new function () {
            this.dxRecursiveBind(iframeArray[i]);
         }
         catch(error){             
-          this.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);     
+          windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);     
         }
        }
     }
@@ -167,7 +169,7 @@ windmill.ui.domexplorer = new function () {
            this.dxRecursiveUnBind(iframeArray[i]);
         }
         catch(error){             
-          this.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);     
+          windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);     
         }
        }
     }

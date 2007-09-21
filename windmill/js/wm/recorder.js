@@ -143,7 +143,7 @@ windmill.ui.recorder = new function () {
            this.recRecursiveBind(windmill.testingApp);
          }
          catch(error){
-           this.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
+           windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
            windmill.remote.$('record').src = 'ide/img/record.png';
            this.recordState = false;
          }
@@ -162,6 +162,9 @@ windmill.ui.recorder = new function () {
      
     //Recursively bind to all the iframes and frames within
     this.recRecursiveBind = function(frame){
+      //Make sure we haven't already bound anything to this frame yet
+      this.recRecursiveUnBind(frame);
+      
       //IE's onChange support doesn't bubble so we have to manually
       //Attach a listener to every select and input in the app
       if (windmill.browser.isIE != false){
@@ -174,7 +177,7 @@ windmill.ui.recorder = new function () {
             fleegix.event.listen(se[i], 'onchange', this, 'writeJsonChange');
          }
       }
-       
+      
       fleegix.event.listen(frame.document, 'ondblclick', this, 'writeJsonClicks');
       fleegix.event.listen(frame.document, 'onchange', this, 'writeJsonChange');
       fleegix.event.listen(frame.document, 'onclick', this, 'writeJsonClicks');
@@ -191,7 +194,7 @@ windmill.ui.recorder = new function () {
            this.recRecursiveBind(iframeArray[i]);
         }
         catch(error){             
-          this.writeResult('There was a problem binding to one of your iframes, is it cross domain?' +
+          windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain?' +
           'Binding to all others.' + error);     
         }
        }
@@ -228,7 +231,7 @@ windmill.ui.recorder = new function () {
            this.recRecursiveUnBind(iframeArray[i]);
         }
         catch(error){             
-          this.writeResult('There was a problem binding to one of your iframes, is it cross domain?' +
+          windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain?' +
           'Binding to all others.' + error);     
         }
        }
