@@ -22,14 +22,47 @@ fleegix.shell = new function () {
     this.shellRegistry.push(sh);
     return this.shellRegistry.length - 1;
   };
+  this.currentShell = null;
+  this.inspect = function (obj) {
+    return this.currentShell.inspect(obj);
+  };
 };
 fleegix.shell.Shell = function (input, output) {
   this.input = input;
   this.output = output;
+  // For now, explorer output hard-coded to go to
+  // normal output node
+  this.explorer = output;
   this.regIndex = fleegix.shell.registerShell(this);
+  this.initScroll = false;
   fleegix.event.listen(this.input, 'onkeydown', this, 'execCode');
+  fleegix.shell.currentShell = this;
 };
 fleegix.shell.Shell.prototype = new function () {
+  var _createElem = function (s) {
+    return document.createElement(s); };
+  var _createText = function (s) {
+    return document.createTextNode(s); };
+  function createItemEntry(node, item, context) {
+    var _this = context;
+    node.innerHTML = item + ' ';
+    if (_this.explorer && typeof item == 'object') {
+      var a = _createElem('a');
+      var f = function () { _this.addExplorerEntry(
+        _this.inspect(item)); };
+      a.href = '#';
+      a.appendChild(_createText('[+]'));
+      node.appendChild(a);
+      fleegix.event.listen(a, 'onclick', f);
+    }
+    return node;
+  }
+  function shouldAutoScroll(o) {
+    return (o.scrollTop == (o.scrollHeight - o.clientHeight));
+  }
+  function isFirstAutoScrollSet(init, o) {
+    return (!init && (o.scrollHeight > o.clientHeight));
+  }
   this.history = [];
   this.historyPos = 0;
   this.result = '';
@@ -56,9 +89,28 @@ fleegix.shell.Shell.prototype = new function () {
           this.addErr(code, e);
         }
       }
-      this.result = this.result || code;
-      var res = '>>> ' + this.result + '<br/>';
-      this.output.innerHTML += res;
+      var span = _createElem('span');
+      var div = _createElem('div');
+      var res = this.result || code;
+      span = createItemEntry(span, res, this);
+
+      // Check if it should be auto-scrolling
+      if (shouldAutoScroll(this.output)) {
+        var follow = true;
+      }
+
+      div.appendChild(_createText('>>>'));
+      div.appendChild(span);
+      this.output.appendChild(div);
+
+      // Do auto scrolling if currently auto-scrolled, or if
+      // setting auto-scroll for the first time
+      if (follow ||
+        (isFirstAutoScrollSet(this.initScroll, this.output))) {
+        this.output.scrollTop = (this.output.scrollHeight - this.output.clientHeight);
+        this.initScroll = true;
+      }
+
       this.input.value = '';
     }
     else if (e.keyCode == 38) {
@@ -75,5 +127,34 @@ fleegix.shell.Shell.prototype = new function () {
   };
   this.addErr = function (code, e) {
     this.result = code + '<br/>' + e.message;
+  };
+  this.addExplorerEntry = function (node) {
+    // Check if it should be auto-scrolling
+    if (shouldAutoScroll(this.output)) {
+      var follow = true;
+    }
+    this.explorer.appendChild(node);
+    // Do auto scrolling if currently auto-scrolled, or if
+    // setting auto-scroll for the first time
+    if (follow ||
+      (isFirstAutoScrollSet(this.initScroll, this.output))) {
+      this.output.scrollTop = (this.output.scrollHeight - this.output.clientHeight);
+      this.initScroll = true;
+    }
+  };
+  this.inspect = function (obj) {
+    var _this = this;
+    var main = _createElem('div');
+    for (var i in obj) {
+      var d = _createElem('div');
+      var item = obj[i];
+      d = createItemEntry(d, obj[i], this);
+      main.appendChild(d);
+    }
+    if (!main.hasChildNodes()) {
+      main.appendChild(
+        _createText('This object has no properties to display.'));
+    }
+    return main;
   };
 };

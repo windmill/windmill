@@ -36,6 +36,7 @@ windmill.registry.methods['type']                = {'locator': true, 'option': '
 windmill.registry.methods['radio']               = {'locator': true, 'option': false };
 windmill.registry.methods['check']               = {'locator': true, 'option': false };
 windmill.registry.methods['select']              = {'locator': true, 'option': 'option'};
+windmill.registry.methods['setTestWindow']       = {'locator': false, 'option': 'path'};
 windmill.registry.methods['asserts.assertProperty'] = {'locator': true, 'option': 'validator' };
 windmill.registry.methods['asserts.assertText']     = {'locator': true, 'option': 'validator' };
 windmill.registry.methods['asserts.assertValue']    = {'locator': true, 'option': 'validator' };

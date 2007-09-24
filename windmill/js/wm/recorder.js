@@ -140,7 +140,7 @@ windmill.ui.recorder = new function () {
          this.recordState = true;
          windmill.ui.remote.getSuite();
          try{
-           this.recRecursiveBind(windmill.testingApp);
+           this.recRecursiveBind(windmill.testWindow);
          }
          catch(error){
            windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
@@ -152,7 +152,7 @@ windmill.ui.recorder = new function () {
      this.recordOff = function(){
          this.recordState = false;
          try{
-           this.recRecursiveUnBind(windmill.testingApp);
+           this.recRecursiveUnBind(windmill.testWindow);
          }
          catch(error){
            windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill,'+ 

@@ -99,7 +99,7 @@ windmill.ui.domexplorer = new function () {
         windmill.remote.$('explorer').src = 'ide/img/xoff.png';
         windmill.remote.$('domExp').style.visibility = 'visible';
 			  windmill.remote.$('domExp').innerHTML = '';
-			  this.dxRecursiveBind(windmill.testingApp);
+			  this.dxRecursiveBind(windmill.testWindow);
       }
       catch(error){
            windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
@@ -118,7 +118,7 @@ windmill.ui.domexplorer = new function () {
          windmill.remote.$('explorer').src = 'ide/img/xon.png';
          windmill.remote.$('domExp').style.visibility = 'hidden';
          windmill.remote.$('domExp').innerHTML = '';
-         this.dxRecursiveUnBind(windmill.testingApp);
+         this.dxRecursiveUnBind(windmill.testWindow);
        }
        catch(error){
          windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');

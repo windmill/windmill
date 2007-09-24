@@ -30,11 +30,12 @@ var windmill = new function () {
     this.varRegistry = new fleegix.hash.Hash();
     
     //The app your testing
-    this.testingApp = opener;
+    this.testWindow = opener;
+    
     //This is so that if you are doing multiple frame testing
     //And you have to change testingApp to point at various frames
     //You can still keep track of the base window
-    this.baseTestingApp = opener;
+    this.baseTestWindow = opener;
     this.remoteLoaded = false;
     this.remote = parent.window;
     
@@ -65,7 +66,7 @@ var windmill = new function () {
     this.loaded = function(){
        windmill.ui.domexplorer.setExploreState();
        windmill.ui.recorder.setRecState();
-       fleegix.event.listen(windmill.testingApp, 'onbeforeunload', windmill, 'unloaded');
+       fleegix.event.listen(windmill.testWindow, 'onbeforeunload', windmill, 'unloaded');
 
      delayed = function(){
        windmill.controller.continueLoop();

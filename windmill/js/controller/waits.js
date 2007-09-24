@@ -70,7 +70,7 @@
         return false;
       }
       //var n = windmill.controller._lookupDispatch(p);
-      try { var n = windmill.testingApp.document;}
+      try { var n = windmill.testWindow.document;}
       catch(err) { var n = false; }
       count += 2500;
       this.check(n);
@@ -109,7 +109,7 @@
       }
       //var n = windmill.controller._lookupDispatch(p);
       try {
-        if (windmill.testingApp.document.title == p.title){
+        if (windmill.testWindow.document.title == p.title){
           var n = null;
         }
         else { var n = true };
@@ -128,7 +128,7 @@
       }
       else{
         //reattach all the listeners etc.
-        fleegix.event.listen(windmill.testingApp, 'onunload', windmill, 'unloaded');
+        fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
         windmill.controller.continueLoop();
         return true;
       }

@@ -47,7 +47,7 @@ windmill.service = new function () {
       try{
         var json_object = new windmill.xhr.json_call('1.1', 'set_test_url');
         var params_obj = {};
-        var loc = windmill.testingApp.location;
+        var loc = windmill.testWindow.location;
         params_obj.url =  windmill.service.getParsedLocation(loc);
         json_object.params = params_obj;
         var json_string = fleegix.json.serialize(json_object)

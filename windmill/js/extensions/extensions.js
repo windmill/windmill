@@ -58,7 +58,7 @@ windmill.controller.extensions.cosmoDragDrop = function (p){
     var param = p || {};
     var dragged = param.dragged;
     var dest = param.destination;
-    var app = windmill.testingApp;
+    var app = windmill.testWindow;
 
     dragged.id = dragged.pfx + eval(dragged.jsid);
     // Delete the jsid to force lookup by regular id

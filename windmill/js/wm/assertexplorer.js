@@ -136,7 +136,7 @@ windmill.ui.assertexplorer = new function () {
         windmill.remote.$('assertx').src = 'ide/img/axoff.png';
         windmill.remote.$('domExp').style.visibility = 'visible';
 			  windmill.remote.$('domExp').innerHTML = '';
-        this.axRecursiveBind(windmill.testingApp);
+        this.axRecursiveBind(windmill.testWindow);
        }
        catch(error){
         windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, '+
@@ -156,7 +156,7 @@ windmill.ui.assertexplorer = new function () {
          windmill.remote.$('assertx').src = 'ide/img/axon.png';
          windmill.remote.$('domExp').style.visibility = 'hidden';
          windmill.remote.$('domExp').innerHTML = '';
-         this.axRecursiveUnBind(windmill.testingApp);
+         this.axRecursiveUnBind(windmill.testWindow);
        }
        catch(error){
          windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, '+

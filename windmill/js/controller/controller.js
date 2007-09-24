@@ -59,7 +59,7 @@ windmill.controller = new function () {
     /* And the ones that start with an underscore are ignored in that list
     /* So if you are adding functionality for internal use and doesnt map from json please start with _
     /*******************************/
-    this._getDocument = function () { return windmill.testingApp.document; }
+    this._getDocument = function () { return windmill.testWindow.document; }
     this._getCurrentWindow = function() { return parent; }
     this._getTitle = function() {
         var t = this._getDocument().title;
@@ -132,7 +132,7 @@ windmill.controller = new function () {
       //windmill.remote.$('playback').src = 'ide/img/playback.png';
       //console.log(windmill.remote.$('playback'));
   };
-
+  
   //After a page is done loading, continue the loop
   this.continueLoop = function (){
     cont = function(){
@@ -156,7 +156,7 @@ windmill.controller = new function () {
       windmill.controller.stopLoop();
       //webappframe = document.getElementById('webapp');        
       //webappframe.src = param_object.url;
-      try{ windmill.testingApp.location = param_object.url; }
+      try{ windmill.testWindow.location = param_object.url; }
       catch(err){}
       //Turn off loop until the onload for the iframe restarts it
       //windmill.xhr.togglePauseJsonLoop();
@@ -246,8 +246,7 @@ windmill.controller = new function () {
   };
 
   //Drag Drop functionality allowing functions passed to calculate cursor offsets
-  this.dragDrop = function (param_object){
-    
+  this.dragDrop = function (param_object){   
    
        var p = param_object;
        var hash_key;
@@ -284,7 +283,7 @@ windmill.controller = new function () {
           var mouseDownPos = getPos(dragged, 'mouseDown');
           var mouseUpPos = getPos(dest, 'mouseUp');
     
-          var webApp = windmill.testingApp;
+          var webApp = windmill.testWindow;
           windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
           windmill.events.triggerMouseEvent(dragged, 'mousedown', true);
           windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
@@ -298,7 +297,7 @@ windmill.controller = new function () {
      this.dragDropXY = function (param_object){
 
          var p = param_object;
-         var webApp = windmill.testingApp;
+         var webApp = windmill.testWindow;
          windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.source[0], p.source[1]);
          windmill.events.triggerMouseEvent(webApp.document.body, 'mousedown', true);
          windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.destination[0], p.destination[1]);
@@ -337,14 +336,23 @@ windmill.controller = new function () {
 
   //After the app reloads you have to re overwrite the alert function for the TestingApp
   this.reWriteAlert = function(param_object){
-    windmill.testingApp.window.alert = function(s){
+    windmill.testWindow.window.alert = function(s){
         windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
     };
 
       return true;
   };
-    
-        
+   
+  //Allow the user to set the testWindow to a different window 
+  //or frame within the page 
+  this.setTestWindow = function(param_object){
+    var res = eval ('windmill.testWindow ='+ param_object.path +';');
+    if (typeof(res) != 'undefined'){
+      return true;
+    }
+    return false;
+  }
+  
     /********************************************************************************
     /* DOM location functionality, all used for various types of lookups in the DOM
     /*********************************************************************************/

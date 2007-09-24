@@ -129,7 +129,7 @@
   
   //
  windmill.controller.commands.getDOM = function (param_object){
-    var dom = windmill.testingApp.document.documentElement.innerHTML.replace('\n','');
+    var dom = windmill.testWindow.document.documentElement.innerHTML.replace('\n','');
     
     //Send to the server
     var json_object = new windmill.xhr.json_call('1.1', 'command_result');
