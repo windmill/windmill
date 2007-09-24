@@ -12,8 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from setuptools import setup
-import sys
+from setuptools import setup, find_packages
+import sys, os
 
 desc = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.'
 
@@ -27,7 +27,8 @@ setup(name=PACKAGE_NAME,
       author_email='tools-dev@osafoundation.org',
       url='http://windmill.osafoundation.org/',
       license='http://www.apache.org/licenses/LICENSE-2.0',
-      packages=['windmill'],
+      packages=find_packages(),
+      scripts=[os.path.abspath(os.path.join(os.path.dirname(__file__),'windmill','bin','windmill'))],
       platforms =['Any'],
       install_requires = ['cherrypy >= 3.0.1',
                           'simplejson',

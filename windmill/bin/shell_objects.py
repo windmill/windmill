@@ -27,29 +27,34 @@ from StringIO import StringIO
 test_stream_object = StringIO()
 
 def clear_queue():
+    """Clear the Service's current queue of tests/actions."""
     xmlrpc_client.clear_queue()
         
 windmill.settings['controllers'] = []
         
 def start_firefox():
+    """Start the Firefox web browser configured for windmill"""
     controller = windmill.browser.get_firefox_controller()
     controller.start()
     windmill.settings['controllers'].append(controller)
     return controller
     
 def start_ie():
+    """Start the Internet Explorer web browser configured for windmill"""
     controller = windmill.browser.get_ie_controller()
     controller.start()
     windmill.settings['controllers'].append(controller)
     return controller
     
 def start_safari():
+    """Start the Safari web browser configured for windmill"""
     controller = windmill.browser.get_safari_controller()
     controller.start()
     windmill.settings['controllers'].append(controller)
     return controller
     
 def run_json_test_file(*args):
+    """Run the json test files passed to this function"""
     filename = ','.join(args)
     if filename.find(',') is not -1:
         for testfile in filename.split(','):
@@ -63,30 +68,36 @@ def run_json_test_file(*args):
     logger.info('Added tests from %s' % filename)
     
 def show_queue():
+    """Return the current queue of tests and commands in windmill"""
     return windmill.settings['shell_objects']['httpd'].controller_queue.queue
     
 def run_python_test(filename):
+    """Run a single python test file"""
     test_run_method = lambda : frame.collect_and_run_tests(filename)
     while not windmill.ide_is_awake:
         sleep(1)
     test_run_method()
     
 def load_python_tests(filename):
+    """Load a python test file's controller actions in to the server and pass to the IDE without running."""
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
     run_python_test(filename)
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
     
 def load_json_test_file(filename):
+    """Load a JSON test file's controller actions in to the server and pass to the IDE without running."""
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
     run_json_test_file(filename)
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
 
 def load_json_test_dir(filename):
+    """Load a JSON test dir's controller actions in to the server and pass to the IDE without running."""
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
     run_json_test_dir(filename)
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
     
 def run_js_test_dir(dirname):
+    """Mount the directory and send all javascript file links to the IDE in order to execute those test urls under the jsUnit framework"""
     # Mount the fileserver application for tests
     from wsgi_fileserver import WSGIFileServerApplication
     application = WSGIFileServerApplication(root_path=os.path.abspath(dirname), mount_point='/windmill-jstest/')
@@ -99,6 +110,7 @@ def run_js_test_dir(dirname):
     
     
 def run_json_test_dir(*args):
+    """Run the directory[s] of JSON tests."""
     # Try to import test_conf
     directory = ','.join(args)
     if directory.find(',') is not -1:
@@ -121,6 +133,7 @@ def run_json_test_dir(*args):
         run_json_test_file(os.path.abspath(directory)+os.path.sep+test)
 
 def run_given_test_dir():
+    """Run the directory[s] of JSON tests that are currently set in windmill. These can be set as a command line option or by a local setting preference."""
     run_json_test_dir(windmill.settings['TEST_DIR'])
     
     logger = logging.getLogger(__name__)

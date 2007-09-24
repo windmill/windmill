@@ -1,7 +1,6 @@
 cherrypy >= 3.0.1
 simplejson
 dateutil
-wsgi_proxy
 wsgi_jsonrpc
 wsgi_xmlrpc
 wsgi_fileserver

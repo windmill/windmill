@@ -1,10 +1,12 @@
 LICENSE.txt
 README.txt
 Windmill-WingDev.wpr
+build_setup.py
 buildapp.sh
 ez_setup.py
 setup.py
 wmicon.icns
+/Users/mikeal/Documents/projects/windmill/trunk/windmill/bin/windmill
 contrib/pyselenium/src/__init__.py
 contrib/pyselenium/src/seleniumservercontrol.py
 contrib/pyselenium/src/seleniumunittest.py
@@ -36,7 +38,6 @@ windmill/bin/admin_lib.py
 windmill/bin/admin_options.py
 windmill/bin/json2python.py
 windmill/bin/shell_objects.py
-windmill/bin/windmill-admin.py
 windmill/bin/wxui/Firefoxlogo2.png
 windmill/bin/wxui/__init__.py
 windmill/bin/wxui/gridcontrol.py
@@ -56,10 +57,13 @@ windmill/conf/local_settings.py
 windmill/js/ide-readme.txt
 windmill/js/remote.html
 windmill/js/start.html
+windmill/js/controller/asserts.js
+windmill/js/controller/commands.js
 windmill/js/controller/controller.js
 windmill/js/controller/ieController.js
 windmill/js/controller/mozController.js
 windmill/js/controller/safController.js
+windmill/js/controller/waits.js
 windmill/js/extensions/extensions.js
 windmill/js/ide/css/interpreter.css
 windmill/js/ide/css/remote.css
@@ -69,6 +73,7 @@ windmill/js/ide/img/adddown.png
 windmill/js/ide/img/addup.png
 windmill/js/ide/img/axoff.png
 windmill/js/ide/img/axon.png
+windmill/js/ide/img/loading.gif
 windmill/js/ide/img/logo.jpg
 windmill/js/ide/img/play.png
 windmill/js/ide/img/playback.png
@@ -77,6 +82,7 @@ windmill/js/ide/img/record.png
 windmill/js/ide/img/stoprecord.png
 windmill/js/ide/img/text_elem_gradient.gif
 windmill/js/ide/img/trash.png
+windmill/js/ide/img/wlogo.png
 windmill/js/ide/img/wmIcon.png
 windmill/js/ide/img/xoff.png
 windmill/js/ide/img/xon.png
@@ -113,12 +119,15 @@ windmill/js/lib/xpath/xpath.js
 windmill/js/wm/assertexplorer.js
 windmill/js/wm/domexplorer.js
 windmill/js/wm/events.js
+windmill/js/wm/jstest.js
 windmill/js/wm/performance.js
 windmill/js/wm/playback.js
 windmill/js/wm/recorder.js
 windmill/js/wm/registry.js
+windmill/js/wm/remote-global.js
 windmill/js/wm/remote.js
 windmill/js/wm/results.js
+windmill/js/wm/service.js
 windmill/js/wm/timing.js
 windmill/js/wm/ui.js
 windmill/js/wm/windmill-exec.js
@@ -126,6 +135,7 @@ windmill/js/wm/windmill.js
 windmill/js/wm/xhr.js
 windmill/server/__init__.py
 windmill/server/convergence.py
+windmill/server/proxy.py
 windmill/server/wsgi.py
 windmill/test/__init__.py
 windmill/test/test_browser.py

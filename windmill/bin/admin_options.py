@@ -125,6 +125,7 @@ def process_module(module):
     module.flags_dict = flags_dict
     
 def help(bin_name='windmill'):
+    bin_name = 'windmill'
     module = sys.modules[__name__]
     from windmill.conf import global_settings
     all_option_names = []
@@ -140,7 +141,7 @@ def help(bin_name='windmill'):
         options_string.append('    '+'  '.join([str(option.option_names), option.__doc__]) + default)
 
     preamble = """windmill web test automation system.
-    %s [-%s] action [option=value] [firefox] [http://www.google.com]
+    %s [-%s] action [option=value] [firefox|ie|safari] [http://www.example.com]
     
 Available Actions:
     shell         Enter the windmilll shell environment (modified python shell). 
