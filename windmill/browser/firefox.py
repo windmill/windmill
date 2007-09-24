@@ -61,6 +61,14 @@ class MozillaProfile(object):
             self.prefs_js_filename = self.profile_path + '/prefs.js'
             self.prefs_js_f = open( self.prefs_js_filename, 'w')
             self.initial_prefs()
+        
+        if sys.platform == 'linux':
+            shutil.copyfile(windmill.settings['MOZILLA_BINARY'], self.profile_path+'/'+'windmill-firefox')
+            f = open(self.profile_path+'/'+'windmill-firefox', 'rw')
+            f.write(f.read().replace('file://', ''))
+            f.flush()
+            f.close()
+            windmill.settings['MOZILLA_BINARY'] = self.profile_path+'/'+'windmill-firefox'
             
     
     def initial_prefs(self):
@@ -145,9 +153,6 @@ class MozillaBrowser(object):
             
         if windmill.settings['MOZILLA_COMMAND'] is None:
             self.command = [self.mozilla_bin, '-profile', profile_path]
-        elif windmill.settings['MOZILLA_COMMAND'] == 'linux':
-            self.command = [windmill.settings['MOZILLA_BINARY'],
-                            windmill.settings['TEST_URL']+'/windmill-serv/start.html']
         else:
             self.command = windmill.settings['MOZILLA_COMMAND']
 
