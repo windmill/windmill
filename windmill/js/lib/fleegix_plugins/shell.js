@@ -43,9 +43,13 @@ fleegix.shell.Shell.prototype = new function () {
     return document.createElement(s); };
   var _createText = function (s) {
     return document.createTextNode(s); };
-  function createItemEntry(node, item, context) {
+  function createItemEntry(node, name, item, context) {
     var _this = context;
-    node.innerHTML = item + ' ';
+    var str = item + ' ';
+    if (_this.explorer && name) {
+      str = name + ': ' + str;
+    }
+    node.innerHTML = str;
     if (_this.explorer && typeof item == 'object') {
       var a = _createElem('a');
       var f = function () { _this.addExplorerEntry(
@@ -92,7 +96,7 @@ fleegix.shell.Shell.prototype = new function () {
       var span = _createElem('span');
       var div = _createElem('div');
       var res = this.result || code;
-      span = createItemEntry(span, res, this);
+      span = createItemEntry(span, null, res, this);
 
       // Check if it should be auto-scrolling
       if (shouldAutoScroll(this.output)) {
@@ -129,6 +133,7 @@ fleegix.shell.Shell.prototype = new function () {
     this.result = code + '<br/>' + e.message;
   };
   this.addExplorerEntry = function (node) {
+    var follow = false;
     // Check if it should be auto-scrolling
     if (shouldAutoScroll(this.output)) {
       var follow = true;
@@ -148,7 +153,7 @@ fleegix.shell.Shell.prototype = new function () {
     for (var i in obj) {
       var d = _createElem('div');
       var item = obj[i];
-      d = createItemEntry(d, obj[i], this);
+      d = createItemEntry(d, i, obj[i], this);
       main.appendChild(d);
     }
     if (!main.hasChildNodes()) {
