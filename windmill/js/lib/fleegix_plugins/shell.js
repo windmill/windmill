@@ -98,6 +98,7 @@ fleegix.shell.Shell.prototype = new function () {
       var res = this.result || code;
       span = createItemEntry(span, null, res, this);
 
+      var follow = false;
       // Check if it should be auto-scrolling
       if (shouldAutoScroll(this.output)) {
         var follow = true;
