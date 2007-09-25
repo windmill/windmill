@@ -79,7 +79,7 @@
 	
 	<div id="navigation" style="font-wight:bold;" align=center>
 		<span style="font-weight: bold;"> 
-			<a href="#" onclick="javascript:openDialog('console')">Console</a>&nbsp 
+			<a href="#" onclick="javascript:openDialog('shell')">Shell</a>&nbsp 
 			<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
 			<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
 		</span>
@@ -115,15 +115,15 @@
 		<br>
 		<div id="perfOut" class="tab"></div>
 </div>
-<div id="console" class="dialog">
+<div id="shell" class="dialog">
 	<div align="right">
 			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
 				<tr>
 					<td align="left" style="width:92%;color:#456068;">
-						<strong>Windmill Console</strong>
+						<strong>Windmill Shell</strong>
 					</td>
 					<td style="font: 9pt arial;">
-						<a href="#" onclick="javascript:closeDialog('console');">Close</a>
+						<a href="#" onclick="javascript:closeDialog('shell');">Close</a>
 					</td>
 				</tr>
 			</table>
@@ -165,8 +165,8 @@
 				<td>Suite Save Formatting:</td>
 				<td> 
 					<SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
-						<OPTION value="python" selected>python</option>
-						<OPTION value="json">json</option>
+						<OPTION value="python">python</option>
+						<OPTION value="json" selected>json</option>
 					</SELECT>
 				</td>
 			</tr>
