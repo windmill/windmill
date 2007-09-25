@@ -143,7 +143,7 @@ class WindmillProxyApplication(object):
             if new_response is not None: 
                 response = new_response
             else:
-                start_response(connection.pop(0))
+                start_response(*connection.pop(0))
                 return [connection.pop(0)]
         else:
             response = connection.getresponse()
