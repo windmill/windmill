@@ -32,7 +32,6 @@ setup(name=PACKAGE_NAME,
       platforms =['Any'],
       install_requires = ['cherrypy >= 3.0.1',
                           'simplejson',
-                          'dateutil',
                           # All these wsgi_ libraries used to be part of windmill but are now seperate libraries.
                           'wsgi_jsonrpc',
                           'wsgi_xmlrpc',

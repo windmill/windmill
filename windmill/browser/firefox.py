@@ -153,6 +153,7 @@ class MozillaBrowser(object):
             
         if windmill.settings['MOZILLA_COMMAND'] is None:
             self.command = [self.mozilla_bin, '-profile', profile_path]
+
         else:
             self.command = windmill.settings['MOZILLA_COMMAND']
 
