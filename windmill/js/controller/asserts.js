@@ -175,10 +175,18 @@ windmill.controller.asserts.assertProperty = function (param_object) {
    }
    var vArray = param_object.validator.split('|');
    var value = eval ('element.' + vArray[0]+';');
-   if (value.indexOf(vArray[1]) != -1){
-     return true;
-   }
-   return false;
+   var res = false;
+   try {
+     if (value.indexOf(vArray[1]) != -1){
+       res = true;
+     }
+    }
+    catch(err){  
+    }
+    if (String(value) == String(vArray[1])) {
+     res = true;
+    }
+   return res;
  };   
 
 // Assert that a specified image has actually loaded
