@@ -229,11 +229,9 @@ windmill.xhr = new function () {
     this.togglePauseJsonLoop = function(){
         if (windmill.xhr.loopState == 1){
             windmill.xhr.loopState = 0;
-            windmill.ui.toggleLoopButtonText();
         }
         else {
             windmill.xhr.loopState = 1;
-            windmill.ui.toggleLoopButtonText();
             windmill.xhr.getNext();
         }
     };   

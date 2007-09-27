@@ -79,9 +79,11 @@
 	</div>
 	
 	<div id="navigation" style="font-wight:bold;" align=center>
-		<span style="font-weight: bold;"> 
-			<a href="#" onclick="javascript:openDialog('shell')">Shell</a>&nbsp 
-			<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
+	  
+	   <span style="font-weight: bold;"> 
+      <a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Pause Loop</a>&nbsp |
+	    <a href="#" onclick="javascript:openDialog('shell')">Shell</a>&nbsp |
+			<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp | 
 			<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
 		</span>
 		<span>|
@@ -191,11 +193,7 @@
 		<br><br>
 		<a href='#' onclick="windmill.testWindow.document.location.reload()">Reload Testing Application</a>: This reloads your page, without resetting Windmill.
 		<br><br><br><br>
-		<div id="loopButton" style="font:18px arial;width:100%;">
-			<center>
-				<a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Pause Loop</a>
-			</center>
-		</div>
+
 	</form>
 </div>
 
