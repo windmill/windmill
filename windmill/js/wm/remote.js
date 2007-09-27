@@ -110,13 +110,17 @@ windmill.ui.remote = new function () {
           //suite.style.overflow = 'hidden';
           //suite.style.height='40px';
           suite.style.border = '1px solid black';
-          suite.innerHTML = "<div style='width:100%'><table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
+          suite.innerHTML = "<table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
           "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+suite.id+
           "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+suite.id+
           "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.xhr.toggleCollapse(\'"+suite.id+
-          "\')\">[toggle]</a></span></td></tr></table></div>";
+          "\')\">[toggle]</a></span></td></tr></table>";
           windmill.remote.$('ideForm').appendChild(suite);
       }
+      var dragsort = ToolMan.dragsort()
+	    var junkdrawer = ToolMan.junkdrawer()
+      dragsort.makeListSortable(windmill.remote.$(suite.id),verticalOnly, saveOrder)
+      
       return suite;
      }
 
@@ -188,9 +192,8 @@ windmill.ui.remote = new function () {
             params.id = '';
          }
          //If no params were passed
-         if ( typeof(params) == 'undefined'){
-           var params = {};
-         }
+         if ( typeof(params) == 'undefined'){ var params = {}; }
+         
          //var action = this.constructAction(method,'','',windmill.registry.methods[method].option,parms[windmill.registry.methods[method].option]);
          var action = windmill.remote.document.createElement('div');
          if (typeof(params.uuid) == 'undefined'){
@@ -202,7 +205,6 @@ windmill.ui.remote = new function () {
          action.style.border     = '1px dashed #aaa';
          action.style.background = 'lightyellow';
          action.style.width      = '100%';
-         
          //action.style.height = '50px';
          
          //in the case that the method we are passsing in isn't in the registry, we can still display it
@@ -229,14 +231,11 @@ windmill.ui.remote = new function () {
             
             //This makes it look better in IE
             c.innerHTML += '<br>';
-            //c.innerHTML += '<input type="text" class="texta" size="55" id="'+action.id+'params" value="'+ fleegix.json.serialize(params).replace( /"/g, '\'' ); +'"/>';
-            var i = windmill.remote.document.createElement("input");
+            var i = windmill.remote.document.createElement('input');
             i.type      = 'text';
             i.id        = action.id+'params';
             i.className = 'texta';
-            i.size      = '55';
-
-            i.setAttribute('value', fleegix.json.serialize(params));
+            i.value = fleegix.json.serialize(params);
             
             c.appendChild(i);
             r.appendChild(c);

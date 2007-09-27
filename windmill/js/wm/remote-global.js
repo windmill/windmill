@@ -106,8 +106,31 @@
 					$('autoScroll').checked = false;
 				}
 		}
+		
+	function verticalOnly(item) {
+		item.toolManDragGroup.verticalOnly()
+	}
+
+	function speak(id, what) {
+		var element = document.getElementById(id);
+		element.innerHTML = 'Clicked ' + what;
+	}
+
+	function saveOrder(item) {
+		var group = item.toolManDragGroup
+		var list = group.element.parentNode
+		var id = list.getAttribute("id")
+		if (id == null) return
+		group.register('dragend', function() {
+			ToolMan.cookies().set("list-" + id, 
+					ToolMan.junkdrawer().serializeList(list), 365)
+		})
+	}
+		
 		var doSubmit = function(){ return false; }    
     windmill.remote.init = function () {
       windmill.remote.shell = new fleegix.shell.Shell($('shellForm').shellInput,$('shellOutput'));  		
       windmill.Start();
     };
+    
+    

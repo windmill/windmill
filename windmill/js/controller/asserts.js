@@ -155,11 +155,10 @@ windmill.controller.asserts.assertSelected = function (param_object) {
    return false;
  };
  
-//Assert that a provided value is selected in a select element
+//Assert that a provided checkbox is checked
 windmill.controller.asserts.assertChecked = function (param_object) { 
    var n = windmill.controller._lookupDispatch(param_object);
-   var validator = param_object.validator;
- 
+    
    if (n.checked == true){
     return true;
    }
