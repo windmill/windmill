@@ -105,8 +105,16 @@ def run_js_test_dir(dirname):
     wsgi.add_namespace('windmill-jstest', application)
     # Build list of files and send to IDE
     base_url = windmill.settings['TEST_URL']+'/windmill-jstest/'
+    
+    js_files = []
+    def parse_files(x, directory, files):
+        if not os.path.split(directory)[-1].startswith('.'):
+            js_files.extend( [f for f in files if f.endswith('js')]  )
+    os.path.walk(dirname, parse_files, 'x') 
+    print js_files
+    
     xmlrpc_client.add_command({'method':'commands.jsTests', 
-                               'params':{'tests':[base_url+f for f in os.listdir(dirname) if f.endswith('.js') ]}})
+                               'params':{'tests':[base_url+f for f in js_files ]}})
     
     
 def run_json_test_dir(*args):
