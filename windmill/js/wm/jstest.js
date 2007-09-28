@@ -22,16 +22,23 @@ windmill.jsTest = new function () {
     if (window.execScript) {
       window.execScript(code);
     }
-    else if (navigator.userAgent.indexOf('Safari/41') > -1) {
-      window.setTimeout(data, 0);
-    }
     else {
       window.eval.call(window, code);
     }
   };
+  function combineLists(listA, listB) {
+    var arr = [];
+    if (listB.length) {
+      arr = listA.length ? listA.join() + ',' + listB.join() : listB.join();
+      arr = arr.split(',');
+    }
+    return arr;
+  }
 
   this.testFiles = null;
-  this.testList = null;
+  this.initFile = false;
+  this.testNamespaces = [];
+  this.testList = [];
   this.testOrder = null;
   this.testItemArray = null;
   this.testFailures = [];
@@ -42,7 +49,9 @@ windmill.jsTest = new function () {
   // Initialize everything to starting vals
   this.init = function () {
     this.testFiles = null;
-    this.testList = null;
+    this.initFile = false;
+    this.testNamespaces = [];
+    this.testList = [];
     this.testOrder = null;
     this.testItemArray = null;
     this.testFailures = [];
@@ -50,10 +59,11 @@ windmill.jsTest = new function () {
     this.testFailureCount = 0;
   }
   // Main function to run a directory of JS tests
-  this.run = function (tests) {
+  this.run = function (testFiles) {
     this.init();
-    this.doSetup(tests);
+    this.doSetup(testFiles);
     this.loadTests();
+    this.getTestNames();
     this.runTests();
   };
   this.finish = function () {
@@ -72,12 +82,17 @@ windmill.jsTest = new function () {
       }
     }
     if (typeof initIndex == 'number') {
+      this.initFile = true;
       var initPath = tests[initIndex];
       tests.splice(initIndex, 1);
       this.testFiles = tests;
       if (this.doTestInit(initPath)) {
         return true;
       }
+    }
+    else {
+      this.testFiles = tests;
+      return true;
     }
   };
   // Run any init code in the init file, and grab
@@ -89,11 +104,61 @@ windmill.jsTest = new function () {
       globalEval(str);
       return true;
   };
-  // Called from the eval of initialize.js,
+  // Can be called from the eval of an initialize.js file --
   // registers all the tests to be run, in order
   this.registerTests = function (arr) {
-    this.testList = arr.slice();
-    this.testOrder = arr;
+    this.testList = combineLists(this.testList, arr);
+  };
+  // Can be called from the eval of an initialize.js file --
+  // parses a JS namespace object for functions that
+  // start with 'test_'. Does not guarantee the order of
+  // tests run
+  this.registerTestNamespace = function (name) {
+    this.testNamespaces.push(name);
+  };
+  this.parseTestNamespace = function (name) {
+    var arr = [];
+    var re = /^test_/;
+    function parseObj(obj, namespace) {
+      var o = obj;
+      for (var p in o) {
+        var item = o[p];
+        if (typeof item == 'function' && re.test(p)) {
+          arr.push(namespace + '.' + p);
+        }
+        else if (typeof item == 'object') {
+          var n = namespace + '.' + p;
+          parseObj(item, n);
+        }
+      }
+    }
+    parseObj(window[name], name);
+    this.testList = combineLists(this.testList, arr);
+  };
+  this.getTestNames = function () {
+    if (this.initFile) {
+      var n = this.testNamespaces;
+      for (var i = 0; i < n.length; i++) {
+        this.parseTestNamespace(n[i]);
+      }
+    }
+    else {
+      var re = /^test_/;
+      var arr = [];
+      for (var p in window) {
+        var item = window[p];
+        if (typeof item == 'function' && re.test(p)) {
+          arr.push(p);
+        }
+        this.testList = arr;
+      }
+    }
+    if (this.testList.length) {
+      this.testOrder = this.testList.slice();
+    }
+    else {
+      throw new Error('No tests to run.');
+    }
   };
   // Grab the contents of the test files, and eval
   // them in window scope
