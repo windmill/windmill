@@ -49,5 +49,5 @@ windmill.registry.methods['cosmoDragDrop']  = {'locator': true, 'option':'destin
 windmill.registry.methods['setOptions']     = {'locator': false, 'option':'stopOnFailure'};
 windmill.registry.methods['reWriteAlert']   = {'locator': false, 'option': false };
 windmill.registry.methods['storeURL']       = {'locator': true, 'option': false };
-windmill.registry.methods['complex']        = {};
+windmill.registry.methods['complex']        = {'locator': false, 'option': false };
 

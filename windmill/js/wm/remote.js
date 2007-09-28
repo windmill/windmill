@@ -137,21 +137,29 @@ windmill.ui.remote = new function () {
 	var actionObj = {};
 	actionObj.suite_name = suite.id;
 	actionObj.version = "0.1";
-	var si = windmill.remote.$(suite.childNodes[j].id+'method').selectedIndex;
-	actionObj.method = windmill.remote.$(suite.childNodes[j].id+'method')[si].value;
+	
+	if (windmill.remote.$(suite.childNodes[j].id+'params') != null ) {
+	  actionObj.method = windmill.remote.$(suite.childNodes[j].id+'method').value;
+	  actionObj.params = eval('('+windmill.remote.$(suite.childNodes[j].id+'params').value + ')');
+	}	  
+	else {
+	  var si = windmill.remote.$(suite.childNodes[j].id+'method').selectedIndex;
+	  actionObj.method = windmill.remote.$(suite.childNodes[j].id+'method')[si].value;
+	  var paramsObj = {};
+	  paramsObj.uuid = suite.childNodes[j].id;
+	  
+	  if (windmill.registry.methods[actionObj.method].locator){
+	    var si = windmill.remote.$(suite.childNodes[j].id+'locatorType').selectedIndex;
+	    paramsObj[windmill.remote.$(suite.childNodes[j].id+'locatorType')[si].value] = windmill.remote.$(suite.childNodes[j].id+'locator').value;
+	  }
+	  if (windmill.registry.methods[actionObj.method].option){
+	    var si = windmill.remote.$(suite.childNodes[j].id+'optionType').selectedIndex;
+	    paramsObj[windmill.remote.$(suite.childNodes[j].id+'optionType')[si].value] = windmill.remote.$(suite.childNodes[j].id+'option').value;
+	  }
+	  actionObj.params = paramsObj;
+	}
+	
 
-	var paramsObj = {};
-	paramsObj.uuid = suite.childNodes[j].id;
-                
-	if (windmill.registry.methods[actionObj.method].locator){
-	  var si = windmill.remote.$(suite.childNodes[j].id+'locatorType').selectedIndex;
-	  paramsObj[windmill.remote.$(suite.childNodes[j].id+'locatorType')[si].value] = windmill.remote.$(suite.childNodes[j].id+'locator').value;
-	}
-	if (windmill.registry.methods[actionObj.method].option){
-	  var si = windmill.remote.$(suite.childNodes[j].id+'optionType').selectedIndex;
-	  paramsObj[windmill.remote.$(suite.childNodes[j].id+'optionType')[si].value] = windmill.remote.$(suite.childNodes[j].id+'option').value;
-	}
-	actionObj.params = paramsObj;
 	//var str = fleegix.json.serialize(actionObj);
 	testArray.push(actionObj);
       }
