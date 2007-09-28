@@ -27,7 +27,7 @@ if not __name__ == "__main__":
     import new
     import httplib, urllib, re
     import copy, socket, random, urlparse, logging
-    import wsgi_jsonrpc, wsgi_xmlrpc, wsgi_proxy, wsgi_fileserver
+    import wsgi_jsonrpc, wsgi_xmlrpc, wsgi_fileserver
     import simplejson
     import email
     from email.Header import Header, decode_header
