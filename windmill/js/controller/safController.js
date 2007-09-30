@@ -96,9 +96,9 @@ windmill.controller.doubleClick = function(param_object) {
     windmill.events.triggerMouseEvent(element, 'dblclick', true);
 
    /* if (this._windowClosed()) {
-        return;
-    }
-*/
+      return;
+      }
+   */
     windmill.events.triggerEvent(element, 'blur', false);
     
     return true;

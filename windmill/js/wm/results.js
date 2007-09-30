@@ -18,26 +18,26 @@ Copyright 2006, Open Source Applications Foundation
 /***************************************/
 windmill.ui.results = new function () {
     
-    //Writing to the performance tab
-    this.writePerformance = function(str){
-      var resultsDiv = windmill.remote.$("perfOut");
-      resultsDiv.innerHTML =  str + "<br>" + resultsDiv.innerHTML
-    }
+  //Writing to the performance tab
+  this.writePerformance = function(str){
+    var resultsDiv = windmill.remote.$("perfOut");
+    resultsDiv.innerHTML =  str + "<br>" + resultsDiv.innerHTML
+  }
     
-    this.writeStatus = function(str){
-      //If the remote hasn't fully loaded, this kills the action
-      //that is trying to be run, because this code either stalls or dies
-      //this makes sure, and is set by the remote onload
-      if (windmill.remoteLoaded == true){
-        var status = windmill.remote.$("runningStatus");
-        status.innerHTML = '<b>Status:</b> '+str;
-      }
+  this.writeStatus = function(str){
+    //If the remote hasn't fully loaded, this kills the action
+    //that is trying to be run, because this code either stalls or dies
+    //this makes sure, and is set by the remote onload
+    if (windmill.remoteLoaded == true){
+      var status = windmill.remote.$("runningStatus");
+      status.innerHTML = '<b>Status:</b> '+str;
     }
+  }
     
-    //Writing to the results tab
-    this.writeResult = function(str){
-          var resultsDiv = windmill.remote.$("resOut");
-          resultsDiv.innerHTML = str + "<br>" + resultsDiv.innerHTML; 
-    }
+  //Writing to the results tab
+  this.writeResult = function(str){
+    var resultsDiv = windmill.remote.$("resOut");
+    resultsDiv.innerHTML = str + "<br>" + resultsDiv.innerHTML; 
+  }
 
 };

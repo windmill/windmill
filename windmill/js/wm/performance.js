@@ -24,7 +24,7 @@ windmill.performance = new function () {
   //this.windmill.ui.results.writeResult( =  new windmill.ui.results.writeResult(4js.getwindmill.ui.results.writeResult(ger("Performance_log");
   //this.windmill.ui.results.writeResult(.setLevel(windmill.ui.results.writeResult(4js.Level.ALL);
     
-    //Other performance functionality
+  //Other performance functionality
     
     
 };

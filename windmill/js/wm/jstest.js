@@ -98,11 +98,11 @@ windmill.jsTest = new function () {
   // Run any init code in the init file, and grab
   // the ordered list of tests to run
   this.doTestInit = function(initPath) {
-      var str = fleegix.xhr.doReq({ url: initPath,
-        async: false });
-      // Eval in window scope
-      globalEval(str);
-      return true;
+    var str = fleegix.xhr.doReq({ url: initPath,
+	  async: false });
+    // Eval in window scope
+    globalEval(str);
+    return true;
   };
   // Can be called from the eval of an initialize.js file --
   // registers all the tests to be run, in order
@@ -167,7 +167,7 @@ windmill.jsTest = new function () {
     for (var i = 0; i < tests.length; i++) {
       var path = tests[i];
       var str = fleegix.xhr.doReq({ url: path,
-        async: false });
+	    async: false });
       // Eval in window scope
       globalEval(str);
     }
@@ -224,7 +224,7 @@ windmill.jsTest = new function () {
       jsTestTimer.endTime();
       //write to the results tab in the IDE
       windmill.ui.results.writeResult("<br>Test: <b>" +
-        testName + "<br>Test Result:" + true);
+				      testName + "<br>Test Result:" + true);
       //send report for pass
       windmill.jsTest.sendJSReport(testName, true, null,jsTestTimer);
     }
@@ -234,7 +234,7 @@ windmill.jsTest = new function () {
       jsTestTimer.endTime();
       var fail = new windmill.jsTest.TestFailure(testName, e);
       windmill.ui.results.writeResult("<br>Test: <b>" +
-        testName + "<br>Test Result:" + false + '<br>Error: '+ fail.message);
+				      testName + "<br>Test Result:" + false + '<br>Error: '+ fail.message);
       windmill.jsTest.sendJSReport(testName, false, e, jsTestTimer);
       this.testFailures.push(fail);
     }
@@ -292,11 +292,11 @@ windmill.jsTest.sendJSReport = function (testname, result, error, timer) {
   var result_string = fleegix.json.serialize(result);
   var dt = new Date();
   var test_obj = { "result": result,
-    "starttime": timer.getStart(),
-    "endtime": timer.getEnd(),
-    "debug": error,
-    "uuid": dt.getTime(),
-    "suite_name": "jsTest" };
+		   "starttime": timer.getStart(),
+		   "endtime": timer.getEnd(),
+		   "debug": error,
+		   "uuid": dt.getTime(),
+		   "suite_name": "jsTest" };
   var json_object = new windmill.xhr.json_call('1.1', 'report_without_resolve');
   json_object.params = test_obj;
   var json_string = fleegix.json.serialize(json_object);

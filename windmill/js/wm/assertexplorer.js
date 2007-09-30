@@ -160,56 +160,56 @@ windmill.ui.assertexplorer = new function () {
        }
        catch(error){
          windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, '+
-         'we are getting cross domain exceptions.');
-        }
+					 'we are getting cross domain exceptions.');
+       }
     }  
     
-    //Recursively bind to all the iframes and frames within
-    this.axRecursiveBind = function(frame){
-      this.axRecursiveUnBind(frame);
+  //Recursively bind to all the iframes and frames within
+  this.axRecursiveBind = function(frame){
+    this.axRecursiveUnBind(frame);
       
-      fleegix.event.listen(frame.document, 'onmouseover', this, 'setIdInRemote');
-      fleegix.event.listen(frame.document, 'onmouseout', this, 'resetBorder');
-      fleegix.event.listen(frame.document, 'onclick', this, 'aexplorerClick');
+    fleegix.event.listen(frame.document, 'onmouseover', this, 'setIdInRemote');
+    fleegix.event.listen(frame.document, 'onmouseout', this, 'resetBorder');
+    fleegix.event.listen(frame.document, 'onclick', this, 'aexplorerClick');
       
-			var iframeCount = frame.window.frames.length;
-      var iframeArray = frame.window.frames;
+    var iframeCount = frame.window.frames.length;
+    var iframeArray = frame.window.frames;
       
-			for (var i=0;i<iframeCount;i++)
-       {
+    for (var i=0;i<iframeCount;i++)
+      {
         try{
-           fleegix.event.listen(iframeArray[i].document, 'onmouseover', this, 'setIdInRemote');
-           fleegix.event.listen(iframeArray[i].document, 'onmouseout', this, 'resetBorder');
-           fleegix.event.listen(iframeArray[i].document, 'onclick', this, 'aexplorerClick');
-           this.axRecursiveBind(iframeArray[i]);
+	  fleegix.event.listen(iframeArray[i].document, 'onmouseover', this, 'setIdInRemote');
+	  fleegix.event.listen(iframeArray[i].document, 'onmouseout', this, 'resetBorder');
+	  fleegix.event.listen(iframeArray[i].document, 'onclick', this, 'aexplorerClick');
+	  this.axRecursiveBind(iframeArray[i]);
         }
         catch(error){             
           windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain? '+
-          'Binding to all others.' + error);     
+					  'Binding to all others.' + error);     
         }
-       }
-    }
+      }
+  }
     
-    this.axRecursiveUnBind = function(frame){
-      fleegix.event.unlisten(frame.document, 'onmouseover', this, 'setIdInRemote');
-      fleegix.event.unlisten(frame.document, 'onmouseout', this, 'resetBorder');
-      fleegix.event.unlisten(frame.document, 'onclick', this, 'aexplorerClick');
+  this.axRecursiveUnBind = function(frame){
+    fleegix.event.unlisten(frame.document, 'onmouseover', this, 'setIdInRemote');
+    fleegix.event.unlisten(frame.document, 'onmouseout', this, 'resetBorder');
+    fleegix.event.unlisten(frame.document, 'onclick', this, 'aexplorerClick');
       
-			var iframeCount = frame.window.frames.length;
-      var iframeArray = frame.window.frames;
+    var iframeCount = frame.window.frames.length;
+    var iframeArray = frame.window.frames;
       
-			for (var i=0;i<iframeCount;i++)
-       {
+    for (var i=0;i<iframeCount;i++)
+      {
         try{
-           fleegix.event.unlisten(iframeArray[i].document, 'onmouseover', this, 'setIdInRemote');
-           fleegix.event.unlisten(iframeArray[i].document, 'onmouseout', this, 'resetBorder');
-           fleegix.event.unlisten(iframeArray[i].document, 'onclick', this, 'aexplorerClick');
-           this.axRecursiveUnBind(iframeArray[i]);
+	  fleegix.event.unlisten(iframeArray[i].document, 'onmouseover', this, 'setIdInRemote');
+	  fleegix.event.unlisten(iframeArray[i].document, 'onmouseout', this, 'resetBorder');
+	  fleegix.event.unlisten(iframeArray[i].document, 'onclick', this, 'aexplorerClick');
+	  this.axRecursiveUnBind(iframeArray[i]);
         }
         catch(error){             
           windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain? '+
-          'Binding to all others.' + error);     
+					  'Binding to all others.' + error);     
         }
-       }
-    }
+      }
+  }
 };

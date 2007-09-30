@@ -16,67 +16,67 @@ Copyright 2006, Open Source Applications Foundation
 
 function TimeObj() {
     
-    var timeStarted = '0:0:0:0';
-    var timeEnded  = '0:0:0:0';
-    var startMS    = 0;
-    var endMS      = 0;
-    var runTime    = '';
-    var identifier = '';
+  var timeStarted = '0:0:0:0';
+  var timeEnded  = '0:0:0:0';
+  var startMS    = 0;
+  var endMS      = 0;
+  var runTime    = '';
+  var identifier = '';
 
     
   this.getStart = function(){
-      return timeStarted;
+    return timeStarted;
   }
   
   this.getEnd = function(){
-        return timeEnded;
-    }
+    return timeEnded;
+  }
    
-    //Set the identifier 
-    this.setName = function(identifier){
-        this.identifier = identifier;
-    }
+  //Set the identifier 
+  this.setName = function(identifier){
+    this.identifier = identifier;
+  }
     
-    //Calculate how long it took
-    this.calculateTime = function(){
-         runTime = endMS - startMS;
-    }
+  //Calculate how long it took
+  this.calculateTime = function(){
+    runTime = endMS - startMS;
+  }
     
-    //Used for users who want to log the time and MS so they can compute how long a test took to run
-    this.startTime = function(){
+  //Used for users who want to log the time and MS so they can compute how long a test took to run
+  this.startTime = function(){
 
-        var d = new Date();
-        startMS = d.getTime();
-    	timeStarted = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() 
-    	+ ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z'; 
-    }
+    var d = new Date();
+    startMS = d.getTime();
+    timeStarted = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() 
+    + ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z'; 
+  }
 
-    //Storing end time used for performance computation
-    this.endTime = function(identifier){
+  //Storing end time used for performance computation
+  this.endTime = function(identifier){
 
-        var d = new Date();
-        endMS  = d.getTime();
-        timeEnded = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() + ':' 
-        + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z';
-    }
+    var d = new Date();
+    endMS  = d.getTime();
+    timeEnded = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() + ':' 
+    + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z';
+  }
     
-    //Write to the log div
-    this.write = function(parameters){
-         this.calculateTime(); 
-         var perf_tab = windmill.remote.document.getElementById("perfOut");
+  //Write to the log div
+  this.write = function(parameters){
+    this.calculateTime(); 
+    var perf_tab = windmill.remote.document.getElementById("perfOut");
         
-         perf_tab.innerHTML = "<br>Total: " + this.identifier + " : " + runTime + " ms<br>" + perf_tab.innerHTML;
-         perf_tab.innerHTML = "<br>Ending: " + this.identifier + " : " + timeEnded + perf_tab.innerHTML;
-         perf_tab.innerHTML = "<br>Starting: " + this.identifier + " : " + timeStarted + perf_tab.innerHTML;
+    perf_tab.innerHTML = "<br>Total: " + this.identifier + " : " + runTime + " ms<br>" + perf_tab.innerHTML;
+    perf_tab.innerHTML = "<br>Ending: " + this.identifier + " : " + timeEnded + perf_tab.innerHTML;
+    perf_tab.innerHTML = "<br>Starting: " + this.identifier + " : " + timeStarted + perf_tab.innerHTML;
                
-         //perf_tab.scrollTop = perf_tab.scrollHeight;
-         if(!parameters){
-             perf_tab.innerHTML =  "<br>Executing: " + this.identifier + perf_tab.innerHTML;
-         }
-         else{
-           perf_tab.innerHTML ="<br>Executing: " + this.identifier + " - Parameters: " + parameters + perf_tab.innerHTML;    
-         }
-    
+    //perf_tab.scrollTop = perf_tab.scrollHeight;
+    if(!parameters){
+      perf_tab.innerHTML =  "<br>Executing: " + this.identifier + perf_tab.innerHTML;
     }
+    else{
+      perf_tab.innerHTML ="<br>Executing: " + this.identifier + " - Parameters: " + parameters + perf_tab.innerHTML;    
+    }
+    
+  }
     
 };

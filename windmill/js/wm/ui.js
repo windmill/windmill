@@ -26,57 +26,57 @@ Copyright 2006, Open Source Applications Foundation
 
 
 windmill.ui = new function() {
-    var _this = this;
-    //Needed to keep track of the old border for the dom explorer
-    //keeping track of the recorder state when a new page is loaded and wipes the document
-    this.recordSuiteNum    = 0;
+  var _this = this;
+  //Needed to keep track of the old border for the dom explorer
+  //keeping track of the recorder state when a new page is loaded and wipes the document
+  this.recordSuiteNum    = 0;
 
-    //Setter, incremeneting the recordSuiteNum
-    this.incRecSuite = function(){
-      this.recordSuiteNum ++;
+  //Setter, incremeneting the recordSuiteNum
+  this.incRecSuite = function(){
+    this.recordSuiteNum ++;
+  }
+  //Toggle Pause Loop
+  this.toggleLoopButtonText = function(){
+    var loopButton = windmill.remote.$("loopButton");
+    if (loopButton.value == "Loop Stopped"){
+      loopButton.value = "Loop Running"; 
     }
-    //Toggle Pause Loop
-    this.toggleLoopButtonText = function(){
-      var loopButton = windmill.remote.$("loopButton");
-      if (loopButton.value == "Loop Stopped"){
-        loopButton.value = "Loop Running"; 
-      }
-      else{ loopButton.value = "Loop Stopped"; }    
-    }
+    else{ loopButton.value = "Loop Stopped"; }    
+  }
     
-    //Allowing the stopOnFailure switch to be controlled from the UI
-    this.toggleBreak = function(){
-        var breakCheckBox = windmill.remote.$('toggleBreak');
-        if (breakCheckBox.checked){
-            windmill.stopOnFailure = true;
-        }
-        else{
-            windmill.stopOnFailure = false;
-        }
+  //Allowing the stopOnFailure switch to be controlled from the UI
+  this.toggleBreak = function(){
+    var breakCheckBox = windmill.remote.$('toggleBreak');
+    if (breakCheckBox.checked){
+      windmill.stopOnFailure = true;
     }
-    this.getContMethodsUI = function(){
-       var str = '';
-           for (var i in windmill.controller) { if (i.indexOf('_') == -1){ str += "," + i; } }
-           for (var i in windmill.controller.extensions) {
-               if (str) { str += ',' }
-               str += 'extensions.'+i;
-           }
-           for (var i in windmill.controller.commands) {
-               if (str) { str += ',' }
-               str += 'commands.'+i;
-           }
+    else{
+      windmill.stopOnFailure = false;
+    }
+  }
+  this.getContMethodsUI = function(){
+    var str = '';
+    for (var i in windmill.controller) { if (i.indexOf('_') == -1){ str += "," + i; } }
+    for (var i in windmill.controller.extensions) {
+      if (str) { str += ',' }
+      str += 'extensions.'+i;
+    }
+    for (var i in windmill.controller.commands) {
+      if (str) { str += ',' }
+      str += 'commands.'+i;
+    }
           
-          //Clean up
-          var ca = new Array();
-          ca = str.split(",");
-          ca = ca.reverse();
-          ca.pop();
-          ca.pop();
-          ca.pop();
-          ca.pop();
-          ca = ca.sort();
+    //Clean up
+    var ca = new Array();
+    ca = str.split(",");
+    ca = ca.reverse();
+    ca.pop();
+    ca.pop();
+    ca.pop();
+    ca.pop();
+    ca = ca.sort();
           
-          return ca;    
-     }
+    return ca;    
+  }
     
 };

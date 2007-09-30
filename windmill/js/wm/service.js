@@ -18,48 +18,48 @@ Copyright 2006, Open Source Applications Foundation
 /***************************************/
 windmill.service = new function () {
 
-    this.getParsedLocation = function(loc) {
-      var str = '';
-      str += loc.protocol + '//' + loc.hostname;
-      str += loc.port ? ':' + loc.port : '';
-      return str;
+  this.getParsedLocation = function(loc) {
+    var str = '';
+    str += loc.protocol + '//' + loc.hostname;
+    str += loc.port ? ':' + loc.port : '';
+    return str;
+  }
+
+  //Set the URL we are starting out testing
+  this.setStartURL = function(){
+    var json_object = new windmill.xhr.json_call('1.1', 'set_test_url');
+    var params_obj = {};
+    var loc = window.location;
+    params_obj.url = windmill.service.getParsedLocation(loc);
+    json_object.params = params_obj;
+    var json_string = fleegix.json.serialize(json_object)
+
+    var resp = function(str){
+      return true;
     }
 
-    //Set the URL we are starting out testing
-    this.setStartURL = function(){
+    result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+    resp(result);
+  };
+
+  //Set the URL we are testing in the python service
+  this.setTestURL = function(){
+    try{
       var json_object = new windmill.xhr.json_call('1.1', 'set_test_url');
       var params_obj = {};
-      var loc = window.location;
-      params_obj.url = windmill.service.getParsedLocation(loc);
+      var loc = windmill.testWindow.location;
+      params_obj.url =  windmill.service.getParsedLocation(loc);
       json_object.params = params_obj;
       var json_string = fleegix.json.serialize(json_object)
 
       var resp = function(str){
-        return true;
+	return true;
       }
 
       result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
       resp(result);
-    };
-
-    //Set the URL we are testing in the python service
-    this.setTestURL = function(){
-      try{
-        var json_object = new windmill.xhr.json_call('1.1', 'set_test_url');
-        var params_obj = {};
-        var loc = windmill.testWindow.location;
-        params_obj.url =  windmill.service.getParsedLocation(loc);
-        json_object.params = params_obj;
-        var json_string = fleegix.json.serialize(json_object)
-
-        var resp = function(str){
-          return true;
-        }
-
-        result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-        resp(result);
-      }
-      catch(er){
-      }
-    };
+    }
+    catch(er){
+    }
+  };
 };

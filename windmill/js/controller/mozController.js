@@ -96,7 +96,7 @@ windmill.controller.doubleClick = function(param_object) {
  * we search separately by id and name.
  */
 windmill.controller.locateElementByIdentifier = function(identifier, inDocument, inWindow) {
-    return windmill.controller.locateElementById(identifier, inDocument, inWindow)
-            || windmill.controller.locateElementByName(identifier, inDocument, inWindow)
-            || null;
+  return windmill.controller.locateElementById(identifier, inDocument, inWindow)
+  || windmill.controller.locateElementByName(identifier, inDocument, inWindow)
+  || null;
 };

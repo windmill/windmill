@@ -17,49 +17,49 @@ Copyright 2006, Open Source Applications Foundation
 //Internet Explorer specific controller functions
 
 windmill.controller.what = function() {
-    alert('Internet Explorer');
+  alert('Internet Explorer');
 }
 
-    /**
-   * In IE, getElementById() also searches by name - this is an optimisation for IE.
-   */
+/**
+ * In IE, getElementById() also searches by name - this is an optimisation for IE.
+ */
   windmill.controller.locateElementByIdentifer = function(identifier, inDocument, inWindow) {
     return inDocument.getElementById(identifier);
   };
   
-  windmill.controller.click = function(param_object){        
-     var element = this._lookupDispatch(param_object);
-     if (!element){ return false; }
-     // Trigger the event.
-     // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-     windmill.events.triggerMouseEvent(element, 'mousedown', true);
-     windmill.events.triggerMouseEvent(element, 'mouseup', true);
-     windmill.events.triggerMouseEvent(element, 'click', true);
+windmill.controller.click = function(param_object){        
+  var element = this._lookupDispatch(param_object);
+  if (!element){ return false; }
+  // Trigger the event.
+  // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
+  windmill.events.triggerMouseEvent(element, 'mousedown', true);
+  windmill.events.triggerMouseEvent(element, 'mouseup', true);
+  windmill.events.triggerMouseEvent(element, 'click', true);
         
-     if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
-       windmill.controller.open({"url":element.href});
-     }
-     /*else {
-      if (element.hasChildNodes()){
-         var children = element.childNodes;
-         for (var i = 0; i < children.length; i++){
-           windmill.controller.open({"url":children[i].href});
-           return true;
-         }
-       }
-     }*/
-     return true;
-  };
-  
-  //there is a problem with checking via click in safari
-  windmill.controller.check = function(param_object){
-    return windmill.controller.click(param_object);
+  if (element.href && (element.href.indexOf('javascript:', 0) == -1)){
+    windmill.controller.open({"url":element.href});
   }
+  /*else {
+    if (element.hasChildNodes()){
+    var children = element.childNodes;
+    for (var i = 0; i < children.length; i++){
+    windmill.controller.open({"url":children[i].href});
+    return true;
+    }
+    }
+    }*/
+  return true;
+};
+  
+//there is a problem with checking via click in safari
+windmill.controller.check = function(param_object){
+  return windmill.controller.click(param_object);
+}
 
-  //Radio buttons are even WIERDER in safari, not breaking in FF
+//Radio buttons are even WIERDER in safari, not breaking in FF
   windmill.controller.radio = function(param_object){
-      //var element = this._lookupDispatch(param_object);
-      return windmill.controller.click(param_object);
+    //var element = this._lookupDispatch(param_object);
+    return windmill.controller.click(param_object);
   }
   
   //double click for ie, needs to be tested

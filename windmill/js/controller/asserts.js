@@ -16,83 +16,83 @@ Copyright 2006, Open Source Applications Foundation
 
 windmill.controller.asserts.assertRegistry = {
   'assertTrue': {
-    expr: function (a) {
+  expr: function (a) {
       if (typeof a != 'boolean') {
         throw('Bad argument to assertTrue.');
       }
       return a === true;
     },
-    errMsg: 'expected true but was false.'
+  errMsg: 'expected true but was false.'
   },
 
   'assertFalse': {
-    expr: function (a) {
+  expr: function (a) {
       if (typeof a != 'boolean') {
         throw('Bad argument to assertFalse.');
       }
       return a === false;
     },
-    errMsg: 'expected false but was true.'
+  errMsg: 'expected false but was true.'
   },
 
   'assertEquals': {
-    expr: function (a, b) { return a === b; },
-    errMsg: 'expected $1 but was $2.'
+  expr: function (a, b) { return a === b; },
+  errMsg: 'expected $1 but was $2.'
   },
 
   'assertNotEquals': {
-    expr: function (a, b) { return a !== b; },
-    errMsg: 'expected one of the two values not to be $1.'
+  expr: function (a, b) { return a !== b; },
+  errMsg: 'expected one of the two values not to be $1.'
   },
 
   'assertNull': {
-    expr: function (a) { return a === null; },
-    errMsg: 'expected to be null but was $1.'
+  expr: function (a) { return a === null; },
+  errMsg: 'expected to be null but was $1.'
   },
 
   'assertNotNull': {
-    expr: function (a) { return a !== null; },
-    errMsg: 'expected not to be null but was null.'
+  expr: function (a) { return a !== null; },
+  errMsg: 'expected not to be null but was null.'
   },
 
   'assertUndefined': {
-    expr: function (a) { return typeof a == 'undefined'; },
-    errMsg: 'expected to be undefined but was $1.'
+  expr: function (a) { return typeof a == 'undefined'; },
+  errMsg: 'expected to be undefined but was $1.'
   },
 
   'assertNotUndefined': {
-    expr: function (a) { return typeof a != 'undefined'; },
-    errMsg: 'expected not to be undefined but was undefined.'
+  expr: function (a) { return typeof a != 'undefined'; },
+  errMsg: 'expected not to be undefined but was undefined.'
   },
 
   'assertNaN': {
-    expr: function (a) { return typeof a == 'undefined'; },
-    errMsg: 'expected to be undefined but was $1.'
+  expr: function (a) { return typeof a == 'undefined'; },
+  errMsg: 'expected to be undefined but was $1.'
   },
 
   'assertNotNaN': {
-    expr: function (a) { return typeof a != 'undefined'; },
-    errMsg: 'expected not to be undefined but was undefined.'
+  expr: function (a) { return typeof a != 'undefined'; },
+  errMsg: 'expected not to be undefined but was undefined.'
   },
 
   'assertEvaluatesToTrue': {
-    expr: function (a) { return !!a; },
-    errMsg: 'value of $1 does not evaluate to true.'
+  expr: function (a) { return !!a; },
+  errMsg: 'value of $1 does not evaluate to true.'
   },
 
   'assertEvaluatesToFalse': {
-    expr: function (a) { return !a; },
-    errMsg: 'value of $1 does not evaluate to false.'
+  expr: function (a) { return !a; },
+  errMsg: 'value of $1 does not evaluate to false.'
   },
 
   'assertContains': {
-    expr: function (a, b) {
+  expr: function (a, b) {
       if (typeof a != 'string' || typeof b != 'string') {
         throw('Bad argument to assertContains.');
       }
       return (a.indexOf(b) > -1);
     },
-    errMsg: 'value of $1 does not contain $2.'
+  errMsg: 'value of $1 does not contain $2.'
   }
 };
 
@@ -100,93 +100,93 @@ windmill.controller.asserts.assertRegistry = {
 //To make it more thorough it needs recursion to be implemented later
 windmill.controller.asserts.assertText = function (param_object) { 
     
-    var n = windmill.controller._lookupDispatch(param_object);
-    var validator = param_object.validator;
+  var n = windmill.controller._lookupDispatch(param_object);
+  var validator = param_object.validator;
   try{
-   if (n.innerHTML.indexOf(validator) != -1){
-     return true;
-   }
-   if (n.hasChildNodes()){
+    if (n.innerHTML.indexOf(validator) != -1){
+      return true;
+    }
+    if (n.hasChildNodes()){
       for(var m = n.firstChild; m != null; m = m.nextSibling) {       
-       if (m.innerHTML.indexOf(validator) != -1){
-        return true;
-       }
-       if (m.value.indexOf(validator) != -1){
-         return true;  
-       }
+	if (m.innerHTML.indexOf(validator) != -1){
+	  return true;
+	}
+	if (m.value.indexOf(validator) != -1){
+	  return true;  
+	}
       }
     }
   }
   catch(error){
-   return false;
+    return false;
   } 
-   return false;
+  return false;
 }; 
  
-   //Assert that a specified node exists
+//Assert that a specified node exists
 windmill.controller.asserts.assertNode = function (param_object) { 
 
-   var element = windmill.controller._lookupDispatch(param_object);
-   if (!element){
+  var element = windmill.controller._lookupDispatch(param_object);
+  if (!element){
     return false;
-   }
-    return true;
- };   
+  }
+  return true;
+};   
 
 //Assert that a form element contains the expected value
 windmill.controller.asserts.assertValue = function (param_object) { 
-   var n = windmill.controller._lookupDispatch(param_object);
-   var validator = param_object.validator;
+  var n = windmill.controller._lookupDispatch(param_object);
+  var validator = param_object.validator;
  
-   if (n.value.indexOf(validator) != -1){
+  if (n.value.indexOf(validator) != -1){
     return true;
-   }
-   return false;
- };
+  }
+  return false;
+};
 
 //Assert that a provided value is selected in a select element
 windmill.controller.asserts.assertSelected = function (param_object) { 
-   var n = windmill.controller._lookupDispatch(param_object);
-   var validator = param_object.validator;
+  var n = windmill.controller._lookupDispatch(param_object);
+  var validator = param_object.validator;
  
-   if (n.options[n.selectedIndex].value == validator){
+  if (n.options[n.selectedIndex].value == validator){
     return true;
-   }
-   return false;
- };
+  }
+  return false;
+};
  
 //Assert that a provided checkbox is checked
 windmill.controller.asserts.assertChecked = function (param_object) { 
-   var n = windmill.controller._lookupDispatch(param_object);
+  var n = windmill.controller._lookupDispatch(param_object);
     
-   if (n.checked == true){
+  if (n.checked == true){
     return true;
-   }
-   return false;
- };
+  }
+  return false;
+};
 
 // Assert that a an element's property is a particular
 // value
 windmill.controller.asserts.assertProperty = function (param_object) { 
-   var element = windmill.controller._lookupDispatch(param_object);
-   if (!element){
+  var element = windmill.controller._lookupDispatch(param_object);
+  if (!element){
     return false;
-   }
-   var vArray = param_object.validator.split('|');
-   var value = eval ('element.' + vArray[0]+';');
-   var res = false;
-   try {
-     if (value.indexOf(vArray[1]) != -1){
-       res = true;
-     }
+  }
+  var vArray = param_object.validator.split('|');
+  var value = eval ('element.' + vArray[0]+';');
+  var res = false;
+  try {
+    if (value.indexOf(vArray[1]) != -1){
+      res = true;
     }
-    catch(err){  
-    }
-    if (String(value) == String(vArray[1])) {
-     res = true;
-    }
-   return res;
- };   
+  }
+  catch(err){  
+  }
+  if (String(value) == String(vArray[1])) {
+    res = true;
+  }
+  return res;
+};   
 
 // Assert that a specified image has actually loaded
 // The Safari workaround results in additional requests
@@ -234,7 +234,7 @@ windmill.controller.asserts.AssertFactory = new function () {
   var _this = this;
   function validateArgs(count, args) {
     if (!(args.length == count ||
-      (args.length == count + 1 && typeof(args[0]) == 'string') )) {
+	  (args.length == count + 1 && typeof(args[0]) == 'string') )) {
       throw('Incorrect arguments passed to assert function');
     }
   }
@@ -253,57 +253,57 @@ windmill.controller.asserts.AssertFactory = new function () {
     try {
       if (r == 'object' || r == 'function') {
         var m = val.constructor.toString().match(/function\s*([^( ]+)\(/);
-        if (m) { r = m[1]; }
-        else { r = 'Unknown Data Type' }
+						 if (m) { r = m[1]; }
+						 else { r = 'Unknown Data Type' }
+						 }
+      }
+      finally {
+	r = r.substr(0, 1).toUpperCase() + r.substr(1);
+	return r;
       }
     }
-    finally {
-      r = r.substr(0, 1).toUpperCase() + r.substr(1);
-      return r;
+    this.createAssert = function (meth) {
+      return function () {
+	var args = Array.prototype.slice.call(arguments);
+	args.unshift(meth);
+	return _this.doAssert.apply(_this, args);
+      }
     }
-  }
-  this.createAssert = function (meth) {
-    return function () {
+    this.doAssert = function () {
+      // Convert arguments to real Array
       var args = Array.prototype.slice.call(arguments);
-      args.unshift(meth);
-      return _this.doAssert.apply(_this, args);
-    }
-  }
-  this.doAssert = function () {
-    // Convert arguments to real Array
-    var args = Array.prototype.slice.call(arguments);
-    // The actual assert method, e.g, 'equals'
-    var meth = args.shift();
-    // The assert object
-    var asrt = windmill.controller.asserts.assertRegistry[meth];
-    // The assert expresion
-    var expr = asrt.expr;
-    // Validate the args passed
-    var valid = validateArgs(expr.length, args);
-    // Pull off additional comment which may be first arg
-    var comment = args.length > expr.length ?
+      // The actual assert method, e.g, 'equals'
+      var meth = args.shift();
+      // The assert object
+      var asrt = windmill.controller.asserts.assertRegistry[meth];
+      // The assert expresion
+      var expr = asrt.expr;
+      // Validate the args passed
+      var valid = validateArgs(expr.length, args);
+      // Pull off additional comment which may be first arg
+      var comment = args.length > expr.length ?
       args.shift() : null;
-    // Run the assert
-    var res = expr.apply(window, args);
-    if (res) {
-      return true;
-    }
-    else {
-      var message = meth + ' -- ' +
+      // Run the assert
+      var res = expr.apply(window, args);
+      if (res) {
+	return true;
+      }
+      else {
+	var message = meth + ' -- ' +
         createErrMsg(asrt.errMsg, args);
-      throw new windmill.controller.asserts.WindmillAssertException(comment, message);
-    }
+	throw new windmill.controller.asserts.WindmillAssertException(comment, message);
+      }
+    };
   };
-};
 
-// Create all the assert methods on windmill.controller.asserts
-// Using the items in the assertRegistry
-for (var meth in windmill.controller.asserts.assertRegistry) {
-  windmill.controller.asserts[meth] = windmill.controller.asserts.AssertFactory.createAssert(meth);
-}
+  // Create all the assert methods on windmill.controller.asserts
+  // Using the items in the assertRegistry
+  for (var meth in windmill.controller.asserts.assertRegistry) {
+    windmill.controller.asserts[meth] = windmill.controller.asserts.AssertFactory.createAssert(meth);
+  }
 
-windmill.controller.asserts.WindmillAssertException = function (comment, message) {
+  windmill.controller.asserts.WindmillAssertException = function (comment, message) {
     this.comment = comment;
     this.message = message;
-};
+  };
 
