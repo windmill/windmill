@@ -107,7 +107,7 @@ windmill.ui.remote = new function () {
 	suite.style.width = "100%";
       }
       suite.style.background = "lightblue";
-      //suite.style.overflow = 'hidden';
+      suite.style.overflow = 'hidden';
       //suite.style.height='40px';
       suite.style.border = '1px solid black';
       suite.innerHTML = "<table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
