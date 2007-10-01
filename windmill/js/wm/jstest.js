@@ -18,18 +18,20 @@ var jum = windmill.controller.asserts;
 
 windmill.jsTest = new function () {
 
-  function globalEval(code) {
+  function globalEval(code, testWin) {
+    var win = testWin ? windmill.testWindow : window;
     if (window.execScript) {
-      window.execScript(code);
+      win.execScript(code);
     }
     else {
-      window.eval.call(window, code);
+      win.eval.call(win, code);
     }
   };
   function combineLists(listA, listB) {
     var arr = [];
     if (listB.length) {
-      arr = listA.length ? listA.join() + ',' + listB.join() : listB.join();
+      arr = listA.length ? listA.join() + ',' +
+        listB.join() : listB.join();
       arr = arr.split(',');
     }
     return arr;
@@ -44,6 +46,7 @@ windmill.jsTest = new function () {
   this.testFailures = [];
   this.testCount = 0;
   this.testFailureCount = 0;
+  this.runInTestWindowScope = false;
   this.jsSuiteSummary = null;
 
   // Initialize everything to starting vals
@@ -57,6 +60,7 @@ windmill.jsTest = new function () {
     this.testFailures = [];
     this.testCount = 0;
     this.testFailureCount = 0;
+    this.runInTestWindowScope = false;
   }
   // Main function to run a directory of JS tests
   this.run = function (testFiles) {
@@ -122,8 +126,10 @@ windmill.jsTest = new function () {
     function parseObj(obj, namespace) {
       var o = obj;
       for (var p in o) {
+        console.log(p);
         var item = o[p];
-        if (typeof item == 'function' && re.test(p)) {
+        if ((typeof item == 'function' ||
+          typeof item.push == 'function') && re.test(p)) {
           arr.push(namespace + '.' + p);
         }
         else if (typeof item == 'object') {
@@ -132,7 +138,9 @@ windmill.jsTest = new function () {
         }
       }
     }
-    parseObj(window[name], name);
+    var win = this.runInTestWindowScope ?
+      windmill.testWindow : window;
+    parseObj(win[name], name);
     this.testList = combineLists(this.testList, arr);
   };
   this.getTestNames = function () {
@@ -147,7 +155,8 @@ windmill.jsTest = new function () {
       var arr = [];
       for (var p in window) {
         var item = window[p];
-        if (typeof item == 'function' && re.test(p)) {
+        if ((typeof item == 'function'
+          || typeof item.push == 'function') && re.test(p)) {
           arr.push(p);
         }
         this.testList = arr;
@@ -169,7 +178,7 @@ windmill.jsTest = new function () {
       var str = fleegix.xhr.doReq({ url: path,
 	    async: false });
       // Eval in window scope
-      globalEval(str);
+      globalEval(str, this.runInTestWindowScope);
     }
     return true;
   };
@@ -178,8 +187,10 @@ windmill.jsTest = new function () {
     var p = null; // Appended to by parseTestName
     var testName = '';
     var testFunc = null;
+    var win = this.runInTestWindowScope ?
+      windmill.testWindow : window;
     var parseTestName = function (n) {
-      p = !n ? window : p[n];
+      p = !n ? win : p[n];
       return arr.length ? parseTestName(arr.shift()) : p;
     };
     if (this.testOrder.length == 0) {
