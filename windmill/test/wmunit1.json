@@ -1,0 +1,44 @@
+{"params": {"id": "subBtn"}, "version": "0.1", "method": "click"}
+{"params": {"milliseconds": "3000"}, "version": "0.1", "method": "waits.sleep"}
+{"params": {"validator": "", "id": "sleeper"}, "version": "0.1", "method": "asserts.assertText"}
+{"params": {"milliseconds": "8000"}, "version": "0.1", "method": "waits.sleep"}
+{"params": {"validator": "Slept", "id": "sleeper"}, "version": "0.1", "method": "asserts.assertText"}
+{"params": {"text": "my test text", "id": "junkfield"}, "version": "0.1", "method": "type"}
+{"params": {"validator": "my test text", "id": "junkfield"}, "version": "0.1", "method": "asserts.assertValue"}
+{"params": {"id": "cougar"}, "version": "0.1", "method": "radio"}
+{"params": {"id": "cougar"}, "version": "0.1", "method": "asserts.assertChecked"}
+{"params": {"id": "duck"}, "version": "0.1", "method": "radio"}
+{"params": {"id": "duck"}, "version": "0.1", "method": "asserts.assertChecked"}
+{"params": {"id": "Smallpox"}, "version": "0.1", "method": "check"}
+{"params": {"id": "Smallpox"}, "version": "0.1", "method": "asserts.assertChecked"}
+{"params": {"id": "Mumps"}, "version": "0.1", "method": "asserts.assertChecked"}
+{"params": {"id": "Dizziness"}, "version": "0.1", "method": "asserts.assertChecked"}
+{"params": {"id": "Mumps"}, "version": "0.1", "method": "check"}
+{"params": {"id": "Mumps"}, "version": "0.1", "method": "asserts.assertChecked"}
+{"params": {"id": "Dizziness"}, "version": "0.1", "method": "asserts.assertChecked"}
+{"params": {"id": "Dizziness"}, "version": "0.1", "method": "check"}
+{"params": {"id": "Dizziness"}, "version": "0.1", "method": "asserts.assertChecked"}
+{"params": {"text": "The text area tester", "name": "story"}, "version": "0.1", "method": "type"}
+{"params": {"validator": "area", "id": "story"}, "version": "0.1", "method": "asserts.assertValue"}
+{"params": {"option": "Strawberry", "id": "flavor"}, "version": "0.1", "method": "select"}
+{"params": {"validator": "b", "id": "flavor"}, "version": "0.1", "method": "asserts.assertSelected"}
+{"params": {"option": "Rum and Raisin", "id": "flavor"}, "version": "0.1", "method": "select"}
+{"params": {"validator": "c", "id": "flavor"}, "version": "0.1", "method": "asserts.assertSelected"}
+{"params": {"validator": "d", "id": "flavor"}, "version": "0.1", "method": "asserts.assertSelected"}
+{"params": {"option": "Peach and Orange", "id": "flavor"}, "version": "0.1", "method": "select"}
+{"params": {"validator": "d", "id": "flavor"}, "version": "0.1", "method": "asserts.assertSelected"}
+{"params": {"id": "clickme"}, "version": "0.1", "method": "click"}
+{"params": {"validator": "Clicked", "id": "clickme"}, "version": "0.1", "method": "asserts.assertText"}
+{"params": {"id": "dblclickme"}, "version": "0.1", "method": "doubleClick"}
+{"params": {"validator": "Double Clicked", "id": "dblclickme"}, "version": "0.1", "method": "asserts.assertText"}
+{"params": {"id": "mousedownme"}, "version": "0.1", "method": "mousedown"}
+{"params": {"validator": "mouse downed", "id": "mousedownme"}, "version": "0.1", "method": "asserts.assertText"}
+{"params": {"id": "mouseupme"}, "version": "0.1", "method": "mouseup"}
+{"params": {"validator": "mouse upped", "id": "mouseupme"}, "version": "0.1", "method": "asserts.assertText"}
+{"params": {"id": "amIhere"}, "version": "0.1", "method": "asserts.assertNode"}
+{"params": {"validator": "style.height|50px", "id": "amIhere"}, "version": "0.1", "method": "asserts.assertProperty"}
+{"params": {"id": "doesntExist"}, "version": "0.1", "method": "asserts.assertNode"}
+{"params": {"id": "created"}, "version": "0.1", "method": "asserts.assertNode"}
+{"params": {"id": "wfeBtn"}, "version": "0.1", "method": "click"}
+{"params": {"timeout": "40000", "id": "created"}, "version": "0.1", "method": "waits.forElement"}
+{"params": {"id": "created"}, "version": "0.1", "method": "asserts.assertNode"}

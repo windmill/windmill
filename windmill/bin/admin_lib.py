@@ -296,7 +296,33 @@ def tinderbox_action(shell_objects):
         teardown(shell_objects)
         if result == "FAILED":
             sys.exit(1)
-        
+
+def start_windmill():
+    configure_global_settings()
+    shell_objects = setup()
+    return shell_objects
+
+def command_line_startup():
+    windmill.stdout, windmill.stdin = sys.stdout, sys.stdin
+
+    configure_global_settings()
+
+    action = admin_lib.process_options(sys.argv)
+
+    shell_objects = setup()
+
+    if windmill.settings.get('TEST_FRAME', None):
+        result = windmill.settings['TEST_FRAME'](shell_objects)
+        if result == 'call_action':
+            action(shell_objects)
+        elif result == 'teardown_called':
+            sys.exit()
+        else:
+            print "Something happended in the framework that prevented teardown and/or action call"
+            print "attempting teardown..."
+            admin_lib.teardown(shell_objects)
+    else:
+        action(shell_objects)
             
 
 action_mapping = {'shell':shell_action, 'runserver':runserver_action, 

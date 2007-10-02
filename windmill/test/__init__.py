@@ -12,4 +12,43 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import test_browser, test_jsonrpc, test_proxy, test_xmlrpc, windmill_test_lib
+from windmill.bin import admin_lib
+import os, sys
+import xmlrpclib
+import functest
+from time import sleep
+
+from threading import Thread
+
+functest.registry = {}
+
+def setup_module(module):
+    windmill_dict = admin_lib.start_windmill()
+
+    import cherrypy
+    import wsgi_fileserver
+    application = wsgi_fileserver.WSGIFileServerApplication(root_path=os.path.dirname(__file__), mount_point='/')
+    httpd = cherrypy.wsgiserver.CherryPyWSGIServer(('', 8444), application, server_name='testing_site')
+    httpd_thread = Thread(target=httpd.start)
+    httpd_thread.start()
+    sleep(1)
+    
+    module.windmill_dict = windmill_dict
+    module.httpd = httpd
+    module.httpd_thread = httpd_thread
+
+    if 'firefox' in sys.argv:
+        windmill_dict['start_firefox']()
+    elif 'safari' in sys.argv:
+        windmill_dict['start_safari']()
+    elif 'ie' in sys.argv:
+        windmill_dict['start_ie']()
+        
+    functest.registry['rpc_client'] = xmlrpclib.ServerProxy('http://localhost:4444/windmill-xmlrpc', allow_none=1)
+    print 'testing 1'
+    
+    
+def teardown_module(module):
+    module.httpd.stop()
+    admin_lib.teardown(module.windmill_dict)
+    

@@ -51,7 +51,7 @@ class MozillaProfile(object):
         
         if windmill.settings['MOZILLA_CREATE_NEW_PROFILE']:
             if sys.platform == 'linux2':
-                print commands.getoutput('chmod -R %s %s' % (os.getlogin(), self.profile_path))
+                print commands.getoutput('chown -R %s:%s %s' % (os.getlogin(), os.getlogin(), self.profile_path))
                                          
             if os.path.exists(self.profile_path) is True:
                 shutil.rmtree(self.profile_path)
@@ -62,13 +62,14 @@ class MozillaProfile(object):
             self.prefs_js_f = open( self.prefs_js_filename, 'w')
             self.initial_prefs()
         
-        if sys.platform == 'linux':
-            shutil.copyfile(windmill.settings['MOZILLA_BINARY'], self.profile_path+'/'+'windmill-firefox')
-            f = open(self.profile_path+'/'+'windmill-firefox', 'rw')
-            f.write(f.read().replace('file://', ''))
-            f.flush()
-            f.close()
-            windmill.settings['MOZILLA_BINARY'] = self.profile_path+'/'+'windmill-firefox'
+            if sys.platform == 'linux2':
+                print commands.getoutput('chown -R %s:%s %s' % (os.getlogin(), os.getlogin() self.profile_path))
+                windmill_firefox = open(windmill.settings['MOZILLA_BINARY'], 'r').read().replace('file://', '')
+                f = open(self.profile_path+'/'+'windmill-firefox', 'w')
+                f.write(windmill_firefox); f.flush(); f.close()
+
+                print commands.getoutput('chmod 755 %s' % (self.profile_path+'/'+'windmill-firefox'))
+                windmill.settings['MOZILLA_BINARY'] = self.profile_path+'/'+'windmill-firefox'
             
     
     def initial_prefs(self):
