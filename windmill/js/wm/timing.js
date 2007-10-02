@@ -14,7 +14,7 @@ Copyright 2006, Open Source Applications Foundation
  limitations under the License.
 */
 
-function TimeObj() {
+windmill.TimeObj = function () {
     
   var timeStarted = '0:0:0:0';
   var timeEnded  = '0:0:0:0';
@@ -80,3 +80,5 @@ function TimeObj() {
   }
     
 };
+
+var TimeObj = windmill.TimeObj;
