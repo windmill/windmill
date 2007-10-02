@@ -33,7 +33,7 @@ PLATFORM         = sys.platform
 WINDMILL_PATH    = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 JS_PATH          = os.path.join(WINDMILL_PATH, 'js')
 
-TEST_URL  = 'http://www.google.com'
+TEST_URL  = 'http://windmill.osafoundation.org/tutorial'
 TEST_FILE = None
 TEST_DIR  = None
 FORWARDING_TEST_URL = None
