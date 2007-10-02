@@ -146,7 +146,7 @@ windmill.controller.commands.getDOM = function (param_object){
   windmill.controller.commands.jsTests = function (paramObj) {
     var testFiles = paramObj.tests;
     if (!testFiles.length) {
-      throw('No JavaScript tests to run.');
+      throw new Error('No JavaScript tests to run.');
     }
     var _j = windmill.jsTest;
     windmill.controller.stopLoop();
