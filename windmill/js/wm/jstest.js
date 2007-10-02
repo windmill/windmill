@@ -38,6 +38,7 @@ windmill.jsTest = new function () {
   }
 
   this.testFiles = null;
+  this.testScriptSrc = '';
   this.initFile = false;
   this.testNamespaces = [];
   this.testList = [];
@@ -51,7 +52,9 @@ windmill.jsTest = new function () {
 
   // Initialize everything to starting vals
   this.init = function () {
+    windmill.testWindow.windmill = windmill;
     this.testFiles = null;
+    this.testScriptSrc = '';
     this.initFile = false;
     this.testNamespaces = [];
     this.testList = [];
@@ -91,6 +94,9 @@ windmill.jsTest = new function () {
       tests.splice(initIndex, 1);
       this.testFiles = tests;
       if (this.doTestInit(initPath)) {
+        if (this.runInTestWindowScope) {
+          windmill.testWindow.jum = windmill.controller.asserts;
+        }
         return true;
       }
     }
@@ -122,12 +128,17 @@ windmill.jsTest = new function () {
   };
   this.parseTestNamespace = function (name) {
     var arr = [];
-    var re = /^test_/;
+    var str = '';
     function parseObj(obj, namespace) {
+      var re = /^test_/;
       var o = obj;
       for (var p in o) {
-        console.log(p);
         var item = o[p];
+        //str += p + ': ' + typeof item + ', ';
+        if (!re.test(p)) {
+          str += p + ': ' + item + ', ';
+        }
+
         if ((typeof item == 'function' ||
           typeof item.push == 'function') && re.test(p)) {
           arr.push(namespace + '.' + p);
@@ -138,9 +149,18 @@ windmill.jsTest = new function () {
         }
       }
     }
-    var win = this.runInTestWindowScope ?
-      windmill.testWindow : window;
-    parseObj(win[name], name);
+    if (window.execScript) {
+      re = new RegExp('(' + name + '.*\\.test_.+)(\\s+=)', 'gm');
+      var m = [];
+      while (m = re.exec(this.testScriptSrc)) {
+        arr.push(m[1]);
+      }
+    }
+    else {
+      var win = this.runInTestWindowScope ?
+        windmill.testWindow : window;
+      parseObj(win[name], name);
+    }
     this.testList = combineLists(this.testList, arr);
   };
   this.getTestNames = function () {
@@ -177,10 +197,16 @@ windmill.jsTest = new function () {
       var path = tests[i];
       var str = fleegix.xhr.doReq({ url: path,
 	    async: false });
+      if (window.execScript) {
+        this.testScriptSrc += str + '\n';
+      }
       // Eval in window scope
       globalEval(str, this.runInTestWindowScope);
     }
     return true;
+  };
+  this.showMsg = function (msg) {
+    alert(msg);
   };
   this.runTests = function () {
     var arr = null; // parseTestName recurses through this
@@ -209,35 +235,39 @@ windmill.jsTest = new function () {
       // p = window['foo']['bar'] =>
       // p = window['foo']['bar']['baz']
       testFunc = parseTestName();
-      //alert(testFunc);
       // Tell IDE what is going on
       windmill.ui.results.writeStatus('Running '+ testName + '...');
-      if (typeof testFunc == 'function') {
-        this.runTest(testName, testFunc);
-        this.runTests();
-      }
-      else if (testFunc.length > 0) {
+      if (testFunc.length > 0) {
         this.testItemArray = { name: testName, funcs: testFunc }
         this.runTestItemArray();
+      }
+      else if (typeof testFunc == 'function' ||
+        (document.all && testFunc.toString().indexOf('function') == 0)) {
+        this.runTest(testName, testFunc);
+        this.runTests();
       }
     }
     return true;
   };
   this.runTest = function (testName, testFunc) {
     //Do some timing of test run
-    var jsTestTimer = new TimeObj();
+    var jsTestTimer = new windmill.TimeObj();
     jsTestTimer.setName(testName);
     jsTestTimer.startTime();
     // Run the test
     try {
-      //console.log('Running ' + testName + ' ...');
-      testFunc();
+      if (document.all && this.runInTestWindowScope) {
+        windmill.testWindow.execScript(testFunc.toString());
+      }
+      else {
+        testFunc();
+      }
       jsTestTimer.endTime();
       //write to the results tab in the IDE
       windmill.ui.results.writeResult("<br>Test: <b>" +
 				      testName + "<br>Test Result:" + true);
       //send report for pass
-      windmill.jsTest.sendJSReport(testName, true, null,jsTestTimer);
+      windmill.jsTest.sendJSReport(testName, true, null, jsTestTimer);
     }
     // For each failure, create a TestFailure obj, add
     // to the failures list
@@ -258,7 +288,11 @@ windmill.jsTest = new function () {
     }
     else {
       var item = this.testItemArray.funcs.shift();
-      if (typeof item == 'function') {
+      if (typeof item == 'undefined') {
+        throw new Error('Test item in array-style test is undefined -- likely a trailing comma separator has caused this.');
+      }
+      if (typeof item == 'function' ||
+        (document.all && item.toString().indexOf('function') == 0)) {
         this.runTest(this.testItemArray.name, item);
       }
       else {
@@ -324,7 +358,7 @@ windmill.jsTest.actions.loadActions = function () {
     return function () {
       var args = Array.prototype.slice.call(arguments);
       //We want to time how long this takes
-      var cwTimer = new TimeObj();
+      var cwTimer = new windmill.TimeObj();
       cwTimer.setName(meth);
       cwTimer.startTime();
       //Run the action in the UI
