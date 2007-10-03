@@ -114,11 +114,9 @@ def configure_global_settings():
 
 def setup():
     """Setup server and shell objects"""
-    from windmill.bin import admin_lib
-
     shell_objects_dict = {}
 
-    httpd, httpd_thread, console_log_handler = admin_lib.run_threaded(windmill.settings['CONSOLE_LOG_LEVEL'])
+    httpd, httpd_thread, console_log_handler = run_threaded(windmill.settings['CONSOLE_LOG_LEVEL'])
 
     shell_objects_dict['httpd'] = httpd
     shell_objects_dict['httpd_thread'] = httpd_thread
@@ -307,7 +305,7 @@ def command_line_startup():
 
     configure_global_settings()
 
-    action = admin_lib.process_options(sys.argv)
+    action = process_options(sys.argv)
 
     shell_objects = setup()
 
@@ -320,7 +318,7 @@ def command_line_startup():
         else:
             print "Something happended in the framework that prevented teardown and/or action call"
             print "attempting teardown..."
-            admin_lib.teardown(shell_objects)
+            teardown(shell_objects)
     else:
         action(shell_objects)
             
