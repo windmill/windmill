@@ -44,7 +44,7 @@ table {
 #intro {
   text-align:left;
   margin: auto;
-  width: 600px;
+  width: 550px;
 }
 
 #messages {
@@ -72,7 +72,7 @@ table {
   position: absolute;
   left: 2px;
   margin: auto;
-  width: 600px;
+  width: 550px;
   min-height: 100%;
   text-align: left;
   background: transparent;
