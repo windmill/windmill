@@ -44,13 +44,13 @@ table {
 #intro {
   text-align:left;
   margin: auto;
-  width: 500px;
+  width: 600px;
 }
 
 #messages {
     position:absolute;
-    top: 10px;
-    left:70%;
+    top: 20px;
+    left: 450px;
     height:50px;
     width:150px;
     float:right;
@@ -72,7 +72,7 @@ table {
   position: absolute;
   left: 2px;
   margin: auto;
-  width: 500px;
+  width: 600px;
   min-height: 100%;
   text-align: left;
   background: transparent;

@@ -8,16 +8,18 @@ var erase = function(){
 
 var writeClicked = function(){
   $('messages').style.opacity = 0;
-  $('messages').innerHTML = 'Clicked the button and recorded it!';
+  $('messages').innerHTML = 'Clicked the DIV and recorded it!';
   fleegix.fx.fadeIn($('messages'));
   setTimeout('erase()', 2000);
 };
 
 var writeTxtChanged = function(){
-  $('messages').style.opacity = 0;
-  $('messages').innerHTML = 'Changed text and recorded it!';
-  fleegix.fx.fadeIn($('messages'));
-  setTimeout('erase()', 2000);
+  if ($('textFieldOne').value != ''){
+    $('messages').style.opacity = 0;
+    $('messages').innerHTML = 'Changed text and recorded it!';
+    fleegix.fx.fadeIn($('messages'));
+    setTimeout('erase()', 2000);
+  }
 
 }
 
