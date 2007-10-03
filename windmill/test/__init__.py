@@ -20,8 +20,6 @@ from time import sleep
 
 from threading import Thread
 
-functest.registry = {}
-
 def setup_module(module):
     windmill_dict = admin_lib.start_windmill()
 
@@ -37,12 +35,8 @@ def setup_module(module):
     module.httpd = httpd
     module.httpd_thread = httpd_thread
 
-    if 'firefox' in sys.argv:
-        windmill_dict['start_firefox']()
-    elif 'safari' in sys.argv:
-        windmill_dict['start_safari']()
-    elif 'ie' in sys.argv:
-        windmill_dict['start_ie']()
+    assert functest.registry.has_key('browser') # Make sure browser= was passed to functest
+    module.windmill_dict['start_'+functest.registry['browser']]()
         
     functest.registry['rpc_client'] = xmlrpclib.ServerProxy('http://localhost:4444/windmill-xmlrpc', allow_none=1)
     print 'testing 1'
