@@ -63,7 +63,7 @@ class MozillaProfile(object):
             self.initial_prefs()
         
             if sys.platform == 'linux2':
-                print commands.getoutput('chown -R %s:%s %s' % (os.getlogin(), os.getlogin() self.profile_path))
+                print commands.getoutput('chown -R %s:%s %s' % (os.getlogin(), os.getlogin(), self.profile_path))
                 windmill_firefox = open(windmill.settings['MOZILLA_BINARY'], 'r').read().replace('file://', '')
                 f = open(self.profile_path+'/'+'windmill-firefox', 'w')
                 f.write(windmill_firefox); f.flush(); f.close()
