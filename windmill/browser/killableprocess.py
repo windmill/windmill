@@ -205,3 +205,12 @@ class Popen(subprocess.Popen):
             subprocess.Popen.wait(self)
 
         return self.returncode
+        
+def setpgid_preexec_fn():
+    os.setpgid(0, 0)
+        
+def runCommand(cmd):
+    if sys.platform != "win32":
+        return Popen(cmd, preexec_fn=setpgid_preexec_fn)
+    else:
+        return Popen(cmd)

@@ -74,8 +74,9 @@ if PLATFORM == 'darwin':
 
     MOZILLA_DEFAULT_PROFILE = os.path.join(firefoxDir, 'Contents', 'MacOS', 'defaults', 'profile')
     MOZILLA_BINARY          = os.path.join(firefoxDir, 'Contents', 'MacOS', 'firefox-bin')
-    SAFARI_BINARY           = '/Applications/Safari.app'
+    SAFARI_BINARY           = '/Applications/Safari.app/Contents/MacOS/Safari'
     SAFARI_COMMAND          = ['open', '-a', SAFARI_BINARY, TEST_URL+'/windmill-serv/start.html']
+    NETWORKSETUP_BINARY = '/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support/networksetup'
 
 elif sys.platform == 'linux2':
     firefoxBin = findInPath('firefox')
