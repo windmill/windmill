@@ -1,6 +1,5 @@
 import commands
 import tempfile
-import pexpect
 import logging
 import signal
 import killableprocess, commands
