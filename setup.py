@@ -15,28 +15,42 @@
 from setuptools import setup, find_packages
 import sys, os
 
-desc = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.'
-
 PACKAGE_NAME = "windmill"
-PACKAGE_VERSION = "0.2"
+PACKAGE_VERSION = "0.2rc2"
+
+SUMMARY = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging and recording capabilities.'
+
+DESCRIPTION = """Windmill is an Open Source AJAX Web UI Testing framework that was originally built to automate testing for the Chandler Server Project at OSAF. After spending time with Selenium we realized we had a variety of needs that weren't being fulfilled and built Windmill from the ground up. 
+
+Windmill implements cross browser testing, in-browser recording and playback, and functionality for fast accurate debugging and test environment integration.
+
+We are a relatively young project, but as far as we know we already implement a larger set of a browser testability than Selenium. We welcome any and all interest and contribution, as we work diligently at adding new features and keeping up with your bugs.
+
+Thanks for your interest and participation!
+"""
 
 setup(name=PACKAGE_NAME,
       version=PACKAGE_VERSION,
-      description=desc,
+      description=SUMMARY,
+      long_description=DESCRIPTION,
       author='Open Source Applications Foundation',
       author_email='tools-dev@osafoundation.org',
       url='http://windmill.osafoundation.org/',
       license='http://www.apache.org/licenses/LICENSE-2.0',
+      include_package_data = True,
       packages=find_packages(),
-      scripts=[os.path.abspath(os.path.join(os.path.dirname(__file__),'windmill','bin','windmill'))],
+      package_data = {'': ['*.js', '*.css', '*.html', '*.txt'],},
+      scripts=[os.path.join(os.path.dirname(__file__),'windmill','bin','windmill')],
+      app=[os.path.join(os.path.dirname(__file__),'windmill','bin','windmill')],
       platforms =['Any'],
-      install_requires = ['cherrypy >= 3.0.1',
-                          'simplejson',
+      install_requires = ['cherrypy >= 3.0.2',
+                          'simplejson >= 1.7.1',
                           # All these wsgi_ libraries used to be part of windmill but are now seperate libraries.
-                          'wsgi_jsonrpc',
-                          'wsgi_xmlrpc',
-                          'wsgi_fileserver',
-                          ],                          
+                          'wsgi_jsonrpc >= 0.2.2',
+                          'wsgi_xmlrpc >= 0.2.3',
+                          'wsgi_fileserver >= 0.2.3',
+                          ],
+      tests_require = ['functest >= 0.4'],           
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Console',
                    'Intended Audience :: Developers',
@@ -44,7 +58,5 @@ setup(name=PACKAGE_NAME,
                    'Operating System :: OS Independent',
                    'Topic :: Software Development :: Libraries :: Python Modules',
                   ],
-      # -- build section -- #
-      # **extra_options
      )
 

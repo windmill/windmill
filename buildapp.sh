@@ -1,1 +1,1 @@
-rm -rf build dist ; python setup.py py2app ; open dist/windmill.app
+rm -rf build dist ; python build_setup.py py2app

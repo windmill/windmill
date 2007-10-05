@@ -13,24 +13,23 @@
 #   limitations under the License.
 
 import sys, os, copy
-from setuptools import setup
+from setuptools import setup, find_packages
 
-APP = 'windmill/bin/windmill-admin.py'
+APP = 'windmill/bin/windmill_bin.py'
 DATA_FILES = ['windmill']
 
 APP_VERSION = '0.2.0'
 APP_DESC    = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging capabilities.'
 
-mikeals_build = ['/Users/mikeal/tmp/CherryPy-3.0.1/cherrypy',
-                 '/Users/mikeal/tmp/dateutil-1.1/dateutil',
+mikeals_build = ['/Users/mikeal/tmp/CherryPy-3.0.2/cherrypy',
                  '/Users/mikeal/tmp/simplejson-1.7.1/simplejson',
                  '/Users/mikeal/Documents/projects/tools/wsgi_fileserver/trunk/wsgi_fileserver',
                  '/Users/mikeal/Documents/projects/tools/wsgi_jsonrpc/trunk/wsgi_jsonrpc',
-                 '/Users/mikeal/Documents/projects/tools/wsgi_proxy/trunk/wsgi_proxy',
+                 #'/Users/mikeal/Documents/projects/tools/wsgi_proxy/trunk/wsgi_proxy',
                  '/Users/mikeal/Documents/projects/tools/wsgi_xmlrpc/trunk/wsgi_xmlrpc',
                  #'/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5',
                  '/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/email',
-                 '/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/lib-dynload/', '/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/wx-2.8-mac-unicode/wx',
+                 '/Library/Frameworks/Python.framework/Versions/2.5/lib/python2.5/lib-dynload/',                   '/Library/Frameworks/Python.framework/Versions/Current/lib/python2.5/site-packages/wx-2.8-mac-unicode/wx',
                  ]
 
 if os.path.isdir('/Users/mikeal'):
@@ -86,7 +85,7 @@ setup(
     author_email='windmill-dev@list.osafoundation.org',
     url='http://windmill.osafoundation.org/trac/',
     license='http://www.apache.org/licenses/LICENSE-2.0',
-    packages=['windmill'],
+    packages=find_packages(),
     platforms=['Any'],
     classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Library',
