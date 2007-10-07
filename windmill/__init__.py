@@ -14,5 +14,7 @@
 
 import authoring, bin, browser, server, conf, tools
 
+# This is for some event driven framework code latched on to windmill
+# This kind of crap will get removed when we move to Twisted.
 TESTS_COMPLETED = False
 RESULTS = {'pass':0, 'fail':0}

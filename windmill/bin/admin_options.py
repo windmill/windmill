@@ -130,6 +130,7 @@ def process_module(module):
     module.flags_dict = flags_dict
     
 def help(bin_name='windmill'):
+    """Print windmill command line help."""
     bin_name = 'windmill'
     module = sys.modules[__name__]
     from windmill.conf import global_settings

@@ -17,13 +17,14 @@ import sys, os
 from windmill.authoring import transforms
 
 def transform_json_to_python(json_strings):
+    """Transform serialized JSON objects to python code using the windmill transformer architecture"""
     tests = []
     for line in json_strings:
         tests.append(simplejson.loads(line))
     return transforms.build_test_file(tests)
     
 if __name__ == '__main__':
-    
+    """Command line utility for converting JSON formatted tests to Python"""
     if len(sys.argv) is 1:
         files = [fn for fn in os.listdir('.') if fn.endswith('.json')]
     else:

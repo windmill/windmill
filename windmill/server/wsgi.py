@@ -54,7 +54,7 @@ def reconstruct_url(environ):
     # Stick query string back in
     if environ.get('QUERY_STRING'):
         url += '?' + environ['QUERY_STRING']
-        
+    # Stick it in environ for convenience     
     environ['reconstructed_url'] = url
     return url
     
@@ -88,6 +88,7 @@ class HTTPConnection(httplib.HTTPConnection):
             raise socket.error, msg
             
     def __del__(self):
+        """Make sure we close the socket when the object gets destroyed"""
         if self.sock is not None:
             self.sock.close()
 
@@ -105,6 +106,7 @@ class WindmillChooserApplication(object):
         self.proxy = proxy
         
     def add_namespace(self, name, application):
+        """Add an application to a specific url namespace in windmill"""
         self.namespaces[name] = application
 
     def handler(self, environ, start_response):
@@ -131,6 +133,7 @@ def make_windmill_server(http_port=None, js_path=None):
     if js_path is None:
         js_path = windmill.settings['JS_PATH']
         
+    # Start up all the convergence objects    
     import convergence
     test_resolution_suite = convergence.TestResolutionSuite()
     command_resolution_suite = convergence.CommandResolutionSuite()
@@ -138,6 +141,7 @@ def make_windmill_server(http_port=None, js_path=None):
     xmlrpc_methods_instance = convergence.XMLRPCMethods(queue, test_resolution_suite, command_resolution_suite)
     jsonrpc_methods_instance = convergence.JSONRPCMethods(queue, test_resolution_suite, command_resolution_suite)
     
+    # Start up all the wsgi applications
     windmill_serv_app = wsgi_fileserver.WSGIFileServerApplication(root_path=js_path, mount_point='/windmill-serv/')
     windmill_proxy_app = WindmillProxyApplication()
     windmill_xmlrpc_app =  wsgi_xmlrpc.WSGIXMLRPCApplication(instance=xmlrpc_methods_instance)
@@ -148,6 +152,7 @@ def make_windmill_server(http_port=None, js_path=None):
     windmill_chooser_app = WindmillChooserApplication(apps=[windmill_serv_app, windmill_jsonrpc_app,
                                                       windmill_xmlrpc_app], proxy=windmill_proxy_app)
     
+    # Make add_namespace available at the module level
     global add_namespace
     add_namespace = windmill_chooser_app.add_namespace
     

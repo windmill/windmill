@@ -34,9 +34,11 @@ def process_options(argv_list):
     # forgotten what it does -Mikeal
     for index in range(len(argv_list)):
         if index <= len(argv_list):
+            # Grab the test url if one is given
             if argv_list[index].startswith('http://'):
                 windmill.settings['TEST_URL'] = argv_list[index]
             elif not argv_list[index].startswith('-'):
+                # Any argument not starting with - is a regular named option
                 if argv_list[index][0].islower():
                     value = None
                     if argv_list[index].find('=') is not -1:
@@ -64,11 +66,13 @@ def process_options(argv_list):
                             windmill.settings[value] = True
                             
             elif argv_list[index].startswith('-'):
+                # Take something like -efg and set the e, f, and g options
                 options = argv_list[index].replace('-')
                 for option in options:
                     admin_options.flags_dict[option]()
                     
     if action is None:
+        # If an action is not defined we default to running the service in the foreground
         return action_mapping['runserver']
     else:
         return action
@@ -83,7 +87,7 @@ def setup_servers(console_level=logging.INFO):
     return httpd, console_handler
 
 def run_threaded(console_level=logging.INFO):
-    """Run the server with various values"""
+    """Run the server threaded."""
 
     httpd, console_handler = setup_servers(console_level)
     
@@ -95,7 +99,9 @@ def run_threaded(console_level=logging.INFO):
     return httpd, httpd_thread, console_handler
 
 def configure_global_settings():
-    # Get local config
+    """Configure that global settings for the current run"""
+    
+    # This logging stuff probably shouldn't be here, it should probably be abstracted
     logging.getLogger().setLevel(0)
     
     console = logging.StreamHandler()
@@ -155,6 +161,7 @@ def setup():
 
 
 def python_test_frame(shell_objects):
+    """Execute the python test framework"""
     from windmill.authoring import frame
     if windmill.settings['PYTHON_TEST_FILE']:
         test_run_method = lambda : frame.collect_and_run_tests(windmill.settings['PYTHON_TEST_FILE'])
@@ -174,7 +181,7 @@ def python_test_frame(shell_objects):
     
 
 def teardown(shell_objects):
-    
+    """Teardown the server, threads, and open browsers."""
     windmill.is_active = False
     
     shell_objects['clear_queue']()
@@ -188,9 +195,8 @@ def teardown(shell_objects):
 
 
 def runserver_action(shell_objects):
-
+    """Run the server in the foreground with the options given to the command line"""
     try:
-        
         print 'Server running...'
         if not windmill.settings['EXIT_ON_DONE']:
             while 1:
@@ -207,6 +213,7 @@ def runserver_action(shell_objects):
 
 
 def shell_action(shell_objects):
+    """Start the windmill shell environment"""
     # If ipython is installed and we weren't given the usecode option
     try:
         assert not windmill.settings['USECODE']
@@ -222,6 +229,7 @@ def shell_action(shell_objects):
     
     
 def wxui_action(shell_objects):
+    """Start the wxPython based service GUI"""
     try:
         import wxui
         app = wxui.App(shell_objects)
@@ -296,11 +304,13 @@ def tinderbox_action(shell_objects):
             sys.exit(1)
 
 def start_windmill():
+    """Start windmill and return shell_objects"""
     configure_global_settings()
     shell_objects = setup()
     return shell_objects
 
 def command_line_startup():
+    """Command line startup"""
     windmill.stdout, windmill.stdin = sys.stdout, sys.stdin
 
     configure_global_settings()

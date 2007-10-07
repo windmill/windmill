@@ -21,12 +21,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Note that hoppish conntains proxy-connection, which is pre-HTTP-1.1 and is somewhat nebulous
 _hoppish = {
     'connection':1, 'keep-alive':1, 'proxy-authenticate':1,
     'proxy-authorization':1, 'te':1, 'trailers':1, 'transfer-encoding':1,
     'upgrade':1, 'proxy-connection':1 }
     
 def is_hop_by_hop(header):
+    """check if the given header is hop_by_hop"""
     return _hoppish.has_key(header.lower())
 
 initial_forwarding_registry = {}
@@ -42,6 +44,7 @@ class WindmillProxyApplication(object):
         url = urlparse(environ['reconstructed_url'])
         
         def change_environ_domain(original_netloc, new_netloc, environ):
+            """Swap out the domain for a given request environ"""
             new_environ = {}
             for key, value in environ.items():
                 if ( type(value) is str ) and ( value.find(original_netloc) is not -1 ):
@@ -50,6 +53,9 @@ class WindmillProxyApplication(object):
                     new_environ[key] = value
             return new_environ
 
+        # Once FORWARDING_TEST_URL is set we should check for cross-domain forward
+        # but we must disable for localhost as redirects to localhost will cause the browser 
+        # to error.
         if windmill.settings['FORWARDING_TEST_URL'] is not None and (
            not url.netloc.startswith('localhost') ) and (
            not url.netloc.startswith('127.0.0.1') ):
@@ -59,6 +65,8 @@ class WindmillProxyApplication(object):
             referer = environ.get('HTTP_REFERER', None)
 
             if ( url.netloc != test_netloc ):
+                # if the url's network address is not the test URL that has been set we need to return
+                # a forward
                 initial_forwarding_registry[url.geturl().replace(url.netloc, test_netloc)] = url.netloc
                 start_response("302 Found", [('Content-Type', 'text/plain'), 
                                              ('Location', url.geturl().replace(url.netloc, test_netloc) )])
@@ -66,12 +74,15 @@ class WindmillProxyApplication(object):
                 return ['Windmill is forwarding you to a new url at the proper test domain']
         
             elif ( url.geturl() in initial_forwarding_registry.keys() ):
+                # This handles the first case where a forward is returned to the browser
                 host_netloc = initial_forwarding_registry.get(url.geturl())
                 forwarding_registry[url.geturl()] = host_netloc
                 environ = change_environ_domain(url.netloc, host_netloc, environ)
                 url = urlparse(url.geturl().replace(url.netloc, host_netloc))
             
             elif (referer is not None) and (referer in forwarding_registry.keys()):
+                # This handles the case that the referer is a url we've already
+                # done a cross-domain request for 
                 host_netloc = forwarding_registry[referer]
                 forwarding_registry[url.geturl()] = host_netloc
                 environ = change_environ_domain(url.netloc, host_netloc, environ)
@@ -124,6 +135,7 @@ class WindmillProxyApplication(object):
                 return [("501 Gateway error", [('Content-Type', 'text/html')],), '<H1>Could not connect</H1>']
                 
         def retry_known_hosts(url, environ):
+            # retry the given request against all the hosts the current session has run against
             hosts = copy.copy(initial_forwarding_registry.values())
             hosts.reverse()
             current_host = url.netloc
@@ -139,6 +151,7 @@ class WindmillProxyApplication(object):
                 
         connection = make_remote_connection(url, environ)
         if not isinstance(connection, HTTPConnection):
+            # if it's not an HTTPConnection object then the request failed so we should retry
             new_response = retry_known_hosts(url, environ)
             if new_response is not None: 
                 response = new_response
@@ -149,10 +162,14 @@ class WindmillProxyApplication(object):
             response = connection.getresponse()
         
         if response.status == 404:
+            # If the response is 404 we should retry against the known hosts
+            # this is usually the case when the referrer is ommitted by the browser 
+            # for random reasons
             new_response = retry_known_hosts(url, environ)
             if new_response is not None:
                 response = new_response
 
+        # Remove hop by hop headers
         hopped_headers = response.getheaders()
         headers = copy.copy(hopped_headers)
         for header in hopped_headers:

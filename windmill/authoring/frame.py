@@ -12,6 +12,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+# This is a quick discovery based framework for the windmill python test authoring library
+# Hopefully this can all get removed and replaced with functest.
+
 import os
 import sys
 import pdb
@@ -38,6 +41,7 @@ settings = {'pytest_on_failure': lambda x, e: sys.stdout.write('%s failed' % x._
 settings.update(wm_settings)
 
 def get_module(directory):
+    """Import and return a python module by directory"""
     directory = os.path.abspath(directory)
     if os.path.split(directory)[-1] == '.':
         directory = os.path.join(os.path.split(directory).pop(-1))
@@ -47,6 +51,7 @@ def get_module(directory):
     return test_module
     
 def get_test_module(test_path):
+    """Import and return test module"""
     if os.path.isfile(test_path):
         if os.path.isfile(os.path.join(os.path.dirname(test_path), '__init__.py')):
             root_module = get_module(os.path.dirname(test_path))
@@ -66,6 +71,7 @@ def get_test_module(test_path):
     return root_module, test_module
     
 def run_test_module(test_module, root_module=None):
+    """Run individual test module"""
     if hasattr(test_module, '_depends_') and ( root_module is not None ):
         for test in [getattr(root_module, x) for x in test_module._depends_ if (
                      getattr(root_module, x) not in modules_run)]:
@@ -93,6 +99,7 @@ def run_test_module(test_module, root_module=None):
     modules_run.append(test_module)
         
 def wm_post_mortem():
+    """Wrapper around pdb.pm so that we can eventually route stdin and stdout to a GUI front end"""
     t = sys.exc_info()[2]
     while t.tb_next is not None:
         t = t.tb_next
@@ -104,17 +111,20 @@ def wm_post_mortem():
     p.interaction(t.tb_frame, t)
         
 def run_test_callable(test):
+    """Run test callable extracted from test module"""
     try:
         test()
         settings['pytest_on_success'](test)
         results['pass'] += 1
     except AssertionError, e:
+        # handle assertion error, explicit comparison failures in tests
         print traceback.format_exc()
         if windmill.settings.get('ENABLE_PDB', None):
             wm_post_mortem()
         settings['pytest_on_failure'](test, e)
         results['fail'] += 1
     except Exception, e:
+        # handle exception in python
         print traceback.format_exc()
         if windmill.settings.get('ENABLE_PDB', None):
             wm_post_mortem()
@@ -122,6 +132,7 @@ def run_test_callable(test):
         results['fail'] += 1
         
 def collect_and_run_tests(file_path):
+    """Collect the entire set of tests and run."""
     if os.path.split(file_path)[-1] == '__init__.py':
         file_path = os.path.dirname(os.path.abspath(file_path))
     else:

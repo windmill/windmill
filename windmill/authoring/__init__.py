@@ -18,7 +18,7 @@ import new, copy
 import transforms
 
 class WindmillTestClient(object):
-    
+    """Windmill controller implementation for python test authoring library"""
     _enable_assertions = True
     _browser_debugging = False
         
@@ -31,6 +31,7 @@ class WindmillTestClient(object):
         self._method_proxy = method_proxy
         
         class ExecWrapper(object):
+            """In line callable wrapper class for execute/load methods"""
             def __init__(self, exec_method, action_name):
                 self.action_name = action_name
                 self.exec_method = exec_method
@@ -40,7 +41,6 @@ class WindmillTestClient(object):
                 
         for action in self._method_proxy.execute_command(
                                    {'method':'commands.getControllerMethods','params':{}})['result']:
-            
             
             #Bind every available test and action to self, flatten them as well
             if action.find('command') is not -1:
@@ -82,6 +82,7 @@ class WindmillTestClient(object):
             return self._method_proxy.add_test({'method':command_name, 'params':kwargs})        
             
 def get_test_client(name):
+    """Convenience method for gettign windmill test client"""
     client = WindmillTestClient(name)
     
     if windmill.settings.get('BROWSER_DEBUGGING', None):

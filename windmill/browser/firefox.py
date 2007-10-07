@@ -28,6 +28,7 @@ def setpgid_preexec_fn():
     os.setpgid(0, 0)
 
 def runCommand(cmd):
+    """Run the given command in killable process."""
     if sys.platform != "win32":
         return killableprocess.Popen(cmd, preexec_fn=setpgid_preexec_fn)
     else:
@@ -123,17 +124,21 @@ class MozillaProfile(object):
         return
         
     def user_pref(self, string):
+        """Set user pref"""
         self.prefs_js_f.write('user_pref(' + string + ');\n')
         self.prefs_js_f.flush()
         
     def add_js(self, string):
+        """Add line of js to prefs"""
         self.prefs_js_f.write(string + '\n')
         self.prefs_js_f.flush()
         
     def clean_up(self):
+        """Removed the profile from /tmp"""
         shutil.rmtree(self.profile_path)
         
 def convertPath(linuxPath):
+    """Convert windows path to cygwin path"""
     sysdrive = os.environ.get('SYSTEMDRIVE')
     cygdrive = '/cygdrive/%s' % sysdrive.lower().replace(':', '')
 
@@ -159,13 +164,13 @@ class MozillaBrowser(object):
             self.command = windmill.settings['MOZILLA_COMMAND']
 
     def start(self):
-
+        """Start the browser"""
         self.p_handle = runCommand(self.command)
 
         logger.info(self.command)
 
     def is_alive(self):
-        
+        """Check if the browser thread is alive"""
         if self.p_handle.poll() is None:
             return False
 
@@ -176,7 +181,7 @@ class MozillaBrowser(object):
             return False
 
     def kill(self, kill_signal):
-        
+        """Kill the browser"""
         if sys.platform == 'darwin':
             try:
                 os.kill(self.p_handle.pid+1, kill_signal)
@@ -197,6 +202,6 @@ class MozillaBrowser(object):
                 shutil.rmtree(windmill.settings['MOZILLA_PROFILE_PATH'])
 
     def stop(self):
-        
+        """Stop the browser"""
         self.kill(signal.SIGTERM)
         
