@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- */
+*/
 
 // This script contains a badly-organised collection of miscellaneous
 // functions that really need better homes.

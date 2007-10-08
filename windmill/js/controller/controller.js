@@ -1,5 +1,6 @@
 /*
-Copyright 2006, Open Source Applications Foundation
+Copyright 2006-2007, Open Source Applications Foundation
+ 2006, Open Source Applications Foundation
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -320,7 +321,7 @@ this.storeURL = function(param_object){
 }
 
 //Directly access mouse events
-  this.mousedown = function (param_object){
+this.mousedown = function (param_object){
     var mupElement = this._lookupDispatch(param_object);
     windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  
     
@@ -354,8 +355,8 @@ this.setTestWindow = function(param_object){
 }
   
 /********************************************************************************
-    /* DOM location functionality, all used for various types of lookups in the DOM
-    /*********************************************************************************/
+/* DOM location functionality, all used for various types of lookups in the DOM
+/*********************************************************************************/
     
 //A big part of the following is adapted from the selenium project browserbot
     
