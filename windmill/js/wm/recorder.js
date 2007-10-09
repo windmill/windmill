@@ -42,12 +42,12 @@ windmill.ui.recorder = new function () {
     else if ((e.target.tagName == "A") || (e.target.parentNode.tagName == "A")){
       locator = 'link';
       if (!e.target.href || e.target.onclick || e.target.onmouseover){
-	locValue = e.target.parentNode.innerHTML.replace(/(<([^>]+)>)/ig,"");
-	locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
+	      locValue = e.target.parentNode.innerHTML.replace(/(<([^>]+)>)/ig,"");
+	      locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
       }
       else{
-	locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig,"");
-	locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
+	      locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig,"");
+	      locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
       }
     }
     else{

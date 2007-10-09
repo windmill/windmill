@@ -15,10 +15,13 @@ Copyright 2006-2007, Open Source Applications Foundation
 */
 
 /*******************************************************************************************************
-/* Commands namespace functions, mostly system specific for the server to inderact with the client
+/* Commands namespace functions, mostly system specific for the server to interact with the client
 /******************************************************************************************************/
  
-//Create lots of variables
+//Create multiple variables with one function call
+//When we load the test suites we want to fill the registry
+//with variables to make the tests cleaner when it comes to
+//js paths and random vars, currently delimited by |'s
 windmill.controller.commands.createVariables = function(param_object){
   for (var i = 0;i<param_object.variables.length;i++){
     windmill.varRegistry.addItem('{$'+param_object.variables[i].split('|')[0] +'}',param_object.variables[i].split('|')[1]);
@@ -33,10 +36,10 @@ windmill.controller.commands.createVariables = function(param_object){
     
   result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
   resp(result);        
-}
+};
  
 //This function stores a variable and it's value in the variable registry
-  windmill.controller.commands.createVariable = function(param_object){
+windmill.controller.commands.createVariable = function(param_object){
     var value = null;
     if (windmill.varRegistry.hasKey('{$'+param_object.name +'}')){
       value = windmill.varRegistry.getByKey('{$'+param_object.name +'}');
@@ -58,19 +61,19 @@ windmill.controller.commands.createVariables = function(param_object){
     result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
     resp(result);
     return true;
-  }
+  };
 
-  //This function allows the user to specify a string of JS and execute it
-    windmill.controller.commands.execJS = function(param_object){
+//This function allows the user to specify a string of JS and execute it
+windmill.controller.commands.execJS = function(param_object){
       //Lets send the result now to the server
       var json_object = new windmill.xhr.json_call('1.1', 'command_result');
       var params_obj = {};
     
       try {
-	params_obj.result = eval(param_object.code);
+	      params_obj.result = eval(param_object.code);
       }
       catch(error){
-	params_obj.result = error;
+	      params_obj.result = error;
       }
     
       params_obj.status = true;
@@ -83,10 +86,10 @@ windmill.controller.commands.createVariables = function(param_object){
       result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
       resp(result);
       return false;
-    }
+};
 
-    //Give the backend a list of available controller methods
-      windmill.controller.commands.getControllerMethods = function (param_object){
+//Give the backend a list of available controller methods
+windmill.controller.commands.getControllerMethods = function (param_object){
 	var str = '';
 	for (var i in windmill.controller) { if (i.indexOf('_') == -1){ str += "," + i; } }
 	for (var i in windmill.controller.extensions) {
@@ -126,7 +129,7 @@ windmill.controller.commands.createVariables = function(param_object){
     
 	result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
 	resp(result);
-      };
+};
   
 //Keeping the suites running 
 windmill.controller.commands.setOptions = function (param_object){
@@ -143,7 +146,10 @@ windmill.controller.commands.setOptions = function (param_object){
   return true;
 };
   
-//
+//If we have an error at any time during playback we may
+//want to know the exact state and contents of the testing window
+//this function takes the innerHTML, removes the new lines and sends
+//the contents back to the service so that they can be used for debugging
 windmill.controller.commands.getDOM = function (param_object){
   var dom = windmill.testWindow.document.documentElement.innerHTML.replace('\n','');
     
@@ -157,9 +163,10 @@ windmill.controller.commands.getDOM = function (param_object){
     
   result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
   resp(result); 
-}
+};
 
-  windmill.controller.commands.jsTests = function (paramObj) {
+//Function to start the running of jsTests
+windmill.controller.commands.jsTests = function (paramObj) {
     var testFiles = paramObj.tests;
     if (!testFiles.length) {
       throw new Error('No JavaScript tests to run.');
@@ -174,8 +181,9 @@ windmill.controller.commands.getDOM = function (param_object){
     _j.jsSuiteSummary = jsSuiteSummary;
 
     _j.run(testFiles);
-  };
+};
 
+//Commands function to hande the test results of the js tests
 windmill.controller.commands.jsTestResults = function () {
   var _j = windmill.jsTest;
   var jsSuiteSummary = _j.jsSuiteSummary;

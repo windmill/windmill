@@ -15,7 +15,6 @@ Copyright 2006-2007, Open Source Applications Foundation
 */
 
 //Assertion Explorer Functions
-/***************************************/
 windmill.ui.assertexplorer = new function () {
   var exploreState = false;
   //this.domExplorerBorder = '';

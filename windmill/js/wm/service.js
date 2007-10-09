@@ -53,7 +53,7 @@ windmill.service = new function () {
       var json_string = fleegix.json.serialize(json_object)
 
       var resp = function(str){
-	return true;
+	      return true;
       }
 
       result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);

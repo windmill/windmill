@@ -23,9 +23,9 @@ windmill.controller.what = function() {
 /**
  * In IE, getElementById() also searches by name - this is an optimisation for IE.
  */
-  windmill.controller.locateElementByIdentifer = function(identifier, inDocument, inWindow) {
-    return inDocument.getElementById(identifier);
-  };
+windmill.controller.locateElementByIdentifer = function(identifier, inDocument, inWindow) {
+  return inDocument.getElementById(identifier);
+};
   
 windmill.controller.click = function(param_object){        
   var element = this._lookupDispatch(param_object);
@@ -57,28 +57,27 @@ windmill.controller.check = function(param_object){
 }
 
 //Radio buttons are even WIERDER in safari, not breaking in FF
-  windmill.controller.radio = function(param_object){
+windmill.controller.radio = function(param_object){
     //var element = this._lookupDispatch(param_object);
     return windmill.controller.click(param_object);
-  }
+}
   
-  //double click for ie, needs to be tested
-  windmill.controller.doubleClick = function(param_object){
-         
-         var element = this._lookupDispatch(param_object);
-         if (!element){
-           return false;
-         }
-         windmill.events.triggerEvent(element, 'focus', false);
+//double click for ie
+windmill.controller.doubleClick = function(param_object){      
+   var element = this._lookupDispatch(param_object);
+   if (!element){
+     return false;
+   }
+   windmill.events.triggerEvent(element, 'focus', false);
 
-           // Trigger the mouse event.
-           //windmill.events.triggerMouseEvent(element, 'dblclick', true, clientX, clientY);
-           windmill.events.triggerMouseEvent(element, 'dblclick', true);   
-         /* if (this.windowClosed()) {
-               return;
-           }*/
-           windmill.events.triggerEvent(element, 'blur', false);       
-        return true;
-  };
+     // Trigger the mouse event.
+     //windmill.events.triggerMouseEvent(element, 'dblclick', true, clientX, clientY);
+     windmill.events.triggerMouseEvent(element, 'dblclick', true);   
+   /* if (this.windowClosed()) {
+         return;
+     }*/
+     windmill.events.triggerEvent(element, 'blur', false);       
+  return true;
+};
  
   

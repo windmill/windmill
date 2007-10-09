@@ -162,16 +162,16 @@ windmill.ui.remote = new function () {
 
 	//var str = fleegix.json.serialize(actionObj);
 	testArray.push(actionObj);
-      }
+  }
             
-      var respRun = function(str){
+  var respRun = function(str){
 	//alert(str);
 	response = eval('(' + str + ')');
 	//window.open(response.result,'Saved Test','width=400,height=600')
 	//window.open(response.result);
 	window.open(response.result,null,"height=500,width=600,status=no,toolbar=no,menubar=no,location=no,resizable=yes");
 	return true;
-      }
+  }
    
       //Get the language to save these suckers in
       var langSI = windmill.remote.$('suiteSaveFormat').selectedIndex;

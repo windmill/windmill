@@ -15,7 +15,6 @@ Copyright 2006-2007, Open Source Applications Foundation
 */
 
 //DOM Explorer Functions
-/***************************************/
 windmill.ui.domexplorer = new function () {
   var exploreState = false;
   //this.domExplorerBorder = '';

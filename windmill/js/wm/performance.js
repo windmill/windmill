@@ -15,16 +15,6 @@ Copyright 2006-2007, Open Source Applications Foundation
 */
 
 windmill.performance = new function () {
-  
   //Setting up a performance timing object
   timing = new TimeObj();
-  
-  
-  //Setup log4js object
-  //this.windmill.ui.results.writeResult( =  new windmill.ui.results.writeResult(4js.getwindmill.ui.results.writeResult(ger("Performance_log");
-  //this.windmill.ui.results.writeResult(.setLevel(windmill.ui.results.writeResult(4js.Level.ALL);
-    
-  //Other performance functionality
-    
-    
 };

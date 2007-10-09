@@ -15,6 +15,9 @@
  *
 */
 
+/* A lot of this can probably be removed as legacy from old selenium code 
+a few hacks in here I have added and use frequently, this file is on the list
+for a reorg in the next release */
 var $ = function(id) {
 		  return document.getElementById(id);
 };

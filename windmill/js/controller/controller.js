@@ -1,6 +1,7 @@
 /*
 Copyright 2006-2007, Open Source Applications Foundation
  2006, Open Source Applications Foundation
+Copyright 2004 ThoughtWorks, Inc
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,23 +17,6 @@ Copyright 2006-2007, Open Source Applications Foundation
 */
 
 /*
- * Copyright 2004 ThoughtWorks, Inc
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- */
-
-/*
  Functionality that works for every browser
  Mozilla specific functionality abstracted to mozcontroller.js
  Safari specific functionality abstracted to safcontroller.js
@@ -42,10 +26,11 @@ Copyright 2006-2007, Open Source Applications Foundation
  to the current browser, this means that the functionality in the controller
  object is only for the current browser, and there is only one copy of the code being
  loaded into the browser for performance.
- */
+*/
  
 windmill.controller = new function () {
-    
+  
+  //Some namespacing for controller functionality
   this.extensions           = {};
   this.commands             = {};
   this.asserts              = {};
@@ -124,14 +109,13 @@ windmill.controller = new function () {
 }
 
 /************************************
-  /* User facing windmill functionality
-  /************************************/
-  this.defer = function (){
-    //We may want to somehow display that the loop is being deferred but right now it was too messy in output.
-    //windmill.ui.results.writeResult('Deferring..')
-    //If we are getting defers, no tests are running.. and the playback button should be available
-    //windmill.remote.$('playback').src = 'ide/img/playback.png';
-    //console.log(windmill.remote.$('playback'));
+/* User facing windmill functionality
+/************************************/
+
+//When the service has nothing for us to do  
+this.defer = function (){
+    //At some point we may want to display somewhere that we continually get deferred
+    //when the backend has nothing for us to do
   };
   
 //After a page is done loading, continue the loop
@@ -194,8 +178,6 @@ this.type = function (param_object){
     }
   }
      
-  //actualValue = this._handleRandom(actualValue);
-     
   //Set the value
   element.value = actualValue;
      
@@ -206,10 +188,8 @@ this.type = function (param_object){
   return true;
 };
 
-//Initial stab at selector functionality, taken from selenium-browserbot.js
-/*
- * Select the specified option and trigger the relevant events of the element.
- */
+
+/* Select the specified option and trigger the relevant events of the element.*/
 this.select = function (param_object) {
   var element = this._lookupDispatch(param_object);
   if (!element){ return false; }
@@ -309,6 +289,8 @@ this.dragDropXY = function (param_object){
 };
    
 //Functions for interacting with the windmill variable storage
+//Store the url of a provided link on the page, to be accessed later
+//Ususally with an open
 this.storeURL = function(param_object){
   var linkNode = this._lookupDispatch(param_object);
   if (linkNode){
@@ -361,7 +343,6 @@ this.setTestWindow = function(param_object){
 //A big part of the following is adapted from the selenium project browserbot
     
 // Refine a list of elements using a filter.
- 
   this.selectElementsBy = function (filterType, filter, elements) {
     var filterFunction = this.filterFunctions[filterType];
     if (! filterFunction) {

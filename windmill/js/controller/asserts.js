@@ -14,6 +14,11 @@ Copyright 2006-2007, Open Source Applications Foundation
  limitations under the License.
 */
 
+/* The following are assertion functions available in all browsers
+Currently the dynamic ones are not built into the IDE UI, but will
+in the very near future.
+*/
+
 windmill.controller.asserts.assertRegistry = {
   'assertTrue': {
   expr: function (a) {
@@ -165,8 +170,7 @@ windmill.controller.asserts.assertChecked = function (param_object) {
   return false;
 };
 
-// Assert that a an element's property is a particular
-// value
+// Assert that a an element's property is a particular value
 windmill.controller.asserts.assertProperty = function (param_object) { 
   var element = windmill.controller._lookupDispatch(param_object);
   if (!element){

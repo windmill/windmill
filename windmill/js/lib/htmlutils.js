@@ -15,8 +15,9 @@
  *
 */
 
-// This script contains a badly-organised collection of miscellaneous
-// functions that really need better homes.
+/* This script contains a badly-organised collection of miscellaneous
+functions that really need better homes, slated for a reorg in the
+next relelase and a large portion will probably go away */
 
 function classCreate() {
     return function () {

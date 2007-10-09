@@ -14,6 +14,7 @@ Copyright 2006-2007, Open Source Applications Foundation
  limitations under the License.
 */
 
+//Used for getting xpaths for elements in the DOM based on a given node
 function getXPath(node, path) {
     path = path || [];
     if(node.parentNode) {

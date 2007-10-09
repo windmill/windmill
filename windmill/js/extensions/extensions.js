@@ -17,7 +17,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 //Author: Adam Christian, Open Source Applications Foundation
 //Email: adam@osafoundation.org
 //
-//Description: The following function allows a selenium test to accurately move an event DIV
+//Description: The following function allows a test to accurately move an event DIV
 //to a destination time/day using the Cosmo UI objects to calculate and compensate for
 //The relative DIV offsets
 //
