@@ -404,7 +404,9 @@ c.innerHTML += '<br>';
       var r = windmill.remote.document.createElement("tr");
       r.id = action.id+'optionRow';
       var c = windmill.remote.document.createElement("td");  
-      c.innerHTML += 'Option: ';
+      if (windmill.browser.isIE){ c.innerHTML += '<br>Option: '; }
+      else { c.innerHTML += 'Option: '; }
+
       r.appendChild(c);
              
       //Setup third select
