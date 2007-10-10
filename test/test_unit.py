@@ -15,6 +15,7 @@
 import os
 import simplejson
 import functest
+from windmill.authoring import WindmillTestClient
 
 def test_wmunti1():
     client = WindmillTestClient(__name__, assertions=False)
