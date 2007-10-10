@@ -33,6 +33,11 @@ def setup_module(module):
     functest.registry['rpc_client'] = windmill.tools.make_xmlrpc_client()
     
 def teardown_module(module):
+    try:
+        if functest.registry.get('browser_debugging', False):
+            sleep(1)
+    except KeyboardInterrupt:
+        pass
     admin_lib.teardown(module.windmill_dict)
     sleep(.5)
     

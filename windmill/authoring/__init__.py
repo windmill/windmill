@@ -35,6 +35,10 @@ class WindmillTestClient(object):
         if browser_debugging is not None:
             self.browser_debugging = browser_debugging
             
+        import functest
+        if functest.registry.get('browser_debugging', False):
+            self.browser_debugging = True
+            self.assertions = False
             
         class ExecWrapper(object):
             """In line callable wrapper class for execute/load methods"""
