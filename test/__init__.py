@@ -34,7 +34,7 @@ def setup_module(module):
     
 def teardown_module(module):
     try:
-        if functest.registry.get('browser_debugging', False):
+        while functest.registry.get('browser_debugging', False):
             sleep(1)
     except KeyboardInterrupt:
         pass
