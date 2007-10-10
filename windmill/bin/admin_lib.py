@@ -15,7 +15,7 @@
 import windmill
 import logging, time
 from time import sleep
-import os, sys, inspect, shutil
+import os, sys
 from datetime import datetime
 from threading import Thread
 
@@ -121,6 +121,9 @@ def configure_global_settings():
 def setup():
     """Setup server and shell objects"""
     shell_objects_dict = {}
+    
+    windmill.settings['shell_objects'] = shell_objects_dict
+    assert not windmill.settings.get('setup_has_run', False)
 
     httpd, httpd_thread, console_log_handler = run_threaded(windmill.settings['CONSOLE_LOG_LEVEL'])
 
@@ -130,7 +133,7 @@ def setup():
     from windmill.bin import shell_objects
     
     if windmill.settings['CONTINUE_ON_FAILURE'] is not False:
-        jsonrpc_client.add_json_command('{"method": "commands.setOptions", "params": {"stopOnFailure" : false}}')
+        shell_objects.jsonrpc_client.add_json_command('{"method": "commands.setOptions", "params": {"stopOnFailure" : false}}')
 
     if windmill.settings['TEST_FILE'] is not None:
          shell_objects.run_json_test_file(windmill.settings['TEST_FILE'])
@@ -155,7 +158,8 @@ def setup():
     for attribute in dir(shell_objects):
         shell_objects_dict[attribute] = getattr(shell_objects, attribute)
 
-    windmill.settings['shell_objects'] = shell_objects_dict
+    shell_objects_dict['setup_has_run'] = True
+                
                 
     return shell_objects_dict
 

@@ -13,7 +13,7 @@
 #   limitations under the License.
 
 from setuptools import setup, find_packages
-import sys, os
+import os
 
 PACKAGE_NAME = "windmill"
 PACKAGE_VERSION = "0.2rc2"
@@ -34,14 +34,13 @@ setup(name=PACKAGE_NAME,
       description=SUMMARY,
       long_description=DESCRIPTION,
       author='Open Source Applications Foundation',
-      author_email='tools-dev@osafoundation.org',
+      author_email='windmill-dev@osafoundation.org',
       url='http://windmill.osafoundation.org/',
       license='http://www.apache.org/licenses/LICENSE-2.0',
       include_package_data = True,
       packages=find_packages(),
       package_data = {'': ['*.js', '*.css', '*.html', '*.txt'],},
       scripts=[os.path.join(os.path.dirname(__file__),'windmill','bin','windmill')],
-      app=[os.path.join(os.path.dirname(__file__),'windmill','bin','windmill')],
       platforms =['Any'],
       install_requires = ['cherrypy >= 3.0.2',
                           'simplejson >= 1.7.1',
@@ -49,8 +48,8 @@ setup(name=PACKAGE_NAME,
                           'wsgi_jsonrpc >= 0.2.2',
                           'wsgi_xmlrpc >= 0.2.3',
                           'wsgi_fileserver >= 0.2.3',
+                          'functest >= 0.5.3',
                           ],
-      tests_require = ['functest >= 0.4'],           
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Console',
                    'Intended Audience :: Developers',

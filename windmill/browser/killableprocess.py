@@ -205,6 +205,8 @@ class Popen(subprocess.Popen):
             subprocess.Popen.wait(self)
 
         return self.returncode
+    # We get random maxint errors from subprocesses __del__
+    __del__ = lambda self: None        
         
 def setpgid_preexec_fn():
     os.setpgid(0, 0)

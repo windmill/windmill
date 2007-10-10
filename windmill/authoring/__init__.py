@@ -19,10 +19,10 @@ import transforms
 
 class WindmillTestClient(object):
     """Windmill controller implementation for python test authoring library"""
-    _enable_assertions = True
-    _browser_debugging = False
+    assertions = True
+    browser_debugging = False
         
-    def __init__(self, suite_name, method_proxy=None):
+    def __init__(self, suite_name, assertions=None, browser_debugging=None, method_proxy=None):
         """Assign all available attributes to instance so they are easily introspected"""
         
         if method_proxy is None:
@@ -30,6 +30,12 @@ class WindmillTestClient(object):
         
         self._method_proxy = method_proxy
         
+        if assertions is not None:
+            self.assertions = assertions
+        if browser_debugging is not None:
+            self.browser_debugging = browser_debugging
+            
+            
         class ExecWrapper(object):
             """In line callable wrapper class for execute/load methods"""
             def __init__(self, exec_method, action_name):
@@ -59,9 +65,9 @@ class WindmillTestClient(object):
     def _exec_command(self, command_name, **kwargs):
         """Execute command, if browser_debugging then just add it to queue"""
         command = {'method':command_name, 'params':kwargs}
-        if not self._browser_debugging:
+        if not self.browser_debugging:
             result = self._method_proxy.execute_command({'method':command_name, 'params':kwargs})
-            if not result and self._enable_assertions:
+            if not result and self.assertions:
                 assert result
             else:
                 return result
@@ -72,25 +78,25 @@ class WindmillTestClient(object):
     def _exec_test(self, test_name, **kwargs):
         """Execute test, if browser_debugging then just add it to queue"""
         test = {'method':test_name, 'params':kwargs}
-        if not self._browser_debugging:
+        if not self.browser_debugging:
             result = self._method_proxy.execute_test({'method':test_name, 'params':kwargs})
-            if not result['result'] and self._enable_assertions:
+            if not result['result'] and self.assertions:
                 assert result['result']
             else:
                 return result
         else:
-            return self._method_proxy.add_test({'method':command_name, 'params':kwargs})        
+            return self._method_proxy.add_test({'method':test_name, 'params':kwargs})        
             
 def get_test_client(name):
     """Convenience method for gettign windmill test client"""
     client = WindmillTestClient(name)
     
     if windmill.settings.get('BROWSER_DEBUGGING', None):
-        client._browser_debugging = True
+        client.browser_debugging = True
         
     if windmill.settings.get('ENABLE_PDB', None): 
         import pdb
-        client._browser_debugging = False
-        client._enable_assertions = True
+        client.browser_debugging = False
+        client.assertions = True
     else:
         pdb = None

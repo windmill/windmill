@@ -14,11 +14,10 @@
 
 import windmill
 import exceptions
-import os, sys, shutil, time, signal
+import os, sys, shutil, signal
 import killableprocess
 import commands
 import logging
-import urlparse
 
 logger = logging.getLogger(__name__)
 
