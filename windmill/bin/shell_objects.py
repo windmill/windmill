@@ -17,6 +17,7 @@ import windmill
 import sys, os, logging
 from time import sleep
 from windmill.authoring import frame
+from threading import Thread
 
 logger = logging.getLogger(__name__)
 
@@ -71,18 +72,27 @@ def show_queue():
     """Return the current queue of tests and commands in windmill"""
     return windmill.settings['shell_objects']['httpd'].controller_queue.queue
     
-def run_python_test(filename):
-    """Run a single python test file"""
-    test_run_method = lambda : frame.collect_and_run_tests(filename)
-    while not windmill.ide_is_awake:
-        sleep(1)
-    test_run_method()
+def run_python_test(filename, load=False):
+    """Run python test file(s)"""
+    files = filename.split(',')
+    import functest
+    
+    functest.configure()
+    
+    def run_functest():
+        from windmill.authoring import WindmillFunctestRunner
+        functest.run_framework(test_args=files, test_runner=WindmillFunctestRunner())
+        if load:
+            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
+
+    run_functest_thread = Thread(target=run_functest)
+    from windmill.bin import admin_lib
+    admin_lib.on_ide_awake.append(run_functest_thread.start)
     
 def load_python_tests(filename):
     """Load a python test file's controller actions in to the server and pass to the IDE without running."""
     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
-    run_python_test(filename)
-    xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
+    run_python_test(filename, load=True)
     
 def load_json_test_file(filename):
     """Load a JSON test file's controller actions in to the server and pass to the IDE without running."""
@@ -115,7 +125,6 @@ def run_js_test_dir(dirname):
     
     xmlrpc_client.add_command({'method':'commands.jsTests', 
                                'params':{'tests':[base_url+f for f in js_files ]}})
-    
     
 def run_json_test_dir(*args):
     """Run the directory[s] of JSON tests."""

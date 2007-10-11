@@ -13,9 +13,49 @@
 #   limitations under the License.
 
 import windmill
+from windmill.bin import admin_lib
 import xmlrpclib
 import new, copy
 import transforms
+import logging
+import functest
+from time import sleep
+
+logger = logging.getLogger(__name__)
+
+class NSWrapper(object):
+    def __init__(self, ):
+        pass
+        
+def setup_module(module):
+    """setup_module function for functest based python tests"""
+    if functest.registry.get('functest_cli', False):
+        assert functest.registry.has_key('browser') # Make sure browser= was passed to functest
+    
+    admin_lib.configure_global_settings()
+    import windmill
+    if functest.registry.get('url', False):
+        windmill.settings['TEST_URL'] = functest.registry['url']
+    if functest.registry.get('functest_cli', False):
+        windmill.settings['START_'+functest.registry.get('browser').upper()] = True
+        
+    module.windmill_dict = admin_lib.setup()
+
+def teardown_module(module):
+    """teardown_module function for functest based python tests"""
+    try:
+        while functest.registry.get('browser_debugging', False):
+            sleep(1)
+    except KeyboardInterrupt:
+        pass
+    admin_lib.teardown(module.windmill_dict)
+    sleep(.5)
+
+class WindmillFunctestRunner(functest.runner.FunctestRunnerInterface):
+    def test_function_passed(self, test):
+        logger.debug('Functest test passed: '+test.__name__)
+    def test_function_failed(self, test):
+        logger.error('Functest test failed: '+test.__name__)
 
 class WindmillTestClient(object):
     """Windmill controller implementation for python test authoring library"""
@@ -89,18 +129,18 @@ class WindmillTestClient(object):
             else:
                 return result
         else:
-            return self._method_proxy.add_test({'method':test_name, 'params':kwargs})        
+            return self._method_proxy.add_test({'method':test_name, 'params':kwargs})     
             
-def get_test_client(name):
-    """Convenience method for gettign windmill test client"""
-    client = WindmillTestClient(name)
-    
-    if windmill.settings.get('BROWSER_DEBUGGING', None):
-        client.browser_debugging = True
-        
-    if windmill.settings.get('ENABLE_PDB', None): 
-        import pdb
-        client.browser_debugging = False
-        client.assertions = True
-    else:
-        pdb = None
+# def get_test_client(name):
+#     """Convenience method for gettign windmill test client"""
+#     client = WindmillTestClient(name)
+#     
+#     if windmill.settings.get('BROWSER_DEBUGGING', None):
+#         client.browser_debugging = True
+#         
+#     if windmill.settings.get('ENABLE_PDB', None): 
+#         import pdb
+#         client.browser_debugging = False
+#         client.assertions = True
+#     else:
+#         pdb = None

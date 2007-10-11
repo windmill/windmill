@@ -18,3 +18,5 @@ import authoring, bin, browser, server, conf, tools
 # This kind of crap will get removed when we move to Twisted.
 TESTS_COMPLETED = False
 RESULTS = {'pass':0, 'fail':0}
+
+

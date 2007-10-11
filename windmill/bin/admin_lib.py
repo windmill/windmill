@@ -117,6 +117,7 @@ def configure_global_settings():
 
     windmill.settings = windmill.conf.configure_settings(localSettings=local_settings)
 
+on_ide_awake = []
 
 def setup():
     """Setup server and shell objects"""
@@ -142,7 +143,7 @@ def setup():
          shell_objects.run_given_test_dir() 
     
     if windmill.settings['PYTHON_TEST_FRAME']:
-         windmill.settings['TEST_FRAME'] = python_test_frame
+         shell_objects.run_python_test(windmill.settings['PYTHON_TEST_FILE'])
          
     if windmill.settings['JAVASCRIPT_TEST_DIR']:
         shell_objects.run_js_test_dir(windmill.settings['JAVASCRIPT_TEST_DIR'])
@@ -203,14 +204,15 @@ def runserver_action(shell_objects):
     try:
         print 'Server running...'
         if not windmill.settings['EXIT_ON_DONE']:
-            while 1:
+            windmill.runserver_running = True
+            while windmill.runserver_running:
                 sleep(1)
         else:
             while ( len(shell_objects['httpd'].controller_queue.queue) is not 0 ) or (
                     len(shell_objects['httpd'].test_resolution_suite.unresolved) is not 0 ):
                 sleep(1)
             
-            teardown(shell_objects)
+        teardown(shell_objects)
 
     except KeyboardInterrupt:
         teardown(shell_objects)
@@ -323,18 +325,7 @@ def command_line_startup():
 
     shell_objects = setup()
 
-    if windmill.settings.get('TEST_FRAME', None):
-        result = windmill.settings['TEST_FRAME'](shell_objects)
-        if result == 'call_action':
-            action(shell_objects)
-        elif result == 'teardown_called':
-            sys.exit()
-        else:
-            print "Something happended in the framework that prevented teardown and/or action call"
-            print "attempting teardown..."
-            teardown(shell_objects)
-    else:
-        action(shell_objects)
+    action(shell_objects)
             
 
 action_mapping = {'shell':shell_action, 'runserver':runserver_action, 

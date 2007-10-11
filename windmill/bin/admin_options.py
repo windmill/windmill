@@ -81,7 +81,7 @@ class StartIE(GeneralBoolSettingToTrue):
 class RunPythonTests(object):
     """Run a set of python tests. 
         If no test file is specified the current directory is used."""
-    option_names = ('t', 'test')
+    option_names = ('t', 'tests')
     setting = 'PYTHON_TEST_FRAME'
     def __call__(self, value=None):
         windmill.settings[self.setting] = True

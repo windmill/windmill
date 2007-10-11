@@ -272,6 +272,12 @@ class JSONRPCMethods(RPCMethods):
     def next_action(self):
         """The next action for the browser to execute"""
         windmill.ide_is_awake = True
+        from windmill.bin import admin_lib
+        if len(admin_lib.on_ide_awake) is not 0:
+            for func in copy.copy(admin_lib.on_ide_awake):
+                func()
+                admin_lib.on_ide_awake.remove(func)
+        
         action = self._queue.next_action()
         if action is not None:
             self._logger.debug('queue has next_action %s' % str(action))
@@ -319,7 +325,9 @@ class JSONRPCMethods(RPCMethods):
         return windmill.authoring.transforms.registry[transformer](suite_name, tests)
         
 class XMLRPCMethods(RPCMethods):
-    pass
+    def stop_runserver(self):
+        import windmill
+        windmill.runserver_running = False
         
             
             
