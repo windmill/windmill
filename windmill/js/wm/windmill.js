@@ -67,7 +67,7 @@ var windmill = new function () {
     
     //When the page is unloaded turn off the loop until it loads the new one
     this.unloaded = function(){
-      console.log('unloaded');
+      //console.log('unloaded');
 
       this.controller.stopLoop();
       checkPage = function(){ windmill.controller.waits.forPageLoad({}); }
@@ -77,7 +77,7 @@ var windmill = new function () {
     //On load setup all the listener stuff
     //Set the listener on the testingApp on unload
     this.loaded = function(){
-     console.log('loaded');
+     //console.log('loaded');
        windmill.ui.domexplorer.setExploreState();
        windmill.ui.recorder.setRecState();
        fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
