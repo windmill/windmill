@@ -74,6 +74,10 @@ windmill.controller.waits.forElement = function (param_object) {
 //But if users wanted this manually they could use it
 windmill.controller.waits.forPageLoad = function (param_object) { 
   _this = this;
+  
+  //If the page gets loaded before all this, we want to be as time efficient 
+  //as we possibly can
+  //fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
 
   var timeout = 20000;
   var count = 0;
@@ -101,7 +105,12 @@ windmill.controller.waits.forPageLoad = function (param_object) {
     }
     else{
       //reattach all the listeners etc.
+      //At this point, we know that testWindow.document exists in the page
+      //Unfortunately sometimes this wont mean that it's completely done rendering
+      //at the same time, at this point it may be done rendering so attaching a listener
+      //instead of calling loaded will never run loaded because it has already fired
       windmill.loaded();
+
       return true;
     }
   }
@@ -125,7 +134,7 @@ windmill.controller.waits._forNotTitleAttach = function (param_object) {
   }
   this.lookup = function(){
     if (count >= timeout){
-      //windmill.controller.continueLoop();
+      windmill.controller.continueLoop();
       return false;
     }
     //var n = windmill.controller._lookupDispatch(p);
@@ -145,13 +154,22 @@ windmill.controller.waits._forNotTitleAttach = function (param_object) {
     
   this.check = function(n){   
     if (!n){
-      var x = setTimeout(function () { _this.lookup(); }, 2500);
+      var x = setTimeout(function () { _this.lookup(); }, 1000);
     }
     else{
       //reattach all the listeners etc.
       fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
       fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
-      //windmill.controller.continueLoop();
+      
+      //if this doesn't happen for some reason, we wanna get the tests running
+      //if the testWindow takes more than 10 seconds to load they can pass a timeout manually
+      //that will ensure that it waits longer
+      
+      ct = function(){
+        windmill.controller.continueLoop();
+      }
+      
+      setTimeout('ct()', timeout);
       return true;
     }
   }

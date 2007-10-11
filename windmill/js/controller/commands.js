@@ -91,7 +91,7 @@ windmill.controller.commands.execJS = function(param_object){
 //Give the backend a list of available controller methods
 windmill.controller.commands.getControllerMethods = function (param_object){
 	var str = '';
-	for (var i in windmill.controller) { if (i.indexOf('_') == -1){ str += "," + i; } }
+	for (var i in windmill.controller) { if ((i.indexOf('_') == -1) && (i != 'waits' )){ str += "," + i; } }
 	for (var i in windmill.controller.extensions) {
 	  if (str) { str += ',' }
 	  str += 'extensions.'+i;
@@ -108,7 +108,6 @@ windmill.controller.commands.getControllerMethods = function (param_object){
 	  if (str) { str += ',' }
 	  str += 'waits.'+i;
 	}
-    
 	//Clean up
 	var ca = new Array();
 	ca = str.split(",");

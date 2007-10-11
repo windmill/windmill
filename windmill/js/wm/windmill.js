@@ -41,8 +41,13 @@ var windmill = new function () {
     
     this.Start = function(){
       windmill.service.setStartURL();
-      windmill.controller.waits._forNotTitleAttach({"title":"Windmill Testing Framework"});
-
+      
+      if (windmill.testWindow.document.title == "Windmill Testing Framework"){
+        windmill.controller.waits._forNotTitleAttach({"title":"Windmill Testing Framework"});
+      }
+      else {
+       this.controller.continueLoop(); 
+      }
       try {
         windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
         browser.current_ua + ".</b><br>");
