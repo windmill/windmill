@@ -14,6 +14,7 @@
 
 import simplejson
 import functest
+from datetime import datetime
 from windmill.authoring import WindmillTestClient
 
 def test_wmunti1():
@@ -21,10 +22,22 @@ def test_wmunti1():
 
     assert client.open(url=u'http://windmill.osafoundation.org/windmill-unittests/unit_tester.html')['result']
     assert client.click(id=u'subBtn')['result']
+    
+    # Tests that sleeps actually wait for long enough
+    start = datetime.now()
     assert client.waits.sleep(milliseconds=u'3000')['result']
+    end = datetime.now()
+    assert ( end - start ).seconds >= 3
+    
     assert client.asserts.assertText(validator=u'', id=u'sleeper')['result']
+    
+    # Tests that an 8 second sleep actually waits long enough
+    start = datetime.now()
     assert client.waits.sleep(milliseconds=u'8000')['result']
-    assert client.asserts.assertText(validator=u'Slept', id=u'sleeper')['result']
+    end = datetime.now()
+    assert ( end - start ).seconds >= 8
+    
+    assert not client.asserts.assertText(validator=u'Slept', id=u'sleeper')['result']
     assert client.type(text=u'my test text', id=u'junkfield')['result']
     assert client.asserts.assertValue(validator=u'my test text', id=u'junkfield')['result']
     assert client.radio(id=u'cougar')['result']
@@ -33,8 +46,8 @@ def test_wmunti1():
     assert client.asserts.assertChecked(id=u'duck')['result']
     assert client.check(id=u'Smallpox')['result']
     assert client.asserts.assertChecked(id=u'Smallpox')['result']
-    assert client.asserts.assertChecked(id=u'Mumps')['result']
-    assert client.asserts.assertChecked(id=u'Dizziness')['result']
+    assert not client.asserts.assertChecked(id=u'Mumps')['result']
+    assert not client.asserts.assertChecked(id=u'Dizziness')['result']
     assert client.check(id=u'Mumps')['result']
     assert client.asserts.assertChecked(id=u'Mumps')['result']
     assert client.asserts.assertChecked(id=u'Dizziness')['result']
