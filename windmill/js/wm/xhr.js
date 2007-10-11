@@ -27,7 +27,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 windmill.xhr = new function () {
     
   //Keep track of the loop state, running or paused
-  this.loopState = 1;
+  this.loopState = 0;
   this.timeoutId = null;
     
   //json_call

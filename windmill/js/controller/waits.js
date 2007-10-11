@@ -16,7 +16,9 @@ Copyright 2006-2007, Open Source Applications Foundation
 
 //Wait a specified number of milliseconds
 windmill.controller.waits.sleep = function (param_object) { 
+  //console.log('inside sleep');
   done = function(){
+    //console.log('inside done');
     windmill.controller.continueLoop();
     return true;
   }    
@@ -88,6 +90,7 @@ windmill.controller.waits.forPageLoad = function (param_object) {
     //var n = windmill.controller._lookupDispatch(p);
     try { var n = windmill.testWindow.document;}
     catch(err) { var n = false; }
+    
     count += 2500;
     this.check(n);
   }
@@ -102,13 +105,15 @@ windmill.controller.waits.forPageLoad = function (param_object) {
       return true;
     }
   }
-   
+  
   this.lookup();
   return true;
 }
   
 //Turn the loop back on when the page in the testingApp window is loaded
-windmill.controller.waits.forNotTitle = function (param_object) { 
+//this is an internal wait used only for the first load of the page
+//a more generic one will be added if there is a need
+windmill.controller.waits._forNotTitleAttach = function (param_object) { 
   _this = this;
 
   var timeout = 20000;
@@ -120,13 +125,13 @@ windmill.controller.waits.forNotTitle = function (param_object) {
   }
   this.lookup = function(){
     if (count >= timeout){
-      windmill.controller.continueLoop();
+      //windmill.controller.continueLoop();
       return false;
     }
     //var n = windmill.controller._lookupDispatch(p);
     try {
       if (windmill.testWindow.document.title == p.title){
-	var n = null;
+	      var n = null;
       }
       else { var n = true };
     }
@@ -144,8 +149,9 @@ windmill.controller.waits.forNotTitle = function (param_object) {
     }
     else{
       //reattach all the listeners etc.
+      fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
       fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
-      windmill.controller.continueLoop();
+      //windmill.controller.continueLoop();
       return true;
     }
   }

@@ -406,7 +406,6 @@ c.innerHTML += '<br>';
       var c = windmill.remote.document.createElement("td");  
       if (windmill.browser.isIE){ c.innerHTML += '<br>Option: '; }
       else { c.innerHTML += 'Option: '; }
-
       r.appendChild(c);
              
       //Setup third select

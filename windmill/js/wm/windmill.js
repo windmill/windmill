@@ -41,7 +41,8 @@ var windmill = new function () {
     
     this.Start = function(){
       windmill.service.setStartURL();
-      windmill.controller.waits.forNotTitle({"title":"Windmill Testing Framework"});
+      windmill.controller.waits._forNotTitleAttach({"title":"Windmill Testing Framework"});
+
       try {
         windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
         browser.current_ua + ".</b><br>");
@@ -66,7 +67,7 @@ var windmill = new function () {
     this.loaded = function(){
        windmill.ui.domexplorer.setExploreState();
        windmill.ui.recorder.setRecState();
-       fleegix.event.listen(windmill.testWindow, 'onbeforeunload', windmill, 'unloaded');
+       fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
 
      delayed = function(){
        windmill.controller.continueLoop();
