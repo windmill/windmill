@@ -132,14 +132,14 @@ windmill.xhr = new function () {
 	if ((windmill.runTests == true) || (windmill.xhr.xhrResponse.result.method.split(".")[0] == 'commands')){
 	  try {
 	    //Wait/open needs to not grab the next action immediately
-	    if ((windmill.xhr.xhrResponse.result.method.split(".")[0] == 'waits') || (windmill.xhr.xhrResponse.result.method == 'open')){
+	    if ((windmill.xhr.xhrResponse.result.method.split(".")[0] == 'waits')){
 	      windmill.xhr.loopState = 0;
 	    }
 	    if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1){
 	      var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
 	      var result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);
 	    }
-	    else{  
+	    else{	
 	      var result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params);
 	    }
 	  }
@@ -155,7 +155,7 @@ windmill.xhr = new function () {
 	  }
 	}
 	else { result == true; }
-                
+	  
 	//End timer and store
 	action_timer.endTime();
 	var to_write = fleegix.json.serialize(windmill.xhr.xhrResponse.result);
@@ -185,10 +185,10 @@ windmill.xhr = new function () {
 	  }
 	}
 	//Do the timer write
-	action_timer.write(to_write);
-      }
-    }
-    //If the loop is running make the next request    
+	  action_timer.write(to_write);
+  }
+  }
+      //If the loop is running make the next request    
     if (windmill.xhr.loopState != 0){
       //Sleep then do the next call
       setTimeout("windmill.xhr.getNext()", 1000);  

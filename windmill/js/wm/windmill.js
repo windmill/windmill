@@ -25,6 +25,10 @@ var windmill = new function () {
     this.builder={};
     this.helpers={};
     
+    //The timeout for page loading, if the onload is never called
+    //how long do we wait before we start firing tests again
+    this.timeout = 20000;
+    
     //We need to allow users to store data locally
     //So we are using the fleegix hash data structure
     this.varRegistry = new fleegix.hash.Hash();
@@ -38,6 +42,7 @@ var windmill = new function () {
     this.baseTestWindow = opener;
     this.remoteLoaded = false;
     this.remote = parent.window;
+    
     
     this.Start = function(){
       windmill.service.setStartURL();
@@ -62,6 +67,8 @@ var windmill = new function () {
     
     //When the page is unloaded turn off the loop until it loads the new one
     this.unloaded = function(){
+      console.log('unloaded');
+
       this.controller.stopLoop();
       checkPage = function(){ windmill.controller.waits.forPageLoad({}); }
       setTimeout('checkPage()', 1000);
@@ -70,14 +77,16 @@ var windmill = new function () {
     //On load setup all the listener stuff
     //Set the listener on the testingApp on unload
     this.loaded = function(){
+     console.log('loaded');
        windmill.ui.domexplorer.setExploreState();
        windmill.ui.recorder.setRecState();
+       fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
        fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
 
      delayed = function(){
        windmill.controller.continueLoop();
      }
-     setTimeout('delayed()', 1000);
+     setTimeout('delayed()', 2000);
     }
     
     //windmill Options to be set

@@ -52,7 +52,7 @@ windmill.controller.waits.forElement = function (param_object) {
     
   this.check = function(n){   
     if (!n){
-      var x = setTimeout(function () { _this.lookup(); }, 2500);
+      var x = setTimeout(function () { _this.lookup(); }, 1500);
     }
 
     else{
@@ -75,8 +75,8 @@ windmill.controller.waits.forElement = function (param_object) {
 windmill.controller.waits.forPageLoad = function (param_object) { 
   _this = this;
   
-  //If the page gets loaded before all this, we want to be as time efficient 
-  //as we possibly can
+  //Attach an onload listener to the new window
+  //fleegix.event.unlisten(windmill.testWindow, 'onload', windmill, 'loaded');
   //fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
 
   var timeout = 20000;
@@ -101,16 +101,21 @@ windmill.controller.waits.forPageLoad = function (param_object) {
     
   this.check = function(n){   
     if (!n){
-      var x = setTimeout(function () { _this.lookup(); }, 2500);
+      var x = setTimeout(function () { _this.lookup(); }, 1000);
     }
     else{
-      //reattach all the listeners etc.
-      //At this point, we know that testWindow.document exists in the page
-      //Unfortunately sometimes this wont mean that it's completely done rendering
-      //at the same time, at this point it may be done rendering so attaching a listener
-      //instead of calling loaded will never run loaded because it has already fired
-      windmill.loaded();
-
+      //If we get here it means that the window onload wasn't attached
+      //or it was attached and wiped out. We were able to grab the document
+      //Object so the page is mostly loaded, reattach the listener
+      try {
+        if (typeof(windmill.testWindow.onload.listenReg) == 'undefined'){
+          windmill.loaded();
+        }
+      }
+      catch(err){
+        windmill.loaded();
+      }
+      //default with the timeout to start running tests again if onload never gets launched
       return true;
     }
   }
@@ -157,19 +162,22 @@ windmill.controller.waits._forNotTitleAttach = function (param_object) {
       var x = setTimeout(function () { _this.lookup(); }, 1000);
     }
     else{
-      //reattach all the listeners etc.
+      
+      try {
+        if (typeof(windmill.testWindow.onload.listenReg) == 'undefined'){
+          windmill.loaded();
+        }
+      }
+      catch(err){
+      }
+      
+      fleegix.event.unlisten(windmill.testWindow, 'onload', windmill, 'loaded');
       fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
-      fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
       
       //if this doesn't happen for some reason, we wanna get the tests running
       //if the testWindow takes more than 10 seconds to load they can pass a timeout manually
       //that will ensure that it waits longer
-      
-      ct = function(){
-        windmill.controller.continueLoop();
-      }
-      
-      setTimeout('ct()', timeout);
+
       return true;
     }
   }

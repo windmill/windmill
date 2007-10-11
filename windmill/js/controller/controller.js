@@ -138,7 +138,7 @@ this.open = function (param_object) {
   //windmill.service.setTestURL();
     
   //Turn the loop off until the page loads
-  windmill.controller.stopLoop();
+  //windmill.controller.stopLoop();
   //webappframe = document.getElementById('webapp');        
   //webappframe.src = param_object.url;
   try{ windmill.testWindow.location = param_object.url; }
@@ -149,7 +149,7 @@ this.open = function (param_object) {
     windmill.controller.waits.forPageLoad({});
     return true;
   }
-  setTimeout('done()', 5000);
+  setTimeout('done()', 2000);
   return true;
 };
 

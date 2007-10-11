@@ -681,7 +681,7 @@ function openSeparateApplicationWindow (url) {
 
 
     if (window.document.readyState == null && !seenReadyStateWarning) {
-        alert("Beware!  Mozilla bug 300992 means that we can't always reliably detect when a new page has loaded.  Install the Windmill IDE extension or the readyState extension available from selenium.openqa.org to make page load detection more reliable.");
+        alert("Beware!  Mozilla bug 300992 means that we can't always reliably detect when a new page has loaded.");
         seenReadyStateWarning = true;
     }
 

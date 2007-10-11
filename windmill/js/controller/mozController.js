@@ -27,33 +27,24 @@ windmill.controller.click = function(param_object){
       element.addEventListener('click', function(evt) {
            preventDefault = evt.getPreventDefault();
        }, false);
-
+       
        // Trigger the event.
        // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
        windmill.events.triggerMouseEvent(element, 'mousedown', true);
        windmill.events.triggerMouseEvent(element, 'mouseup', true);
        windmill.events.triggerMouseEvent(element, 'click', true);
-          
+      
        //Apparently there is some annoying issue with chrome..and this fixes it. Concept from selenium browerbot.
        	if (!browser.isChrome && !preventDefault) {
 	        if (element.href) {
              windmill.controller.open({"url":element.href});
-               
+             
              //if the url is calling JS then its ajax and we don't need to wait for any full page load.. hopefully.
              if (element.href.indexOf('javascript:', 0) == -1){
                   windmill.xhr.loopState = 0;
                   return true;
               }
            }
-           /*else {
-            if (element.hasChildNodes()){
-               var children = element.childNodes;
-               for (var i = 0; i < children.length; i++){
-                 windmill.controller.open({"url":children[i].href});
-                 return true;
-               }
-             }
-           }*/
         }
        return true;     
 };

@@ -129,8 +129,7 @@ windmill.controller.asserts.assertText = function (param_object) {
 }; 
  
 //Assert that a specified node exists
-windmill.controller.asserts.assertNode = function (param_object) { 
-
+windmill.controller.asserts.assertNode = function (param_object) {
   var element = windmill.controller._lookupDispatch(param_object);
   if (!element){
     return false;
