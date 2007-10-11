@@ -233,7 +233,7 @@ windmill.controller.asserts.assertImageLoaded = function (param_object) {
   return ret;
 };
 
-windmill.controller.asserts.AssertFactory = new function () {
+windmill.controller.asserts._AssertFactory = new function () {
   var _this = this;
   function validateArgs(count, args) {
     if (!(args.length == count ||
@@ -294,7 +294,7 @@ windmill.controller.asserts.AssertFactory = new function () {
       else {
 	var message = meth + ' -- ' +
         createErrMsg(asrt.errMsg, args);
-	throw new windmill.controller.asserts.WindmillAssertException(comment, message);
+	throw new windmill.controller.asserts._WindmillAssertException(comment, message);
       }
     };
   };
@@ -302,10 +302,10 @@ windmill.controller.asserts.AssertFactory = new function () {
   // Create all the assert methods on windmill.controller.asserts
   // Using the items in the assertRegistry
   for (var meth in windmill.controller.asserts.assertRegistry) {
-    windmill.controller.asserts[meth] = windmill.controller.asserts.AssertFactory.createAssert(meth);
+    windmill.controller.asserts[meth] = windmill.controller.asserts._AssertFactory.createAssert(meth);
   }
 
-  windmill.controller.asserts.WindmillAssertException = function (comment, message) {
+  windmill.controller.asserts._WindmillAssertException = function (comment, message) {
     this.comment = comment;
     this.message = message;
   };

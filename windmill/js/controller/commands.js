@@ -101,8 +101,11 @@ windmill.controller.commands.getControllerMethods = function (param_object){
 	  str += 'commands.'+i;
 	}
 	for (var i in windmill.controller.asserts) {
-	  if (str) { str += ',' }
-	  str += 'asserts.'+i;
+	  if ((i.indexOf('_') == -1) && (typeof(windmill.controller.asserts.assertRegistry[i]) != 'object')){
+
+	    if (str) { str += ',' }
+	      str += 'asserts.'+i;
+      }
 	}
 	for (var i in windmill.controller.waits) {
 	  if (str) { str += ',' }
