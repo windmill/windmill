@@ -14,9 +14,6 @@
 
 import windmill
 from windmill.bin import admin_lib
-import xmlrpclib
-import new, copy
-import transforms
 import logging
 import functest
 from time import sleep
@@ -88,18 +85,29 @@ class WindmillTestClient(object):
             def __call__(self, **kwargs):
                 return self.exec_method(self.action_name, **kwargs)
                 
-                
+        class NSWrapper(object):
+            """Namespace wrapper"""
+            def __init__(self, name):
+                self.name = name
+        
+        print self._method_proxy.execute_command({'method':'commands.getControllerMethods','params':{}})['result']
         for action in self._method_proxy.execute_command(
                                    {'method':'commands.getControllerMethods','params':{}})['result']:
+            parent = self
+            if action.find('.') is not -1:
+                for name in [a for a in action.split('.') if not action.endswith(a) ]:
+                    if not hasattr(parent, name): 
+                        setattr(parent, name, NSWrapper(name))
+                    parent = getattr(parent, name) 
             
             #Bind every available test and action to self, flatten them as well
             if action.find('command') is not -1:
-                setattr(self, 
+                setattr(parent, 
                         action.split('.')[-1], 
                         ExecWrapper(self._exec_command, action)
                         )
             else:
-                setattr(self, 
+                setattr(parent, 
                         action.split('.')[-1], 
                         ExecWrapper(self._exec_test, action)
                         )
