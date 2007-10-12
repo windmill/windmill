@@ -133,7 +133,8 @@ windmill.xhr = new function () {
 	  try {
 	    //Wait/open needs to not grab the next action immediately
 	    if ((windmill.xhr.xhrResponse.result.method.split(".")[0] == 'waits')){
-	      windmill.xhr.loopState = 0;
+	      windmill.controller.stopLoop();
+	      windmill.waiting = true;
 	    }
 	    if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1){
 	      var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
@@ -188,11 +189,8 @@ windmill.xhr = new function () {
 	  action_timer.write(to_write);
   }
   }
-      //If the loop is running make the next request    
-    if (windmill.xhr.loopState != 0){
-      //Sleep then do the next call
-      setTimeout("windmill.xhr.getNext()", 1000);  
-    }
+      //Get the next action from the service
+      setTimeout("windmill.xhr.getNext()", 1000);
   };
           
   //Send the report

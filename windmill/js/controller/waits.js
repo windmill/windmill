@@ -19,6 +19,7 @@ windmill.controller.waits.sleep = function (param_object) {
   //console.log('inside sleep');
   done = function(){
     //console.log('inside done');
+    windmill.waiting = false;
     windmill.controller.continueLoop();
     return true;
   }    
@@ -56,6 +57,7 @@ windmill.controller.waits.forElement = function (param_object) {
     }
 
     else{
+      windmill.waiting = false;
       windmill.controller.continueLoop();
       return true;
     }
@@ -88,6 +90,7 @@ windmill.controller.waits.forPageLoad = function (param_object) {
   }
   this.lookup = function(){
     if (count >= timeout){
+      windmill.waiting = false;
       windmill.controller.continueLoop();
       return false;
     }
@@ -109,10 +112,12 @@ windmill.controller.waits.forPageLoad = function (param_object) {
       //Object so the page is mostly loaded, reattach the listener
       try {
         if (typeof(windmill.testWindow.onload.listenReg) == 'undefined'){
+          windmill.waiting = false;
           windmill.loaded();
         }
       }
       catch(err){
+        windmill.waiting = false;
         windmill.loaded();
       }
       //default with the timeout to start running tests again if onload never gets launched
@@ -139,6 +144,7 @@ windmill.controller.waits._forNotTitleAttach = function (param_object) {
   }
   this.lookup = function(){
     if (count >= timeout){
+      windmill.waiting = false;
       windmill.controller.continueLoop();
       return false;
     }
@@ -165,6 +171,7 @@ windmill.controller.waits._forNotTitleAttach = function (param_object) {
       
       try {
         if (typeof(windmill.testWindow.onload.listenReg) == 'undefined'){
+          windmill.waiting = false;
           windmill.loaded();
         }
       }

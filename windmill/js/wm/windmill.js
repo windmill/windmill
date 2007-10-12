@@ -28,6 +28,7 @@ var windmill = new function () {
     //The timeout for page loading, if the onload is never called
     //how long do we wait before we start firing tests again
     this.timeout = 20000;
+    this.waiting = false;
     
     //We need to allow users to store data locally
     //So we are using the fleegix hash data structure
@@ -50,8 +51,8 @@ var windmill = new function () {
       if (windmill.testWindow.document.title == "Windmill Testing Framework"){
         windmill.controller.waits._forNotTitleAttach({"title":"Windmill Testing Framework"});
       }
-      else {
-       this.controller.continueLoop(); 
+      else{
+        windmill.controller.continueLoop();
       }
       try {
         windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
@@ -84,9 +85,11 @@ var windmill = new function () {
        fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
 
      delayed = function(){
-       windmill.controller.continueLoop();
+      if (windmill.waiting == false){
+         windmill.controller.continueLoop();
+      }
      }
-     setTimeout('delayed()', 2000);
+     setTimeout('delayed()', 1000);
     }
     
     //windmill Options to be set
