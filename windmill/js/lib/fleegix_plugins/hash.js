@@ -32,6 +32,8 @@ fleegix.hash.Hash.prototype = new function () {
       var rnum = Math.floor(Math.random() * chars.length);
       str += chars.substring(rnum, rnum + 1);
     }
+    var d = new Date().getTime();
+		str += String(d).substring(9,13);
     return str;
   };
   // Interface methods

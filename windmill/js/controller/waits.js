@@ -91,8 +91,7 @@ windmill.controller.waits.forPageLoad = function (param_object) {
   }
   this.lookup = function(){
     if (count >= timeout){
-    //  windmill.waiting = false;
-   //   windmill.controller.continueLoop();
+      windmill.controller.continueLoop();
       return false;
     }
     //var n = windmill.controller._lookupDispatch(p);
@@ -113,20 +112,24 @@ windmill.controller.waits.forPageLoad = function (param_object) {
       //Object so the page is mostly loaded, reattach the listener
       try {
         if (typeof(windmill.testWindow.onload.listenReg) == 'undefined'){
-//          windmill.waiting = false;
           windmill.loaded();
         }
       }
-      catch(err){
-    //    windmill.waiting = false;
-        windmill.loaded();
-      }
+      catch(err){ windmill.loaded(); }
       //default with the timeout to start running tests again if onload never gets launched
       return true;
     }
   }
   
   this.lookup();
+  
+  //if windmill.timeout goes by and the tests haven't been started
+  //We go ahead and start them, longer waits can happen by changing windmill.timeout
+  ct = function(){ 
+	 	windmill.controller.continueLoop(); 
+	}       
+ 	windmill.loadTimeoutId = setTimeout('ct()', windmill.timeout);
+  
   return true;
 }
   
@@ -145,11 +148,9 @@ windmill.controller.waits._forNotTitleAttach = function (param_object) {
   }
   this.lookup = function(){
     if (count >= timeout){
-     // windmill.waiting = false;
       windmill.controller.continueLoop();
       return false;
     }
-    //var n = windmill.controller._lookupDispatch(p);
     try {
       if (windmill.testWindow.document.title == p.title){
 	      var n = null;
@@ -172,24 +173,24 @@ windmill.controller.waits._forNotTitleAttach = function (param_object) {
       
       try {
         if (typeof(windmill.testWindow.onload.listenReg) == 'undefined'){
-          //windmill.waiting = false;
           windmill.loaded();
         }
       }
-      catch(err){
-      }
-      
+      catch(err){  }
       fleegix.event.unlisten(windmill.testWindow, 'onload', windmill, 'loaded');
       fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
-      
-      //if this doesn't happen for some reason, we wanna get the tests running
-      //if the testWindow takes more than 10 seconds to load they can pass a timeout manually
-      //that will ensure that it waits longer
-
       return true;
     }
   }
    
   this.lookup();
+  
+  //if windmill.timeout goes by and the tests haven't been started
+  //We go ahead and start them, longer waits can happen by changing windmill.timeout
+  ct = function(){ 
+	 	windmill.controller.continueLoop(); 
+	}       
+ 	windmill.loadTimeoutId = setTimeout('ct()', windmill.timeout); 
+  
   return true;
 }

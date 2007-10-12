@@ -29,6 +29,7 @@ var windmill = new function () {
     //how long do we wait before we start firing tests again
     this.timeout = 20000;
     this.waiting = false;
+    this.loadTimeoutId = 0;
     
     //We need to allow users to store data locally
     //So we are using the fleegix hash data structure
@@ -78,7 +79,16 @@ var windmill = new function () {
     //On load setup all the listener stuff
     //Set the listener on the testingApp on unload
     this.loaded = function(){
-     //console.log('loaded');
+      //When the waits happen I set a timeout
+      //to ensure that if it takes longer than the
+      //windmill default timeout to load
+      //we start running tests.. failover incase something
+      //breaks, but we don't want this same code to get
+      //called twice, so I clear it here
+      if (windmill.loadTimeoutId != 0){
+        clearTimeout(windmill.loadTimeoutId);
+      }
+      //console.log('loaded');
        windmill.ui.domexplorer.setExploreState();
        windmill.ui.recorder.setRecState();
        fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
