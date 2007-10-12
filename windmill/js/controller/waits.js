@@ -59,7 +59,7 @@ windmill.controller.waits.forElement = function (param_object) {
 
     else{
       //windmill.waiting = false;
-   //   windmill.controller.continueLoop();
+      windmill.controller.continueLoop();
       return true;
     }
   }
@@ -91,7 +91,7 @@ windmill.controller.waits.forPageLoad = function (param_object) {
   }
   this.lookup = function(){
     if (count >= timeout){
-      windmill.waiting = false;
+    //  windmill.waiting = false;
    //   windmill.controller.continueLoop();
       return false;
     }
@@ -172,7 +172,7 @@ windmill.controller.waits._forNotTitleAttach = function (param_object) {
       
       try {
         if (typeof(windmill.testWindow.onload.listenReg) == 'undefined'){
-          windmill.waiting = false;
+          //windmill.waiting = false;
           windmill.loaded();
         }
       }
