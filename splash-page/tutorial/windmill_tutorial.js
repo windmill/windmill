@@ -28,7 +28,11 @@ var init = function(){
   s.style.opacity = 0;
   fleegix.fx.fadeIn(s);
   
-
+  if (navigator.userAgent.indexOf('Safari/41') > -1) {
+    document.body.style.backgroundColor = '#7cb3c0';
+    $('main').style.borderColor = '#16323b';
+  }
+  
   var d = $('recordedClickId');
   fleegix.event.listen(d, 'onclick', writeClicked);
   var t = $('btnSub');
