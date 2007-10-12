@@ -134,7 +134,6 @@ windmill.xhr = new function () {
 	    //Wait/open needs to not grab the next action immediately
 	    if ((windmill.xhr.xhrResponse.result.method.split(".")[0] == 'waits')){
 	      windmill.controller.stopLoop();
-	      windmill.waiting = true;
 	    }
 	    if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1){
 	      var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
