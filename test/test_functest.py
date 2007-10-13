@@ -8,6 +8,8 @@ def test_functest_google_firefox_url():
     test_directory = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'files', 'functest_tests')
     
     output = commands.getoutput('cd '+test_directory+' && functest browser=firefox url=http://www.google.com')
+    if not output.find('Passed: 4, Failed: 0, Skipped: 0') is not -1:
+        print output
     assert output.find('Passed: 4, Failed: 0, Skipped: 0') is not -1
     sleep(1)
     
@@ -15,6 +17,8 @@ def test_functest_google_firefox_nourl():
     test_directory = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'files', 'functest_tests')
     
     output = commands.getoutput('cd '+test_directory+' && functest browser=firefox')
+    if not output.find('Passed: 2, Failed: 2, Skipped: 0') is not -1:
+        print output
     assert output.find('Passed: 2, Failed: 2, Skipped: 0') is not -1
     sleep(1)
     

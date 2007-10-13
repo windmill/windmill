@@ -29,14 +29,19 @@ def setup_module(module):
     if functest.registry.get('functest_cli', False):
         assert functest.registry.has_key('browser') # Make sure browser= was passed to functest
     
-    admin_lib.configure_global_settings()
     import windmill
+    if not hasattr(windmill, 'settings'):
+        admin_lib.configure_global_settings()
+    
     if functest.registry.get('url', False):
         windmill.settings['TEST_URL'] = functest.registry['url']
     if functest.registry.get('functest_cli', False):
         windmill.settings['START_'+functest.registry.get('browser').upper()] = True
         
-    module.windmill_dict = admin_lib.setup()
+    if not windmill.is_active:
+        module.windmill_dict = admin_lib.setup()
+    else:
+        module.windmill_dict = admin_lib.shell_objects_dict
 
 def teardown_module(module):
     """teardown_module function for functest based python tests"""
@@ -45,7 +50,11 @@ def teardown_module(module):
             sleep(1)
     except KeyboardInterrupt:
         pass
-    admin_lib.teardown(module.windmill_dict)
+    # Incase we're in runserver mode and test were passed to the windmill command line
+    if hasattr(windmill, 'settings') and windmill.settings['EXIT_ON_DONE']:
+        module.windmill_dict['xmlrpc_client'].stop_runserver() 
+    else:
+        admin_lib.teardown(module.windmill_dict)
     sleep(.5)
 
 class WindmillFunctestRunner(functest.runner.FunctestRunnerInterface):
@@ -89,8 +98,7 @@ class WindmillTestClient(object):
             """Namespace wrapper"""
             def __init__(self, name):
                 self.name = name
-        
-        print self._method_proxy.execute_command({'method':'commands.getControllerMethods','params':{}})['result']
+
         for action in self._method_proxy.execute_command(
                                    {'method':'commands.getControllerMethods','params':{}})['result']:
             parent = self

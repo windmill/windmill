@@ -19,4 +19,4 @@ import authoring, bin, browser, server, conf, tools
 TESTS_COMPLETED = False
 RESULTS = {'pass':0, 'fail':0}
 
-
+is_active = None

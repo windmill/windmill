@@ -88,7 +88,6 @@ class Safari(object):
 	    f = open(redirection_page, 'w') 
 	    f.write(html_redirection.replace('{replace}', uri.netloc+uri.path))
 	    f.flush() ; f.close()
-	    print self.safari_binary, redirection_page
 	    self.p_handle = killableprocess.runCommand([self.safari_binary, redirection_page])
 	    logger.info([self.safari_binary, redirection_page])
 	    self.interface_name = interface_name

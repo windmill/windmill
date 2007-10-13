@@ -78,7 +78,7 @@ def mergeSettings(windmillSettings, globalSettings, localSettings):
             del localKeys[key_upper]
         elif key_upper in globalKeys:
             windmillSettings[key] = _get(globalSettings, globalDict, globalKeys[key_upper])
-            del globaKeys[key_upper]
+            del globalKeys[key_upper]
 
     for key_upper in localKeys:
         key = localKeys[key_upper]

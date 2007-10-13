@@ -13,7 +13,7 @@
 #   limitations under the License.
 
 import windmill
-import logging, time
+import logging
 from time import sleep
 import os, sys
 from datetime import datetime
@@ -121,6 +121,7 @@ on_ide_awake = []
 
 def setup():
     """Setup server and shell objects"""
+    global shell_objects_dict
     shell_objects_dict = {}
     
     windmill.settings['shell_objects'] = shell_objects_dict
@@ -203,11 +204,11 @@ def runserver_action(shell_objects):
     """Run the server in the foreground with the options given to the command line"""
     try:
         print 'Server running...'
-        if not windmill.settings['EXIT_ON_DONE']:
+        if not windmill.settings['TEST_FILE'] or windmill.settings['TEST_DIR']:
             windmill.runserver_running = True
             while windmill.runserver_running:
                 sleep(1)
-        else:
+        elif windmill.settings['EXIT_ON_DONE']:
             while ( len(shell_objects['httpd'].controller_queue.queue) is not 0 ) or (
                     len(shell_objects['httpd'].test_resolution_suite.unresolved) is not 0 ):
                 sleep(1)
