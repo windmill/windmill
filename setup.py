@@ -42,7 +42,7 @@ setup(name=PACKAGE_NAME,
       package_data = {'': ['*.js', '*.css', '*.html', '*.txt'],},
       scripts=[os.path.join(os.path.dirname(__file__),'windmill','bin','windmill')],
       platforms =['Any'],
-      install_requires = ['cherrypy >= 3.0.2',
+      install_requires = ['CherryPy >= 3.0.2',
                           'simplejson >= 1.7.1',
                           # All these wsgi_ libraries used to be part of windmill but are now seperate libraries.
                           'wsgi_jsonrpc >= 0.2.2',
