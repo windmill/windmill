@@ -26,7 +26,6 @@ windmill.ui.recorder = new function () {
   }
   //write json to the remote from the click events
   this.writeJsonClicks = function(e){
-    //console.log(e);
     if( this.recordState == false){ return; }
     var locator = '';
     var locValue = '';
@@ -39,48 +38,40 @@ windmill.ui.recorder = new function () {
       locator = 'name';
       locValue = e.target.name;
     }
-    else if ((e.target.tagName == "A") || (e.target.parentNode.tagName == "A")){
+    else if (e.target.tagName.toUpperCase() == "A"){
       locator = 'link';
-      if (!e.target.href || e.target.onclick || e.target.onmouseover){
-	      locValue = e.target.parentNode.innerHTML.replace(/(<([^>]+)>)/ig,"");
-	      locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
-      }
-      else{
-	      locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig,"");
-	      locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
-      }
+	    locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig,"");
+	    locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
     }
     else{
       var xpArray = getXPath(e.target);
       var stringXpath = xpArray.join('/');
            
       locator = 'xpath';
-      locValue = stringXpath;
+      locValue = '/'+stringXpath;
     } 
     if (locValue != ""){
       var params = {};
       params[locator] = locValue;
-            
+     
       if(e.type == 'dblclick'){
-	windmill.ui.remote.addAction(windmill.ui.remote.buildAction('doubleClick', params));
+	      windmill.ui.remote.addAction(windmill.ui.remote.buildAction('doubleClick', params));
       }
       else{
-	//console.log(e.target.parentNode);                 
-	if (windmill.remote.$("clickOn").checked == true){
-	  windmill.ui.remote.addAction(windmill.ui.remote.buildAction('click', params));
-	}
-	else if ((e.target.onclick != null) || (locator == 'link') || (e.target.type == 'image')){
-	  windmill.ui.remote.addAction(windmill.ui.remote.buildAction('click', params));
-	}
-      }
+  	    if (windmill.remote.$("clickOn").checked == true){
+    	    windmill.ui.remote.addAction(windmill.ui.remote.buildAction('click', params));
+    	  }
+  	    else if ((e.target.onclick != null) || (locator == 'link') || (e.target.tagName.toUpperCase() == 'IMG')){
+  	      windmill.ui.remote.addAction(windmill.ui.remote.buildAction('click', params));
+  	    }
     }
-    windmill.ui.remote.scrollRecorderTextArea();
-
+  }
+  windmill.ui.remote.scrollRecorderTextArea();
   }
      
   //Writing json to the remote for the change events
   this.writeJsonChange = function(e){          
-
+    
     if( this.recordState == false){ return; }
     var locator = '';
     var locValue = '';

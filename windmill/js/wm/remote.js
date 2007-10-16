@@ -100,11 +100,11 @@ windmill.ui.remote = new function () {
       suite = windmill.remote.document.createElement('div');
       suite.id = 'recordingSuite' + windmill.ui.recordSuiteNum;
       if (document.all) {
-	var vWidth = windmill.remote.fleegix.dom.getViewportWidth();
-	suite.style.width = (vWidth - 20) + 'px';
+	      var vWidth = windmill.remote.fleegix.dom.getViewportWidth();
+	      suite.style.width = (vWidth - 20) + 'px';
       }
       else {
-	suite.style.width = "100%";
+	      suite.style.width = "100%";
       }
       suite.style.background = "lightblue";
       suite.style.overflow = 'hidden';
@@ -365,16 +365,16 @@ c.innerHTML += '<br>';
       var o1 = windmill.remote.document.createElement('option');
       o1.selected = 'selected';
       if (locator){ 
-	o1.value = locator;
-	o1.innerHTML += locator; 
+      	o1.value = locator;
+      	o1.innerHTML += locator; 
       }
       s1.appendChild(o1);
              
       for(var i=0;i<windmill.registry.locator.length;i++){
-	var o1 = windmill.remote.document.createElement('option');
-	o1.value = windmill.registry.locator[i];
-	o1.innerHTML += windmill.registry.locator[i];
-	s1.appendChild(o1);
+      	var o1 = windmill.remote.document.createElement('option');
+      	o1.value = windmill.registry.locator[i];
+      	o1.innerHTML += windmill.registry.locator[i];
+      	s1.appendChild(o1);
       }
              
       var c = windmill.remote.document.createElement("td"); 
@@ -388,10 +388,13 @@ c.innerHTML += '<br>';
       i0.size      = '45';
       //Dont know why I have to do this.. but it wont work if its not setattrib
       if (params[locator]){
-	i0.setAttribute('value',params[locator]);
+	      i0.setAttribute('value',params[locator]);
       }
       i0.id        = action.id + 'locator';   
       i0.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElem(\''+i0.id+'\')');
+      //in firefox there was a bug moving the focus to the element we clicked, not sure why
+      //but this seems to fix it. 
+      i0.setAttribute('onClick', 'windmill.remote.$(\''+i0.id+'\').focus();');
 
       var c = windmill.remote.document.createElement("td"); 
       c.appendChild(i0);
@@ -415,17 +418,17 @@ c.innerHTML += '<br>';
              
       var o2 = windmill.remote.document.createElement('option');
       if (typeof(windmill.registry.methods[method].option) != 'undefined'){
-	o2.value = windmill.registry.methods[method].option;
+	      o2.value = windmill.registry.methods[method].option;
       }
       o2.selected = 'selected';
       o2.innerHTML += windmill.registry.methods[method].option;
       s2.appendChild(o2);
              
       for(var i=0;i<windmill.registry.option.length;i++){
-	var o2 = windmill.remote.document.createElement('option');
-	o2.value = windmill.registry.option[i];
-	o2.innerHTML += windmill.registry.option[i];
-	s2.appendChild(o2);
+      	var o2 = windmill.remote.document.createElement('option');
+      	o2.value = windmill.registry.option[i];
+      	o2.innerHTML += windmill.registry.option[i];
+      	s2.appendChild(o2);
       }
       var c = windmill.remote.document.createElement("td");  
       c.appendChild(s2);
@@ -437,10 +440,11 @@ c.innerHTML += '<br>';
       i1.className = 'texta';
       i1.size = '40';
       if (typeof(params[windmill.registry.methods[method].option]) != 'undefined'){
-	i1.setAttribute("value", params[windmill.registry.methods[method].option]);
+	      i1.setAttribute("value", params[windmill.registry.methods[method].option]);
       }
       i1.id = action.id + 'option';
       i1.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElem(\''+i1.id+'\')');
+      i1.setAttribute('onClick', 'windmill.remote.$(\''+i1.id+'\').focus();');
 
       var c = windmill.remote.document.createElement("td");  
       c.appendChild(i1);

@@ -34,6 +34,8 @@ windmill.controller.click = function(param_object){
        windmill.events.triggerMouseEvent(element, 'mouseup', true);
        windmill.events.triggerMouseEvent(element, 'click', true);
       
+       
+      
        //Apparently there is some annoying issue with chrome..and this fixes it. Concept from selenium browerbot.
        	if (!browser.isChrome && !preventDefault) {
 	        if (element.href) {
@@ -44,6 +46,17 @@ windmill.controller.click = function(param_object){
                   windmill.xhr.loopState = 0;
                   return true;
               }
+           }
+           //It is common place for an event to bubble, which is why many sites
+           //will place a click listener on an elements parent and expect that to catch
+           //the event and fire it, we need to replicate that.
+           else{
+             while (element = element.parentNode) {
+               if (element.href) {
+                 windmill.controller.open({"url":element.href});
+                 break;
+               }
+             }
            }
         }
        return true;     
