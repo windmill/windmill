@@ -39,6 +39,7 @@ fleegix.shell.Shell = function (input, output) {
   fleegix.shell.currentShell = this;
 };
 fleegix.shell.Shell.prototype = new function () {
+  var brokenEval;
   var _createElem = function (s) {
     return document.createElement(s); };
   var _createText = function (s) {
@@ -67,24 +68,51 @@ fleegix.shell.Shell.prototype = new function () {
   function isFirstAutoScrollSet(init, o) {
     return (!init && (o.scrollHeight > o.clientHeight));
   }
+  function appendScriptTag(code) {
+    var scr = _createElem('script');
+    scr.type = 'text/javascript';
+    var head = document.getElementsByTagName("head")[0] ||
+      document.documentElement;
+    scr.appendChild(_createText(code));
+    head.appendChild(scr);
+    head.removeChild(scr);
+    return true;
+  }
   this.history = [];
   this.historyPos = 0;
   this.result = '';
   this.execCode = function (e) {
     var code = this.input.value;
     if (code && e.keyCode == 13) {
+      // Test to see if eval works
+      if (typeof brokenEval == 'undefined') {
+        window.eval.call(window, 'var __EVAL_TEST__ = true;');
+        if (typeof window.__EVAL_TEST__ != 'boolean') {
+          brokenEval = true;
+        }
+        else {
+          brokenEval = false;
+          delete window.__EVAL_TEST__;
+        }
+      }
       this.result = '';
       this.history.push(code);
       this.historyPos = this.history.length;
-      // IE is such a piece of shit
-      if (window.execScript) {
+      if (brokenEval) {
         var evalStr = 'try { fleegix.shell.shellRegistry[' +
           this.regIndex + '].result = eval("' + code +
           '"); } catch(e) { fleegix.shell.shellRegistry[' +
           this.regIndex + '].addErr("' + code + '", e); }';
-        window.execScript(evalStr);
+        // IE is such a piece of shit
+        if (window.execScript) {
+          window.execScript(evalStr);
+        }
+        // Safari 2 sucks too
+        else {
+          appendScriptTag(evalStr);
+        }
       }
-      // Moz/Safari
+      // Browsers with a working eval
       else {
         try {
             this.result = window.eval.call(window, code);
@@ -164,3 +192,4 @@ fleegix.shell.Shell.prototype = new function () {
     return main;
   };
 };
+
