@@ -18,10 +18,37 @@ var jum = windmill.controller.asserts;
 
 windmill.jsTest = new function () {
 
+  var brokenEval;
+  function appendScriptTag(win, code) {
+    var scr = win.document.createElement('script');
+    scr.type = 'text/javascript';
+    var head = win.document.getElementsByTagName("head")[0] ||
+      win.document.documentElement;
+    scr.appendChild(win.document.createTextNode(code));
+    head.appendChild(scr);
+    head.removeChild(scr);
+    return true;
+  }
   function globalEval(code, testWin) {
     var win = testWin ? windmill.testWindow : window;
-    if (window.execScript) {
-      win.execScript(code);
+    // Do we have a working eval?
+    if (typeof brokenEval == 'undefined') {
+      window.eval.call(window, 'var __EVAL_TEST__ = true;');
+      if (typeof window.__EVAL_TEST__ != 'boolean') {
+        brokenEval = true;
+      }
+      else {
+        brokenEval = false;
+        delete window.__EVAL_TEST__;
+      }
+    }
+    if (brokenEval) {
+      if (window.execScript) {
+        win.execScript(code);
+      }
+      else {
+        appendScriptTag(win, code);
+      }
     }
     else {
       win.eval.call(win, code);
@@ -134,11 +161,12 @@ windmill.jsTest = new function () {
       var o = obj;
       for (var p in o) {
         var item = o[p];
-        //str += p + ': ' + typeof item + ', ';
         if (!re.test(p)) {
           str += p + ': ' + item + ', ';
         }
 
+        // Function objs, or Arrays of function objs
+        // with names beginning with 'test_'
         if ((typeof item == 'function' ||
           typeof item.push == 'function') && re.test(p)) {
           arr.push(namespace + '.' + p);
@@ -149,6 +177,9 @@ windmill.jsTest = new function () {
         }
       }
     }
+    // IE-only. Use regex-fu against the source code --
+    // functions objects appear to drop their type across
+    // windows
     if (window.execScript) {
       re = new RegExp('(' + name + '.*\\.test_.+)(\\s+=)', 'gm');
       var m = [];
@@ -156,6 +187,9 @@ windmill.jsTest = new function () {
         arr.push(m[1]);
       }
     }
+    // Non-shite browsers, parse through the tree of the
+    // namespace obj, looking for functions or arrays of
+    // functions beginning with 'test_'
     else {
       var win = this.runInTestWindowScope ?
         windmill.testWindow : window;
