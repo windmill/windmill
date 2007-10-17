@@ -16,7 +16,7 @@ from setuptools import setup, find_packages
 import os
 
 PACKAGE_NAME = "windmill"
-PACKAGE_VERSION = "0.2rc4"
+PACKAGE_VERSION = "0.2"
 
 SUMMARY = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging and recording capabilities.'
 
@@ -40,7 +40,7 @@ setup(name=PACKAGE_NAME,
       include_package_data = True,
       packages=find_packages(),
       package_data = {'': ['*.js', '*.css', '*.html', '*.txt'],},
-      scripts=[os.path.join(os.path.dirname(__file__),'windmill','bin','windmill')],
+      scripts=[os.path.join(os.path.dirname(__file__),'scripts','windmill')],
       platforms =['Any'],
       install_requires = ['CherryPy >= 3.0.2',
                           'simplejson >= 1.7.1',

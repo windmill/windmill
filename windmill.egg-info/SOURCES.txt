@@ -9,6 +9,9 @@ wmicon.icns
 contrib/pyselenium/src/__init__.py
 contrib/pyselenium/src/seleniumservercontrol.py
 contrib/pyselenium/src/seleniumunittest.py
+scripts/build_and_release.py
+scripts/mikeals_b_and_r.py
+scripts/windmill
 splash-page/fleegix.js
 splash-page/fleegix.js.uncompressed.js
 splash-page/index.html
@@ -50,7 +53,6 @@ windmill/bin/admin_lib.py
 windmill/bin/admin_options.py
 windmill/bin/json2python.py
 windmill/bin/shell_objects.py
-windmill/bin/windmill
 windmill/bin/windmill_bin.py
 windmill/bin/wxui/Firefoxlogo2.png
 windmill/bin/wxui/__init__.py
