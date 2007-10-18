@@ -28,12 +28,20 @@ fleegix.hash.Hash.prototype = new function () {
     var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
     var len = 16;
     var str = '';
+    var mls = new Date().getTime();
     for (var i = 0; i < len; i++) {
-      var rnum = Math.floor(Math.random() * chars.length);
+      // In Safari 2 Math.random returns the same random
+      // sequence after firing up the browser -- return
+      // something randomish
+      if (navigator.userAgent.indexOf('Safari/41') > -1) {
+        rnum = (((mls / (i + 1)) + mls) % chars.length);
+      }
+      else {
+        var rnum = (Math.random() * chars.length);
+      }
+      rnum = Math.floor(rnum);
       str += chars.substring(rnum, rnum + 1);
     }
-    var d = new Date().getTime();
-		str += String(d).substring(9,13);
     return str;
   };
   // Interface methods

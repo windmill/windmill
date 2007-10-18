@@ -5,52 +5,52 @@
 	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 	<title>Windmill IDE</title>
 	
-	<link rel="stylesheet" type="text/css" href="ide/css/windmill.css"/>
-	<link rel="stylesheet" type="text/css" href="ide/css/remote.css"/>
-	<link rel="stylesheet" type="text/css" href="ide/css/shell.css"/>
+	<link rel="stylesheet" type="text/css" href="css/windmill.css"/>
+	<link rel="stylesheet" type="text/css" href="css/remote.css"/>
+	<link rel="stylesheet" type="text/css" href="css/shell.css"/>
 
-		<script type="text/javascript" src="lib/browserdetect.js"></script>
-  	<script type="text/javascript" src="lib/fleegix.js"></script>
-		<script type="text/javascript" src="lib/fleegix_plugins/hash.js"></script>
-		<script type="text/javascript" src="lib/fleegix_plugins/shell.js"></script>
-		<script type="text/javascript" src="lib/getXPath.js"></script>
-		<script type="text/javascript" src="wm/windmill.js"></script>
-				<script type="text/javascript" src="lib/toolman.js"></script>
-		<script type="text/javascript" src="wm/registry.js"></script>
-		<script type="text/javascript" src="wm/service.js"></script>
-		<script type="text/javascript" src="controller/controller.js"></script>
+		<script type="text/javascript" src="js/lib/browserdetect.js"></script>
+		<script type="text/javascript" src="js/lib/fleegix_js/trunk/fleegix.js"></script>
+		<script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/hash.js"></script>
+		<script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/shell.js"></script>
+		<script type="text/javascript" src="js/lib/getXPath.js"></script>
+		<script type="text/javascript" src="js/wm/windmill.js"></script>
+				<script type="text/javascript" src="js/lib/toolman.js"></script>
+		<script type="text/javascript" src="js/wm/registry.js"></script>
+		<script type="text/javascript" src="js/wm/service.js"></script>
+		<script type="text/javascript" src="js/controller/controller.js"></script>
 		<script type="text/javascript">
-			var url = 'controller/mozController.js';
+			var url = 'js/controller/mozController.js';
 
 			if (browser.isIE){
-				url = 'controller/ieController.js';
+				url = 'js/controller/ieController.js';
 			}
 			else if(browser.isSafari){
-				url = 'controller/safController.js';
+				url = 'js/controller/safController.js';
 			}
 			document.write('<script src="', url, '" type="text/javascript"><\/script>');
 		</script>
-		<script type="text/javascript" src="controller/commands.js"></script>
-		<script type="text/javascript" src="controller/asserts.js"></script>
-		<script type="text/javascript" src="controller/waits.js"></script>
-		<script type="text/javascript" src="wm/timing.js"></script>
-		<script type="text/javascript" src="wm/performance.js"></script>
-		<script type="text/javascript" src="wm/events.js"></script>
-		<script type="text/javascript" src="wm/ui.js"></script>
-		<script type="text/javascript" src="wm/playback.js"></script>
-		<script type="text/javascript" src="wm/remote.js"></script>
-		<script type="text/javascript" src="wm/recorder.js"></script>
-		<script type="text/javascript" src="wm/domexplorer.js"></script>
-		<script type="text/javascript" src="wm/assertexplorer.js"></script>
-		<script type="text/javascript" src="wm/results.js"></script>
-		<script type="text/javascript" src="wm/xhr.js"></script>
-		<script type="text/javascript" src="wm/jstest.js"></script>
-		<script type="text/javascript" src="lib/xpath/misc.js"></script>
-		<script type="text/javascript" src="lib/xpath/dom.js"></script>
-		<script type="text/javascript" src="lib/xpath/xpath.js"></script>
-	  <script type="text/javascript" src="lib/helpers.js"></script>
-		<script type="text/javascript" src="extensions/extensions.js"></script>
-		<script type="text/javascript" src="wm/remote-global.js"></script>
+		<script type="text/javascript" src="js/controller/commands.js"></script>
+		<script type="text/javascript" src="js/controller/asserts.js"></script>
+		<script type="text/javascript" src="js/controller/waits.js"></script>
+		<script type="text/javascript" src="js/wm/timing.js"></script>
+		<script type="text/javascript" src="js/wm/performance.js"></script>
+		<script type="text/javascript" src="js/wm/events.js"></script>
+		<script type="text/javascript" src="js/wm/ui.js"></script>
+		<script type="text/javascript" src="js/wm/playback.js"></script>
+		<script type="text/javascript" src="js/wm/remote.js"></script>
+		<script type="text/javascript" src="js/wm/recorder.js"></script>
+		<script type="text/javascript" src="js/wm/domexplorer.js"></script>
+		<script type="text/javascript" src="js/wm/assertexplorer.js"></script>
+		<script type="text/javascript" src="js/wm/results.js"></script>
+		<script type="text/javascript" src="js/wm/xhr.js"></script>
+		<script type="text/javascript" src="js/wm/jstest.js"></script>
+		<script type="text/javascript" src="js/lib/xpath/misc.js"></script>
+		<script type="text/javascript" src="js/lib/xpath/dom.js"></script>
+		<script type="text/javascript" src="js/lib/xpath/xpath.js"></script>
+	  <script type="text/javascript" src="js/lib/helpers.js"></script>
+		<script type="text/javascript" src="js/extensions/extensions.js"></script>
+		<script type="text/javascript" src="js/wm/remote-global.js"></script>
 
 	<script type="text/javascript" charset="utf-8">
 	  fleegix.event.listen(window, 'onload', windmill.remote, 'init');
