@@ -23,7 +23,7 @@ function Load(){
   load.style.position = 'absolute';
   load.style.zIndex = '99999';
   load.style.display = 'block';
-  load.innerHTML = '<center><img src="ide/img/wlogo.png"><br>Loading <img src="ide/img/loading.gif"></center>';
+  load.innerHTML = '<center><img src="img/wlogo.png"><br>Loading <img src="img/loading.gif"></center>';
   document.body.appendChild(load);
   fleegix.dom.center(load);
 

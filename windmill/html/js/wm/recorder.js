@@ -135,7 +135,7 @@ windmill.ui.recorder = new function () {
     }
     catch(error){
       windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
-      windmill.remote.$('record').src = 'ide/img/record.png';
+      windmill.remote.$('record').src = 'img/record.png';
       this.recordState = false;
     }
   }

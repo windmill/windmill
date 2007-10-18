@@ -132,7 +132,7 @@ windmill.ui.assertexplorer = new function () {
     this.assertExplorerOn = function(){
       this.exploreState = true;
       try { 
-        windmill.remote.$('assertx').src = 'ide/img/axoff.png';
+        windmill.remote.$('assertx').src = 'img/axoff.png';
         windmill.remote.$('domExp').style.visibility = 'visible';
 			  windmill.remote.$('domExp').innerHTML = '';
         this.axRecursiveBind(windmill.testWindow);
@@ -140,7 +140,7 @@ windmill.ui.assertexplorer = new function () {
        catch(error){
         windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, '+
         'we are getting cross domain exceptions.');
-        windmill.remote.$('assertx').src = 'ide/img/axon.png';
+        windmill.remote.$('assertx').src = 'img/axon.png';
         this.exploreState = false;
       }
     }
@@ -152,7 +152,7 @@ windmill.ui.assertexplorer = new function () {
        try {
          //Reset the selected element
          windmill.ui.remote.selectedElement = null;
-         windmill.remote.$('assertx').src = 'ide/img/axon.png';
+         windmill.remote.$('assertx').src = 'img/axon.png';
          windmill.remote.$('domExp').style.visibility = 'hidden';
          windmill.remote.$('domExp').innerHTML = '';
          this.axRecursiveUnBind(windmill.testWindow);

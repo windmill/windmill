@@ -32,24 +32,24 @@ var openDialog = function(id){
 };
 		
 var toggleRec = function(){
-  if ($('record').src.indexOf("ide/img/record.png")  != -1){
+  if ($('record').src.indexOf("img/record.png")  != -1){
     windmill.ui.recorder.recordOn();
     opener.window.focus();
-    $('record').src = 'ide/img/stoprecord.png';
+    $('record').src = 'img/stoprecord.png';
   }
   else{
     windmill.ui.recorder.recordOff();
-    $('record').src = 'ide/img/record.png';
+    $('record').src = 'img/record.png';
   }
 }
   var togglePlay = function(){
-    if ($('playback').src.indexOf("ide/img/playback.png")  != -1){
+    if ($('playback').src.indexOf("img/playback.png")  != -1){
       windmill.xhr.startJsonLoop();
       windmill.ui.playback.sendPlayBack();				
-      $('playback').src = 'ide/img/playbackstop.png';
+      $('playback').src = 'img/playbackstop.png';
     }
     else{
-      $('playback').src = 'ide/img/playback.png';
+      $('playback').src = 'img/playback.png';
     }
   }
     var toggleLoop = function(){
@@ -64,36 +64,36 @@ var toggleRec = function(){
 			
     }
       var toggleExplore = function(){
-	if ($('explorer').src.indexOf("ide/img/xon.png")  != -1){
+	if ($('explorer').src.indexOf("img/xon.png")  != -1){
 	  $('domExp').style.visibility = 'visible';
 	  $('domExp').innerHTML = '';
 	  windmill.ui.domexplorer.domExplorerOn();
 	  opener.window.focus();
-	  $('explorer').src = 'ide/img/xoff.png';
+	  $('explorer').src = 'img/xoff.png';
 
 	}
 	else {
 	  $('domExp').style.visibility = 'hidden';
 	  windmill.ui.domexplorer.domExplorerOff();
-	  $('explorer').src = 'ide/img/xon.png';
+	  $('explorer').src = 'img/xon.png';
 	  $('domExp').innerHTML = '';
 
 	}
       }
 	var toggleAExplore = function(){
 
-	  if ($('assertx').src.indexOf("ide/img/axon.png")  != -1){
+	  if ($('assertx').src.indexOf("img/axon.png")  != -1){
 	    $('domExp').style.visibility = 'visible';
 	    $('domExp').innerHTML = '';
 	    windmill.ui.assertexplorer.assertExplorerOn();
 	    opener.window.focus();
-	    $('assertx').src = 'ide/img/axoff.png';
+	    $('assertx').src = 'img/axoff.png';
 
 	  }
 	  else {
 	    $('domExp').style.visibility = 'hidden';
 	    windmill.ui.assertexplorer.assertExplorerOff();
-	    $('assertx').src = 'ide/img/axon.png';
+	    $('assertx').src = 'img/axon.png';
 	    $('domExp').innerHTML = '';
 
 	  }

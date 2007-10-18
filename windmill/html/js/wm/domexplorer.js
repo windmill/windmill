@@ -95,14 +95,14 @@ windmill.ui.domexplorer = new function () {
   this.domExplorerOn = function(){
     this.exploreState = true;
     try {
-      windmill.remote.$('explorer').src = 'ide/img/xoff.png';
+      windmill.remote.$('explorer').src = 'img/xoff.png';
       windmill.remote.$('domExp').style.visibility = 'visible';
       windmill.remote.$('domExp').innerHTML = '';
       this.dxRecursiveBind(windmill.testWindow);
     }
     catch(error){
       windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
-      windmill.remote.$('explorer').src = 'ide/img/xon.png';
+      windmill.remote.$('explorer').src = 'img/xon.png';
       this.exploreState = false;
     }
   }
@@ -114,14 +114,14 @@ windmill.ui.domexplorer = new function () {
     try{
       //Reset the selected element
       windmill.ui.remote.selectedElement = null;
-      windmill.remote.$('explorer').src = 'ide/img/xon.png';
+      windmill.remote.$('explorer').src = 'img/xon.png';
       windmill.remote.$('domExp').style.visibility = 'hidden';
       windmill.remote.$('domExp').innerHTML = '';
       this.dxRecursiveUnBind(windmill.testWindow);
     }
     catch(error){
       windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
-      windmill.remote.$('explorer').src = 'ide/img/xon.png';
+      windmill.remote.$('explorer').src = 'img/xon.png';
       this.exploreState = false;
     }
   } 

@@ -88,7 +88,7 @@ windmill.ui.playback = new function () {
           
     //console.log(testArray);    
     var respRun = function(str){
-      setTimeout('windmill.remote.$(\'playback\').src = \'ide/img/playback.png\'', 3000);
+      setTimeout('windmill.remote.$(\'playback\').src = \'img/playback.png\'', 3000);
       return true;
     }
     
