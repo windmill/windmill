@@ -31,7 +31,7 @@ FILE_LOG_LEVEL    = logging.INFO
 SERVER_HTTP_PORT = 4444
 PLATFORM         = sys.platform
 WINDMILL_PATH    = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-JS_PATH          = os.path.join(WINDMILL_PATH, 'js')
+JS_PATH          = os.path.join(WINDMILL_PATH, 'html')
 
 TEST_URL  = 'http://windmill.osafoundation.org/tutorial'
 TEST_FILE = None
