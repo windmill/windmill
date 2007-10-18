@@ -59,11 +59,11 @@ windmill.xhr = new function () {
     //If there was a legit json response
     if ( windmill.xhr.xhrResponse.error ){
       windmill.ui.results.writeResult("There was a JSON syntax error: '" + 
-				      windmill.xhr.xhrResponse.error + "'");
+			windmill.xhr.xhrResponse.error + "'");
     }
     else{
       if (windmill.xhr.xhrResponse.result.method != 'defer'){
-	windmill.ui.results.writeStatus("Running " + windmill.xhr.xhrResponse.result.method + "...");
+	      windmill.ui.results.writeStatus("Running " + windmill.xhr.xhrResponse.result.method + "...");
       }
       else{ windmill.ui.results.writeStatus("Waiting for tests..."); }
             

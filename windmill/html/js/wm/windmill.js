@@ -36,12 +36,13 @@ var windmill = new function () {
     this.varRegistry = new fleegix.hash.Hash();
     
     //The app your testing
+    this.testWindowStr = 'windmill.testWindow';
     this.testWindow = opener;
     
     //This is so that if you are doing multiple frame testing
     //And you have to change testingApp to point at various frames
     //You can still keep track of the base window
-    this.baseTestWindow = opener;
+    this.baseTestWindow = opener;    
     this.remoteLoaded = false;
     this.remote = parent.window;
     

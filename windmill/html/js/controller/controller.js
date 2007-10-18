@@ -45,16 +45,13 @@ windmill.controller = new function () {
     /* And the ones that start with an underscore are ignored in that list
     /* So if you are adding functionality for internal use and doesnt map from json please start with _
     /*******************************/
+    
+  this._getDocumentStr = function () { return windmill.testWindowStr + '.document'; }
+  this._getWindowStr = function() { return windmill.testWindowStr; }
   this._getDocument = function () { return windmill.testWindow.document; }
-  this._getCurrentWindow = function() { return parent; }
-  this._getTitle = function() {
-    var t = this._getDocument().title;
-    if (typeof(t) == "string") {
-      t = t.trim();
-    }
-    return t;
-  }
-
+  this._getWindow = function() { return windmill.testWindow; }
+  
+  
   //Translates from the way we are passing objects to functions to the lookups
   this._lookupDispatch = function (param_object){
 
@@ -62,7 +59,7 @@ windmill.controller = new function () {
     //If a link was passed, lookup as link
     if(typeof param_object.link != "undefined") {
       element = this.findElement("link=" + param_object.link)
-        }
+    }
     
     //if xpath was passed, lookup as xpath
     if(typeof param_object.xpath != "undefined") {                
@@ -76,8 +73,8 @@ windmill.controller = new function () {
     
     //if jsid was passed
     if(typeof param_object.jsid != "undefined") {
-      var jsid;
-      eval ("jsid=" + param_object.jsid + ";");
+      var jsid; 
+      eval ("jsid=" + this._getWindowStr() + '.' +param_object.jsid + ";");
       element = this.findElement("id=" + jsid);
     }
     
@@ -93,256 +90,257 @@ windmill.controller = new function () {
   this._handleVariable = function (actualValue){
     var variables = actualValue.match(/{\$[^}]*}/g);
                                 
-  for (var i = 0; i < variables.length; i++){
-    var variable = variables[i];
+    for (var i = 0; i < variables.length; i++){
+      var variable = variables[i];
             
-    if (windmill.varRegistry.hasKey(variable)){
-      actualValue = actualValue.replace(variable, windmill.varRegistry.getByKey(variable));
+      if (windmill.varRegistry.hasKey(variable)){
+        actualValue = actualValue.replace(variable, windmill.varRegistry.getByKey(variable));
+      }
+      //if it doesn't exist and contains the string random we create it (username or pass etc)
+      else if (variable.indexOf('random') != -1){
+        actualValue = actualValue.replace(variable, windmill.varRegistry.addItemCreateValue(variable));
+      }
     }
-    //if it doesn't exist and contains the string random we create it (username or pass etc)
-    else if (variable.indexOf('random') != -1){
-      actualValue = actualValue.replace(variable, windmill.varRegistry.addItemCreateValue(variable));
-    }
-  }
     
   return actualValue;
-}
+  }
 
 /************************************
 /* User facing windmill functionality
 /************************************/
 
-//When the service has nothing for us to do  
-this.defer = function (){
+  //When the service has nothing for us to do  
+  this.defer = function (){
     //At some point we may want to display somewhere that we continually get deferred
     //when the backend has nothing for us to do
   };
   
-//After a page is done loading, continue the loop
-this.continueLoop = function (){
-  cont = function(){
-    windmill.xhr.loopState = 1;
-    windmill.xhr.startJsonLoop();
-  }
-  //Just making sure the page is fully loaded
-  setTimeout("cont()", 1000);
-};
-this.stopLoop = function () {
-  windmill.xhr.loopState = 0;
-};
+  //After a page is done loading, continue the loop
+  this.continueLoop = function (){
+    cont = function(){
+      windmill.xhr.loopState = 1;
+      windmill.xhr.startJsonLoop();
+    }
+    //Just making sure the page is fully loaded
+    setTimeout("cont()", 1000);
+  };
 
-//open an url in the webapp iframe
-this.open = function (param_object) {
-  //We need to tell the service where we are before we
-  //head to a new page
-  //windmill.service.setTestURL();
+  this.stopLoop = function () {
+    windmill.xhr.loopState = 0;
+  };
+
+  //open an url in the webapp iframe
+  this.open = function (param_object) {
+    //We need to tell the service where we are before we
+    //head to a new page
+    //windmill.service.setTestURL();
     
-  //Turn the loop off until the page loads
-  //windmill.controller.stopLoop();
-  //webappframe = document.getElementById('webapp');        
-  //webappframe.src = param_object.url;
-  try{ windmill.testWindow.location = param_object.url; }
-  catch(err){}
-  //Turn off loop until the onload for the iframe restarts it
-  //windmill.xhr.togglePauseJsonLoop();
-  done = function(){
-    windmill.controller.waits.forPageLoad({});
+    //Turn the loop off until the page loads
+    //windmill.controller.stopLoop();
+    //webappframe = document.getElementById('webapp');        
+    //webappframe.src = param_object.url;
+    try{ windmill.testWindow.location = param_object.url; }
+    catch(err){}
+    //Turn off loop until the onload for the iframe restarts it
+    //windmill.xhr.togglePauseJsonLoop();
+      done = function(){
+        windmill.controller.waits.forPageLoad({});
+        return true;
+      }
+    setTimeout('done()', 2000);
     return true;
-  }
-  setTimeout('done()', 2000);
-  return true;
-};
+  };
 
 
-//Type Function
-this.type = function (param_object){
+  //Type Function
+  this.type = function (param_object){
 
-  var element = this._lookupDispatch(param_object);
-  if (!element){
-    return false;
-  }
-  //Get the focus on to the item to be typed in, or selected
-  windmill.events.triggerEvent(element, 'focus', false);
-  windmill.events.triggerEvent(element, 'select', true);
-     
-  //Make sure text fits in the textbox
-  var maxLengthAttr = element.getAttribute("maxLength");
-  var actualValue = param_object.text;
-  var stringValue = param_object.text;
-     
-  if (maxLengthAttr != null) {
-    var maxLength = parseInt(maxLengthAttr);
-    if (stringValue.length > maxLength) {
-      //truncate it to fit
-      actualValue = stringValue.substr(0, maxLength);
+    var element = this._lookupDispatch(param_object);
+    if (!element){
+      return false;
     }
-  }
+    //Get the focus on to the item to be typed in, or selected
+    windmill.events.triggerEvent(element, 'focus', false);
+    windmill.events.triggerEvent(element, 'select', true);
      
-  //Set the value
-  element.value = actualValue;
+    //Make sure text fits in the textbox
+    var maxLengthAttr = element.getAttribute("maxLength");
+    var actualValue = param_object.text;
+    var stringValue = param_object.text;
      
-  // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
-  //Another wierd chrome thing?
-  windmill.events.triggerEvent(element, 'change', true);
-     
-  return true;
-};
-
-
-/* Select the specified option and trigger the relevant events of the element.*/
-this.select = function (param_object) {
-  var element = this._lookupDispatch(param_object);
-  if (!element){ return false; }
-      
-  var locatorType = param_object.locatorType || 'LABEL';
-  /*if (!("options" in element)) {
-  //throw new WindmillError("Specified element is not a Select (has no options)");
-           
-  }*/
-    
-  var locator = this.optionLocatorFactory.fromLocatorString(
-							    locatorType.toLowerCase() + '=' + param_object.option);
-
-  var optionToSelect = locator.findOption(element);
-    
-  windmill.events.triggerEvent(element, 'focus', false);
-  var changed = false;
-  for (var i = 0; i < element.options.length; i++) {
-    var option = element.options[i];
-    if (option.selected && option != optionToSelect) {
-      option.selected = false;
-      changed = true;
+    if (maxLengthAttr != null) {
+      var maxLength = parseInt(maxLengthAttr);
+      if (stringValue.length > maxLength) {
+        //truncate it to fit
+        actualValue = stringValue.substr(0, maxLength);
+      }
     }
-    else if (!option.selected && option == optionToSelect) {
-      option.selected = true;
-      changed = true;
-    }
-  }
-
-  if (changed) {
+     
+    //Set the value
+    element.value = actualValue;
+     
+    // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
+    //Another wierd chrome thing?
     windmill.events.triggerEvent(element, 'change', true);
-  }
-    
-  return true;
-};
-
-//Drag Drop functionality allowing functions passed to calculate cursor offsets
-this.dragDrop = function (param_object){   
-   
-  var p = param_object;
-  var hash_key;
      
-  eval ("hash_key=" + p.dragged.jsid + ";");
-  p.dragged.id = hash_key;
-  delete p.dragged.jsid;
+    return true;
+  };
+
+
+  /* Select the specified option and trigger the relevant events of the element.*/
+  this.select = function (param_object) {
+    var element = this._lookupDispatch(param_object);
+    if (!element){ return false; }
+      
+    var locatorType = param_object.locatorType || 'LABEL';
+    /*if (!("options" in element)) {
+    //throw new WindmillError("Specified element is not a Select (has no options)");
+           
+    }*/
+    
+    var locator = this.optionLocatorFactory.fromLocatorString(
+  							    locatorType.toLowerCase() + '=' + param_object.option);
+
+    var optionToSelect = locator.findOption(element);
+    
+    windmill.events.triggerEvent(element, 'focus', false);
+    var changed = false;
+    for (var i = 0; i < element.options.length; i++) {
+      var option = element.options[i];
+      if (option.selected && option != optionToSelect) {
+        option.selected = false;
+        changed = true;
+      }
+      else if (!option.selected && option == optionToSelect) {
+        option.selected = true;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      windmill.events.triggerEvent(element, 'change', true);
+    }
+    
+    return true;
+  };
+
+  //Drag Drop functionality allowing functions passed to calculate cursor offsets
+  this.dragDrop = function (param_object){   
+   
+    var p = param_object;
+    var hash_key;
+     
+    eval ("hash_key=" + p.dragged.jsid + ";");
+    p.dragged.id = hash_key;
+    delete p.dragged.jsid;
              
-  function getPos(elem, evType) {
-    // param_object.mouseDownPos or param_obj.mouseUpPos
-    var t = evType + 'Pos';
-    var res = [];
-    // Explicit function for getting XY of both
-    // start and end position for drag  start 
-    // to be calculated from the initial pos of the
-    // dragged, and end to be calculated from the
-    // position of the destination
-    if (p[t]) {
-      var f = eval(p[t]);
-      res = f(elem);
-    }
-    // Otherwise naively assume top/left XY for both
-    // start (dragged) and end (destination)
-    else {
-      res = [elem.offsetLeft, elem.offsetTop];
-    }
+    function getPos(elem, evType) {
+      // param_object.mouseDownPos or param_obj.mouseUpPos
+      var t = evType + 'Pos';
+      var res = [];
+      // Explicit function for getting XY of both
+      // start and end position for drag  start 
+      // to be calculated from the initial pos of the
+      // dragged, and end to be calculated from the
+      // position of the destination
+      if (p[t]) {
+        var f = eval(p[t]);
+        res = f(elem);
+      }
+      // Otherwise naively assume top/left XY for both
+      // start (dragged) and end (destination)
+      else {
+        res = [elem.offsetLeft, elem.offsetTop];
+      }
        
-    return res;
+      return res;
   }
                 
     
-  var dragged = this._lookupDispatch(p.dragged);
-  var dest = this._lookupDispatch(p.destination);
-  var mouseDownPos = getPos(dragged, 'mouseDown');
-  var mouseUpPos = getPos(dest, 'mouseUp');
+    var dragged = this._lookupDispatch(p.dragged);
+    var dest = this._lookupDispatch(p.destination);
+    var mouseDownPos = getPos(dragged, 'mouseDown');
+    var mouseUpPos = getPos(dest, 'mouseUp');
     
-  var webApp = windmill.testWindow;
-  windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
-  windmill.events.triggerMouseEvent(dragged, 'mousedown', true);
-  windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
-  windmill.events.triggerMouseEvent(dragged, 'mouseup', true);
-  windmill.events.triggerMouseEvent(dragged, 'click', true);
+    var webApp = windmill.testWindow;
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
+    windmill.events.triggerMouseEvent(dragged, 'mousedown', true);
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
+    windmill.events.triggerMouseEvent(dragged, 'mouseup', true);
+    windmill.events.triggerMouseEvent(dragged, 'click', true);
         
-  return true;
-};
-
-//Drag Drop functionality allowing functions passed to calculate cursor offsets
-this.dragDropXY = function (param_object){
-
-  var p = param_object;
-  var webApp = windmill.testWindow;
-  windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.source[0], p.source[1]);
-  windmill.events.triggerMouseEvent(webApp.document.body, 'mousedown', true);
-  windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.destination[0], p.destination[1]);
-  windmill.events.triggerMouseEvent(webApp.document.body, 'mouseup', true);
-  windmill.events.triggerMouseEvent(webApp.document.body, 'click', true);
-
-  return true;
-};
-   
-//Functions for interacting with the windmill variable storage
-//Store the url of a provided link on the page, to be accessed later
-//Ususally with an open
-this.storeURL = function(param_object){
-  var linkNode = this._lookupDispatch(param_object);
-  if (linkNode){
-    windmill.varRegistry.addItem('{$'+param_object.link +'}',linkNode.href);
     return true;
+  };
+
+  //Drag Drop functionality allowing functions passed to calculate cursor offsets
+  this.dragDropXY = function (param_object){
+
+    var p = param_object;
+    var webApp = windmill.testWindow;
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.source[0], p.source[1]);
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mousedown', true);
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.destination[0], p.destination[1]);
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mouseup', true);
+    windmill.events.triggerMouseEvent(webApp.document.body, 'click', true);
+
+    return true;
+  };
+   
+  //Functions for interacting with the windmill variable storage
+  //Store the url of a provided link on the page, to be accessed later
+  //Ususally with an open
+  this.storeURL = function(param_object){
+    var linkNode = this._lookupDispatch(param_object);
+    if (linkNode){
+      windmill.varRegistry.addItem('{$'+param_object.link +'}',linkNode.href);
+      return true;
+    }
+    else{
+      return false;
+    }
   }
-  else{
+
+  //Directly access mouse events
+  this.mousedown = function (param_object){
+      var mupElement = this._lookupDispatch(param_object);
+      windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  
+    
+      return true;
+  };
+
+  this.mouseup = function (param_object){
+    var mdnElement = this._lookupDispatch(param_object);
+    windmill.events.triggerMouseEvent(mdnElement, 'mouseup', true);
+    
+    return true;
+  };
+
+  //After the app reloads you have to re overwrite the alert function for the TestingApp
+  this.reWriteAlert = function(param_object){
+    windmill.testWindow.window.alert = function(s){
+      windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
+    };
+
+    return true;
+  };
+   
+  //Allow the user to set the testWindow to a different window 
+  //or frame within the page 
+  this.setTestWindow = function(param_object){
+    var res = eval ('windmill.testWindow ='+ param_object.path +';');
+    if (typeof(res) != 'undefined'){
+      return true;
+    }
     return false;
   }
-}
-
-//Directly access mouse events
-this.mousedown = function (param_object){
-    var mupElement = this._lookupDispatch(param_object);
-    windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  
-    
-    return true;
-  };
-
-this.mouseup = function (param_object){
-  var mdnElement = this._lookupDispatch(param_object);
-  windmill.events.triggerMouseEvent(mdnElement, 'mouseup', true);
-    
-  return true;
-};
-
-//After the app reloads you have to re overwrite the alert function for the TestingApp
-this.reWriteAlert = function(param_object){
-  windmill.testWindow.window.alert = function(s){
-    windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
-  };
-
-  return true;
-};
-   
-//Allow the user to set the testWindow to a different window 
-//or frame within the page 
-this.setTestWindow = function(param_object){
-  var res = eval ('windmill.testWindow ='+ param_object.path +';');
-  if (typeof(res) != 'undefined'){
-    return true;
-  }
-  return false;
-}
   
-/********************************************************************************
-/* DOM location functionality, all used for various types of lookups in the DOM
-/*********************************************************************************/
+  /********************************************************************************
+  /* DOM location functionality, all used for various types of lookups in the DOM
+  /*********************************************************************************/
     
-//A big part of the following is adapted from the selenium project browserbot
+  //A big part of the following is adapted from the selenium project browserbot
     
-// Refine a list of elements using a filter.
+  // Refine a list of elements using a filter.
   this.selectElementsBy = function (filterType, filter, elements) {
     var filterFunction = this.filterFunctions[filterType];
     if (! filterFunction) {
@@ -352,73 +350,73 @@ this.setTestWindow = function(param_object){
     return filterFunction(filter, elements);
   };
 
-this.filterFunctions = {};
+  this.filterFunctions = {};
 
-this.filterFunctions.name = function (name, elements) {
-  var selectedElements = [];
-  for (var i = 0; i < elements.length; i++) {
-    if (elements[i].name === name) {
-      selectedElements.push(elements[i]);
+  this.filterFunctions.name = function (name, elements) {
+    var selectedElements = [];
+    for (var i = 0; i < elements.length; i++) {
+      if (elements[i].name === name) {
+        selectedElements.push(elements[i]);
+      }
     }
-  }
-  return selectedElements;
-};
+    return selectedElements;
+  };
 
-this.filterFunctions.value = function (value, elements) {
-  var selectedElements = [];
-  for (var i = 0; i < elements.length; i++) {
-    if (elements[i].value === value) {
-      selectedElements.push(elements[i]);
+  this.filterFunctions.value = function (value, elements) {
+    var selectedElements = [];
+    for (var i = 0; i < elements.length; i++) {
+      if (elements[i].value === value) {
+        selectedElements.push(elements[i]);
+      }
     }
-  }
-  return selectedElements;
-};
+    return selectedElements;
+  };
 
-this.filterFunctions.index = function (index, elements) {
-  index = Number(index);
-  if (isNaN(index) || index < 0) {
-    //throw new WindmillError("Illegal Index: " + index);
-    //console.log('Error')
+  this.filterFunctions.index = function (index, elements) {
+    index = Number(index);
+    if (isNaN(index) || index < 0) {
+      //throw new WindmillError("Illegal Index: " + index);
+      //console.log('Error')
 
-  }
-  if (elements.length <= index) {
-    //throw new WindmillError("Index out of range: " + index);
-    //console.log('Error')
-  }
-  return [elements[index]];
-};
+    }
+    if (elements.length <= index) {
+      //throw new WindmillError("Index out of range: " + index);
+      //console.log('Error')
+    }
+    return [elements[index]];
+  };
 
-this.selectElements = function (filterExpr, elements, defaultFilterType) {
+  this.selectElements = function (filterExpr, elements, defaultFilterType) {
 
-  var filterType = (defaultFilterType || 'value');
+    var filterType = (defaultFilterType || 'value');
 
-  // If there is a filter prefix, use the specified strategy
-  var result = filterExpr.match(/^([A-Za-z]+)=(.+)/);
-  if (result) {
-    filterType = result[1].toLowerCase();
-    filterExpr = result[2];
-  }
+    // If there is a filter prefix, use the specified strategy
+    var result = filterExpr.match(/^([A-Za-z]+)=(.+)/);
+    if (result) {
+      filterType = result[1].toLowerCase();
+      filterExpr = result[2];
+    }
 
-  return this.selectElementsBy(filterType, filterExpr, elements);
-};
+    return this.selectElementsBy(filterType, filterExpr, elements);
+  };
 
     
-//Registers all the ways to do a lookup
-this._registerAllLocatorFunctions = function () {
-  // TODO - don't do this in the constructor - only needed once ever
-  this.locationStrategies = {};
-  for (var functionName in this) {
-    var result = /^locateElementBy([A-Z].+)$/.exec(functionName);
-    if (result != null) {
-      var locatorFunction = this[functionName];
-      if (typeof(locatorFunction) != 'function') {
-	continue;
+  //Registers all the ways to do a lookup
+  this._registerAllLocatorFunctions = function () {
+    // TODO - don't do this in the constructor - only needed once ever
+    this.locationStrategies = {};
+    for (var functionName in this) {
+      var result = /^locateElementBy([A-Z].+)$/.exec(functionName);
+      if (result != null) {
+        var locatorFunction = this[functionName];
+        if (typeof(locatorFunction) != 'function') {
+  	      continue;
+        }
+        // Use a specified prefix in preference to one generated from
+        // the function name
+        var locatorPrefix = locatorFunction.prefix || result[1].toLowerCase();
+        this.locationStrategies[locatorPrefix] = locatorFunction;
       }
-      // Use a specified prefix in preference to one generated from
-      // the function name
-      var locatorPrefix = locatorFunction.prefix || result[1].toLowerCase();
-      this.locationStrategies[locatorPrefix] = locatorFunction;
-    }
   };
 
         
@@ -448,7 +446,7 @@ this._registerAllLocatorFunctions = function () {
 }
     
 //All Element Lookup functionality, based on selenium browserbot code
-  this.findElement = function (locator) {
+this.findElement = function (locator) {
     var locatorType = 'implicit';
     var locatorString = locator;
         
@@ -459,21 +457,21 @@ this._registerAllLocatorFunctions = function () {
       locatorString = result[2];
     }
         
-    var element = this.findElementBy(locatorType, locatorString, this._getDocument(), parent.frames[1]);
+    var element = this.findElementBy(locatorType, locatorString, this._getDocument(), this._getWindow());
     if (element != null) {
       return element;
     }
             
     for (var i = 0; i < parent.frames.length; i++) {
-      element = this.findElementBy(locatorType, locatorString, parent.frames[i].document, parent.frames[i]);
+      element = this.findElementBy(locatorType, locatorString, this._getDocument().frames[i].document, this._getWindow().frames[i]);
       if (element != null) {
-	return element;
+	      return element;
       }
     };
 
     // Element was not found by any locator function.
     windmill.ui.results.writeResult("Element " + locator + " not found");
-  };
+};
 
 
     
