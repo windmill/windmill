@@ -52,8 +52,8 @@ JAVASCRIPT_TEST_DIR = None
 
 # Browser prefs
 MOZILLA_COMMAND = None
-SAFARI_BINARY = None
-SAFARI_COMMAND = None
+SAFARI_BINARY   = None
+SAFARI_COMMAND  = None
 
 # Mozilla prefs
 MOZILLA_CREATE_NEW_PROFILE     = True
