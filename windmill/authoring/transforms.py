@@ -47,6 +47,8 @@ def create_json_test_file(suite_name, tests, location=None):
         location = os.path.join(windmill.settings['JS_PATH'], 'saves', suite_name+'.json')
     f = open(location, 'w')
     for test in tests:
+        # Strip keys that aren't part of the api
+        test.pop('suite_name', None) ; test.pop('version', None)
         f.write(simplejson.dumps(test))
         f.write('\n')
     f.flush()
