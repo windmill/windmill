@@ -27,8 +27,10 @@ Copyright 2006-2007, Open Source Applications Foundation
 
 windmill.controller.extensions.clickLozenge =function (param_object){
     var hash_key;
-
-    eval ("hash_key=" + param_object.jsid + ";");
+    // FIXME: Fixing a backwards dependency issue
+    // so the tests work for both 0.2 and trunk
+    var jsid = param_object.jsid.replace('windmill.testWindow.', '');
+    eval ("hash_key=windmill.testWindow." + jsid + ";");
     //hash_key = eval('('+ param_object.jsid + ')');
     param_object.id = "eventDivContent__" + hash_key;
     //console.log(param_object);
@@ -42,8 +44,10 @@ windmill.controller.extensions.clickLozenge =function (param_object){
 
 windmill.controller.extensions.clickItem =function (param_object){
     var hash_key;
-
-    eval ("hash_key=" + param_object.jsid + ";");
+    // FIXME: Fixing a backwards dependency issue
+    // so the tests work for both 0.2 and trunk
+    var jsid = param_object.jsid.replace('windmill.testWindow.', '');
+    eval ("hash_key=windmill.testWindow." + jsid + ";");
     //hash_key = eval('('+ param_object.jsid + ')');
     param_object.id = "listView_item" + hash_key;
     delete param_object.jsid;
@@ -59,8 +63,11 @@ windmill.controller.extensions.cosmoDragDrop = function (p){
     var dragged = param.dragged;
     var dest = param.destination;
     var app = windmill.testWindow;
+    // FIXME: Fixing a backwards dependency issue
+    // so the tests work for both 0.2 and trunk
+    var jsid = dragged.jsid.replace('windmill.testWindow.', '');
 
-    dragged.id = dragged.pfx + eval(dragged.jsid);
+    dragged.id = dragged.pfx + eval('windmill.testWindow.' + jsid);
     // Delete the jsid to force lookup by regular id
     delete dragged.jsid;
     dragged = windmill.controller._lookupDispatch(dragged);
