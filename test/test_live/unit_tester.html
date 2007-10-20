@@ -9,6 +9,10 @@
 	<meta name="author" content="Adam Christian">
 	<!-- Date: 2007-09-04 -->
 	<script type="text/javascript" charset="utf-8">
+		//A namespacing test for the jsid fix
+		var testSpace = new function () {
+			this.spaceId = 'jsidTeset';
+		}
 		var countdown = function(){
 			slept = function(){
 				document.getElementById('sleeper').innerHTML = 'Slept';
@@ -70,5 +74,6 @@
 
 <div id="amIhere" style="width:200px;height:50px;border:1px solid black;"></div><br>
 
+<div id="jsidTeset" style="width:200px;height:50px;border:1px solid orange;"></div>
 </body>
 </html>
