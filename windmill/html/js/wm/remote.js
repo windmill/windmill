@@ -154,7 +154,12 @@ windmill.ui.remote = new function () {
 	  }
 	  if (windmill.registry.methods[actionObj.method].option){
 	    var si = windmill.remote.$(suite.childNodes[j].id+'optionType').selectedIndex;
-	    paramsObj[windmill.remote.$(suite.childNodes[j].id+'optionType')[si].value] = windmill.remote.$(suite.childNodes[j].id+'option').value;
+	    if (actionObj.method.split(".")[0] == 'waits'){
+        paramsObj[windmill.remote.$(suite.childNodes[j].id+'optionType')[si].value] = parseInt(windmill.remote.$(suite.childNodes[j].id+'option').value);
+      }
+      else{
+	      paramsObj[windmill.remote.$(suite.childNodes[j].id+'optionType')[si].value] = windmill.remote.$(suite.childNodes[j].id+'option').value;
+      }
 	  }
 	  actionObj.params = paramsObj;
 	}

@@ -54,32 +54,31 @@ var toggleRec = function(){
   }
     var toggleLoop = function(){
       if ($('loopLink').innerHTML.indexOf('Pause') != -1){
-	$('loopLink').innerHTML = 'Resume Loop';
-	windmill.xhr.togglePauseJsonLoop();
+	      $('loopLink').innerHTML = 'Resume Loop';
+	      windmill.controller.stopLoop();
       }
       else{
-	$('loopLink').innerHTML = 'Pause Loop';
-	windmill.xhr.togglePauseJsonLoop();
+	      $('loopLink').innerHTML = 'Pause Loop';
+        windmill.controller.continueLoop();  
       }
-			
     }
-      var toggleExplore = function(){
-	if ($('explorer').src.indexOf("img/xon.png")  != -1){
-	  $('domExp').style.visibility = 'visible';
-	  $('domExp').innerHTML = '';
-	  windmill.ui.domexplorer.domExplorerOn();
-	  opener.window.focus();
-	  $('explorer').src = 'img/xoff.png';
-
-	}
-	else {
+  
+  var toggleExplore = function(){
+	  if ($('explorer').src.indexOf("img/xon.png")  != -1){
+  	  $('domExp').style.visibility = 'visible';
+  	  $('domExp').innerHTML = '';
+  	  windmill.ui.domexplorer.domExplorerOn();
+  	  opener.window.focus();
+  	  $('explorer').src = 'img/xoff.png';
+  	}
+	 else {
 	  $('domExp').style.visibility = 'hidden';
 	  windmill.ui.domexplorer.domExplorerOff();
 	  $('explorer').src = 'img/xon.png';
 	  $('domExp').innerHTML = '';
-
-	}
-      }
+  	}
+ }
+	
 	var toggleAExplore = function(){
 
 	  if ($('assertx').src.indexOf("img/axon.png")  != -1){
@@ -88,14 +87,12 @@ var toggleRec = function(){
 	    windmill.ui.assertexplorer.assertExplorerOn();
 	    opener.window.focus();
 	    $('assertx').src = 'img/axoff.png';
-
 	  }
 	  else {
 	    $('domExp').style.visibility = 'hidden';
 	    windmill.ui.assertexplorer.assertExplorerOff();
 	    $('assertx').src = 'img/axon.png';
 	    $('domExp').innerHTML = '';
-
 	  }
 	}
 		
@@ -141,7 +138,7 @@ function saveOrder(item) {
 			  ToolMan.cookies().set("list-" + id, 
 						ToolMan.junkdrawer().serializeList(list), 365)
 			    })
-		      }
+		  }
 		
 var doSubmit = function(){ return false; }    
   windmill.remote.init = function () {
