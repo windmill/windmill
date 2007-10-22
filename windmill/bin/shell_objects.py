@@ -114,12 +114,13 @@ def run_js_test_dir(dirname):
     from windmill.server import wsgi
     wsgi.add_namespace('windmill-jstest', application)
     # Build list of files and send to IDE
-    base_url = windmill.settings['TEST_URL']+'/windmill-jstest/'
+    base_url = windmill.settings['TEST_URL']+'/windmill-jstest'
     
     js_files = []
     def parse_files(x, directory, files):
         if not os.path.split(directory)[-1].startswith('.'):
-            js_files.extend( [f for f in files if f.endswith('js')]  )
+            additional_dir = directory.replace(dirname, '')
+            js_files.extend( [additional_dir+'/'+f for f in files if f.endswith('.js')]  )
     os.path.walk(dirname, parse_files, 'x') 
     print js_files
     
