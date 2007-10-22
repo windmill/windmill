@@ -12,7 +12,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import sys
 import os
 import windmill
 import simplejson
@@ -34,7 +33,7 @@ def build_test_file(tests):
 def create_python_test_file(suite_name, tests, location=None):
     """Transform and create and build the python test file"""
     if location is None: 
-        location = os.path.join(windmill.settings['JS_PATH'], 'saves', suite_name+'.py')
+        location = os.path.join(windmill.settings['SAVES_PATH'], suite_name+'.py')
     f = open(location, 'w')
     f.write(build_test_file(tests))
     f.flush()
@@ -44,7 +43,7 @@ def create_python_test_file(suite_name, tests, location=None):
 def create_json_test_file(suite_name, tests, location=None):
     """Transform and create a json test file."""
     if location is None: 
-        location = os.path.join(windmill.settings['JS_PATH'], 'saves', suite_name+'.json')
+        location = os.path.join(windmill.settings['SAVES_PATH'], suite_name+'.json')
     f = open(location, 'w')
     for test in tests:
         # Strip keys that aren't part of the api

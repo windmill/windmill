@@ -32,6 +32,7 @@ SERVER_HTTP_PORT = 4444
 PLATFORM         = sys.platform
 WINDMILL_PATH    = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 JS_PATH          = os.path.join(WINDMILL_PATH, 'html')
+SAVES_PATH       = os.path.join(JS_PATH, 'saves')
 
 TEST_URL  = 'http://windmill.osafoundation.org/tutorial'
 TEST_FILE = None

@@ -204,7 +204,9 @@ def runserver_action(shell_objects):
     """Run the server in the foreground with the options given to the command line"""
     try:
         print 'Server running...'
-        if not windmill.settings['TEST_FILE'] or windmill.settings['TEST_DIR']:
+        if ( not windmill.settings['TEST_FILE'] ) or ( 
+             windmill.settings['TEST_DIR'] ) or ( 
+             windmill.settings['JAVASCRIPT_TEST_DIR'] ):
             windmill.runserver_running = True
             while windmill.runserver_running:
                 sleep(1)
