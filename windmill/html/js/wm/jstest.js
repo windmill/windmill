@@ -64,18 +64,18 @@ windmill.jsTest = new function () {
     return arr;
   }
 
-  this.testFiles = null;
-  this.testScriptSrc = '';
-  this.regFile = false;
-  this.testNamespaces = [];
-  this.testList = [];
-  this.testOrder = null;
-  this.testItemArray = null;
-  this.testFailures = [];
-  this.testCount = 0;
-  this.testFailureCount = 0;
-  this.runInTestWindowScope = true;
-  this.jsSuiteSummary = null;
+  this.testFiles;
+  this.testScriptSrc;
+  this.regFile;
+  this.testNamespaces;
+  this.testList;
+  this.testOrder;
+  this.testItemArray;
+  this.testFailures;
+  this.testCount;
+  this.testFailureCount;
+  this.runInTestWindowScope;
+  this.jsSuiteSummary;
 
   // Initialize everything to starting vals
   this.init = function () {
@@ -110,39 +110,48 @@ windmill.jsTest = new function () {
   this.doSetup = function (tests) {
     var regIndex = null;
     var initIndex = null;
+    var dirs = [];
     for (var i = 0; i < tests.length; i++) {
       var t = tests[i];
       if (t.indexOf('/register.js') > -1) {
         regIndex = i;
       }
-      if (t.indexOf('/initialize.js') > -1) {
-        initIndex = i;
-      }
     }
+    // Get any specific test registrations
+    // Exec this file in the remote's window scope
+    // to call registerTests or registerTestNamespace
     if (typeof regIndex == 'number') {
       this.regFile = true;
       var regPath = tests[regIndex];
       tests.splice(regIndex, 1);
-      this.doTestInit(regPath, false);
+      this.doTestRegistration(regPath);
     }
-    if (typeof initIndex == 'number') {
-      var initPath = tests[initIndex];
-      tests.splice(initIndex, 1);
-      this.doTestInit(initPath, true);
+    // Remove any directories or non-js files returned
+    for (var i = 0; i < tests.length; i++) {
+      if (t.indexOf('\.js') == -1) {
+        dirs.push(i);
+      }
     }
+    for (var i = 0; i < dirs.length; i++) {
+      tests.splice(dirs[i], 1);
+    }
+    // Load the asserts into the test window scope
+    // as the 'jum' object
     if (this.runInTestWindowScope) {
       windmill.testWindow.jum = windmill.controller.asserts;
     }
+    // Test files include any initialize.js environ setup
+    // files in the directories
     this.testFiles = tests;
     return true;
   };
   // Run any init code in the init file, and grab
   // the ordered list of tests to run
-  this.doTestInit = function(initPath, runInTestWindowScope) {
-    var str = fleegix.xhr.doReq({ url: initPath,
+  this.doTestRegistration = function(path) {
+    var str = fleegix.xhr.doReq({ url: path,
 	  async: false });
     // Eval in window scope
-    globalEval(str, runInTestWindowScope);
+    globalEval(str, false);
     return true;
   };
   // Can be called from the eval of an initialize.js file --
