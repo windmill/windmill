@@ -16,7 +16,7 @@ from setuptools import setup, find_packages
 import os
 
 PACKAGE_NAME = "windmill"
-PACKAGE_VERSION = "0.2.1pre"
+PACKAGE_VERSION = "0.2.2pre"
 
 SUMMARY = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging and recording capabilities.'
 
@@ -38,8 +38,8 @@ setup(name=PACKAGE_NAME,
       url='http://windmill.osafoundation.org/',
       license='http://www.apache.org/licenses/LICENSE-2.0',
       include_package_data = True,
-      packages=find_packages(),
-      package_data = {'': ['*.js', '*.css', '*.html', '*.txt'],},
+      packages = find_packages(exclude=['test', 'test.test_live']),
+      package_data = {'': ['*.js', '*.css', '*.html', '*.txt', ],},
       scripts=[os.path.join(os.path.dirname(__file__),'scripts','windmill')],
       platforms =['Any'],
       install_requires = ['CherryPy >= 3.0.2',
