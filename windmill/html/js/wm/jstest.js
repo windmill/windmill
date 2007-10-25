@@ -17,16 +17,20 @@ Copyright 2007, Open Source Applications Foundation
 var jum = windmill.controller.asserts;
 
 windmill.jsTest = new function () {
-
   var brokenEval;
   function appendScriptTag(win, code) {
-    var scr = win.document.createElement('script');
-    scr.type = 'text/javascript';
+    var script = win.document.createElement('script');
+    script.type = 'text/javascript';
     var head = win.document.getElementsByTagName("head")[0] ||
       win.document.documentElement;
-    scr.appendChild(win.document.createTextNode(code));
-    head.appendChild(scr);
-    head.removeChild(scr);
+    if (document.all) {
+      script.text = code;
+    }
+    else {
+      script.appendChild(win.document.createTextNode(code));
+    }
+    head.appendChild(script);
+    head.removeChild(script);
     return true;
   }
   function globalEval(code, testWin) {
@@ -43,12 +47,12 @@ windmill.jsTest = new function () {
       }
     }
     if (brokenEval) {
-      if (window.execScript) {
-        win.execScript(code);
-      }
-      else {
+      //if (window.execScript) {
+        //win.execScript(code);
+      //}
+      //else {
         appendScriptTag(win, code);
-      }
+      //}
     }
     else {
       win.eval.call(win, code);
@@ -75,6 +79,8 @@ windmill.jsTest = new function () {
   this.testCount;
   this.testFailureCount;
   this.runInTestWindowScope;
+  this.currentTestName;
+  this.currentJsTestTimer;
   this.jsSuiteSummary;
 
   // Initialize everything to starting vals
@@ -139,6 +145,9 @@ windmill.jsTest = new function () {
     // as the 'jum' object
     if (this.runInTestWindowScope) {
       windmill.testWindow.jum = windmill.controller.asserts;
+      if (document.all) {
+        windmill.testWindow.jsTest = this;
+      }
     }
     // Test files include any initialize.js environ setup
     // files in the directories
@@ -178,8 +187,7 @@ windmill.jsTest = new function () {
           str += p + ': ' + item + ', ';
         }
 
-        // Function objs, or Arrays of function objs
-        // with names beginning with 'test_'
+        // Functions or Arrays with names beginning with 'test_'
         if ((typeof item == 'function' ||
           typeof item.push == 'function') && re.test(p)) {
           arr.push(namespace + '.' + p);
@@ -240,8 +248,23 @@ windmill.jsTest = new function () {
   // them in window scope
   this.loadTests = function () {
     var tests = this.testFiles;
+    // Eval any init files first
     for (var i = 0; i < tests.length; i++) {
       var path = tests[i];
+      if (path.indexOf('/initialize.js') == -1) {
+        continue;
+      }
+      var str = fleegix.xhr.doReq({ url: path,
+	    async: false });
+      // Eval in window scope
+      globalEval(str, this.runInTestWindowScope);
+    }
+    // Then eval the test files
+    for (var i = 0; i < tests.length; i++) {
+      var path = tests[i];
+      if (path.indexOf('/initialize.js') > -1) {
+        continue;
+      }
       var str = fleegix.xhr.doReq({ url: path,
 	    async: false });
       if (window.execScript) {
@@ -298,33 +321,35 @@ windmill.jsTest = new function () {
   };
   this.runTest = function (testName, testFunc) {
     //Do some timing of test run
-    var jsTestTimer = new windmill.TimeObj();
-    jsTestTimer.setName(testName);
-    jsTestTimer.startTime();
+    this.currentTestName = testName;
+    var timer = new windmill.TimeObj();
+    timer.setName(testName);
+    timer.startTime();
+    this.currentJsTestTimer = timer;
     // Run the test
     try {
       if (document.all && this.runInTestWindowScope) {
-        windmill.testWindow.execScript(testFunc.toString());
+        // Holy crap, what a god-awful hack this is
+        // There *has* to be a better way to do this
+        var execStr = 'window.execFunc = ' +
+          testFunc.toString() + '; try { window.execFunc.call(window); } catch(e) { window.jsTest.handleErr.call(window.jsTest, e); }';
+        windmill.testWindow.execScript(execStr);
       }
       else {
         testFunc();
       }
-      jsTestTimer.endTime();
+      this.currentJsTestTimer.endTime();
       //write to the results tab in the IDE
       windmill.ui.results.writeResult("<br>Test: <b>" +
 				      testName + "<br>Test Result:" + true);
       //send report for pass
-      windmill.jsTest.sendJSReport(testName, true, null, jsTestTimer);
+      windmill.jsTest.sendJSReport(testName, true, null,
+        this.currentJsTestTimer);
     }
     // For each failure, create a TestFailure obj, add
     // to the failures list
     catch (e) {
-      jsTestTimer.endTime();
-      var fail = new windmill.jsTest.TestFailure(testName, e);
-      windmill.ui.results.writeResult("<br>Test: <b>" +
-				      testName + "<br>Test Result:" + false + '<br>Error: '+ fail.message);
-      windmill.jsTest.sendJSReport(testName, false, e, jsTestTimer);
-      this.testFailures.push(fail);
+      this.handleErr(e);
     }
   };
   this.runTestItemArray = function () {
@@ -354,6 +379,15 @@ windmill.jsTest = new function () {
       var f = function () { _this.runTestItemArray.apply(_this); };
       setTimeout(f, t);
     }
+  };
+  this.handleErr = function (e) {
+    var testName = this.currentTestName;
+    this.currentJsTestTimer.endTime();
+    var fail = new windmill.jsTest.TestFailure(testName, e);
+    windmill.ui.results.writeResult("<br>Test: <b>" +
+            testName + "<br>Test Result:" + false + '<br>Error: '+ fail.message);
+    windmill.jsTest.sendJSReport(testName, false, e, this.currentJsTestTimer);
+    this.testFailures.push(fail);
   };
 };
 
