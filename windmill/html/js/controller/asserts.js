@@ -103,8 +103,8 @@ windmill.controller.asserts.assertRegistry = {
 
 //Currently only does one level below the provided div
 //To make it more thorough it needs recursion to be implemented later
-windmill.controller.asserts.assertText = function (param_object) { 
-    
+windmill.controller.asserts.assertText = function (param_object) {
+
   var n = windmill.controller._lookupDispatch(param_object);
   var validator = param_object.validator;
   try{
@@ -112,22 +112,22 @@ windmill.controller.asserts.assertText = function (param_object) {
       return true;
     }
     if (n.hasChildNodes()){
-      for(var m = n.firstChild; m != null; m = m.nextSibling) {       
+      for(var m = n.firstChild; m != null; m = m.nextSibling) {
 	if (m.innerHTML.indexOf(validator) != -1){
 	  return true;
 	}
 	if (m.value.indexOf(validator) != -1){
-	  return true;  
+	  return true;
 	}
       }
     }
   }
   catch(error){
     return false;
-  } 
+  }
   return false;
-}; 
- 
+};
+
 //Assert that a specified node exists
 windmill.controller.asserts.assertNode = function (param_object) {
   var element = windmill.controller._lookupDispatch(param_object);
@@ -135,13 +135,13 @@ windmill.controller.asserts.assertNode = function (param_object) {
     return false;
   }
   return true;
-};   
+};
 
 //Assert that a form element contains the expected value
-windmill.controller.asserts.assertValue = function (param_object) { 
+windmill.controller.asserts.assertValue = function (param_object) {
   var n = windmill.controller._lookupDispatch(param_object);
   var validator = param_object.validator;
- 
+
   if (n.value.indexOf(validator) != -1){
     return true;
   }
@@ -149,20 +149,20 @@ windmill.controller.asserts.assertValue = function (param_object) {
 };
 
 //Assert that a provided value is selected in a select element
-windmill.controller.asserts.assertSelected = function (param_object) { 
+windmill.controller.asserts.assertSelected = function (param_object) {
   var n = windmill.controller._lookupDispatch(param_object);
   var validator = param_object.validator;
- 
+
   if (n.options[n.selectedIndex].value == validator){
     return true;
   }
   return false;
 };
- 
+
 //Assert that a provided checkbox is checked
-windmill.controller.asserts.assertChecked = function (param_object) { 
+windmill.controller.asserts.assertChecked = function (param_object) {
   var n = windmill.controller._lookupDispatch(param_object);
-    
+
   if (n.checked == true){
     return true;
   }
@@ -170,7 +170,7 @@ windmill.controller.asserts.assertChecked = function (param_object) {
 };
 
 // Assert that a an element's property is a particular value
-windmill.controller.asserts.assertProperty = function (param_object) { 
+windmill.controller.asserts.assertProperty = function (param_object) {
   var element = windmill.controller._lookupDispatch(param_object);
   if (!element){
     return false;
@@ -183,13 +183,13 @@ windmill.controller.asserts.assertProperty = function (param_object) {
       res = true;
     }
   }
-  catch(err){  
+  catch(err){
   }
   if (String(value) == String(vArray[1])) {
     res = true;
   }
   return res;
-};   
+};
 
 // Assert that a specified image has actually loaded
 // The Safari workaround results in additional requests
