@@ -384,8 +384,12 @@ windmill.jsTest = new function () {
     var testName = this.currentTestName;
     this.currentJsTestTimer.endTime();
     var fail = new windmill.jsTest.TestFailure(testName, e);
+    var msg = fail.message;
+    // Escape angle brackets for display in HTML
+    msg = msg.replace(/</g, '&lt;');
+    msg = msg.replace(/>/g, '&gt;');
     windmill.ui.results.writeResult("<br>Test: <b>" +
-            testName + "<br>Test Result:" + false + '<br>Error: '+ fail.message);
+            testName + "<br>Test Result:" + false + '<br>Error: '+ msg);
     windmill.jsTest.sendJSReport(testName, false, e, this.currentJsTestTimer);
     this.testFailures.push(fail);
   };

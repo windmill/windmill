@@ -194,9 +194,14 @@ windmill.controller.commands.jsTestResults = function () {
   s += 'Number of tests failures: ' + _j.testFailureCount + '<br/>';
   if (_j.testFailureCount > 0) {
     s += 'Test failures:<br/>';
-    var fail = _j.testFailures;
-    for (var i = 0; i < fail.length; i++) {
-      s += fail[i].message + '<br/>';
+    var fails = _j.testFailures;
+    for (var i = 0; i < fails.length; i++) {
+      var fail = fails[i];
+      var msg = fail.message;
+      // Escape angle brackets for display in HTML
+      msg = msg.replace(/</g, '&lt;');
+      msg = msg.replace(/>/g, '&gt;');
+      s += msg + '<br/>';
     }
   }
 

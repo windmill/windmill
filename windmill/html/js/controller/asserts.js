@@ -285,7 +285,7 @@ windmill.controller.asserts._AssertFactory = new function () {
       var valid = validateArgs(expr.length, args);
       // Pull off additional comment which may be first arg
       var comment = args.length > expr.length ?
-      args.shift() : null;
+        args.shift() : null;
       // Run the assert
       var res = expr.apply(window, args);
       if (res) {
