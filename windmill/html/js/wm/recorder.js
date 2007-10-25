@@ -129,6 +129,13 @@ windmill.ui.recorder = new function () {
     this.recordOff();
     //keep track of the recorder state, for page refreshes
     this.recordState = true;
+    
+    //if when loading the listener didn't get attached
+    //we attach it if they are recording because we need to know
+    //when the new page is loading so we can re-attach
+    fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
+    fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
+    
     windmill.ui.remote.getSuite();
     try{
       this.recRecursiveBind(windmill.testWindow);
@@ -161,14 +168,15 @@ windmill.ui.recorder = new function () {
     if (windmill.browser.isIE != false){
       var inp = frame.document.getElementsByTagName('input');
       for (var i = 0; i < inp.length; i++) { 
-	fleegix.event.listen(inp[i], 'onchange', this, 'writeJsonChange');
+	      fleegix.event.listen(inp[i], 'onchange', this, 'writeJsonChange');
       }
       var se = frame.document.getElementsByTagName('select');
       for (var i = 0; i < se.length; i++) { 
-	fleegix.event.listen(se[i], 'onchange', this, 'writeJsonChange');
+	      fleegix.event.listen(se[i], 'onchange', this, 'writeJsonChange');
       }
     }
-      
+    
+    fleegix.event.listen(frame, 'onunload', windmill, 'unloaded');
     fleegix.event.listen(frame.document, 'ondblclick', this, 'writeJsonClicks');
     fleegix.event.listen(frame.document, 'onchange', this, 'writeJsonChange');
     fleegix.event.listen(frame.document, 'onclick', this, 'writeJsonClicks');
@@ -179,10 +187,11 @@ windmill.ui.recorder = new function () {
     for (var i=0;i<iframeCount;i++)
       {
         try{
-	  fleegix.event.listen(iframeArray[i].document, 'ondblclick', this, 'writeJsonClicks');
-	  fleegix.event.listen(iframeArray[i].document, 'onchange', this, 'writeJsonChange');
-	  fleegix.event.listen(iframeArray[i].document, 'onclick', this, 'writeJsonClicks');
-	  this.recRecursiveBind(iframeArray[i]);
+          fleegix.event.listen(iframeArray[i], 'onunload', windmill, 'unloaded');
+	        fleegix.event.listen(iframeArray[i].document, 'ondblclick', this, 'writeJsonClicks');
+	        fleegix.event.listen(iframeArray[i].document, 'onchange', this, 'writeJsonChange');
+	        fleegix.event.listen(iframeArray[i].document, 'onclick', this, 'writeJsonClicks');
+	        this.recRecursiveBind(iframeArray[i]);
         }
         catch(error){             
           windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain?' +
@@ -198,14 +207,14 @@ windmill.ui.recorder = new function () {
     if (windmill.browser.isIE != false){
       var inp = frame.document.getElementsByTagName('input');
       for (var i = 0; i < inp.length; i++) { 
-	fleegix.event.unlisten(inp[i], 'onchange', this, 'writeJsonChange');
+	      fleegix.event.unlisten(inp[i], 'onchange', this, 'writeJsonChange');
       }
       var se = frame.document.getElementsByTagName('select');
       for (var i = 0; i < se.length; i++) { 
-	fleegix.event.unlisten(se[i], 'onchange', this, 'writeJsonChange');
+	      fleegix.event.unlisten(se[i], 'onchange', this, 'writeJsonChange');
       }
     }
-       
+    fleegix.event.unlisten(frame, 'onunload', windmill, 'unloaded');
     fleegix.event.unlisten(frame.document, 'ondblclick', this, 'writeJsonClicks');
     fleegix.event.unlisten(frame.document, 'onchange', this, 'writeJsonChange');
     fleegix.event.unlisten(frame.document, 'onclick', this, 'writeJsonClicks');
@@ -216,10 +225,11 @@ windmill.ui.recorder = new function () {
     for (var i=0;i<iframeCount;i++)
       {
         try{
-	  fleegix.event.unlisten(iframeArray[i].document, 'ondblclick', this, 'writeJsonClicks');
-	  fleegix.event.unlisten(iframeArray[i].document, 'onchange', this, 'writeJsonChange');
-	  fleegix.event.unlisten(iframeArray[i].document, 'onclick', this, 'writeJsonClicks');
-	  this.recRecursiveUnBind(iframeArray[i]);
+          fleegix.event.unlisten(iframeArray[i], 'onunload', windmill, 'unloaded');
+	        fleegix.event.unlisten(iframeArray[i].document, 'ondblclick', this, 'writeJsonClicks');
+      	  fleegix.event.unlisten(iframeArray[i].document, 'onchange', this, 'writeJsonChange');
+      	  fleegix.event.unlisten(iframeArray[i].document, 'onclick', this, 'writeJsonClicks');
+      	  this.recRecursiveUnBind(iframeArray[i]);
         }
         catch(error){             
           windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain?' +
