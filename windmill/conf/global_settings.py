@@ -32,7 +32,7 @@ SERVER_HTTP_PORT = 4444
 PLATFORM         = sys.platform
 WINDMILL_PATH    = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 JS_PATH          = os.path.join(WINDMILL_PATH, 'html')
-SAVES_PATH       = os.path.join(JS_PATH, 'saves')
+SAVES_PATH       = None
 
 TEST_URL  = 'http://windmill.osafoundation.org/tutorial'
 TEST_FILE = None
@@ -58,7 +58,6 @@ SAFARI_COMMAND  = None
 
 # Mozilla prefs
 MOZILLA_CREATE_NEW_PROFILE     = True
-MOZILLA_REMOVE_PROFILE_ON_EXIT = True
 
 MOZILLA_PROFILE_PATH = tempfile.mkdtemp(suffix='.windmill')
 

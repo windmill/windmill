@@ -19,4 +19,6 @@ import authoring, bin, browser, server, conf, tools
 TESTS_COMPLETED = False
 RESULTS = {'pass':0, 'fail':0}
 
+teardown_directories = []
+
 is_active = None

@@ -18,6 +18,7 @@ from time import sleep
 import os, sys
 from datetime import datetime
 from threading import Thread
+import shutil
 
 def process_options(argv_list):
     """Process all the command line options"""
@@ -123,7 +124,7 @@ def setup():
     """Setup server and shell objects"""
     global shell_objects_dict
     shell_objects_dict = {}
-    
+        
     windmill.settings['shell_objects'] = shell_objects_dict
     assert not windmill.settings.get('setup_has_run', False)
 
@@ -190,10 +191,14 @@ def teardown(shell_objects):
     windmill.is_active = False
     
     shell_objects['clear_queue']()
-
+    
     for controller in windmill.settings['controllers']:
         controller.stop()
         del(controller)
+        
+    for directory in windmill.teardown_directories:
+        if os.path.isdir(directory):
+            shutil.rmtree(directory)
 
     while shell_objects['httpd_thread'].isAlive():
         shell_objects['httpd'].stop()

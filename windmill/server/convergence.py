@@ -317,6 +317,8 @@ class JSONRPCMethods(RPCMethods):
             self.add_test(test, suite_name=test.get('suite_name'))
                 
     def create_save_file(self, transformer, suite_name, tests):
+        if not windmill.settings['SAVES_PATH']:
+            windmill.authoring.transforms.create_saves_path()
         for test in tests:
             if test.get('suite_name'):
                 test.pop('suite_name')

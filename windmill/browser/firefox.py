@@ -134,10 +134,6 @@ class MozillaProfile(object):
         self.prefs_js_f.write(string + '\n')
         self.prefs_js_f.flush()
         
-    def clean_up(self):
-        """Removed the profile from /tmp"""
-        shutil.rmtree(self.profile_path)
-        
 def convertPath(linuxPath):
     """Convert windows path to cygwin path"""
     sysdrive = os.environ.get('SYSTEMDRIVE')
@@ -197,7 +193,7 @@ class MozillaBrowser(object):
             except:
                 logger.error('Cannot kill firefox')
                 
-        if windmill.settings['MOZILLA_REMOVE_PROFILE_ON_EXIT'] is True:
+        if windmill.settings['MOZILLA_CREATE_NEW_PROFILE'] is True:
             # Windows holds on to the file handlers for prefs.js indefinitely, we leave tempfiles and let the OS handle cleaning them up at a later time 
             if sys.platform != "win32" and os.path.isdir(windmill.settings['MOZILLA_PROFILE_PATH']):
                 shutil.rmtree(windmill.settings['MOZILLA_PROFILE_PATH'])

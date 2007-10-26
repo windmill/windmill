@@ -15,6 +15,17 @@
 import os
 import windmill
 import simplejson
+import tempfile
+
+def create_saves_path():
+    directory = tempfile.mkdtemp(suffix='.windmill-saves')
+    # Mount the fileserver application for tests
+    from wsgi_fileserver import WSGIFileServerApplication
+    application = WSGIFileServerApplication(root_path=os.path.abspath(directory), mount_point='/windmill-saves/')
+    from windmill.server import wsgi
+    wsgi.add_namespace('windmill-saves', application)
+    windmill.settings['SAVES_PATH'] = directory
+    windmill.teardown_directories.append(directory)
 
 def test_object_transform(test):
     """Transform test object in to controller call in python."""
@@ -38,7 +49,7 @@ def create_python_test_file(suite_name, tests, location=None):
     f.write(build_test_file(tests))
     f.flush()
     f.close()
-    return '%s/windmill-serv/saves/%s' % (windmill.settings['TEST_URL'], suite_name+'.py')
+    return '%s/windmill-saves/%s' % (windmill.settings['TEST_URL'], suite_name+'.py')
     
 def create_json_test_file(suite_name, tests, location=None):
     """Transform and create a json test file."""
@@ -52,7 +63,7 @@ def create_json_test_file(suite_name, tests, location=None):
         f.write('\n')
     f.flush()
     f.close()
-    return '%s/windmill-serv/saves/%s' % (windmill.settings['TEST_URL'], suite_name+'.json')
+    return '%s/windmill-saves/%s' % (windmill.settings['TEST_URL'], suite_name+'.json')
     
 registry = {'python':create_python_test_file, 'json':create_json_test_file}
 
