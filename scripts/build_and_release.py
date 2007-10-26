@@ -65,6 +65,9 @@ def main():
     except:
         remove_old()
         run_setup_develop()
+    finally:
+        remove_old()
+        run_setup_develop()
     
 if __name__ == "__main__":
     main()
