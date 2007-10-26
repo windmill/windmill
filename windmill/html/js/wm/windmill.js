@@ -28,7 +28,17 @@ var windmill = new function () {
     //The timeout for page loading, if the onload is never called
     //how long do we wait before we start firing tests again
     this.timeout = 20000;
+    
+    //How long xhr waits in seconds before calling the timout function
+    this.xhrTimeout = 180;
+    
+    //Whether or not the IDE is in a waiting state
+    //Is set to true when we run into any waits.*
     this.waiting = false;
+    
+    //The timeout ID of whatever is keeping
+    //us from continuing the tests runs, if it reaches
+    //windmill.timeout we stop the timeout and continue on
     this.loadTimeoutId = 0;
     
     //We need to allow users to store data locally
