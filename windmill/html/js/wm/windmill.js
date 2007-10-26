@@ -99,8 +99,14 @@ var windmill = new function () {
       if (windmill.loadTimeoutId != 0){
         clearTimeout(windmill.loadTimeoutId);
       }
-      //console.log('loaded');
-       //alert('loaded');
+
+      //We need to define the windmill object in the
+      //test window to allow the JS test framework
+      //to access different functionality
+       windmill.testWindow.windmill = windmill;
+       
+       //Reset the explorer and recorder to what
+       //they were before the new page load
        windmill.ui.domexplorer.setExploreState();
        windmill.ui.recorder.setRecState();
        fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
