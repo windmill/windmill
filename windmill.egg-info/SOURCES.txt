@@ -135,7 +135,6 @@ windmill/html/js/wm/ui.js
 windmill/html/js/wm/windmill-exec.js
 windmill/html/js/wm/windmill.js
 windmill/html/js/wm/xhr.js
-windmill/html/saves/README.txt
 windmill/server/__init__.py
 windmill/server/convergence.py
 windmill/server/proxy.py
