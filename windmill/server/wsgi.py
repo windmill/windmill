@@ -57,40 +57,6 @@ def reconstruct_url(environ):
     # Stick it in environ for convenience     
     environ['reconstructed_url'] = url
     return url
-    
-         
-class HTTPConnection(httplib.HTTPConnection):
-    
-    def connect(self):
-        """Connect to the host and port specified in __init__."""
-        msg = "getaddrinfo returns an empty list"
-        for res in socket.getaddrinfo(self.host, self.port, 0,
-                                      socket.SOCK_STREAM):
-            af, socktype, proto, canonname, sa = res
-            try:
-                self.sock = socket.socket(af, socktype, proto)
-                if self.debuglevel > 0:
-                    print "connect: (%s, %s)" % (self.host, self.port)
-                if CURRENT_DST_PORT[0] > START_DST_PORT+20000:
-                    CURRENT_DST_PORT[0] = copy.copy(START_DST_PORT)
-                CURRENT_DST_PORT[0] = CURRENT_DST_PORT[0]+1
-                self.sock.bind((None, CURRENT_DST_PORT[0]))
-                self.sock.connect(sa)
-            except socket.error, msg:
-                if self.debuglevel > 0:
-                    print 'connect fail:', (self.host, self.port)
-                if self.sock:
-                    self.sock.close()
-                self.sock = None
-                continue
-            break
-        if not self.sock:
-            raise socket.error, msg
-            
-    def __del__(self):
-        """Make sure we close the socket when the object gets destroyed"""
-        if self.sock is not None:
-            self.sock.close()
 
 HTTPConnection = httplib.HTTPConnection            
             

@@ -136,7 +136,7 @@ def setup():
     
     if windmill.settings['CONTINUE_ON_FAILURE'] is not False:
         shell_objects.jsonrpc_client.add_json_command('{"method": "commands.setOptions", "params": {"stopOnFailure" : false}}')
-
+                
     if windmill.settings['TEST_FILE'] is not None:
          shell_objects.run_json_test_file(windmill.settings['TEST_FILE'])
 
@@ -161,7 +161,6 @@ def setup():
         shell_objects_dict[attribute] = getattr(shell_objects, attribute)
 
     shell_objects_dict['setup_has_run'] = True
-                
                 
     return shell_objects_dict
 
