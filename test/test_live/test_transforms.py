@@ -45,10 +45,10 @@ def test():
     client.extensions.cosmoDragDrop(destination={u'id': u'hourDiv4-1300'}, dragged={u'pfx': u'eventDivContent__', u'jsid': u'windmill.testWindow.cosmo.view.cal.canvasInstance.getSelectedItemId()'})"""
     
 def test_save_to_python():
+    import windmill
     url = client.create_save_file(transformer='python', suite_name='test_suite_name', tests=json_test_lines)[u'result']
-    file_path = url.split('/windmill-serv/saves/')[-1].split('/')
-    file_path.insert(0, saves_directory)
-    file_path = os.path.join(*file_path)
+    file_name = url.split('/windmill-saves/')[-1]
+    file_path = os.path.join(windmill.settings['SAVES_PATH'], file_name)
     cleanup_files.append(file_path)
     python_code = open(file_path, 'r').read()
     assert python_code == proper_python_code
