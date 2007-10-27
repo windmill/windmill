@@ -61,10 +61,6 @@ MOZILLA_CREATE_NEW_PROFILE     = True
 
 MOZILLA_PROFILE_PATH = tempfile.mkdtemp(suffix='.windmill')
 
-while MOZILLA_PROFILE_PATH.find('-') is not -1:
-    shutil.rmtree(MOZILLA_PROFILE_PATH)
-    MOZILLA_PROFILE_PATH = tempfile.mkdtemp(suffix='.windmill')
-
 if PLATFORM == 'darwin':
     firefoxApp = os.path.join('Applications', 'Firefox.app')
     firefoxDir = os.path.join(os.path.expanduser('~/'), firefoxApp)
