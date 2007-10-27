@@ -91,23 +91,23 @@ windmill.controller = new function () {
   };
 
   //Function to handle the random keyword scenario
-  this._handleVariable = function (actualValue){
-    var variables = actualValue.match(/{\$[^}]*}/g);
-                                
-    for (var i = 0; i < variables.length; i++){
-      var variable = variables[i];
-            
-      if (windmill.varRegistry.hasKey(variable)){
-        actualValue = actualValue.replace(variable, windmill.varRegistry.getByKey(variable));
-      }
-      //if it doesn't exist and contains the string random we create it (username or pass etc)
-      else if (variable.indexOf('random') != -1){
-        actualValue = actualValue.replace(variable, windmill.varRegistry.addItemCreateValue(variable));
+  this.handleVariable = function (val){
+    var ret = val;
+    var matches = val.match(/{\$[^}]*}/g);
+    if (matches) {
+      for (var i = 0; i < matches.length; i++){
+        var m = matches[i];
+        if (windmill.varRegistry.hasKey(m)){
+          ret = val.replace(m, windmill.varRegistry.getByKey(m));
+        }
+        //if it doesn't exist and contains the string random we create it (username or pass etc)
+        else if (m.indexOf('random') != -1){
+          ret = val.replace(m, windmill.varRegistry.addItemCreateValue(m));
+        }
       }
     }
-    
-  return actualValue;
-  }
+    return ret;
+  };
 
 /************************************
 /* User facing windmill functionality

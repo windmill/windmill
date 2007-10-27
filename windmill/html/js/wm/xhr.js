@@ -49,7 +49,7 @@ windmill.xhr = new function () {
 
     //If the are variables passed we need to do our lex and replace
     if ((str.indexOf('{$') != -1) && (windmill.runTests == true)){
-      str = windmill.controller._handleVariable(str); 
+      str = windmill.controller.handleVariable(str); 
     }
         
     windmill.xhr.xhrResponse = eval('(' + str + ')');

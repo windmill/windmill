@@ -38,7 +38,7 @@ windmill.controller.commands.createVariables = function(param_object){
   resp(result);        
 };
  
-//This function stores a variable and it's value in the variable registry
+//This function stores a variable and its value in the variable registry
 windmill.controller.commands.createVariable = function(param_object){
     var value = null;
     if (windmill.varRegistry.hasKey('{$'+param_object.name +'}')){

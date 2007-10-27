@@ -157,8 +157,7 @@ windmill.jsTest = new function () {
   // Run any init code in the init file, and grab
   // the ordered list of tests to run
   this.doTestRegistration = function(path) {
-    var str = fleegix.xhr.doReq({ url: path,
-	  async: false });
+    var str = this.getFile(path);
     // Eval in window scope
     globalEval(str, false);
     return true;
@@ -254,8 +253,7 @@ windmill.jsTest = new function () {
       if (path.indexOf('/initialize.js') == -1) {
         continue;
       }
-      var str = fleegix.xhr.doReq({ url: path,
-	    async: false });
+      var str = this.getFile(path);
       // Eval in window scope
       globalEval(str, this.runInTestWindowScope);
     }
@@ -265,8 +263,7 @@ windmill.jsTest = new function () {
       if (path.indexOf('/initialize.js') > -1) {
         continue;
       }
-      var str = fleegix.xhr.doReq({ url: path,
-	    async: false });
+      var str = this.getFile(path);
       if (window.execScript) {
         this.testScriptSrc += str + '\n';
       }
@@ -368,11 +365,21 @@ windmill.jsTest = new function () {
         this.runTest(this.testItemArray.name, item);
       }
       else {
+        // If the action is a sleep, set the sleep
+        // wait interval for the setTimeout loop
         if (item.method == 'waits.sleep') {
           t = item.params.milliseconds;
         }
         else {
+          // Get the UI action to execute
           var func = eval('windmill.jsTest.actions.' + item.method);
+          // Check for any shortcut vars in jsids, replace with
+          // real JS paths
+          var jsid = item.params.jsid;
+          if (typeof jsid != 'undefined' && jsid.indexOf('{$') > -1) {
+            item.params.jsid = windmill.controller.handleVariable(jsid);
+          }
+          // Execute the UI action with the set params
           func(item.params);
         }
       }
@@ -392,6 +399,11 @@ windmill.jsTest = new function () {
             testName + "<br>Test Result:" + false + '<br>Error: '+ msg);
     windmill.jsTest.sendJSReport(testName, false, e, this.currentJsTestTimer);
     this.testFailures.push(fail);
+  };
+  this.getFile = function (path) {
+    var file = fleegix.xhr.doReq({ url: path,
+	  async: false });
+    return file;
   };
 };
 
