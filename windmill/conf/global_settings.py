@@ -72,7 +72,14 @@ if PLATFORM == 'darwin':
     MOZILLA_BINARY          = os.path.join(firefoxDir, 'Contents', 'MacOS', 'firefox-bin')
     SAFARI_BINARY           = '/Applications/Safari.app/Contents/MacOS/Safari'
     SAFARI_COMMAND          = ['open', '-a', SAFARI_BINARY, TEST_URL+'/windmill-serv/start.html']
-    NETWORKSETUP_BINARY = '/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support/networksetup'
+    
+    import distutils.version, commands
+    OS_VERSION = distutils.version.StrictVersion(commands.getoutput('sw_vers -productVersion'))
+    leopard = distutils.version.StrictVersion('10.5')
+    if OS_VERSION >= leopard:
+        NETWORKSETUP_BINARY = '/usr/sbin/networksetup'
+    else:
+        NETWORKSETUP_BINARY = '/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support/networksetup'
 
 elif sys.platform == 'linux2':
     firefoxBin = findInPath('firefox')

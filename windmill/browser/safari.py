@@ -2,7 +2,7 @@ import commands
 import tempfile
 import logging
 import signal
-import killableprocess, commands
+import killableprocess
 import sys, os
 import urlparse
 
@@ -45,16 +45,18 @@ html_redirection = """
 
 
 def find_default_interface_name():
-    interface = [ s for s in commands.getoutput('netstat -nr').splitlines() if ( 
-                  s.startswith('default') ) 
-                 ][0].split()[-1] # split lines of the command, find default, last value in line is interface
+    target_host = urlparse.urlparse(windmill.settings['TEST_URL']).hostname
+    interface_id = commands.getoutput('route get '+target_host).split('interface:')[1].split('\n')[:1][0].replace(' ', '')
+    all_inet = commands.getoutput(windmill.settings['NETWORKSETUP_BINARY']+' -listallhardwareports').split('\n\n')
+    interface_name = [ l for l in all_inet if l.find(interface_id) is not -1 ][0].split('\n')[0].split(' ')[-1]
     
-    interfaces = commands.getoutput(windmill.settings['NETWORKSETUP_BINARY']+' -listnetworkserviceorder').split('\n\n')
-    for line in interfaces:
-        if not line.startswith('(') and line.find('(1)') is not -1:
-            line = '(1)'+line.split('(1)')[-1]
-        if line.find('Device: '+interface) is not -1:
-            interface_name = ' '.join(line.splitlines()[0].split()[1:])
+    # interfaces = commands.getoutput().split('\n\n')
+    # print 'interfaces::\n', '\n'.join(interfaces)
+    # for line in interfaces:
+    #     if not line.startswith('(') and line.find('(1)') is not -1:
+    #         line = '(1)'+line.split('(1)')[-1]
+    #     if line.find('Device: '+interface) is not -1:
+    #         interface_name = ' '.join(line.splitlines()[0].split()[1:])
     
     return interface_name
             
@@ -106,34 +108,5 @@ class Safari(object):
 	def is_alive(self):
 	    if self.p_handle.poll() is None:
 	        return False
-	    return True    
-	        
-# def ipfw_configure_global_proxy():
-# 
-#   if commands.getoutput('whoami') == 'root':
-#       assert commands.getoutput('ipfw add 00017 allow ip from any 32000-34000 to any 80')==\
-#                                 '00017 allow ip from any 32000-34000 to any dst-port 80'
-#       assert commands.getoutput('ipfw add 00019 fwd 127.0.0.1,4444 tcp from any to any dst-port 80')==\
-#                                 '00019 fwd 127.0.0.1,4444 tcp from any to any dst-port 80'
-#       print 'is root'
-#   else:
-#       if SUDO_PASS is not None:
-#           cmd =  'echo "spawn sudo ipfw add 00017 allow ip from any 32000-34000 to any 80 \n\rexpect \"Password:\" \n\rsend \"%s\" " | expect' % SUDO_PASS
-#           commands.getoutput(cmd)
-#           cmd = 'sudo ipfw add 00019 fwd 127.0.0.1,4444 tcp from any to any dst-port 80'
-#           assert commands.getoutput(cmd) == '00019 fwd 127.0.0.1,4444 tcp from any to any dst-port 80'
-# 
-# def ipfw_remove_transparent_proxy():
-#   
-#   if commands.getoutput('whoami') == 'root':
-#       assert commands.getoutput('ipfw add 00017 allow ip from any 32000-34000 to any 80')==\
-#                                 '00017 allow ip from any 32000-34000 to any dst-port 80'
-#       assert commands.getoutput('ipfw add 00019 fwd 127.0.0.1,4444 tcp from any to any dst-port 80')==\
-#                                 '00019 fwd 127.0.0.1,4444 tcp from any to any dst-port 80'
-#       print 'is root'
-#   else:
-#       if SUDO_PASS is not None:
-#           cmd =  'echo "spawn sudo ipfw delete 00017 \n\rexpect \"Password:\" \n\rsend \"%s\" " | expect' % SUDO_PASS
-#           commands.getoutput(cmd)
-#           cmd = 'sudo ipfw delete'
-#           assert commands.getoutput(cmd) == ''
+	    return True
+	    
