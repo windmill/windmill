@@ -27,7 +27,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 windmill.xhr = new function () {
     
   //Keep track of the loop state, running or paused
-  this.loopState = 0;
+  this.loopState = false;
   this.timeoutId = null;
     
   //json_call
@@ -38,11 +38,17 @@ windmill.xhr = new function () {
   };
 
   this.toggleCollapse = function(id){
-    if (windmill.remote.document.getElementById(id).style.height == '18px'){
-      windmill.remote.document.getElementById(id).style.height = '';
+    if (windmill.remote.$(id).style.height == '18px'){
+      windmill.remote.$(id).style.height = '';
     }
-    else{ windmill.remote.document.getElementById(id).style.height = '18px'; }            
+    else{ windmill.remote.$(id).style.height = '18px'; }            
   };
+  this.resetPlayBack = function(){
+    if (($('runningStatus').innerHTML.indexOf('Waiting for tests...') != -1) && ($('playback').src.indexOf("img/playbackstop.png")  != -1) && windmill.ui.playback.running){
+      $('playback').src = 'img/playback.png';
+      windmill.ui.playback.running = false;
+    }
+  }
   
   //action callback
   this.actionHandler = function(str){
@@ -63,7 +69,10 @@ windmill.xhr = new function () {
       if (windmill.xhr.xhrResponse.result.method != 'defer'){
 	      windmill.ui.results.writeStatus("Running " + windmill.xhr.xhrResponse.result.method + "...");
       }
-      else{ windmill.ui.results.writeStatus("Waiting for tests..."); }
+      else{ 
+        windmill.xhr.resetPlayBack();
+        windmill.ui.results.writeStatus("Waiting for tests...");
+      }
             
       //Init and start performance but not if the protocol defer
       if (windmill.xhr.xhrResponse.result.method != 'defer'){
@@ -95,17 +104,19 @@ windmill.xhr = new function () {
   	    var ide = windmill.remote.$('ideForm');
   	    var suite = windmill.remote.document.createElement('div');
   	    suite.id = windmill.xhr.xhrResponse.result.suite_name;
-  	    suite.style.width      = "99%";
+  	    if (windmill.browser.isIE){  suite.style.width = "95%"; }
+  	    else{ suite.style.width = "99%"; }
   	    suite.style.background = "lightblue";
-  	    suite.style.overflow   = 'hidden';
-  	    suite.style.border     = '1px solid black';
-  	    suite.innerHTML        = "<table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
+  	    suite.style.overflow = 'hidden';
+  	    suite.style.border = '1px solid black';
+  	    suite.innerHTML = "<table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
   	      windmill.xhr.xhrResponse.result.suite_name+"</td><td><span align=\"right\" style='top:0px;float:right;'>"+
   	      "<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+windmill.xhr.xhrResponse.result.suite_name+
   	      "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+
   	      windmill.xhr.xhrResponse.result.suite_name+
   	      "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.xhr.toggleCollapse(\'"+
   	      windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table>";
+  	    
   	    windmill.remote.$('ideForm').appendChild(suite);
   	  }
                     
@@ -170,7 +181,7 @@ windmill.xhr = new function () {
   					    "</b><br>Parameters: " + to_write + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');   
   	    //if the continue on error flag has been set by the shell.. then we just keep on going
   	    if (windmill.stopOnFailure == true){
-  	      windmill.xhr.loopState = 0;
+  	      windmill.xhr.loopState = false;
   	      windmill.ui.results.writeStatus("Paused, error?...");    
   	    }
   	  }
@@ -182,10 +193,10 @@ windmill.xhr = new function () {
   	    if ((typeof(action) != 'undefined') && (windmill.runTests == true)){ action.style.background = '#C7FFCC'; }
   	  }
   	}
-  	//Do the timer write
+  	  //Do the timer write
   	  action_timer.write(to_write);
-  }
-  }
+      }
+    }
       //Get the next action from the service
       setTimeout("windmill.xhr.getNext()", 1000);
   };
@@ -205,14 +216,16 @@ windmill.xhr = new function () {
     fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', json_string);
   };
   
-  //write to the output tab what is going on
-  this.handleTimeout = function(){
-    windmill.ui.results.writeResult('One of the XHR requests to the server timed out.');
-  }
+ 
   
   //Get the next action from the server
   this.getNext = function(){
-    if (windmill.xhr.loopState != 0){
+     //write to the output tab what is going on
+     var handleTimeout = function(){
+       windmill.ui.results.writeResult('One of the XHR requests to the server timed out.');
+     }
+  
+    if (windmill.xhr.loopState){
       var jsonObject = new this.json_call('1.1', 'next_action');
       var jsonString = fleegix.json.serialize(jsonObject);
       
@@ -226,7 +239,7 @@ windmill.xhr = new function () {
         responseFormat: 'text',
         url: '/windmill-jsonrpc/',
         timeoutSeconds: windmill.xhrTimeout,
-        handleTimeout: this.handleTimeout,
+        handleTimeout: handleTimeout,
         preventCache: true,
         dataPayload: jsonString
       } );
@@ -237,15 +250,16 @@ windmill.xhr = new function () {
   this.startJsonLoop = function(){
     this.getNext();
   };
-    
-  //Handle the toggle of the loop paused/running
-  this.togglePauseJsonLoop = function(){
-    if (windmill.xhr.loopState == 1){
-      windmill.xhr.loopState = 0;
+  
+  this.clearQueue = function(){
+    var h = function(str){
+      windmill.ui.results.writeResult('Cleared backend queue, ' + str);
     }
-    else {
-      windmill.xhr.loopState = 1;
-      windmill.xhr.getNext();
-    }
-  };   
-}
+    var test_obj = { };        
+    var json_object = new this.json_call('1.1', 'clear_queue');
+    var json_string = fleegix.json.serialize(json_object);       
+    //Actually send the report
+    fleegix.xhr.doPost(h, '/windmill-jsonrpc/', json_string);
+  };
+   
+};

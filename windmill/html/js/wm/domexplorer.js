@@ -69,21 +69,21 @@ windmill.ui.domexplorer = new function () {
       var id = windmill.ui.remote.selectedElement.replace('locator', '');
       //Incase if that node has been removed somehow
       try {
-	var a = windmill.remote.$("domExp").innerHTML.split(': ');
-	//If the element is a link, get rid of the all the garbage
-	if (a[0] == 'link'){
-	  a[1] = a[1].replace(/(<([^>]+)>)/ig,"");
-	  a[1] = a[1].replace(/\n/g, "");
-	}
-	windmill.remote.$(id+'locatorType').value =  a[0].toLowerCase(); 
-	windmill.remote.$(id+'locator').value = a[1];
-	windmill.remote.$(id+'locator').focus();
-      }
-      catch(error){
-	windmill.ui.results.writeResult('Error in dom explorer');
+	      var a = windmill.remote.$("domExp").innerHTML.split(': ');
+	      //If the element is a link, get rid of the all the garbage
+	      if (a[0] == 'link'){
+	        a[1] = a[1].replace(/(<([^>]+)>)/ig,"");
+	        a[1] = a[1].replace(/\n/g, "");
+	      }
+	      windmill.remote.$(id+'locatorType').value =  a[0].toLowerCase(); 
+	      windmill.remote.$(id+'locator').value = a[1];
+	      windmill.remote.$(id+'locator').focus();
+        }
+        catch(error){
+	        windmill.ui.results.writeResult('Error in dom explorer');
+        }
       }
     }
-  }
     
   this.explorerClick = function(e){
     windmill.remote.window.focus();

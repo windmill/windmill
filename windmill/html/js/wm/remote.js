@@ -22,7 +22,7 @@ windmill.ui.remote = new function () {
   this.scrollRecorderTextArea = function() {
     var obj=windmill.remote.$("ide");
     obj.scrollTop=obj.scrollHeight;
-  }
+  };
  
   this.clearIDE = function(){
     input_box=windmill.remote.confirm("Are you sure you want to delete all the data in the IDE?");
@@ -32,10 +32,10 @@ windmill.ui.remote = new function () {
         windmill.remote.$('ideForm').innerHTML = '';
         windmill.ui.recorder.recordOff();
         fleegix.fx.fadeIn(windmill.remote.$('ideForm'));  
-      }
+      };
       setTimeout("d()",800);
     }
-  }
+  };
      
   this.methodChange = function(id){
     var selected  = windmill.remote.$(id+'method').selectedIndex;
@@ -46,11 +46,11 @@ windmill.ui.remote = new function () {
          
     //safari hack for resizing the suite div to accomodate the new action
     windmill.remote.$(id).style.height = '';
-  }
+  };
      
   this.setRemoteElem = function(id){
     this.selectedElement = id;
-  }
+  };
      
   this.addActionAbove = function(uuid){
     var newAction = this.buildAction(null, {});
@@ -59,7 +59,8 @@ windmill.ui.remote = new function () {
     //IE hack
     if (windmill.browser.isIE){ windmill.remote.$(newAction.id).innerHTML = newAction.innerHTML; }
     fleegix.fx.fadeIn(windmill.remote.$(newAction.id));
-  }
+  };
+  
   this.addActionBelow = function(uuid){
     var newAction = this.buildAction(null,{});      
     var parent = windmill.remote.$(uuid).parentNode;
@@ -67,7 +68,8 @@ windmill.ui.remote = new function () {
     //IE Hack
     if (windmill.browser.isIE){ windmill.remote.$(newAction.id).innerHTML = newAction.innerHTML; }
     fleegix.fx.fadeIn(windmill.remote.$(newAction.id));
-  }
+  };
+  
   this.deleteAction = function(uuid){
     //input_box=windmill.remote.confirm("Are you sure you want to continue deleting?");
     //if (input_box==true) {
@@ -75,46 +77,44 @@ windmill.ui.remote = new function () {
     d = function(){ 
       var pElement = windmill.remote.$(uuid).parentNode;
       pElement.removeChild(windmill.remote.$(uuid));
-    }
+    };
     setTimeout("d()",800);
-    //}
-  }
+  };
      
   this.addAction = function(action){
     var suite = this.getSuite();
     if (typeof(action) == 'undefined'){
-      var action = this.buildAction(null,{})
-	}
+      var action = this.buildAction(null,{});
+	  }
        
     //A hack to make it draw the UI correctly in IE
     suite.appendChild(action);
     if (windmill.browser.isIE){ windmill.remote.$(action.id).innerHTML = action.innerHTML; }
-    windmill.remote.$(action.id+"locator").focus();
+    else{ windmill.remote.$(action.id+"locator").focus(); }
     return action.id;
-  }
+  };
         
   this.getSuite = function(){
     var suite = windmill.remote.$('recordingSuite'+windmill.ui.recordSuiteNum);
     if (suite == null){
       var ide = windmill.remote.$('ideForm');
       suite = windmill.remote.document.createElement('div');
+      suite.style.position = 'relative';
       suite.id = 'recordingSuite' + windmill.ui.recordSuiteNum;
       if (document.all) {
 	      var vWidth = windmill.remote.fleegix.dom.getViewportWidth();
-	      suite.style.width = (vWidth - 20) + 'px';
+	      suite.style.width = (vWidth - 22) + 'px';
       }
-      else {
-	      suite.style.width = "100%";
-      }
+      else { suite.style.width = "100%"; }
       suite.style.background = "lightblue";
       suite.style.overflow = 'hidden';
       //suite.style.height='40px';
       suite.style.border = '1px solid black';
       suite.innerHTML = "<table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
-	"</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+suite.id+
-	"\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+suite.id+
-	"\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.xhr.toggleCollapse(\'"+suite.id+
-	"\')\">[toggle]</a></span></td></tr></table>";
+	    "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+suite.id+
+	    "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+suite.id+
+	    "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.xhr.toggleCollapse(\'"+suite.id+
+	    "\')\">[toggle]</a></span></td></tr></table>";
       windmill.remote.$('ideForm').appendChild(suite);
     }
     var dragsort = ToolMan.dragsort()
@@ -122,7 +122,7 @@ windmill.ui.remote = new function () {
     dragsort.makeListSortable(windmill.remote.$(suite.id),verticalOnly, saveOrder)
       
     return suite;
-  }
+  };
 
     
   //Send the suite to save to the backend and receive an url for the user to save
@@ -194,7 +194,8 @@ windmill.ui.remote = new function () {
             
     }
     else { windmill.remote.alert('You need test actions to save!'); }
-  }
+  };
+  
   //This function takes a method and it's params and returns a DOM
   //Element representing that action for the UI
   this.buildAction = function(method, params){
@@ -250,25 +251,25 @@ windmill.ui.remote = new function () {
       i.className = 'texta';
       
       if (windmill.browser.isIE){ 
-	i.setAttribute('value', fleegix.json.serialize(params));
+	      i.setAttribute('value', fleegix.json.serialize(params));
       }
       else {
-	i.value = fleegix.json.serialize(params);
+	      i.value = fleegix.json.serialize(params);
       } 
 
       c.appendChild(i);
       r.appendChild(c);
       var c = windmill.remote.document.createElement("td"); 
       c.innerHTML += '<a onclick="windmill.ui.remote.addActionAbove(\''+action.id+
-	'\')" href="#"><img border=0 style="height:16px;width:16px;" src="img/addup.png"></a><br><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
-	'\')" href="#"><img border=0 style="height:16px;width:16px;" src="img/adddown.png"></a>';
+	    '\')" href="#"><img border=0 style="height:16px;width:16px;" src="img/addup.png"></a><br><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
+	    '\')" href="#"><img border=0 style="height:16px;width:16px;" src="img/adddown.png"></a>';
       r.appendChild(c);
 
       var c = windmill.remote.document.createElement("td"); 
       c.innerHTML += '<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\''+action.id+
-	'\')" style="height:18px;width:18px;" src="img/play.png"></a><a alt="Delete Action" href="#">'+
-	'<img border=0 onclick="windmill.ui.remote.deleteAction(\''+action.id+'\')" style="height:18px;width:18px;" '+
-	'src="img/trash.png"></a>';
+	    '\')" style="height:18px;width:18px;" src="img/play.png"></a><a alt="Delete Action" href="#">'+
+	    '<img border=0 onclick="windmill.ui.remote.deleteAction(\''+action.id+'\')" style="height:18px;width:18px;" '+
+	    'src="img/trash.png"></a>';
             
       r.appendChild(c);
       t.appendChild(r);
@@ -314,7 +315,7 @@ windmill.ui.remote = new function () {
     var c = windmill.remote.document.createElement("td");
     c.colSpan = "3";
     c.appendChild(s);
-c.innerHTML += '<br>';
+    c.innerHTML += '<br>';
     r.appendChild(c);
     
     var spn = windmill.remote.document.createElement('span');
@@ -396,10 +397,12 @@ c.innerHTML += '<br>';
 	      i0.setAttribute('value',params[locator]);
       }
       i0.id        = action.id + 'locator';   
-      i0.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElem(\''+i0.id+'\')');
       //in firefox there was a bug moving the focus to the element we clicked, not sure why
       //but this seems to fix it. 
-      i0.setAttribute('onClick', 'windmill.remote.$(\''+i0.id+'\').focus();');
+      if (!windmill.browser.isIE){
+        i0.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElem(\''+i0.id+'\')');
+        i0.setAttribute('onClick', 'windmill.remote.$(\''+i0.id+'\').focus();');
+      }
 
       var c = windmill.remote.document.createElement("td"); 
       c.appendChild(i0);
@@ -448,8 +451,10 @@ c.innerHTML += '<br>';
 	      i1.setAttribute("value", params[windmill.registry.methods[method].option]);
       }
       i1.id = action.id + 'option';
-      i1.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElem(\''+i1.id+'\')');
-      i1.setAttribute('onClick', 'windmill.remote.$(\''+i1.id+'\').focus();');
+      if (!windmill.browser.isIE){
+        i1.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElem(\''+i1.id+'\')');
+        i1.setAttribute('onClick', 'windmill.remote.$(\''+i1.id+'\').focus();');
+      }
 
       var c = windmill.remote.document.createElement("td");  
       c.appendChild(i1);

@@ -505,8 +505,8 @@ _ToolManDragGroup.prototype = {
 	},
 
 	_dragInit : function(event) {
-	  
-	  event.cancelBubble = true;
+	  if (windmill.browser.isIE){ return;}
+    event.cancelBubble = true;
 	  event.stopPropagation();
 	  if (event.target.tagName != "DIV"){ return; }
 	  

@@ -43,7 +43,7 @@ windmill.controller.click = function(param_object){
              
              //if the url is calling JS then its ajax and we don't need to wait for any full page load.. hopefully.
              if (element.href.indexOf('javascript:', 0) == -1){
-                  windmill.xhr.loopState = 0;
+                  windmill.xhr.loopState = false;
                   return true;
               }
            }

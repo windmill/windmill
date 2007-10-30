@@ -122,7 +122,7 @@ windmill.controller = new function () {
   //After a page is done loading, continue the loop
   this.continueLoop = function (){
     cont = function(){
-      windmill.xhr.loopState = 1;
+      windmill.xhr.loopState = true;
       windmill.xhr.startJsonLoop();
     }
     //Just making sure the page is fully loaded
@@ -130,23 +130,17 @@ windmill.controller = new function () {
   };
 
   this.stopLoop = function () {
-    windmill.xhr.loopState = 0;
+    windmill.xhr.loopState = false;
   };
 
   //open an url in the webapp iframe
   this.open = function (param_object) {
     //We need to tell the service where we are before we
     //head to a new page
-    //windmill.service.setTestURL();
     
-    //Turn the loop off until the page loads
-    //windmill.controller.stopLoop();
-    //webappframe = document.getElementById('webapp');        
-    //webappframe.src = param_object.url;
     try{ windmill.testWindow.location = param_object.url; }
     catch(err){}
     //Turn off loop until the onload for the iframe restarts it
-    //windmill.xhr.togglePauseJsonLoop();
       done = function(){
         windmill.controller.waits.forPageLoad({});
         return true;

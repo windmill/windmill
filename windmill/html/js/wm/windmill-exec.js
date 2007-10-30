@@ -26,8 +26,6 @@ function Load(){
   load.innerHTML = '<center><img src="img/wlogo.png"><br>Loading <img src="img/loading.gif"></center>';
   document.body.appendChild(load);
   fleegix.dom.center(load);
-
-  //document.getElementById('loading').style.visibility = 'visibile';
     
   var remote = window.open('remote.html','windmill_Remote','width=465,height=500,toolbar=no,'+
 			   'location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');

@@ -44,12 +44,15 @@ var toggleRec = function(){
 }
   var togglePlay = function(){
     if ($('playback').src.indexOf("img/playback.png")  != -1){
+      windmill.ui.results.writeStatus("Playing IDE Actions...");
       windmill.xhr.startJsonLoop();
       windmill.ui.playback.sendPlayBack();				
       $('playback').src = 'img/playbackstop.png';
     }
     else{
+      windmill.ui.playback.running = false;
       $('playback').src = 'img/playback.png';
+      windmill.xhr.clearQueue();
     }
   }
     var toggleLoop = function(){
@@ -125,7 +128,7 @@ var toggleRec = function(){
 		}
 
 function speak(id, what) {
-  var element = document.getElementById(id);
+  var element = $(id);
   element.innerHTML = 'Clicked ' + what;
 }
 

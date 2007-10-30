@@ -165,7 +165,7 @@ windmill.ui.recorder = new function () {
       
     //IE's onChange support doesn't bubble so we have to manually
     //Attach a listener to every select and input in the app
-    if (windmill.browser.isIE != false){
+    if (windmill.browser.isIE){
       var inp = frame.document.getElementsByTagName('input');
       for (var i = 0; i < inp.length; i++) { 
 	      fleegix.event.listen(inp[i], 'onchange', this, 'writeJsonChange');
@@ -179,8 +179,8 @@ windmill.ui.recorder = new function () {
     fleegix.event.listen(frame, 'onunload', windmill, 'unloaded');
     fleegix.event.listen(frame.document, 'ondblclick', this, 'writeJsonClicks');
     fleegix.event.listen(frame.document, 'onchange', this, 'writeJsonChange');
-    fleegix.event.listen(frame.document, 'onclick', this, 'writeJsonClicks');
-      
+    fleegix.event.listen(frame.document, 'onclick', this, 'writeJsonClicks');    
+    
     var iframeCount = frame.window.frames.length;
     var iframeArray = frame.window.frames;
       
@@ -204,7 +204,7 @@ windmill.ui.recorder = new function () {
   this.recRecursiveUnBind = function(frame){
     //IE's onChange support doesn't bubble so we have to manually
     //Attach a listener to every select and input in the app
-    if (windmill.browser.isIE != false){
+    if (windmill.browser.isIE){
       var inp = frame.document.getElementsByTagName('input');
       for (var i = 0; i < inp.length; i++) { 
 	      fleegix.event.unlisten(inp[i], 'onchange', this, 'writeJsonChange');
@@ -218,7 +218,7 @@ windmill.ui.recorder = new function () {
     fleegix.event.unlisten(frame.document, 'ondblclick', this, 'writeJsonClicks');
     fleegix.event.unlisten(frame.document, 'onchange', this, 'writeJsonChange');
     fleegix.event.unlisten(frame.document, 'onclick', this, 'writeJsonClicks');
-      
+
     var iframeCount = frame.window.frames.length;
     var iframeArray = frame.window.frames;
       
