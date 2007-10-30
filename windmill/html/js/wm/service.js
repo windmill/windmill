@@ -27,7 +27,7 @@ windmill.service = new function () {
 
   //Set the URL we are starting out testing
   this.setStartURL = function(){
-    var json_object = new windmill.xhr.json_call('1.1', 'set_test_url');
+    var json_object = new json_call('1.1', 'set_test_url');
     var params_obj = {};
     var loc = window.location;
     params_obj.url = windmill.service.getParsedLocation(loc);
@@ -45,7 +45,7 @@ windmill.service = new function () {
   //Set the URL we are testing in the python service
   this.setTestURL = function(){
     try{
-      var json_object = new windmill.xhr.json_call('1.1', 'set_test_url');
+      var json_object = new json_call('1.1', 'set_test_url');
       var params_obj = {};
       var loc = windmill.testWindow.location;
       params_obj.url =  windmill.service.getParsedLocation(loc);

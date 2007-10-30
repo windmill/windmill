@@ -35,14 +35,13 @@ windmill.ui = new function() {
   this.incRecSuite = function(){
     this.recordSuiteNum ++;
   }
-  //Toggle Pause Loop
-  this.toggleLoopButtonText = function(){
-    var loopButton = windmill.remote.$("loopButton");
-    if (loopButton.value == "Loop Stopped"){
-      loopButton.value = "Loop Running"; 
+  
+  this.toggleCollapse = function(id){
+    if (windmill.remote.$(id).style.height == '18px'){
+      windmill.remote.$(id).style.height = '';
     }
-    else{ loopButton.value = "Loop Stopped"; }    
-  }
+    else{ windmill.remote.$(id).style.height = '18px'; }            
+  };
     
   //Allowing the stopOnFailure switch to be controlled from the UI
   this.toggleBreak = function(){

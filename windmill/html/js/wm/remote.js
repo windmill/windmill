@@ -113,7 +113,7 @@ windmill.ui.remote = new function () {
       suite.innerHTML = "<table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
 	    "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+suite.id+
 	    "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+suite.id+
-	    "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.xhr.toggleCollapse(\'"+suite.id+
+	    "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.ui.toggleCollapse(\'"+suite.id+
 	    "\')\">[toggle]</a></span></td></tr></table>";
       windmill.remote.$('ideForm').appendChild(suite);
     }
@@ -182,7 +182,7 @@ windmill.ui.remote = new function () {
       var langSI = windmill.remote.$('suiteSaveFormat').selectedIndex;
       var lang = windmill.remote.$('suiteSaveFormat')[langSI].value;
          
-      var json_object = new windmill.xhr.json_call('1.1', 'create_save_file');
+      var json_object = new json_call('1.1', 'create_save_file');
       var params_obj = {};
       params_obj.transformer = lang;
       params_obj.suite_name  = id;

@@ -122,8 +122,9 @@ windmill.controller = new function () {
   //After a page is done loading, continue the loop
   this.continueLoop = function (){
     cont = function(){
+      $('loopLink').innerHTML = 'Pause Loop';
       windmill.xhr.loopState = true;
-      windmill.xhr.startJsonLoop();
+      windmill.xhr.getNext();
     }
     //Just making sure the page is fully loaded
     setTimeout("cont()", 1000);

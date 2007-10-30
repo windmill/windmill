@@ -631,7 +631,7 @@ this.password="";
 this.headers=[];
 this.preventCache=false;
 this.startTime=new Date().getTime();
-this.timeoutSeconds=30;
+this.timeoutSeconds=180;
 this.uber=false;
 this.aborted=false;
 };

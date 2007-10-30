@@ -29,26 +29,6 @@ windmill.xhr = new function () {
   //Keep track of the loop state, running or paused
   this.loopState = false;
   this.timeoutId = null;
-    
-  //json_call
-  this.json_call   = function(version, method, params){
-    this.version = version || null;
-    this.method  = method || null;
-    this.params  = params || [];
-  };
-
-  this.toggleCollapse = function(id){
-    if (windmill.remote.$(id).style.height == '18px'){
-      windmill.remote.$(id).style.height = '';
-    }
-    else{ windmill.remote.$(id).style.height = '18px'; }            
-  };
-  this.resetPlayBack = function(){
-    if (($('runningStatus').innerHTML.indexOf('Waiting for tests...') != -1) && ($('playback').src.indexOf("img/playbackstop.png")  != -1) && windmill.ui.playback.running){
-      $('playback').src = 'img/playback.png';
-      windmill.ui.playback.running = false;
-    }
-  }
   
   //action callback
   this.actionHandler = function(str){
@@ -70,7 +50,7 @@ windmill.xhr = new function () {
 	      windmill.ui.results.writeStatus("Running " + windmill.xhr.xhrResponse.result.method + "...");
       }
       else{ 
-        windmill.xhr.resetPlayBack();
+        windmill.ui.playback.resetPlayBack();
         windmill.ui.results.writeStatus("Waiting for tests...");
       }
             
@@ -114,7 +94,7 @@ windmill.xhr = new function () {
   	      "<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+windmill.xhr.xhrResponse.result.suite_name+
   	      "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+
   	      windmill.xhr.xhrResponse.result.suite_name+
-  	      "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.xhr.toggleCollapse(\'"+
+  	      "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.ui.toggleCollapse(\'"+
   	      windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table>";
   	    
   	    windmill.remote.$('ideForm').appendChild(suite);
@@ -209,14 +189,13 @@ windmill.xhr = new function () {
     }
     var result_string = fleegix.json.serialize(windmill.xhr.xhrResponse.result)
     var test_obj = {"result":result,"uuid": windmill.xhr.xhrResponse.result.params.uuid,"starttime":timer.getStart(),"endtime":timer.getEnd() };        
-    var json_object = new this.json_call('1.1', 'report');
+    var json_object = new json_call('1.1', 'report');
     json_object.params = test_obj;
     var json_string = fleegix.json.serialize(json_object);       
     //Actually send the report
     fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', json_string);
   };
   
- 
   
   //Get the next action from the server
   this.getNext = function(){
@@ -226,7 +205,7 @@ windmill.xhr = new function () {
      }
   
     if (windmill.xhr.loopState){
-      var jsonObject = new this.json_call('1.1', 'next_action');
+      var jsonObject = new json_call('1.1', 'next_action');
       var jsonString = fleegix.json.serialize(jsonObject);
       
       //Execute the post to get the next action
@@ -245,18 +224,13 @@ windmill.xhr = new function () {
       } );
     }
   };
-    
-  //Start the json loop running
-  this.startJsonLoop = function(){
-    this.getNext();
-  };
   
   this.clearQueue = function(){
     var h = function(str){
       windmill.ui.results.writeResult('Cleared backend queue, ' + str);
     }
     var test_obj = { };        
-    var json_object = new this.json_call('1.1', 'clear_queue');
+    var json_object = new json_call('1.1', 'clear_queue');
     var json_string = fleegix.json.serialize(json_object);       
     //Actually send the report
     fleegix.xhr.doPost(h, '/windmill-jsonrpc/', json_string);

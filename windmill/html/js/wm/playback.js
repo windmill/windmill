@@ -20,6 +20,13 @@ windmill.ui.playback = new function () {
   //Keep track of the status of the playback
   this.running = false;
   
+  this.resetPlayBack = function(){
+    if (($('runningStatus').innerHTML.indexOf('Waiting for tests...') != -1) && ($('playback').src.indexOf("img/playbackstop.png")  != -1) && windmill.ui.playback.running){
+      $('playback').src = 'img/playback.png';
+      windmill.ui.playback.running = false;
+    }
+  };
+  
   //Send the tests to be played back
   this.sendPlayBack = function (uuid){
     var appending = false;
@@ -92,7 +99,7 @@ windmill.ui.playback = new function () {
         return true;
       }
     
-      var json_object = new windmill.xhr.json_call('1.1', 'restart_test_run');
+      var json_object = new json_call('1.1', 'restart_test_run');
       var params_obj = {};
       params_obj.tests = testArray;
       json_object.params = params_obj;

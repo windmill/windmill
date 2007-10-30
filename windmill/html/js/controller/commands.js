@@ -27,7 +27,7 @@ windmill.controller.commands.createVariables = function(param_object){
     windmill.varRegistry.addItem('{$'+param_object.variables[i].split('|')[0] +'}',param_object.variables[i].split('|')[1]);
   }
   //Send to the server
-  var json_object = new windmill.xhr.json_call('1.1', 'command_result');
+  var json_object = new json_call('1.1', 'command_result');
   var params_obj = {"status":true, "uuid":param_object.uuid, "result":'true'};
   json_object.params = params_obj;
   var json_string = fleegix.json.serialize(json_object)
@@ -50,7 +50,7 @@ windmill.controller.commands.createVariable = function(param_object){
     }
   
     //Send to the server
-    var json_object = new windmill.xhr.json_call('1.1', 'command_result');
+    var json_object = new json_call('1.1', 'command_result');
     var params_obj = {"status":true, "uuid":param_object.uuid, "result":value };
 
     json_object.params = params_obj;
@@ -66,7 +66,7 @@ windmill.controller.commands.createVariable = function(param_object){
 //This function allows the user to specify a string of JS and execute it
 windmill.controller.commands.execJS = function(param_object){
       //Lets send the result now to the server
-      var json_object = new windmill.xhr.json_call('1.1', 'command_result');
+      var json_object = new json_call('1.1', 'command_result');
       var params_obj = {};
     
       try {
@@ -122,7 +122,7 @@ windmill.controller.commands.getControllerMethods = function (param_object){
 	ca = ca.sort();
 
 	//Send to the server
-	var json_object = new windmill.xhr.json_call('1.1', 'command_result');
+	var json_object = new json_call('1.1', 'command_result');
 	var params_obj = {"status":true, "uuid":param_object.uuid, "result":ca};
 	json_object.params = params_obj;
 	var json_string = fleegix.json.serialize(json_object)
@@ -156,7 +156,7 @@ windmill.controller.commands.getDOM = function (param_object){
   var dom = windmill.testWindow.document.documentElement.innerHTML.replace('\n','');
     
   //Send to the server
-  var json_object = new windmill.xhr.json_call('1.1', 'command_result');
+  var json_object = new json_call('1.1', 'command_result');
   var params_obj = {"status":true, "uuid":param_object.uuid, "result":dom};
   json_object.params = params_obj;
   var json_string = fleegix.json.serialize(json_object)

@@ -21,6 +21,13 @@ if (!opener){
 var $ = function(id) {
   return document.getElementById(id);
 };
+
+//json_call
+var json_call   = function(version, method, params){
+    this.version = version || null;
+    this.method  = method || null;
+    this.params  = params || [];
+};
 				
 var closeDialog = function(id){
   $(id).style.display = 'none';
@@ -45,7 +52,7 @@ var toggleRec = function(){
   var togglePlay = function(){
     if ($('playback').src.indexOf("img/playback.png")  != -1){
       windmill.ui.results.writeStatus("Playing IDE Actions...");
-      windmill.xhr.startJsonLoop();
+      windmill.xhr.getNext();
       windmill.ui.playback.sendPlayBack();				
       $('playback').src = 'img/playbackstop.png';
     }
@@ -123,17 +130,12 @@ var toggleRec = function(){
 	    }
 	  }
 		
-	    function verticalOnly(item) {
+	function verticalOnly(item) {
 	      item.toolManDragGroup.verticalOnly()
-		}
-
-function speak(id, what) {
-  var element = $(id);
-  element.innerHTML = 'Clicked ' + what;
-}
+  }
 
 function saveOrder(item) {
-  var group = item.toolManDragGroup
+    var group = item.toolManDragGroup
     var list = group.element.parentNode
     var id = list.getAttribute("id")
     if (id == null) return
@@ -143,10 +145,10 @@ function saveOrder(item) {
 			    })
 		  }
 		
-var doSubmit = function(){ return false; }    
-  windmill.remote.init = function () {
-    windmill.remote.shell = new fleegix.shell.Shell($('shellForm').shellInput,$('shellOutput'));  		
-    windmill.Start();
+      var doSubmit = function(){ return false; }    
+      windmill.remote.init = function () {
+        windmill.remote.shell = new fleegix.shell.Shell($('shellForm').shellInput,$('shellOutput'));  		
+        windmill.Start();
   };
     
     
