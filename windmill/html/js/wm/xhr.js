@@ -76,29 +76,7 @@ windmill.xhr = new function () {
   	  if (windmill.xhr.xhrResponse.result.suite_name == null){
   	    windmill.xhr.xhrResponse.result.suite_name = 'Default';
   	  }
-  	  //Try to grab the stuite in the UI
-  	  var suite = windmill.remote.$(windmill.xhr.xhrResponse.result.suite_name);
-                
-  	  //if the suite isn't already there, create it
-  	  if (suite == null){
-  	    var ide = windmill.remote.$('ideForm');
-  	    var suite = windmill.remote.document.createElement('div');
-  	    suite.id = windmill.xhr.xhrResponse.result.suite_name;
-  	    if (windmill.browser.isIE){  suite.style.width = "95%"; }
-  	    else{ suite.style.width = "99%"; }
-  	    suite.style.background = "lightblue";
-  	    suite.style.overflow = 'hidden';
-  	    suite.style.border = '1px solid black';
-  	    suite.innerHTML = "<table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+
-  	      windmill.xhr.xhrResponse.result.suite_name+"</td><td><span align=\"right\" style='top:0px;float:right;'>"+
-  	      "<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+windmill.xhr.xhrResponse.result.suite_name+
-  	      "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+
-  	      windmill.xhr.xhrResponse.result.suite_name+
-  	      "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.ui.toggleCollapse(\'"+
-  	      windmill.xhr.xhrResponse.result.suite_name+"\')\">[toggle]</a></span></td></tr></table>";
-  	    
-  	    windmill.remote.$('ideForm').appendChild(suite);
-  	  }
+  	  var suite = windmill.ui.remote.getSuite(windmill.xhr.xhrResponse.result.suite_name);
                     
   	  //Add the action to the suite
   	  var action = windmill.ui.remote.buildAction(windmill.xhr.xhrResponse.result.method,windmill.xhr.xhrResponse.result.params);

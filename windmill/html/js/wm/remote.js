@@ -94,13 +94,17 @@ windmill.ui.remote = new function () {
     return action.id;
   };
         
-  this.getSuite = function(){
-    var suite = windmill.remote.$('recordingSuite'+windmill.ui.recordSuiteNum);
+  this.getSuite = function(suiteName){
+    
+    if (!suiteName){ var suiteName = 'recordingSuite'+windmill.ui.recordSuiteNum; }
+    
+    var suite = windmill.remote.$(suiteName);    
     if (suite == null){
       var ide = windmill.remote.$('ideForm');
       suite = windmill.remote.document.createElement('div');
       suite.style.position = 'relative';
-      suite.id = 'recordingSuite' + windmill.ui.recordSuiteNum;
+      suite.id = suiteName;
+      
       if (document.all) {
 	      var vWidth = windmill.remote.fleegix.dom.getViewportWidth();
 	      suite.style.width = (vWidth - 22) + 'px';
@@ -110,12 +114,23 @@ windmill.ui.remote = new function () {
       suite.style.overflow = 'hidden';
       //suite.style.height='40px';
       suite.style.border = '1px solid black';
-      suite.innerHTML = "<table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suite.id+
-	    "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+suite.id+
-	    "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+suite.id+
-	    "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.ui.toggleCollapse(\'"+suite.id+
-	    "\')\">[toggle]</a></span></td></tr></table>";
+      suite.innerHTML = "<table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suiteName+
+	    "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+suiteName+
+	    "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+suiteName+
+	    "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.ui.toggleCollapse(\'"+suiteName+
+	    "\')\">[hide/show]</a></span></td></tr></table>";
+      
+      //Append the new suite to the IDE
       windmill.remote.$('ideForm').appendChild(suite);
+      
+      try{ //If the last suite is expanded, collapse it
+        if (windmill.remote.$(suite.id).previousSibling.style.height != '18px'){
+          windmill.ui.toggleCollapse(windmill.remote.$(suite.id).previousSibling.id);
+        }
+      }
+      catch(err){
+      //there wasn't a previous suite
+      }
     }
     var dragsort = ToolMan.dragsort()
     var junkdrawer = ToolMan.junkdrawer()
