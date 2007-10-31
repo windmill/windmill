@@ -45,6 +45,8 @@ CONTINUE_ON_FAILURE = False
 ENABLE_PDB          = False
 BROWSER_DEBUGGING   = False
 START_FIREFOX       = False
+START_IE            = False
+START_SAFARI        = False
 
 PYTHON_TEST_FRAME = False
 PYTHON_TEST_FILE  = None
