@@ -118,6 +118,7 @@ class MozillaProfile(object):
         self.user_pref('"security.warn_viewing_mixed.show_once", false')
         # Disable cache
         self.user_pref('"browser.cache.disk.enable", false')
+        self.user_pref('"browser.sessionstore.resume_from_crash", false')
         # self.user_pref('"browser.cache.memory.enable", false')
         # Disable "do you want to remember this password?"
         self.user_pref('"signon.rememberSignons", false')
@@ -155,7 +156,7 @@ class MozillaBrowser(object):
             profile_path = self.profile.profile_path
             
         if windmill.settings['MOZILLA_COMMAND'] is None:
-            self.command = [self.mozilla_bin, '-profile', profile_path]
+            self.command = [self.mozilla_bin, '-profile', profile_path, self.profile.test_url]
 
         else:
             self.command = windmill.settings['MOZILLA_COMMAND']

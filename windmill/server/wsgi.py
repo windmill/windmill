@@ -79,14 +79,15 @@ class WindmillChooserApplication(object):
         """Windmill app chooser"""
         
         reconstruct_url(environ)
-        
+
         for key in self.namespaces.keys():
             if environ['PATH_INFO'].find('/'+key+'/') is not -1:
                 logger.debug('dispatching request %s to %s' % (environ['reconstructed_url'], key))
                 return self.namespaces[key](environ, start_response)
 
         logger.debug('dispatching request %s to WindmillProxyApplication' % reconstruct_url(environ))
-        return self.proxy(environ, start_response)
+        response = self.proxy(environ, start_response)
+        return response
             
     def __call__(self, environ, start_response):
         return self.handler(environ, start_response)

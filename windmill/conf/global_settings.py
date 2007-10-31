@@ -71,7 +71,6 @@ if PLATFORM == 'darwin':
     MOZILLA_DEFAULT_PROFILE = os.path.join(firefoxDir, 'Contents', 'MacOS', 'defaults', 'profile')
     MOZILLA_BINARY          = os.path.join(firefoxDir, 'Contents', 'MacOS', 'firefox-bin')
     SAFARI_BINARY           = '/Applications/Safari.app/Contents/MacOS/Safari'
-    SAFARI_COMMAND          = ['open', '-a', SAFARI_BINARY, TEST_URL+'/windmill-serv/start.html']
     
     import distutils.version, commands
     OS_VERSION = distutils.version.StrictVersion(commands.getoutput('sw_vers -productVersion'))
@@ -94,7 +93,7 @@ elif sys.platform == 'linux2':
     
 
 elif os.name == 'nt' or sys.platform == 'cygwin':
-    IE_BINARY  = findInPath('iexplore')
+    IE_BINARY  = os.path.join(os.environ['ProgramFiles'], 'Internet Explorer', 'iexplore.exe')
     firefoxBin = findInPath('firefox')
 
     if firefoxBin is None:

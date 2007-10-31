@@ -93,7 +93,7 @@ class WindmillProxyApplication(object):
             try:
                 connection = self.ConnectionClass(url.netloc)
                 # Build path
-                path = url.geturl().replace('%s://%s' % (url.scheme, url.netloc), '')
+                path = url.geturl().replace(url.scheme+'://'+url.netloc, '')
             except Exception, e:
                 logger.exception('Could not Connect')
                 return [("501 Gateway error", [('Content-Type', 'text/html')],), '<H1>Could not connect</H1>']
@@ -170,7 +170,7 @@ class WindmillProxyApplication(object):
                 response = new_response
 
         # Remove hop by hop headers
-        hopped_headers = response.getheaders()
+        hopped_headers = response.getheaders()        
         headers = copy.copy(hopped_headers)
         for header in hopped_headers:
             if is_hop_by_hop(header[0]):

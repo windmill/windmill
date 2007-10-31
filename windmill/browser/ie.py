@@ -10,22 +10,18 @@ if sys.platform == "win32" or sys.platform == "cygwin":
 
 logger = logging.getLogger(__name__)
 
-PROXY_PORT = windmill.settings['SERVER_HTTP_PORT']
-DEFAULT_TEST_URL = windmill.settings['TEST_URL']+'/windmill-serv/start.html'
-IE_BINARY = windmill.settings['IE_BINARY']
-
 class InternetExplorer(object):
     
     
     registry_modifications = {'MigrateProxy': {'type': wreg.REG_DWORD, 'new_value':1},
                               'ProxyEnable':  {'type': wreg.REG_DWORD, 'new_value':1},
-                              'ProxyHttp1.1': {'type': wreg.REG_DWORD, 'new_value':0},
+                              'ProxyHttp1.1': {'type': wreg.REG_DWORD, 'new_value':1},
                               'ProxyServer':  {'type': wreg.REG_SZ}}
     
-    def __init__(self, proxy_port=PROXY_PORT, test_url=DEFAULT_TEST_URL, ie_binary=IE_BINARY):
+    def __init__(self):
         
-        self.proxy_port = proxy_port
-        self.test_url = test_url
+        self.proxy_port = windmill.settings['SERVER_HTTP_PORT']
+        self.test_url = windmill.settings['TEST_URL']+'/windmill-serv/start.html'
         self.registry_modifications['ProxyServer']['new_value'] = "http://localhost:%s" % self.proxy_port
         self.reg = wreg.OpenKey(wreg.HKEY_CURRENT_USER, 
                                 "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", 0, wreg.KEY_ALL_ACCESS)
@@ -36,8 +32,8 @@ class InternetExplorer(object):
                 self.registry_modifications[key]['previous_value'] = result[0]
             except exceptions.WindowsError:
                 self.registry_modifications[key]['previous_value'] = None
-        
-        self.cmd = [ie_binary, self.test_url]
+        self.ie_binary = windmill.settings['IE_BINARY']
+        self.cmd = [self.ie_binary, self.test_url]
         
     
     
@@ -46,11 +42,11 @@ class InternetExplorer(object):
         for key, value in self.registry_modifications.items():
             wreg.SetValueEx(self.reg, key, 0, value['type'], value['new_value'])
             
-        allow_reg = wreg.OpenKey(wreg.HKEY_CURRENT_USER, 
-                                 "Software\\Microsoft\\Internet Explorer\\New Windows\\Allow", 0, wreg.KEY_ALL_ACCESS)
-
-        wreg.SetValueEx(allow_reg, urlparse(windmill.settings['TEST_URL']).hostname,
-                        0, wreg.REG_BINARY, None)
+        # allow_reg = wreg.OpenKey(wreg.HKEY_CURRENT_USER, 
+        #                          "Software\\Microsoft\\Internet Explorer\\New Windows\\Allow", 0, wreg.KEY_ALL_ACCESS)
+        # 
+        # wreg.SetValueEx(allow_reg, urlparse(windmill.settings['TEST_URL']).hostname,
+        #                 0, wreg.REG_BINARY, None)
         
         self.p_handle = killableprocess.Popen(self.cmd)
         
