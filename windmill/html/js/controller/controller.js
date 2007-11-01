@@ -52,6 +52,9 @@ windmill.controller = new function () {
   this._getWindow = function() { return windmill.testWindow; }
   
   
+  //for the recursive DOM search
+  this.currentElement = null;
+  
   //Translates from the way we are passing objects to functions to the lookups
   this._lookupDispatch = function (param_object){
 
@@ -456,23 +459,28 @@ this.findElement = function (locator) {
       locatorString = result[2];
     }
         
-    var element = this.findElementBy(locatorType, locatorString, this._getDocument(), this._getWindow());
-    if (element != null) {
-      return element;
-    }
-            
-    for (var i = 0; i < parent.frames.length; i++) {
-      element = this.findElementBy(locatorType, locatorString, this._getDocument().frames[i].document, this._getWindow().frames[i]);
-      if (element != null) {
-	      return element;
-      }
-    };
+    this.findElementRecursive(windmill.testWindow, locatorType, locatorString);
+    element = this.currentElement;
+    this.currentElement = null;
+    
+    if (element) { return element; }
 
     // Element was not found by any locator function.
     windmill.ui.results.writeResult("Element " + locator + " not found");
 };
 
-
+this.findElementRecursive = function(w, locatorType, locatorString){
+   //do the lookup in the current window
+   element = this.findElementBy(locatorType, locatorString, w.document, w);   
+   if (!element){
+     var frameCount = w.frames.length;
+     var frameArray = w.frames;   
+     for (var i=0;i<frameCount;i++){ this.findElementRecursive(frameArray[i], locatorType, locatorString); }
+   }
+   else {
+     this.currentElement = element;
+   }
+}
     
 //Find the element with id - can't rely on getElementById, coz it returns by name as well in IE.. 
 this.locateElementById = function (identifier, inDocument, inWindow) {

@@ -212,6 +212,5 @@ windmill.xhr = new function () {
     var json_string = fleegix.json.serialize(json_object);       
     //Actually send the report
     fleegix.xhr.doPost(h, '/windmill-jsonrpc/', json_string);
-  };
-   
+  }; 
 };
