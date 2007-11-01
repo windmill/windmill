@@ -73,7 +73,7 @@ class StartIE(GeneralBoolSettingToTrue):
     option_names = ('x', 'ie')
     setting = 'START_IE'
     
-class StartIE(GeneralBoolSettingToTrue):
+class StartSafari(GeneralBoolSettingToTrue):
     """Start the Safari browser. Mac Only."""
     option_names = ('s', 'safari')
     setting = 'START_SAFARI'
