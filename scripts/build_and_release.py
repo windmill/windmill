@@ -36,7 +36,7 @@ def remove_old():
     
 def build():
     outs = commands.getoutput('svn status %s' % SETUP_DIR)
-    # assert outs == ''
+    assert outs == ''
     roll_version(is_release=True)
     outs = commands.getoutput('cd %s && python setup.py bdist_egg' % SETUP_DIR)
     assert outs.find('creating \'dist/%s-' % APP_NAME) is not -1
@@ -109,10 +109,10 @@ def main():
         print 'exception'
         passed = False
     finally:
-        # remove_old()
+        remove_old()
         if rolled_release_version:
             roll_version(is_release=False, roll_back=True)
-        # run_setup_develop()
+        run_setup_develop()
     if passed is True:
         print "DON'T FORGET :: svn commit"
     
