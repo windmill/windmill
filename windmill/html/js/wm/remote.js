@@ -58,6 +58,8 @@ windmill.ui.remote = new function () {
     parent.insertBefore(newAction, windmill.remote.$(uuid));
     //IE hack
     if (windmill.browser.isIE){ windmill.remote.$(newAction.id).innerHTML = newAction.innerHTML; }
+    else{ windmill.remote.$(newAction.id+"locator").focus(); }
+
     fleegix.fx.fadeIn(windmill.remote.$(newAction.id));
   };
   
@@ -67,6 +69,8 @@ windmill.ui.remote = new function () {
     parent.insertBefore(newAction, windmill.remote.$(uuid).nextSibling);
     //IE Hack
     if (windmill.browser.isIE){ windmill.remote.$(newAction.id).innerHTML = newAction.innerHTML; }
+    else{ windmill.remote.$(newAction.id+"locator").focus(); }
+
     fleegix.fx.fadeIn(windmill.remote.$(newAction.id));
   };
   

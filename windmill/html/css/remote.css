@@ -21,7 +21,7 @@
 }
 
 #domExp {
- visibility:hidden;
+ display:none;
  position:absolute;
  background:white;
  left:50px;

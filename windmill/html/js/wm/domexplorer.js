@@ -35,7 +35,7 @@ windmill.ui.domexplorer = new function () {
   this.setIdInRemote = function(e){
     //console.log  (typeof(e.target.name));
     if (windmill.ui.remote.selectedElement != null){
-      windmill.remote.$("domExp").style.visibility = 'hidden';
+      windmill.remote.$("domExp").style.display = 'none';
     }
     if(e.target.id != ""){
       windmill.remote.$("domExp").innerHTML = "ID: "+ e.target.id;  
@@ -96,7 +96,7 @@ windmill.ui.domexplorer = new function () {
     this.exploreState = true;
     try {
       windmill.remote.$('explorer').src = 'img/xoff.png';
-      windmill.remote.$('domExp').style.visibility = 'visible';
+      windmill.remote.$('domExp').style.display = 'block';
       windmill.remote.$('domExp').innerHTML = '';
       this.dxRecursiveBind(windmill.testWindow);
     }
@@ -115,7 +115,7 @@ windmill.ui.domexplorer = new function () {
       //Reset the selected element
       windmill.ui.remote.selectedElement = null;
       windmill.remote.$('explorer').src = 'img/xon.png';
-      windmill.remote.$('domExp').style.visibility = 'hidden';
+      windmill.remote.$('domExp').style.display = 'none';
       windmill.remote.$('domExp').innerHTML = '';
       this.dxRecursiveUnBind(windmill.testWindow);
     }
