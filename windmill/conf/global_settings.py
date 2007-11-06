@@ -80,7 +80,11 @@ if PLATFORM == 'darwin':
     if OS_VERSION >= leopard:
         NETWORKSETUP_BINARY = '/usr/sbin/networksetup'
     else:
-        NETWORKSETUP_BINARY = '/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support/networksetup'
+        networksetup_base = '/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support/'
+        if os.path.isfile(os.path.join(networksetup_base, 'networksetup')):
+            NETWORKSETUP_BINARY = os.path.join(networksetup_base, 'networksetup')
+        elif os.path.isfile(os.path.join(networksetup_base, 'networksetup-panther')):
+            NETWORKSETUP_BINARY = os.path.join(networksetup_base, 'networksetup-panther')
 
 elif sys.platform == 'linux2':
     firefoxBin = findInPath('firefox')
