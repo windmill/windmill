@@ -78,9 +78,15 @@ windmill.ui.remote = new function () {
     //input_box=windmill.remote.confirm("Are you sure you want to continue deleting?");
     //if (input_box==true) {
     fleegix.fx.fadeOut(windmill.remote.$(uuid));
-    d = function(){ 
+    d = function(){
       var pElement = windmill.remote.$(uuid).parentNode;
       pElement.removeChild(windmill.remote.$(uuid));
+
+      //So that we don't leave the selected element
+      //variable turned on when there are no actions in the IDE
+      if (pElement.id == 'ideForm'){
+        windmill.ui.remote.selectedElement = null;
+      }
     };
     setTimeout("d()",800);
   };
