@@ -725,7 +725,7 @@ OptionLocatorFactory.prototype.OptionLocatorByLabel = function (label) {
   this.findOption = function(element) {
     for (var i = 0; i < element.options.length; i++) {
       if (this.labelMatcher.matches(element.options[i].text)) {
-	return element.options[i];
+	      return element.options[i];
       }
     }
     windmill.ui.results.writeResult("Option with label '" + this.label + "' not found");
@@ -746,7 +746,7 @@ OptionLocatorFactory.prototype.OptionLocatorByValue = function (value) {
   this.findOption = function(element) {
     for (var i = 0; i < element.options.length; i++) {
       if (this.valueMatcher.matches(element.options[i].value)) {
-	return element.options[i];
+	      return element.options[i];
       }
     }
        
@@ -770,10 +770,8 @@ OptionLocatorFactory.prototype.OptionLocatorByIndex = function (index) {
     
   }
   this.findOption = function (element) {
-    if (element.options.length <= this.index) {
-            
+    if (element.options.length <= this.index) {        
       windmill.ui.results.writeResult("Index out of range.  Only " + element.options.length + " options available");
-       
     }
     return element.options[this.index];
   };
@@ -792,7 +790,7 @@ OptionLocatorFactory.prototype.OptionLocatorById = function (id) {
   this.findOption = function(element) {
     for (var i = 0; i < element.options.length; i++) {
       if (this.idMatcher.matches(element.options[i].id)) {
-	return element.options[i];
+	      return element.options[i];
       }
     }
     //windmill.windmill.ui.results.writeResult(.debug("Option with id '" + this.id + "' not found");

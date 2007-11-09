@@ -25,6 +25,30 @@ Copyright 2006-2007, Open Source Applications Foundation
 //I will just recreate that before I actually look up the dom element, then click
 //the appropriate element
 
+windmill.controller.extensions.clickClDialog =function (param_object){
+    var hash_key;
+    eval ("hash_key=windmill.testWindow." + param_object.jsid + ";");
+    param_object.id = "collectionSelectorItemDetails_" + hash_key;
+    delete param_object.jsid;    
+    return windmill.controller.click(param_object);
+};
+
+windmill.controller.extensions.clickCollection =function (param_object){
+    var hash_key;
+    eval ("hash_key=windmill.testWindow." + param_object.jsid + ";");
+    param_object.id = "collectionSelectorItemSel_" + hash_key;
+    delete param_object.jsid;
+    return windmill.controller.click(param_object);
+};
+
+windmill.controller.extensions.checkCollection =function (param_object){
+    var hash_key;
+    eval ("hash_key=windmill.testWindow." + param_object.jsid + ";");
+    param_object.id = "collectionSelectorItemCheck_" + hash_key;
+    delete param_object.jsid;
+    return windmill.controller.check(param_object);
+};
+
 windmill.controller.extensions.clickLozenge =function (param_object){
     var hash_key;
     // FIXME: Fixing a backwards dependency issue
