@@ -37,14 +37,23 @@ windmill.ui.domexplorer = new function () {
     if (windmill.ui.remote.selectedElement != null){
       windmill.remote.$("domExp").style.display = 'none';
     }
-    if(e.target.id != ""){
-      windmill.remote.$("domExp").innerHTML = "ID: "+ e.target.id;  
-    }
-    else if ((e.target.name != "") && (typeof(e.target.name) != "undefined")){
-      windmill.remote.$("domExp").innerHTML = "Name: "+ e.target.name;
-    }
-    else if (e.target.nodeName == "A"){
-      windmill.remote.$("domExp").innerHTML = "Link: "+ e.target.innerHTML;  
+    //if absolute xpath is not wanted try our best to get a better locater
+    if (windmill.remote.$('useXpath').checked == false){
+      if(e.target.id != ""){
+        windmill.remote.$("domExp").innerHTML = "ID: "+ e.target.id;  
+      }
+      else if ((e.target.name != "") && (typeof(e.target.name) != "undefined")){
+        windmill.remote.$("domExp").innerHTML = "Name: "+ e.target.name;
+      }
+      else if (e.target.nodeName == "A"){
+        windmill.remote.$("domExp").innerHTML = "Link: "+ e.target.innerHTML;  
+      }
+      //if not just use the xpath
+      else {
+        var xpArray = getXPath(e.target);
+        var stringXpath = xpArray.join('/');
+        windmill.remote.$("domExp").innerHTML = 'XPath: ' + stringXpath;
+      }
     }
     else {
       //windmill.remote.$("domExp").innerHTML = "No identfier available.";
@@ -52,6 +61,7 @@ windmill.ui.domexplorer = new function () {
       var stringXpath = xpArray.join('/');
       windmill.remote.$("domExp").innerHTML = 'XPath: ' + stringXpath;
     }
+   
     //this.domExplorerBorder = e.target.style.border;
     e.target.style.border = "1px solid yellow";
     this.explorerUpdate(e);

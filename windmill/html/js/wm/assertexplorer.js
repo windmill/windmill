@@ -17,7 +17,6 @@ Copyright 2006-2007, Open Source Applications Foundation
 //Assertion Explorer Functions
 windmill.ui.assertexplorer = new function () {
   var exploreState = false;
-  //this.domExplorerBorder = '';
   
    this.setExploreState = function(){
        if (this.exploreState == true){
@@ -35,25 +34,32 @@ windmill.ui.assertexplorer = new function () {
     this.setIdInRemote = function(e){
         //console.log  (typeof(e.target.name));
         var v = null;
-        if (e.target.nodeName == "INPUT"){
-          v = e.target.value;
+        if (windmill.remote.$('useXpath').checked == false){
+          if (e.target.nodeName == "INPUT"){
+            v = e.target.value;
+          }
+          else {
+            v = e.target.innerHTML;
+          }
+          if (e.target.id != ""){
+              windmill.remote.$("domExp").innerHTML = "ID: "+ e.target.id+"<br> Content: "+ v;  
+          }
+          else if ((e.target.name != "") && (typeof(e.target.name) != "undefined")){
+              windmill.remote.$("domExp").innerHTML = "Name: "+ e.target.name +"<br> Content: "+ v;  
+          }
+          else if (e.target.nodeName == "A"){
+              windmill.remote.$("domExp").innerHTML = "Link: "+ e.target.innerHTML+"<br> Content: "+ v; 
+          }
+          else {
+             var xpArray = getXPath(e.target);
+             var stringXpath = xpArray.join('/');
+             windmill.remote.$("domExp").innerHTML = 'XPath: ' + stringXpath +"<br> Content: "+ v;
+          }
         }
-        else {
-          v = e.target.innerHTML;
-        }
-        if (e.target.id != ""){
-            windmill.remote.$("domExp").innerHTML = "ID: "+ e.target.id+"<br> Content: "+ v;  
-        }
-        else if ((e.target.name != "") && (typeof(e.target.name) != "undefined")){
-            windmill.remote.$("domExp").innerHTML = "Name: "+ e.target.name +"<br> Content: "+ v;  
-        }
-        else if (e.target.nodeName == "A"){
-            windmill.remote.$("domExp").innerHTML = "Link: "+ e.target.innerHTML+"<br> Content: "+ v; 
-        }
-        else {
-           var xpArray = getXPath(e.target);
-           var stringXpath = xpArray.join('/');
-           windmill.remote.$("domExp").innerHTML = 'XPath: ' + stringXpath +"<br> Content: "+ v;
+        else{
+          var xpArray = getXPath(e.target);
+          var stringXpath = xpArray.join('/');
+          windmill.remote.$("domExp").innerHTML = 'XPath: ' + stringXpath +"<br> Content: "+ v;
         }
         //this.domExplorerBorder = e.target.style.border;
         e.target.style.border = "1px solid yellow";
@@ -133,7 +139,7 @@ windmill.ui.assertexplorer = new function () {
       this.exploreState = true;
       try { 
         windmill.remote.$('assertx').src = 'img/axoff.png';
-        windmill.remote.$('domExp').style.visibility = 'visible';
+        windmill.remote.$('domExp').style.display = 'block';
 			  windmill.remote.$('domExp').innerHTML = '';
         this.axRecursiveBind(windmill.testWindow);
        }

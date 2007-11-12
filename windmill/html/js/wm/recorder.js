@@ -29,19 +29,28 @@ windmill.ui.recorder = new function () {
     if( this.recordState == false){ return; }
     var locator = '';
     var locValue = '';
-
-    if (e.target.id != ""){
-      locator = 'id';
-      locValue = e.target.id;
-    }
-    else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")){
-      locator = 'name';
-      locValue = e.target.name;
-    }
-    else if (e.target.tagName.toUpperCase() == "A"){
-      locator = 'link';
-	    locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig,"");
-	    locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
+    
+    if (windmill.remote.$('useXpath').checked == false){
+      if (e.target.id != ""){
+        locator = 'id';
+        locValue = e.target.id;
+      }
+      else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")){
+        locator = 'name';
+        locValue = e.target.name;
+      }
+      else if (e.target.tagName.toUpperCase() == "A"){
+        locator = 'link';
+  	    locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig,"");
+  	    locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
+      }
+      else{
+        var xpArray = getXPath(e.target);
+        var stringXpath = xpArray.join('/');
+           
+        locator = 'xpath';
+        locValue = '/'+stringXpath;
+      }
     }
     else{
       var xpArray = getXPath(e.target);
@@ -49,7 +58,8 @@ windmill.ui.recorder = new function () {
            
       locator = 'xpath';
       locValue = '/'+stringXpath;
-    } 
+    }
+    
     if (locValue != ""){
       var params = {};
       params[locator] = locValue;
@@ -75,21 +85,31 @@ windmill.ui.recorder = new function () {
     if( this.recordState == false){ return; }
     var locator = '';
     var locValue = '';
-    if (e.target.id != ""){
-      locator = 'id';
-      locValue = e.target.id;
-    }
-    else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")){
-      locator = 'name';
-      locValue = e.target.name;
+    
+    if (windmill.remote.$('useXpath').checked == false){
+  
+      if (e.target.id != ""){
+        locator = 'id';
+        locValue = e.target.id;
+      }
+      else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")){
+        locator = 'name';
+        locValue = e.target.name;
+      }
+      else{
+        var xpArray = getXPath(e.target);
+        var stringXpath = xpArray.join('/');
+        locator = 'xpath';
+        locValue = stringXpath;
+      }
     }
     else{
-      var xpArray = getXPath(e.target);
-      var stringXpath = xpArray.join('/');
-      locator = 'xpath';
-      locValue = stringXpath;
-    }
-          
+        var xpArray = getXPath(e.target);
+        var stringXpath = xpArray.join('/');
+        locator = 'xpath';
+        locValue = stringXpath;
+    } 
+    
     var params = {};
     params[locator] = locValue;
 
