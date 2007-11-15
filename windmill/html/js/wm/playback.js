@@ -96,6 +96,14 @@ windmill.ui.playback = new function () {
       var respRun = function(str){
         //setTimeout('windmill.remote.$(\'playback\').src = \'img/playback.png\'', 3000);
         windmill.ui.playback.running = true;
+        
+        //If one of the action playback buttons is clicked
+        //and the action playback cascading is enabled
+        //we need the user to be able to stop the playback while it's
+        //cascading, so I check if thats the state and set change the image accordingly
+        if ( $('playCascade').checked ){
+          $('playback').src ="img/playbackstop.png";
+        }
         return true;
       }
     

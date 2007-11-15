@@ -32,16 +32,7 @@ windmill.controller.locateElementByIdentifier = function(identifier, inDocument,
 
 //there is a problem with checking via click in safari
 windmill.controller.check = function(param_object){
-    var element = this._lookupDispatch(param_object);
-    
-    if (element.checked == true){
-        element.checked = false;
-    }
-    else {
-        element.checked = true;
-    }
-    
-    return true;
+   return windmill.controller.click(param_object);    
 }
 
 //Radio buttons are even WIERDER in safari
