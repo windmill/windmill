@@ -116,7 +116,7 @@ windmill.ui.assertexplorer = new function () {
           //Assert checked
           windmill.ui.remote.addAction(windmill.ui.remote.buildAction('asserts.assertChecked', params));
         }
-        else if (e.target.tagName == "DIV"){
+        else if (e.target.tagName == "DIV" || e.target.tagName == "SPAN"){
           //Assert text
          windmill.ui.remote.addAction(windmill.ui.remote.buildAction('asserts.assertNode', params));
           params['validator'] = e.target.innerHTML;

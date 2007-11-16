@@ -75,6 +75,8 @@ var toggleRec = function(){
   
   var toggleExplore = function(){
 	  if ($('explorer').src.indexOf("img/xon.png")  != -1){
+  	  //Turn off the recorder to avoid confusion
+  	  if (windmill.ui.recorder.recordState == true){ toggleRec();}
   	  $('domExp').style.visibility = 'visible';
   	  $('domExp').innerHTML = '';
   	  windmill.ui.domexplorer.domExplorerOn();
@@ -90,8 +92,9 @@ var toggleRec = function(){
  }
 	
 	var toggleAExplore = function(){
-
 	  if ($('assertx').src.indexOf("img/axon.png")  != -1){
+	    //Turn off the recorder to avoid confusion
+  	  if (windmill.ui.recorder.recordState == true){ toggleRec();}
 	    $('domExp').style.visibility = 'visible';
 	    $('domExp').innerHTML = '';
 	    windmill.ui.assertexplorer.assertExplorerOn();
