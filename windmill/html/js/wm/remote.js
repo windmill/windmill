@@ -41,9 +41,25 @@ windmill.ui.remote = new function () {
     var selected  = windmill.remote.$(id+'method').selectedIndex;
     var methodObj = windmill.remote.$(id+'method');
     var method    = methodObj[selected].value;
+    //Preserve the value that was in there
+    try{
+      var oldLocator = windmill.remote.$(id+"locator").value;
+      var oldLocatorType = windmill.remote.$(id+"locatorType").value;
+    }
+    catch(err){
+     //throw it away 
+    }
     var newAction = this.buildAction(method,{'uuid':id});
     windmill.remote.$(id).innerHTML = newAction.innerHTML;
-         
+    //only try to replace them if this particular action had a locator to begin with
+    try{      
+      windmill.remote.$(id+"locator").value = oldLocator;
+      windmill.remote.$(id+"locatorType").value = oldLocatorType;
+    }
+    catch(err){
+    //throw it away
+    }
+    
     //safari hack for resizing the suite div to accomodate the new action
     windmill.remote.$(id).style.height = '';
   };
@@ -421,7 +437,7 @@ windmill.ui.remote = new function () {
       if (params[locator]){
 	      i0.setAttribute('value',params[locator]);
       }
-      i0.id        = action.id + 'locator';   
+      i0.id = action.id + 'locator';   
       //in firefox there was a bug moving the focus to the element we clicked, not sure why
       //but this seems to fix it. 
       if (!windmill.browser.isIE){
