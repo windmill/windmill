@@ -45,19 +45,15 @@ windmill.ui.recorder = new function () {
   	    locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
       }
       else{
-        var xpArray = getXPath(e.target);
-        var stringXpath = xpArray.join('/');
-           
+        var stringXpath = getXSPath(e.target);   
         locator = 'xpath';
-        locValue = '/'+stringXpath;
+        locValue = stringXpath;
       }
     }
     else{
-      var xpArray = getXPath(e.target);
-      var stringXpath = xpArray.join('/');
-           
+      var stringXpath = getXSPath(e.target);     
       locator = 'xpath';
-      locValue = '/'+stringXpath;
+      locValue = stringXpath;
     }
     
     if (locValue != ""){
@@ -97,15 +93,13 @@ windmill.ui.recorder = new function () {
         locValue = e.target.name;
       }
       else{
-        var xpArray = getXPath(e.target);
-        var stringXpath = xpArray.join('/');
+        var stringXpath = getXSPath(e.target);
         locator = 'xpath';
         locValue = stringXpath;
       }
     }
     else{
-        var xpArray = getXPath(e.target);
-        var stringXpath = xpArray.join('/');
+        var stringXpath = getXSPath(e.target);
         locator = 'xpath';
         locValue = stringXpath;
     } 

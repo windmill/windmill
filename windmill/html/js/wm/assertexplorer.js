@@ -51,14 +51,12 @@ windmill.ui.assertexplorer = new function () {
               windmill.remote.$("domExp").innerHTML = "Link: "+ e.target.innerHTML+"<br> Content: "+ v; 
           }
           else {
-             var xpArray = getXPath(e.target);
-             var stringXpath = xpArray.join('/');
+            var stringXpath = getXSPath(e.target);
              windmill.remote.$("domExp").innerHTML = 'XPath: ' + stringXpath +"<br> Content: "+ v;
           }
         }
         else{
-          var xpArray = getXPath(e.target);
-          var stringXpath = xpArray.join('/');
+          var stringXpath = getXSPath(e.target);
           windmill.remote.$("domExp").innerHTML = 'XPath: ' + stringXpath +"<br> Content: "+ v;
         }
         //this.domExplorerBorder = e.target.style.border;
@@ -92,9 +90,7 @@ windmill.ui.assertexplorer = new function () {
             locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
          }
          else{
-           var xpArray = getXPath(e.target);
-           var stringXpath = xpArray.join('/');
-           
+           var stringXpath = getXSPath(e.target);
            locator = 'xpath';
            locValue = stringXpath;
          } 

@@ -50,15 +50,12 @@ windmill.ui.domexplorer = new function () {
       }
       //if not just use the xpath
       else {
-        var xpArray = getXPath(e.target);
-        var stringXpath = xpArray.join('/');
+        var stringXpath = getXSPath(e.target);
         windmill.remote.$("domExp").innerHTML = 'XPath: ' + stringXpath;
       }
     }
     else {
-      //windmill.remote.$("domExp").innerHTML = "No identfier available.";
-      var xpArray = getXPath(e.target);
-      var stringXpath = xpArray.join('/');
+      var stringXpath = getXSPath(e.target);
       windmill.remote.$("domExp").innerHTML = 'XPath: ' + stringXpath;
     }
    

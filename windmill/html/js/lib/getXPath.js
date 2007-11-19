@@ -17,6 +17,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 //Used for getting xpaths for elements in the DOM based on a given node
 function getXPath(node, path) {
     path = path || [];
+
     if(node.parentNode) {
       path = getXPath(node.parentNode, path);
     }
@@ -43,7 +44,16 @@ function getXPath(node, path) {
     }
 
     if(node.nodeType == 1) {
-      path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 0 ? "["+count+"]" : ''));
+      //path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 0 ? "["+count+"]" : ''));
+      path.push(node.nodeName.toLowerCase() + (node.id ? "" : count > 0 ? "["+count+"]" : ''));
     }
     return path;
   };
+  
+  function getXSPath(node){
+    var xpArray = getXPath(node);
+    var stringXpath = xpArray.join('/');
+    stringXpath = '/'+stringXpath;
+    stringXpath = stringXpath.replace('//','/');
+    return stringXpath;
+}
