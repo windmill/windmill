@@ -127,10 +127,12 @@ windmill.ui.recorder = new function () {
     else if(e.target.type == 'radio'){
       windmill.ui.remote.addAction(windmill.ui.remote.buildAction('radio', params));
     }
-    else if(e.target.type == "checkbox"){
+    //The check function is only around now for reverse compatibilty, click does the
+    //correct thing now in all browsers after the update to safari
+  /* else if(e.target.type == "checkbox"){
       windmill.ui.remote.addAction(windmill.ui.remote.buildAction('check', params));    
     }
-          
+  */      
     windmill.ui.remote.scrollRecorderTextArea();
 
   }
