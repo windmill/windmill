@@ -44,7 +44,6 @@ setup(name=PACKAGE_NAME,
       platforms =['Any'],
       install_requires = ['CherryPy >= 3.0.2',
                           'simplejson >= 1.7.1',
-                          # All these wsgi_ libraries used to be part of windmill but are now seperate libraries.
                           'wsgi_jsonrpc >= 0.2.2',
                           'wsgi_xmlrpc >= 0.2.3',
                           'wsgi_fileserver >= 0.2.3',

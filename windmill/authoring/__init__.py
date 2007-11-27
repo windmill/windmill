@@ -17,6 +17,8 @@ from windmill.bin import admin_lib
 import logging
 import functest
 import transforms
+import simplejson
+import os
 from time import sleep
 
 logger = logging.getLogger(__name__)
@@ -39,6 +41,9 @@ def setup_module(module):
     if functest.registry.get('functest_cli', False):
         windmill.settings['START_'+functest.registry.get('browser').upper()] = True
         
+    if functest.registry.get('browser_debugging', False):
+        WindmillTestClient.browser_debugging = True
+        
     if not windmill.is_active:
         module.windmill_dict = admin_lib.setup()
     else:
@@ -57,6 +62,50 @@ def teardown_module(module):
     else:
         admin_lib.teardown(module.windmill_dict)
     sleep(.5)
+    
+def RunJsonFile(object):
+    def __init__(self, name, lines):
+        from windmill.bin import shell_objects
+        client = shell_objects.xmlrpc_client
+        self.name = name ; self.lines = lines ; self.client = client
+        if functest.registry.get('browser_debugging', False):
+            self.do_test = client.add_json_test ; self.do_command = client.add_json_command
+            self.debugging = True
+        else:
+            self.do_test = client.execute_json_test ; self.do_command = client.execute_json_command
+            self.debugging = False
+        
+    def __call__(self):
+        self.client.start_suite(self.name)
+        for line in self.lines:
+            if simplejson.loads(line)['method'].find('command') is -1:
+                result = self.do_test(line)
+                if self.debugging:  assert result['result']
+            else:
+                result = self.do_command(line)
+                if self.debugging:  assert result
+        
+    
+def post_collector(module):
+    if os.path.isdir(module.functest_module_path):
+        directory = module.functest_module_path
+    elif os.path.isfile(module.functest_module_path):
+        directory = None
+    else:
+        print 'functest created a module with a path that does not exist; '+module.__name__
+        directory = None
+    
+    if directory:
+        # Assign json files to module
+        for filename in [os.path.join(directory, f) for f in os.path.listdir(directory)
+                         if f.endswith('.json')]:
+            lines = [l for l in open(filename, 'r').read().splitlines() if l.startswith('{')]
+            name = os.path.split(filename)[-1].split('.json')[0]
+            setattr(module, name, RunJsonFile(name, lines))
+    
+def enable_collector():
+    if post_collector not in functest.collector.test_collector.post_collection_functions:
+        functest.collector.register_post_collection(post_collector)
 
 class WindmillFunctestRunner(functest.runner.FunctestRunnerInterface):
     def test_function_passed(self, test):
