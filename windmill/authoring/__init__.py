@@ -18,7 +18,7 @@ import logging
 import functest
 import transforms
 import simplejson
-import os
+import os, sys
 from time import sleep
 
 logger = logging.getLogger(__name__)
@@ -63,28 +63,31 @@ def teardown_module(module):
         admin_lib.teardown(module.windmill_dict)
     sleep(.5)
     
-def RunJsonFile(object):
+class RunJsonFile(object):
     def __init__(self, name, lines):
-        from windmill.bin import shell_objects
-        client = shell_objects.xmlrpc_client
-        self.name = name ; self.lines = lines ; self.client = client
+        self.name = name ; self.lines = lines
         if functest.registry.get('browser_debugging', False):
-            self.do_test = client.add_json_test ; self.do_command = client.add_json_command
+            self.do_test = 'add_json_test' ; self.do_command = 'add_json_command'
             self.debugging = True
         else:
-            self.do_test = client.execute_json_test ; self.do_command = client.execute_json_command
+            self.do_test = 'execute_json_test' ; self.do_command = 'execute_json_command'
             self.debugging = False
         
     def __call__(self):
-        self.client.start_suite(self.name)
+        from windmill.bin import shell_objects
+        client = shell_objects.xmlrpc_client
+        self.do_test = getattr(client, self.do_test)
+        self.do_command = getattr(client, self.do_command)
+        client.start_suite(self.name)
         for line in self.lines:
             if simplejson.loads(line)['method'].find('command') is -1:
                 result = self.do_test(line)
-                if self.debugging:  assert result['result']
+                if not self.debugging:  
+                    assert result['result']
             else:
                 result = self.do_command(line)
-                if self.debugging:  assert result
-        
+                if not self.debugging:  
+                    assert result
     
 def post_collector(module):
     if os.path.isdir(module.functest_module_path):
@@ -97,11 +100,13 @@ def post_collector(module):
     
     if directory:
         # Assign json files to module
-        for filename in [os.path.join(directory, f) for f in os.path.listdir(directory)
+        for filename in [os.path.join(directory, f) for f in os.listdir(directory)
                          if f.endswith('.json')]:
             lines = [l for l in open(filename, 'r').read().splitlines() if l.startswith('{')]
             name = os.path.split(filename)[-1].split('.json')[0]
-            setattr(module, name, RunJsonFile(name, lines))
+            func = RunJsonFile(name+'.json', lines)
+            func.__name__ = 'test_'+name
+            setattr(module, 'test_'+name, func)
     
 def enable_collector():
     if post_collector not in functest.collector.test_collector.post_collection_functions:
