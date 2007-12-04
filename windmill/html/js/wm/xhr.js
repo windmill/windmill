@@ -48,6 +48,7 @@ windmill.xhr = new function () {
     else{
       if (windmill.xhr.xhrResponse.result.method != 'defer'){
 	      windmill.ui.results.writeStatus("Running " + windmill.xhr.xhrResponse.result.method + "...");
+	      windmill.ui.playback.setPlaying();
       }
       else{ 
         windmill.ui.playback.resetPlayBack();
@@ -121,7 +122,11 @@ windmill.xhr = new function () {
 	    //throw(error);
 	  }
 	}
-	else { result == true; }
+	else { 
+	  //we must be loading, change the status to reflect that
+	  windmill.ui.results.writeStatus("Loading " + windmill.xhr.xhrResponse.result.method + "...");
+	  result == true; 
+	}
 	  
 	//End timer and store
 	action_timer.endTime();

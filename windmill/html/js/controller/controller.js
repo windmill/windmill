@@ -315,10 +315,30 @@ windmill.controller = new function () {
 
   //After the app reloads you have to re overwrite the alert function for the TestingApp
   this.reWriteAlert = function(param_object){
+    windmill.rwAlert = true;
     windmill.testWindow.window.alert = function(s){
       windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
     };
-
+    
+    rwaRecurse = function(frame){
+      var iframeCount = frame.window.frames.length;
+      var iframeArray = frame.window.frames;
+      
+      for (var i=0;i<iframeCount;i++){
+          try{
+  	        iframeArray[i].window.alert = function(s){
+        		  windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
+     	      };
+  	        rwaRecurse(iframeArray[i]);
+          }
+          catch(error){             
+           	windmill.ui.results.writeResult('There was a problem rewriting alert on one of your iframes, is it cross domain?' +
+  					  'Binding to all others.' + error);     
+          }
+        }
+    }
+    rwaRecurse(windmill.testWindow);
+    
     return true;
   };
    

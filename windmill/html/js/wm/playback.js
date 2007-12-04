@@ -26,6 +26,10 @@ windmill.ui.playback = new function () {
       windmill.ui.playback.running = false;
     }
   };
+  this.setPlaying = function(){
+    $('playback').src = 'img/playbackstop.png';
+      windmill.ui.playback.running = true;
+  };
   
   //Send the tests to be played back
   this.sendPlayBack = function (uuid){

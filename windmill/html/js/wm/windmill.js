@@ -99,7 +99,11 @@ var windmill = new function () {
       if (windmill.loadTimeoutId != 0){
         clearTimeout(windmill.loadTimeoutId);
       }
-
+      
+      //Making rewrite alert persist through the session
+      if (windmill.reAlert == true){
+        windmill.controller.reWriteAlert();
+      }
       //We need to define the windmill object in the
       //test window to allow the JS test framework
       //to access different functionality
@@ -124,6 +128,7 @@ var windmill = new function () {
     this.stopOnFailure = false;
     this.showRemote = true;
     this.runTests = true;
+    this.rwAlert = false;
     
 };
 
