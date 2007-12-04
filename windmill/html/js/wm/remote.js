@@ -52,9 +52,11 @@ windmill.ui.remote = new function () {
     var newAction = this.buildAction(method,{'uuid':id});
     windmill.remote.$(id).innerHTML = newAction.innerHTML;
     //only try to replace them if this particular action had a locator to begin with
-    try{      
-      windmill.remote.$(id+"locator").value = oldLocator;
-      windmill.remote.$(id+"locatorType").value = oldLocatorType;
+    try{
+      if (typeof(oldLocator) != 'undefined'){
+        windmill.remote.$(id+"locator").value = oldLocator;
+        windmill.remote.$(id+"locatorType").value = oldLocatorType;
+      }
     }
     catch(err){
     //throw it away
@@ -112,7 +114,6 @@ windmill.ui.remote = new function () {
     if (typeof(action) == 'undefined'){
       var action = this.buildAction(null,{});
 	  }
-       
     //A hack to make it draw the UI correctly in IE
     suite.appendChild(action);
     if (windmill.browser.isIE){ windmill.remote.$(action.id).innerHTML = action.innerHTML; }
@@ -450,6 +451,10 @@ windmill.ui.remote = new function () {
       r.appendChild(c);
       t.appendChild(r);
     }
+    //if its an action that takes no params at all set a min height
+    else {
+      t.style.height = '40px';
+    } 
             
     //If this method has a option
     if (windmill.registry.methods[method].option != false){
@@ -502,7 +507,7 @@ windmill.ui.remote = new function () {
       r.appendChild(c);
       t.appendChild(r);
     }
-          
+ 
     action.appendChild(t);
     if (windmill.browser.isIE){ action.innerHTML = t.innerHTML; }
     return action; 
