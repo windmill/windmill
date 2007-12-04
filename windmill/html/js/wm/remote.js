@@ -477,13 +477,20 @@ windmill.ui.remote = new function () {
       o2.selected = 'selected';
       o2.innerHTML += windmill.registry.methods[method].option;
       s2.appendChild(o2);
-             
-      for(var i=0;i<windmill.registry.option.length;i++){
+      
+      var o2 = windmill.remote.document.createElement('option');
+      o2.value = '';
+      o2.innerHTML += '';
+      s2.appendChild(o2);
+      	
+      //This will give you a list of all the possible options
+      //Keeping this here unless I find a reason to put it back/use it	
+      /*for(var i=0;i<windmill.registry.option.length;i++){
       	var o2 = windmill.remote.document.createElement('option');
       	o2.value = windmill.registry.option[i];
       	o2.innerHTML += windmill.registry.option[i];
       	s2.appendChild(o2);
-      }
+      }*/
       var c = windmill.remote.document.createElement("td");  
       c.appendChild(s2);
       r.appendChild(c);
