@@ -65,6 +65,23 @@ windmill.controller.extensions.clickLozenge =function (param_object){
     
     return windmill.controller.click(param_object);
 };
+windmill.controller.extensions.clickUnTimedLozenge =function (param_object){
+    var hash_key;
+    // FIXME: Fixing a backwards dependency issue
+    // so the tests work for both 0.2 and trunk
+    var jsid = param_object.jsid.replace('windmill.testWindow.', '');
+    eval ("hash_key=windmill.testWindow." + jsid + ";");
+    //hash_key = eval('('+ param_object.jsid + ')');
+    param_object.id = "eventDivAllDayTitle__" + hash_key;
+    //console.log(param_object);
+    delete param_object.jsid;
+    
+    //Since id comes before jsid in the lookup order
+    //we don't need to reset it, now go ahead and click it!
+    
+    return windmill.controller.click(param_object);
+};
+
 
 windmill.controller.extensions.clickItem =function (param_object){
     var hash_key;
