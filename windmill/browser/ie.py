@@ -48,7 +48,9 @@ class InternetExplorer(object):
         # wreg.SetValueEx(allow_reg, urlparse(windmill.settings['TEST_URL']).hostname,
         #                 0, wreg.REG_BINARY, None)
         
-        self.p_handle = killableprocess.Popen(self.cmd)
+        kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
+        
+        self.p_handle = killableprocess.Popen(self.cmd, **kwargs)
         
     def stop(self):
         

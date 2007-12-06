@@ -211,8 +211,8 @@ class Popen(subprocess.Popen):
 def setpgid_preexec_fn():
     os.setpgid(0, 0)
         
-def runCommand(cmd):
+def runCommand(cmd, **kwargs):
     if sys.platform != "win32":
-        return Popen(cmd, preexec_fn=setpgid_preexec_fn)
+        return Popen(cmd, preexec_fn=setpgid_preexec_fn, **kwargs)
     else:
-        return Popen(cmd)
+        return Popen(cmd, **kwargs)

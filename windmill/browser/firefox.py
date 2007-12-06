@@ -28,10 +28,12 @@ def setpgid_preexec_fn():
 
 def runCommand(cmd):
     """Run the given command in killable process."""
+    kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
+    
     if sys.platform != "win32":
-        return killableprocess.Popen(cmd, preexec_fn=setpgid_preexec_fn)
+        return killableprocess.Popen(cmd, preexec_fn=setpgid_preexec_fn, **kwargs)
     else:
-        return killableprocess.Popen(cmd)
+        return killableprocess.Popen(cmd, **kwargs)
 
 class MozillaProfile(object):
     
