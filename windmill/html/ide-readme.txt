@@ -19,7 +19,7 @@ Usage:
 Check out the code: svn co http://svn.osafoundation.org/windmill/trunk windmill
 Run the server: python ./windmill/server/proxy.py
 Configure browser to use http proxy : localhost port 4444
-The default setup is configured as a demo, so launch the browser to: http://qacosmo.osafoundation.org:8080/windmill-serv/start.html
+The default setup is configured as a demo, so launch the browser to: http://next.osaf.us/windmill-serv/start.html
 
 From here you can click "Expand Control" to run tests.
 

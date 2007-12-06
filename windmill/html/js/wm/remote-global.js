@@ -153,5 +153,3 @@ function saveOrder(item) {
         windmill.remote.shell = new fleegix.shell.Shell($('shellForm').shellInput,$('shellOutput'));  		
         windmill.Start();
   };
-    
-    

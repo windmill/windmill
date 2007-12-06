@@ -88,6 +88,15 @@ windmill.controller.commands.execJS = function(param_object){
       return false;
 };
 
+//Dynamically loading an extensions directory
+windmill.controller.commands.loadExtensions = function(param_object){
+  var l = param_object.extensions;
+  for (var n in l){
+   var code = windmill.utilities.getFile(l[n]);
+    windmill.utilities.appendScriptTag(windmill.remote,code); 
+  }
+};
+
 //Give the backend a list of available controller methods
 windmill.controller.commands.getControllerMethods = function (param_object){
 	var str = '';
@@ -203,7 +212,7 @@ windmill.controller.commands.jsTestResults = function () {
       msg = msg.replace(/>/g, '&gt;');
       s += msg + '<br/>';
     }
-  }
+  };
 
   jsSuiteSummary.endTime();
   windmill.ui.results.writeResult(s);
