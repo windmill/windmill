@@ -88,11 +88,13 @@ def do_test(filename, load=False):
                                                         directory_test)(filename)
     
     def run_functest():
+        if load:
+            functest.registry['browser_debugging'] = "True"
+            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
         functest.global_settings.test_filter = filter_string
         from windmill.authoring import WindmillFunctestRunner
         functest.run_framework(test_args=[module_name], test_runner=WindmillFunctestRunner())
-        if load:
-            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
+        
     run_functest_thread = Thread(target=run_functest)
     from windmill.bin import admin_lib
     admin_lib.on_ide_awake.append(run_functest_thread.start)
