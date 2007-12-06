@@ -120,7 +120,6 @@ windmill.controller.waits.forPageLoad = function (param_object) {
       return true;
     }
   }
-  
   this.lookup();
   
   //if windmill.timeout goes by and the tests haven't been started
@@ -166,23 +165,24 @@ windmill.controller.waits._forNotTitleAttach = function (param_object) {
   }
     
   this.check = function(n){   
+
     if (!n){
       var x = setTimeout(function () { _this.lookup(); }, 1000);
     }
     else{
       
-      try {
+      try {  
         if (typeof(windmill.testWindow.onload.listenReg) == 'undefined'){
           windmill.loaded();
         }
       }
-      catch(err){  }
-      fleegix.event.unlisten(windmill.testWindow, 'onload', windmill, 'loaded');
-      fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
+      catch(err){ this.lookup() }
+        fleegix.event.unlisten(windmill.testWindow, 'onload', windmill, 'loaded');
+        fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
       return true;
     }
   }
-   
+
   this.lookup();
   
   //if windmill.timeout goes by and the tests haven't been started

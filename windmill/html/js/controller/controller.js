@@ -53,20 +53,23 @@ windmill.controller = new function () {
   
   //Translates from the way we are passing objects to functions to the lookups
   this._lookupDispatch = function (param_object){
-
+    var s = null;
     var element = null;
     //If a link was passed, lookup as link
     if(typeof param_object.link != "undefined") {
+      s = 'Looking up link '+ param_object.link;
       element = this.findElement("link=" + param_object.link)
     }
     
     //if xpath was passed, lookup as xpath
-    if(typeof param_object.xpath != "undefined") {                
+    if(typeof param_object.xpath != "undefined") {
+      s = 'Looking up xpath '+ param_object.xpath;        
       element = this.findElement("xpath=" + param_object.xpath);
     }
     
     //if id was passed, do as such
     if(typeof param_object.id != "undefined") {
+      s = 'Looking up id '+ param_object.id;
       element = this.findElement("id=" + param_object.id)
     }
     
@@ -81,13 +84,15 @@ windmill.controller = new function () {
       else{
         eval ("jsid=" + this._getWindowStr() + '.' +param_object.jsid + ";");
       }
+        s = 'Looking up jsid '+ jsid;
         element = this.findElement("id=" + jsid);
     }
     //if name was passed
     if(typeof param_object.name != "undefined") {
+      s = 'Looking up name '+ param_object.name;
       element = this.findElement("name=" + param_object.name)
-    }        
-
+    }
+    windmill.ui.results.writeResult(s);
     return element;
   };
 
