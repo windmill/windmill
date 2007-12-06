@@ -18,7 +18,7 @@ import logging
 import functest
 import transforms
 import simplejson
-import os, sys
+import os, sys, re
 from time import sleep
 
 logger = logging.getLogger(__name__)
@@ -88,6 +88,8 @@ class RunJsonFile(object):
                 result = self.do_command(line)
                 if not self.debugging:  
                     assert result
+
+expression = re.compile("\{.*\}")
     
 def post_collector(module):
     if os.path.isdir(module.functest_module_path):
@@ -102,7 +104,7 @@ def post_collector(module):
         # Assign json files to module
         for filename in [os.path.join(directory, f) for f in os.listdir(directory)
                          if f.endswith('.json')]:
-            lines = open(filename, 'r').read().splitlines()
+            lines = expression.findall(open(filename, 'r').read())
             name = os.path.split(filename)[-1].split('.json')[0]
             func = RunJsonFile(name+'.json', lines)
             func.__name__ = 'test_'+name
