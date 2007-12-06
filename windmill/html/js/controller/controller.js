@@ -72,15 +72,17 @@ windmill.controller = new function () {
     
     //if jsid was passed
     if(typeof param_object.jsid != "undefined") {
-      //Fixing one backwards dependency issues
-      //so the tests work for both 0.2 and trunk
-      param_object.jsid = param_object.jsid.replace('windmill.testWindow.', '');
-      
+      //Here if the user hasn't specified the test window scope
+      //we use the default and prepend it, else we eval whatever js they passed
       var jsid; 
-      eval ("jsid=" + this._getWindowStr() + '.' +param_object.jsid + ";");
-      element = this.findElement("id=" + jsid);
+      if (param_object.jsid.indexOf('windmill.testWindow') != -1){
+        eval ("jsid=" + param_object.jsid + ";");
+      }
+      else{
+        eval ("jsid=" + this._getWindowStr() + '.' +param_object.jsid + ";");
+      }
+        element = this.findElement("id=" + jsid);
     }
-    
     //if name was passed
     if(typeof param_object.name != "undefined") {
       element = this.findElement("name=" + param_object.name)
