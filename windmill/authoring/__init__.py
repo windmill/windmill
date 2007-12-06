@@ -65,7 +65,7 @@ def teardown_module(module):
     
 class RunJsonFile(object):
     def __init__(self, name, lines):
-        self.name = name ; self.lines = lines
+        self.name = name ; self.lines = [line for line in lines if line.startswith('{')]
         if functest.registry.get('browser_debugging', False):
             self.do_test = 'add_json_test' ; self.do_command = 'add_json_command'
             self.debugging = True
@@ -102,7 +102,7 @@ def post_collector(module):
         # Assign json files to module
         for filename in [os.path.join(directory, f) for f in os.listdir(directory)
                          if f.endswith('.json')]:
-            lines = [l for l in open(filename, 'r').read().splitlines() if l.startswith('{')]
+            lines = open(filename, 'r').read().splitlines()
             name = os.path.split(filename)[-1].split('.json')[0]
             func = RunJsonFile(name+'.json', lines)
             func.__name__ = 'test_'+name
@@ -136,7 +136,6 @@ class WindmillTestClient(object):
         if browser_debugging is not None:
             self.browser_debugging = browser_debugging
             
-        import functest
         if functest.registry.get('browser_debugging', False):
             self.browser_debugging = True
             self.assertions = False
