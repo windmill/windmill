@@ -48,7 +48,6 @@ windmill.registry.methods['extensions.clickClDialog']       = {'locator': true, 
 windmill.registry.methods['extensions.clickCollection']       = {'locator': true, 'option': false };
 windmill.registry.methods['extensions.checkCollection']       = {'locator': true, 'option': false };
 windmill.registry.methods['extensions.clickLozenge']       = {'locator': true, 'option': false };
-windmill.registry.methods['cosmoDragDrop']  = {'locator': true, 'option':'destination'};
 windmill.registry.methods['setOptions']     = {'locator': false, 'option':'stopOnFailure'};
 windmill.registry.methods['reWriteAlert']   = {'locator': false, 'option': false };
 windmill.registry.methods['storeURL']       = {'locator': true, 'option': false };

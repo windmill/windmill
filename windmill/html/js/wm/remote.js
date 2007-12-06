@@ -301,10 +301,10 @@ windmill.ui.remote = new function () {
 
       c.appendChild(i);
       r.appendChild(c);
-      var c = windmill.remote.document.createElement("td"); 
+      var c = windmill.remote.document.createElement("td");
       c.innerHTML += '<a onclick="windmill.ui.remote.addActionAbove(\''+action.id+
-	    '\')" href="#"><img border=0 style="height:16px;width:16px;" src="img/addup.png"></a><br><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
-	    '\')" href="#"><img border=0 style="height:16px;width:16px;" src="img/adddown.png"></a>';
+	    '\')" href="#"><img border=0 src="img/addup.png"></a><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
+	    '\')" href="#"><img border=0 src="img/adddown.png"></a>';
       r.appendChild(c);
 
       var c = windmill.remote.document.createElement("td"); 
@@ -325,6 +325,7 @@ windmill.ui.remote = new function () {
     t.border      = "0";
     t.cellspacing = "1";
     t.cellpadding = "0";
+    t.width = '100%';
     t.style.font  = "10px arial";
 
          
@@ -355,36 +356,19 @@ windmill.ui.remote = new function () {
     s.setAttribute("onchange","windmill.ui.remote.methodChange('"+action.id+"');");
 
     var c = windmill.remote.document.createElement("td");
-    c.colSpan = "3";
+    c.colSpan = "2";
     c.appendChild(s);
-    c.innerHTML += '<br>';
     r.appendChild(c);
-    
-    var spn = windmill.remote.document.createElement('span');
-    spn.style.position  = 'absolute';
-    spn.style.left   = '95%';
-    spn.style.bottom = '2px';
-    spn.style.zindex = '10';
-    spn.style.font   = '10px arial';
+    var c = windmill.remote.document.createElement("td");
 
-    spn.innerHTML += '<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\''+action.id+
+    c.innerHTML += '<td><a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\''+action.id+
     '\')" style="height:18px;width:18px;" src="img/play.png"></a><a alt="Delete Action" href="#">'+
     '<img border=0 onclick="windmill.ui.remote.deleteAction(\''+action.id+'\')" style="height:18px;width:18px;" '+
-    'src="img/trash.png"></a>';
-        
-    var spn2 = windmill.remote.document.createElement('span');
-    spn2.style.position = 'absolute';
-    spn2.style.left   = '90%';
-    spn2.style.bottom = '3px';
-    spn2.style.zindex = '10';
-    spn2.style.font   = '10px arial';
-    spn2.innerHTML += '<a onclick="windmill.ui.remote.addActionAbove(\''+action.id+
-    '\')" href="#"><img border=0 style="height:16px;width:16px;" src="img/addup.png"></a><br><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
-    '\')" href="#"><img border=0 style="height:16px;width:16px;" src="img/adddown.png"></a></span>';
-        
-    var c = windmill.remote.document.createElement("td"); 
-    c.appendChild(spn);
-    c.appendChild(spn2);
+    'src="img/trash.png"></a><a onclick="windmill.ui.remote.addActionAbove(\''+action.id+
+    '\')" href="#"><img border=0  src="img/addup.png"></a><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
+    '\')" href="#"><img border=0  src="img/adddown.png"></a></td>';
+ 
+
     r.appendChild(c);
     t.appendChild(r);
 
@@ -425,15 +409,16 @@ windmill.ui.remote = new function () {
       	s1.appendChild(o1);
       }
              
-      var c = windmill.remote.document.createElement("td"); 
+      var c = windmill.remote.document.createElement("td");
+      c.colSpan = '3'; 
       c.appendChild(s1);
-      r.appendChild(c);
-
+      c.innerHTML += '&nbsp';
+      
       //Add the text box
       var i0 = windmill.remote.document.createElement('input');
       i0.name      = 'locValue';
       i0.className = 'texta';
-      i0.size      = '45';
+      i0.width      = '105';
       //Dont know why I have to do this.. but it wont work if its not setattrib
       if (params[locator]){
 	      i0.setAttribute('value',params[locator]);
@@ -446,7 +431,6 @@ windmill.ui.remote = new function () {
         i0.setAttribute('onClick', 'windmill.remote.$(\''+i0.id+'\').focus();');
       }
 
-      var c = windmill.remote.document.createElement("td"); 
       c.appendChild(i0);
       r.appendChild(c);
       t.appendChild(r);
@@ -491,7 +475,8 @@ windmill.ui.remote = new function () {
       	o2.innerHTML += windmill.registry.option[i];
       	s2.appendChild(o2);
       }*/
-      var c = windmill.remote.document.createElement("td");  
+      var c = windmill.remote.document.createElement("td");
+      c.colSpan = '3';  
       c.appendChild(s2);
       r.appendChild(c);
               
@@ -509,7 +494,6 @@ windmill.ui.remote = new function () {
         i1.setAttribute('onClick', 'windmill.remote.$(\''+i1.id+'\').focus();');
       }
 
-      var c = windmill.remote.document.createElement("td");  
       c.appendChild(i1);
       r.appendChild(c);
       t.appendChild(r);
