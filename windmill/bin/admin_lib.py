@@ -230,6 +230,7 @@ def runserver_action(shell_objects):
 
 def shell_action(shell_objects):
     """Start the windmill shell environment"""
+    windmill.in_shell = True
     # If ipython is installed and we weren't given the usecode option
     try:
         assert not windmill.settings['USECODE']

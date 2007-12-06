@@ -57,10 +57,11 @@ def teardown_module(module):
     except KeyboardInterrupt:
         pass
     # Incase we're in runserver mode and test were passed to the windmill command line
-    if hasattr(windmill, 'settings') and windmill.settings['EXIT_ON_DONE']:
+    if hasattr(windmill, 'settings') and windmill.settings['EXIT_ON_DONE'] and windmill.runserver_running:
         module.windmill_dict['xmlrpc_client'].stop_runserver() 
     else:
         admin_lib.teardown(module.windmill_dict)
+        
     sleep(.5)
     
 class RunJsonFile(object):

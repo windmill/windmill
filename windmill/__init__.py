@@ -22,3 +22,4 @@ RESULTS = {'pass':0, 'fail':0}
 teardown_directories = []
 
 is_active = None
+in_shell = False
