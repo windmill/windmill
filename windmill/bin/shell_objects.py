@@ -145,4 +145,4 @@ def load_extensions_dir(dirname):
    os.path.walk(dirname, parse_files, 'x') 
 
    xmlrpc_client.add_command({'method':'commands.loadExtensions', 
-                              'params':{'tests':[base_url+f for f in js_files ]}})
+                              'params':{'extensions':[base_url+f for f in js_files ]}})
