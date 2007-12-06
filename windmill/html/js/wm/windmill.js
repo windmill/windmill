@@ -132,3 +132,5 @@ var windmill = new function () {
 
 //Set the browser
 windmill.init(browser);
+//Setup a convenience variable
+var _w = windmill.testWindow;
