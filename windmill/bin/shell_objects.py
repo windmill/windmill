@@ -107,69 +107,42 @@ load_test = lambda filename : do_test(filename, load=True)
 load_test.__name__ = 'load_test'
 run_test.__doc__ = "Load the test file or directory passed to this function"   
     
-# def load_python_tests(filename):
-#     """Load a python test file's controller actions in to the server and pass to the IDE without running."""
-#     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
-#     run_python_test(filename, load=True)
-#     
-# def load_json_test_file(filename):
-#     """Load a JSON test file's controller actions in to the server and pass to the IDE without running."""
-#     # xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
-#     # run_json_test_file(filename)
-#     # xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
-# 
-# def load_json_test_dir(filename):
-#     """Load a JSON test dir's controller actions in to the server and pass to the IDE without running."""
-#     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False}})
-#     run_json_test_dir(filename)
-#     xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
-#     
-# def run_js_test_dir(dirname):
-#     """Mount the directory and send all javascript file links to the IDE in order to execute those test urls under the jsUnit framework"""
-#     # Mount the fileserver application for tests
-#     from wsgi_fileserver import WSGIFileServerApplication
-#     application = WSGIFileServerApplication(root_path=os.path.abspath(dirname), mount_point='/windmill-jstest/')
-#     from windmill.server import wsgi
-#     wsgi.add_namespace('windmill-jstest', application)
-#     # Build list of files and send to IDE
-#     base_url = windmill.settings['TEST_URL']+'/windmill-jstest'
-#     
-#     js_files = []
-#     def parse_files(x, directory, files):
-#         if not os.path.split(directory)[-1].startswith('.'):
-#             additional_dir = directory.replace(dirname, '')
-#             js_files.extend( [additional_dir+'/'+f for f in files if f.endswith('.js')]  )
-#     os.path.walk(dirname, parse_files, 'x') 
-#     
-#     xmlrpc_client.add_command({'method':'commands.jsTests', 
-#                                'params':{'tests':[base_url+f for f in js_files ]}})
-#     
-# def run_json_test_dir(*args):
-#     """Run the directory[s] of JSON tests."""
-#     # Try to import test_conf
-#     directory = ','.join(args)
-#     if directory.find(',') is not -1:
-#         for testdir in directory.split(','):
-#             run_json_test_dir(testdir)
-#         return
-#     
-#     try:
-#         sys.path.insert(0, os.path.abspath(directory))
-#         import test_conf
-#         test_list = test_conf.test_list
-#         sys.modules.pop(test_conf.__name__)
-#         sys.path.pop(0)
-#     except ImportError:
-#         print 'No test_conf.py for this directory, executing all test in directory'
-#         test_list = [test_name for test_name in os.listdir(os.path.abspath(directory)) if ( 
-#                      not test_name.startswith('.') and test_name.endswith('.json') )]
-#         
-#     for test in test_list:
-#         run_json_test_file(os.path.abspath(directory)+os.path.sep+test)
-# 
-# def run_given_test_dir():
-#     """Run the directory[s] of JSON tests that are currently set in windmill. These can be set as a command line option or by a local setting preference."""
-#     run_json_test_dir(windmill.settings['TEST_DIR'])
-#     
-#     logger = logging.getLogger(__name__)
+def run_js_test_dir(dirname):
+    """Mount the directory and send all javascript file links to the IDE in order to execute those test urls under the jsUnit framework"""
+    # Mount the fileserver application for tests
+    from wsgi_fileserver import WSGIFileServerApplication
+    application = WSGIFileServerApplication(root_path=os.path.abspath(dirname), mount_point='/windmill-jstest/')
+    from windmill.server import wsgi
+    wsgi.add_namespace('windmill-jstest', application)
+    # Build list of files and send to IDE
+    base_url = windmill.settings['TEST_URL']+'/windmill-jstest'
+    
+    js_files = []
+    def parse_files(x, directory, files):
+        if not os.path.split(directory)[-1].startswith('.'):
+            additional_dir = directory.replace(dirname, '')
+            js_files.extend( [additional_dir+'/'+f for f in files if f.endswith('.js')]  )
+    os.path.walk(dirname, parse_files, 'x') 
+    
+    xmlrpc_client.add_command({'method':'commands.jsTests', 
+                               'params':{'tests':[base_url+f for f in js_files ]}})
 
+def load_extensions_dir(dirname):
+   """Mount the directory and send all javascript file links to the IDE in order to execute those test urls under the jsUnit framework"""
+   # Mount the fileserver application for tests
+   from wsgi_fileserver import WSGIFileServerApplication
+   application = WSGIFileServerApplication(root_path=os.path.abspath(dirname), mount_point='/windmill-extentions/')
+   from windmill.server import wsgi
+   wsgi.add_namespace('windmill-extentions', application)
+   # Build list of files and send to IDE
+   base_url = windmill.settings['TEST_URL']+'/windmill-extentions'
+
+   js_files = []
+   def parse_files(x, directory, files):
+       if not os.path.split(directory)[-1].startswith('.'):
+           additional_dir = directory.replace(dirname, '')
+           js_files.extend( [additional_dir+'/'+f for f in files if f.endswith('.js')]  )
+   os.path.walk(dirname, parse_files, 'x') 
+
+   xmlrpc_client.add_command({'method':'commands.loadExtensions', 
+                              'params':{'tests':[base_url+f for f in js_files ]}})
