@@ -19,6 +19,8 @@ import os, sys
 from datetime import datetime
 from threading import Thread
 import shutil
+import functest
+functest.configure()
 
 def process_options(argv_list):
     """Process all the command line options"""
@@ -38,6 +40,7 @@ def process_options(argv_list):
             # Grab the test url if one is given
             if argv_list[index].startswith('http://'):
                 windmill.settings['TEST_URL'] = argv_list[index]
+                functest.registry['url'] = argv_list[index]
             elif not argv_list[index].startswith('-'):
                 # Any argument not starting with - is a regular named option
                 if argv_list[index][0].islower():
@@ -71,7 +74,7 @@ def process_options(argv_list):
                 options = argv_list[index].replace('-')
                 for option in options:
                     admin_options.flags_dict[option]()
-                    
+    
     if action is None:
         # If an action is not defined we default to running the service in the foreground
         return action_mapping['runserver']

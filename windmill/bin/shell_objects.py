@@ -19,7 +19,6 @@ from time import sleep
 from windmill.authoring import frame
 from threading import Thread
 import functest
-functest.configure()
 
 logger = logging.getLogger(__name__)
 
