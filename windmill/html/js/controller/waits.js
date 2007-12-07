@@ -37,7 +37,7 @@ windmill.controller.waits.forElement = function (param_object) {
   var count = 0;
   var p = param_object;
     
-  if (p.timeout){
+  if (p.timeout && p.timeout != NaN){
     timeout = p.timeout;
   }
 
