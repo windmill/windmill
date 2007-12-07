@@ -23,7 +23,6 @@ windmill.utilities = new function () {
       win.document.documentElement;
       script.src = url;
     head.appendChild(script);
-    head.removeChild(script);
     return true;
   };
   
