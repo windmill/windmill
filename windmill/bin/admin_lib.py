@@ -145,6 +145,9 @@ def setup():
         shell_objects.run_test(windmill.settings['RUN_TEST'])
     if windmill.settings['LOAD_TEST'] is not None:
         shell_objects.load_test(windmill.settings['LOAD_TEST'])
+        
+    if windmill.settings['EXTENSIONS_DIR'] is not None:
+        shell_objects.load_extensions_dir(windmill.settings['EXTENSIONS_DIR'])
          
     if windmill.settings['JAVASCRIPT_TEST_DIR']:
         shell_objects.run_js_test_dir(windmill.settings['JAVASCRIPT_TEST_DIR'])

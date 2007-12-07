@@ -36,6 +36,7 @@ PLATFORM         = sys.platform
 WINDMILL_PATH    = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 JS_PATH          = os.path.join(WINDMILL_PATH, 'html')
 SAVES_PATH       = None
+EXTENSIONS_DIR   = None
 
 TEST_URL  = 'http://windmill.osafoundation.org/tutorial'
 
