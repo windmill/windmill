@@ -94,8 +94,7 @@ windmill.ui.domexplorer = new function () {
     
   this.explorerClick = function(e){
     windmill.remote.window.focus();
-    this.domExplorerOff();
-    this.resetBorder(e);
+    
   }
     
   //Set the listeners for the dom explorer
