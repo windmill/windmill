@@ -16,6 +16,17 @@ windmill.utilities = new function () {
     return true;
   };
   
+  this.appendScript = function(win, url) {
+    var script = win.document.createElement('script');
+    script.type = 'text/javascript';
+    var head = win.document.getElementsByTagName("head")[0] ||
+      win.document.documentElement;
+      script.src = url;
+    head.appendChild(script);
+    head.removeChild(script);
+    return true;
+  };
+  
   //Grab a file with xhr
   this.getFile = function (path) {
     var file = fleegix.xhr.doReq({ url: path,

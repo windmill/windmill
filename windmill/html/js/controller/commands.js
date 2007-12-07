@@ -92,8 +92,7 @@ windmill.controller.commands.execJS = function(param_object){
 windmill.controller.commands.loadExtensions = function(param_object){
   var l = param_object.extensions;
   for (var n in l){
-   var code = windmill.utilities.getFile(l[n]);
-    windmill.utilities.appendScriptTag(windmill.remote,code); 
+    windmill.utilities.appendScript(windmill.remote,l[0]); 
   }
 };
 
