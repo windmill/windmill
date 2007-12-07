@@ -22,7 +22,7 @@ windmill.registry = new function () {
 
 //Setup all the current methods supported
 windmill.registry.locator.push('id','link','xpath','jsid', 'name');
-windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure','showRemote', 'milliseconds', 'timeout');
+windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure','showRemote', 'milliseconds', 'timeout','js');
 
 //Setup method registry
 windmill.registry.methods['open']                = {'locator': false, 'option': 'url' };
@@ -37,6 +37,7 @@ windmill.registry.methods['radio']               = {'locator': true, 'option': f
 windmill.registry.methods['check']               = {'locator': true, 'option': false };
 windmill.registry.methods['select']              = {'locator': true, 'option': 'option'};
 windmill.registry.methods['setTestWindow']       = {'locator': false, 'option': 'path'};
+windmill.registry.methods['asserts.assertJS'] = {'locator': false, 'option': 'js' };
 windmill.registry.methods['asserts.assertProperty'] = {'locator': true, 'option': 'validator' };
 windmill.registry.methods['asserts.assertText']     = {'locator': true, 'option': 'validator' };
 windmill.registry.methods['asserts.assertValue']    = {'locator': true, 'option': 'validator' };
