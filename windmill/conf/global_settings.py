@@ -28,6 +28,9 @@ def findInPath(fileName, path=os.environ['PATH']):
 CONSOLE_LOG_LEVEL = logging.INFO
 FILE_LOG_LEVEL    = logging.INFO
 
+RUN_TEST = None
+LOAD_TEST = None
+
 SERVER_HTTP_PORT = 4444
 PLATFORM         = sys.platform
 WINDMILL_PATH    = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
@@ -35,8 +38,7 @@ JS_PATH          = os.path.join(WINDMILL_PATH, 'html')
 SAVES_PATH       = None
 
 TEST_URL  = 'http://windmill.osafoundation.org/tutorial'
-TEST_FILE = None
-TEST_DIR  = None
+
 FORWARDING_TEST_URL = None
 
 USECODE             = False
@@ -47,9 +49,6 @@ BROWSER_DEBUGGING   = False
 START_FIREFOX       = False
 START_IE            = False
 START_SAFARI        = False
-
-PYTHON_TEST_FRAME = False
-PYTHON_TEST_FILE  = None
 
 JAVASCRIPT_TEST_DIR = None
 

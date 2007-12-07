@@ -14,7 +14,7 @@
 #   limitations under the License.
 
 import windmill
-import sys, os, logging
+import sys, os, logging, re
 from time import sleep
 from windmill.authoring import frame
 from threading import Thread
@@ -55,19 +55,13 @@ def start_safari():
     windmill.settings['controllers'].append(controller)
     return controller
     
-# def run_json_test_file(*args):
-#     """Run the json test files passed to this function"""
-#     filename = ','.join(args)
-#     if filename.find(',') is not -1:
-#         for testfile in filename.split(','):
-#             run_json_test_file(testfile)
-#         return
-#     f = open(filename)
-#     test_strings = [line for line in f.read().splitlines() if line.startswith('{')]
-#     jsonrpc_client.start_suite(filename.split(os.path.sep)[-1])
-#     jsonrpc_client.run_json_tests(test_strings)
-#     jsonrpc_client.stop_suite()
-#     logger.info('Added tests from %s' % filename)
+def load_json_test_file(filename):
+    """Run the json test files passed to this function"""
+    test_strings = re.compile("\{.*\}").findall(open(filename, 'r').read())
+    jsonrpc_client.start_suite(filename.split(os.path.sep)[-1])
+    jsonrpc_client.run_json_tests(test_strings)
+    jsonrpc_client.stop_suite()
+    logger.info('Added tests from %s' % filename)
 
 def show_queue():
     """Return the current queue of tests and commands in windmill"""

@@ -61,7 +61,6 @@ def teardown_module(module):
         module.windmill_dict['xmlrpc_client'].stop_runserver() 
     else:
         admin_lib.teardown(module.windmill_dict)
-        
     sleep(.5)
     
 class RunJsonFile(object):

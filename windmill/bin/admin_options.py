@@ -19,40 +19,48 @@ import functest
 class LogLevel(object):
     """Log level command, sets the global logging level."""
     option_names = (None, 'loglevel')
-    
     def __call__(self, value):
         level = getattr(logging, value)
         windmill.settings['CONSOLE_LOG_LEVEL'] = getattr(logging, value)
-        
         return level
         
 class ExitOnDone(object):
     """Exit after all tests have run."""
     option_names = ('e', 'exit')
-    
     def __call__(self):
         windmill.settings['EXIT_ON_DONE'] = True
     
 class Debug(object):    
     """Turn on debugging."""    
     option_names = ('d', 'debug')
-    
     def __call__(self):
         windmill.settings['CONSOLE_LOG_LEVEL'] = getattr(logging, 'DEBUG')
     
-class TestFile(object):
-    """Set the test file to run on startup."""
-    option_names = (None, 'testfile')
-    
+# class TestFile(object):
+#     """Set the test file to run on startup."""
+#     option_names = (None, 'testfile')
+#     
+#     def __call__(self, value):
+#         windmill.settings['TEST_FILE'] = os.path.abspath(os.path.expanduser(value))
+#     
+# class TestDir(object):
+#     """Set the test directory to run on startup."""
+#     option_names = (None, 'testdir')
+#     
+#     def __call__(self, value):
+#         windmill.settings['TEST_DIR'] = os.path.abspath(os.path.expanduser(value))
+
+class RunTest(object):
+    """Run the given test file/dir"""
+    option_names = ('t', 'test')
     def __call__(self, value):
-        windmill.settings['TEST_FILE'] = os.path.abspath(os.path.expanduser(value))
-    
-class TestDir(object):
-    """Set the test directory to run on startup."""
-    option_names = (None, 'testdir')
-    
+        windmill.settings['RUN_TEST'] = os.path.abspath(os.path.expanduser(value))
+        
+class LoadTest(object):
+    """Run the given test file/dir"""
+    option_names = ('l', 'loadtest')
     def __call__(self, value):
-        windmill.settings['TEST_DIR'] = os.path.abspath(os.path.expanduser(value))
+        windmill.settings['LOAD_TEST'] = os.path.abspath(os.path.expanduser(value))    
         
 class GeneralBoolSettingToTrue(object):
     """Base class for setting a generic value to True."""
@@ -79,14 +87,14 @@ class StartSafari(GeneralBoolSettingToTrue):
     option_names = ('s', 'safari')
     setting = 'START_SAFARI'
     
-class RunPythonTests(object):
-    """Run a set of python tests. 
-        If no test file is specified the current directory is used."""
-    option_names = ('t', 'tests')
-    setting = 'PYTHON_TEST_FRAME'
-    def __call__(self, value=None):
-        windmill.settings[self.setting] = True
-        windmill.settings['PYTHON_TEST_FILE'] = value
+# class RunPythonTests(object):
+#     """Run a set of python tests. 
+#         If no test file is specified the current directory is used."""
+#     option_names = ('t', 'tests')
+#     setting = 'PYTHON_TEST_FRAME'
+#     def __call__(self, value=None):
+#         windmill.settings[self.setting] = True
+#         windmill.settings['PYTHON_TEST_FILE'] = value
 
 class RunJavascriptTest(object):
     """Run a directory of javascript tests.
@@ -154,8 +162,6 @@ Available Actions:
     shell         Enter the windmilll shell environment (modified python shell). 
                   Uses ipython if installed. Exit using ^d
     run_service   Run the windmill service in foreground. Kill using ^c.
-    tbox          Run the "continuous integration" mode. 
-                  Exits automatically after tests have finished.
     wx            Run the wxPython based graphical interface for the 
                   windmill service. Still experimental.
     
