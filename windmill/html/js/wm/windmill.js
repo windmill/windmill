@@ -15,11 +15,6 @@ Copyright 2006-2007, Open Source Applications Foundation
 */
 
 var windmill = new function () {
-    this.browser = null;
-    
-    this.init = function (b){
-      this.browser = b;
-    }
     
     //More namespacing
     this.builder={};
@@ -56,6 +51,11 @@ var windmill = new function () {
     this.remoteLoaded = false;
     this.remote = parent.window;
     
+    this.browser = null;
+    
+    this.init = function (b){
+      this.browser = b;
+    }
     
     this.Start = function(){
       windmill.service.setStartURL();
@@ -124,7 +124,6 @@ var windmill = new function () {
     
     //windmill Options to be set
     this.stopOnFailure = false;
-    this.showRemote = true;
     this.runTests = true;
     this.rwAlert = false;
     

@@ -22,7 +22,7 @@ windmill.registry = new function () {
 
 //Setup all the current methods supported
 windmill.registry.locator.push('id','link','xpath','jsid', 'name');
-windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure','showRemote', 'milliseconds', 'timeout','js');
+windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js');
 
 //Setup method registry
 windmill.registry.methods['open']                = {'locator': false, 'option': 'url' };

@@ -146,9 +146,6 @@ windmill.controller.commands.setOptions = function (param_object){
   if(typeof param_object.stopOnFailure != "undefined") {
     windmill.stopOnFailure = param_object.stopOnFailure;
   }
-  if(typeof param_object.showRemote != "undefined") {
-    windmill.showRemote = param_object.showRemote;
-  }
   if(typeof param_object.runTests != "undefined") {
     windmill.runTests = param_object.runTests;
   }

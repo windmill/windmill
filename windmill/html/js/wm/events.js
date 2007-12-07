@@ -145,7 +145,6 @@ windmill.events = new function (){
 	          // TODO: is there a way to update window.event?
 
 	          // work around for http://jira.openqa.org/browse/SEL-280 -- make the event available somewhere:
-	          //selenium.browserbot.getCurrentWindow().selenium_event = evt;
 	        }
 
 	        element.fireEvent('on' + eventType, evt);

@@ -33,10 +33,7 @@ windmill.controller.click = function(param_object){
        windmill.events.triggerMouseEvent(element, 'mousedown', true);
        windmill.events.triggerMouseEvent(element, 'mouseup', true);
        windmill.events.triggerMouseEvent(element, 'click', true);
-      
-       
-      
-       //Apparently there is some annoying issue with chrome..and this fixes it. Concept from selenium browerbot.
+             
        	if (!browser.isChrome && !preventDefault) {
 	        if (element.href) {
              windmill.controller.open({"url":element.href});

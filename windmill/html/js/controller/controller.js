@@ -362,9 +362,7 @@ windmill.controller = new function () {
   /********************************************************************************
   /* DOM location functionality, all used for various types of lookups in the DOM
   /*********************************************************************************/
-    
-  //A big part of the following is adapted from the selenium project browserbot
-    
+        
   // Refine a list of elements using a filter.
   this.selectElementsBy = function (filterType, filter, elements) {
     var filterFunction = this.filterFunctions[filterType];
@@ -470,7 +468,6 @@ windmill.controller = new function () {
   };
 }
     
-//All Element Lookup functionality, based on selenium browserbot code
 this.findElement = function (locator) {
     var locatorType = 'implicit';
     var locatorString = locator;
