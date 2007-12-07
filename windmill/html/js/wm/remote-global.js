@@ -40,6 +40,8 @@ var openDialog = function(id){
 		
 var toggleRec = function(){
   if ($('record').src.indexOf("img/record.png")  != -1){
+    windmill.ui.domexplorer.domExplorerOff();
+    windmill.ui.assertexplorer.assertExplorerOff();
     windmill.ui.recorder.recordOn();
     opener.window.focus();
     $('record').src = 'img/stoprecord.png';
