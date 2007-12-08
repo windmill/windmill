@@ -16,7 +16,7 @@ import os
 import commands
 
 def test_google_windmill_launch():
-    output = commands.getoutput('windmill firefox exit http://www.google.com tests='+
+    output = commands.getoutput('windmill firefox exit http://www.google.com test='+
                                  os.path.join(os.path.abspath(os.path.dirname(__file__)),
                                                               'files', 'google_test.py')
                                 )
