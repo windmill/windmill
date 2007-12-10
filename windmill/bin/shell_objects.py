@@ -86,7 +86,8 @@ def do_test(filename, load=False):
             functest.registry['browser_debugging'] = "True"
             xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
         functest.global_settings.test_filter = filter_string
-        from windmill.authoring import WindmillFunctestRunner
+        from windmill.authoring import WindmillFunctestRunner, enable_collector
+        enable_collector()
         functest.run_framework(test_args=[module_name], test_runner=WindmillFunctestRunner())
         
     run_functest_thread = Thread(target=run_functest)
