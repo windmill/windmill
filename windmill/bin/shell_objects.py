@@ -133,7 +133,7 @@ def run_js_test_dir(dirname):
     def parse_files(x, directory, files):
         if not os.path.split(directory)[-1].startswith('.'):
             additional_dir = directory.replace(dirname, '')
-            js_files.extend( ['/'+additional_dir+'/'+f for f in files if f.endswith('.js')]  )
+            js_files.extend( [additional_dir+'/'+f for f in files if f.endswith('.js')]  )
     os.path.walk(dirname, parse_files, 'x') 
     
     xmlrpc_client.add_command({'method':'commands.jsTests', 
