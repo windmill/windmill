@@ -277,11 +277,11 @@ class Frame(wx.Frame):
 	    
 	    if filename.find(".py") is not -1:
 		print "Running the python version of run test"
-		x = Thread(target=self.shell_objects['run_python_test'], args=[filename])
+		x = Thread(target=self.shell_objects['run_test'], args=[filename])
 		
 	    else:
 		print "Running the json version of run test"
-		x = Thread(target=self.shell_objects['run_json_test_file'], args=[filename])
+		x = Thread(target=self.shell_objects['run_test'], args=[filename])
 				
 	    x.start()
 
@@ -290,7 +290,7 @@ class Frame(wx.Frame):
 			      message = u"Choose directory to load")
     
 	if dialog.ShowModal() == wx.ID_OK:
-	    x = Thread(target=   self.shell_objects['run_json_test_dir'], args=[dialog.GetPath()])
+	    x = Thread(target=   self.shell_objects['run_test'], args=[dialog.GetPath()])
 	    x.start()
 	    
     def OnLoadTest(self, event):
@@ -305,10 +305,10 @@ class Frame(wx.Frame):
 	    filename = dialog.GetPath()
 	    
 	    if filename.find(".py") is not -1:
-		x = Thread(target=self.shell_objects['load_python_tests'], args=[filename])
+		x = Thread(target=self.shell_objects['load_test'], args=[filename])
 	    
 	    else:
-		x = Thread(target=self.shell_objects['load_json_test_file'], args=[filename])
+		x = Thread(target=self.shell_objects['load_test'], args=[filename])
 	    
 	    x.start()
 
@@ -317,7 +317,7 @@ class Frame(wx.Frame):
 			      message = u"Choose directory to load")
     
 	if dialog.ShowModal() == wx.ID_OK:
-	    x = Thread(target=self.shell_objects['load_json_test_dir'], args=[dialog.GetPath()])
+	    x = Thread(target=self.shell_objects['load_test'], args=[dialog.GetPath()])
 	
 	x.start()
 
