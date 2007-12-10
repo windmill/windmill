@@ -18,7 +18,21 @@ var jum = windmill.controller.asserts;
 
 windmill.jsTest = new function () {
   var brokenEval;
-
+  function appendScriptTag(win, code) {
+    var script = win.document.createElement('script');
+    script.type = 'text/javascript';
+    var head = win.document.getElementsByTagName("head")[0] ||
+      win.document.documentElement;
+    if (document.all) {
+      script.text = code;
+    }
+    else {
+      script.appendChild(win.document.createTextNode(code));
+    }
+    head.appendChild(script);
+    head.removeChild(script);
+    return true;
+  }
   function globalEval(code, testWin) {
     var win = testWin ? windmill.testWindow : window;
     // Do we have a working eval?
@@ -37,7 +51,7 @@ windmill.jsTest = new function () {
         //win.execScript(code);
       //}
       //else {
-        windmill.utility.appendScriptTag(win, code);
+        appendScriptTag(win, code);
       //}
     }
     else {
@@ -143,7 +157,7 @@ windmill.jsTest = new function () {
   // Run any init code in the init file, and grab
   // the ordered list of tests to run
   this.doTestRegistration = function(path) {
-    var str = windmill.utilities.getFile(path);
+    var str = this.getFile(path);
     // Eval in window scope
     globalEval(str, false);
     return true;
@@ -239,7 +253,7 @@ windmill.jsTest = new function () {
       if (path.indexOf('/initialize.js') == -1) {
         continue;
       }
-      var str = windmill.utilities.getFile(path);
+      var str = this.getFile(path);
       // Eval in window scope
       globalEval(str, this.runInTestWindowScope);
     }
@@ -249,7 +263,7 @@ windmill.jsTest = new function () {
       if (path.indexOf('/initialize.js') > -1) {
         continue;
       }
-      var str = windmill.utilities.getFile(path);
+      var str = this.getFile(path);
       if (window.execScript) {
         this.testScriptSrc += str + '\n';
       }
@@ -385,6 +399,11 @@ windmill.jsTest = new function () {
             testName + "<br>Test Result:" + false + '<br>Error: '+ msg);
     windmill.jsTest.sendJSReport(testName, false, e, this.currentJsTestTimer);
     this.testFailures.push(fail);
+  };
+  this.getFile = function (path) {
+    var file = fleegix.xhr.doReq({ url: path,
+	  async: false });
+    return file;
   };
 };
 
