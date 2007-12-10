@@ -17,6 +17,7 @@ import windmill
 import sys, os, logging, re
 from time import sleep
 from windmill.authoring import frame
+import simplejson
 from threading import Thread
 import functest
 
@@ -70,7 +71,10 @@ def show_queue():
 def do_test(filename, load=False):
     """Run or load the test file or directory passed to this function"""
     def json_test(filename):
-        return os.path.dirname(os.path.abspath(filename)), [
+        if os.path.isfile(filename) and os.path.isfile(os.path.join(os.path.dirname(filename), '__init__.py')):
+            return None, filename
+        else:
+            return os.path.dirname(os.path.abspath(filename)), [
                                f for f in filename.split('/') if f != ''][-1].split('.')[0]
     def python_test(filename):
         return os.path.abspath(filename), ''
@@ -84,15 +88,28 @@ def do_test(filename, load=False):
     def run_functest():
         if load:
             functest.registry['browser_debugging'] = "True"
+            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False, 'priority':'normal'}})
+        else:
             xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
         functest.global_settings.test_filter = filter_string
         from windmill.authoring import WindmillFunctestRunner, post_collector
         functest.collector.Collector.post_collection_functions.append(post_collector)
         functest.run_framework(test_args=[module_name], test_runner=WindmillFunctestRunner())
-        
-    run_functest_thread = Thread(target=run_functest)
-    from windmill.bin import admin_lib
-    admin_lib.on_ide_awake.append(run_functest_thread.start)
+    
+    if module_name is not None:    
+        run_thread = Thread(target=run_functest)
+        from windmill.bin import admin_lib
+        admin_lib.on_ide_awake.append(run_thread.start)
+    else:
+        if load:
+            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False, 'priority':'normal'}})
+        else:
+            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False, 'priority':'normal'}})
+        xmlrpc_client.run_tests(tests=[ 
+            simplejson.loads(l) for l in re.compile("\{.*\}").findall(open(filename, 'r').read())
+            ])
+    
+    
 
 run_test = lambda filename : do_test(filename, load=False)
 run_test.__name__ = 'run_test'
