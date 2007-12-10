@@ -143,7 +143,7 @@ windmill.jsTest = new function () {
   // Run any init code in the init file, and grab
   // the ordered list of tests to run
   this.doTestRegistration = function(path) {
-    var str = windmill.utility.getFile(path);
+    var str = windmill.utilities.getFile(path);
     // Eval in window scope
     globalEval(str, false);
     return true;
@@ -239,7 +239,7 @@ windmill.jsTest = new function () {
       if (path.indexOf('/initialize.js') == -1) {
         continue;
       }
-      var str = windmill.utility.getFile(path);
+      var str = windmill.utilities.getFile(path);
       // Eval in window scope
       globalEval(str, this.runInTestWindowScope);
     }
@@ -249,7 +249,7 @@ windmill.jsTest = new function () {
       if (path.indexOf('/initialize.js') > -1) {
         continue;
       }
-      var str = windmill.utility.getFile(path);
+      var str = windmill.utilities.getFile(path);
       if (window.execScript) {
         this.testScriptSrc += str + '\n';
       }
