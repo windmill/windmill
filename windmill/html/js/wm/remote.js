@@ -284,7 +284,17 @@ windmill.ui.remote = new function () {
       i0.size  = '40';
       i0.setAttribute('value', method);
       c.appendChild(i0);
-            
+      
+      c.innerHTML += '&nbsp&nbsp&nbsp&nbsp<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\''+action.id+
+	    '\')" style="height:18px;width:18px;" src="img/play.png"></a><a alt="Delete Action" href="#">'+
+	    '<img border=0 onclick="windmill.ui.remote.deleteAction(\''+action.id+'\')" style="height:18px;width:18px;" '+
+	    'src="img/trash.png"></a>';
+      
+      c.innerHTML += '<a onclick="windmill.ui.remote.addActionAbove(\''+action.id+
+	    '\')" href="#"><img border=0 src="img/addup.png"></a><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
+	    '\')" href="#"><img border=0 src="img/adddown.png"></a>';
+      r.appendChild(c);
+
       //This makes it look better in IE
       c.innerHTML += '<br>';
       var i = windmill.remote.document.createElement('input');
@@ -300,19 +310,6 @@ windmill.ui.remote = new function () {
       } 
 
       c.appendChild(i);
-      r.appendChild(c);
-      var c = windmill.remote.document.createElement("td");
-      c.innerHTML += '<a onclick="windmill.ui.remote.addActionAbove(\''+action.id+
-	    '\')" href="#"><img border=0 src="img/addup.png"></a><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
-	    '\')" href="#"><img border=0 src="img/adddown.png"></a>';
-      r.appendChild(c);
-
-      var c = windmill.remote.document.createElement("td"); 
-      c.innerHTML += '<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\''+action.id+
-	    '\')" style="height:18px;width:18px;" src="img/play.png"></a><a alt="Delete Action" href="#">'+
-	    '<img border=0 onclick="windmill.ui.remote.deleteAction(\''+action.id+'\')" style="height:18px;width:18px;" '+
-	    'src="img/trash.png"></a>';
-            
       r.appendChild(c);
       t.appendChild(r);
             
