@@ -78,7 +78,7 @@ windmill.controller = new function () {
       //Here if the user hasn't specified the test window scope
       //we use the default and prepend it, else we eval whatever js they passed
       var jsid; 
-      if (param_object.jsid.indexOf('windmill.testWindow') != -1){
+      if ((param_object.jsid.indexOf('windmill.testWindow') != -1) || (param_object.jsid.indexOf('_w') != -1)){
         eval ("jsid=" + param_object.jsid + ";");
       }
       else{
