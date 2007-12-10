@@ -132,6 +132,7 @@ windmill/html/js/wm/results.js
 windmill/html/js/wm/service.js
 windmill/html/js/wm/timing.js
 windmill/html/js/wm/ui.js
+windmill/html/js/wm/utilities.js
 windmill/html/js/wm/windmill-exec.js
 windmill/html/js/wm/windmill.js
 windmill/html/js/wm/xhr.js
