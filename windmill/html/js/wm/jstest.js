@@ -239,7 +239,7 @@ windmill.jsTest = new function () {
       if (path.indexOf('/initialize.js') == -1) {
         continue;
       }
-      var str = this.getFile(path);
+      var str = windmill.utility.getFile(path);
       // Eval in window scope
       globalEval(str, this.runInTestWindowScope);
     }
@@ -249,7 +249,7 @@ windmill.jsTest = new function () {
       if (path.indexOf('/initialize.js') > -1) {
         continue;
       }
-      var str = this.getFile(path);
+      var str = windmill.utility.getFile(path);
       if (window.execScript) {
         this.testScriptSrc += str + '\n';
       }
