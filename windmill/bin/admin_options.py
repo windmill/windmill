@@ -104,6 +104,13 @@ class RunJavascriptTest(object):
     def __call__(self, value):
         windmill.settings[self.setting] = value
 
+class Extensions(object):
+    """The directory containing any windmill javascript extensions."""
+    option_names = (None, 'extensions')
+    setting = 'EXTENSIONS_DIR'
+    def __call__(self, value):
+        windmill.settings[self.setting] = value
+
 class PDB(GeneralBoolSettingToTrue):
     """Enable pdb debugging when running python tests."""
     option_names = ('p', 'pdb')
