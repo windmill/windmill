@@ -100,6 +100,7 @@ windmill.jsTest = new function () {
   }
   // Main function to run a directory of JS tests
   this.run = function (testFiles) {
+    this.actions.loadActions();
     this.init();
     this.doSetup(testFiles);
     this.loadTests();
