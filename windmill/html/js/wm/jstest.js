@@ -338,7 +338,7 @@ windmill.jsTest = new function () {
       }
       this.currentJsTestTimer.endTime();
       //write to the results tab in the IDE
-      windmill.ui.results.writeResult("<br>Test: <b>" +
+      windmill.ui.results.writeResult("<br><b>Test:</b> " +
 				      testName + "<br>Test Result:" + true);
       //send report for pass
       windmill.jsTest.sendJSReport(testName, true, null,
