@@ -338,8 +338,7 @@ windmill.jsTest = new function () {
       }
       this.currentJsTestTimer.endTime();
       //write to the results tab in the IDE
-      windmill.ui.results.writeResult("<br><b>Test:</b> " +
-				      testName + "<br>Test Result:" + true);
+      windmill.ui.results.writeResult("<br><b>Test:</b> " + testName + "<br>Test Result:" + true);
       //send report for pass
       windmill.jsTest.sendJSReport(testName, true, null,
         this.currentJsTestTimer);
@@ -381,7 +380,9 @@ windmill.jsTest = new function () {
             item.params.jsid = windmill.controller.handleVariable(jsid);
           }
           // Execute the UI action with the set params
+          windmill.ui.results.writeStatus('Running '+ item.method + '...');
           func(item.params);
+          windmill.ui.results.writeResult("<br><b>Action:</b> " + item.method + "<br>Params: " + fleegix.json.serialize(item.params));
         }
       }
       var f = function () { _this.runTestItemArray.apply(_this); };

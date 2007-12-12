@@ -174,6 +174,10 @@ windmill.controller.commands.getDOM = function (param_object){
 
 //Function to start the running of jsTests
 windmill.controller.commands.jsTests = function (paramObj) {
+    //Setup needed variables
+    windmill.jsTest.actions.loadActions();
+    var wm = windmill.jsTest.actions;
+    
     var testFiles = paramObj.tests;
     if (!testFiles.length) {
       throw new Error('No JavaScript tests to run.');
