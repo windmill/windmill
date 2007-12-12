@@ -17,7 +17,6 @@ import windmill
 import sys, os, logging, re
 from time import sleep
 from windmill.authoring import frame
-import simplejson
 from threading import Thread
 import functest
 
@@ -71,8 +70,8 @@ def show_queue():
 def do_test(filename, load=False):
     """Run or load the test file or directory passed to this function"""
     def json_test(filename):
-        if os.path.isfile(filename) and os.path.isfile(os.path.join(os.path.dirname(filename), '__init__.py')):
-            return None, filename
+        if os.path.isfile(filename) and not os.path.isfile(os.path.join(os.path.dirname(filename), '__init__.py')):
+            None, load_json_test_file(filename)
         else:
             return os.path.dirname(os.path.abspath(filename)), [
                                f for f in filename.split('/') if f != ''][-1].split('.')[0]
@@ -100,15 +99,6 @@ def do_test(filename, load=False):
         run_thread = Thread(target=run_functest)
         from windmill.bin import admin_lib
         admin_lib.on_ide_awake.append(run_thread.start)
-    else:
-        if load:
-            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False, 'priority':'normal'}})
-        xmlrpc_client.run_tests(tests=[ 
-            simplejson.loads(l) for l in re.compile("\{.*\}").findall(open(filename, 'r').read())
-            ])
-        if load:
-            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
-    
     
 
 run_test = lambda filename : do_test(filename, load=False)
