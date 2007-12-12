@@ -163,6 +163,8 @@ windmill.controller = new function () {
     if (!element){
       return false;
     }
+    //clear the box
+    element.value = '';
     //Get the focus on to the item to be typed in, or selected
     windmill.events.triggerEvent(element, 'focus', false);
     windmill.events.triggerEvent(element, 'select', true);
