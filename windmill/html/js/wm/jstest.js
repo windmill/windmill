@@ -88,7 +88,8 @@ windmill.jsTest = new function () {
   this.currentTestName;
   this.currentJsTestTimer;
   this.jsSuiteSummary;
-
+  this.waiting;
+  
   // Initialize everything to starting vals
   this.init = function () {
     windmill.testWindow.windmill = windmill;
@@ -103,6 +104,8 @@ windmill.jsTest = new function () {
     this.testCount = 0;
     this.testFailureCount = 0;
     this.runInTestWindowScope = true;
+    this.waiting = false;
+
   }
   // Main function to run a directory of JS tests
   this.run = function (testFiles) {
@@ -389,6 +392,17 @@ windmill.jsTest = new function () {
         if (item.method == 'waits.sleep') {
           t = item.params.milliseconds;
         }
+        //If the waits.forElement is called
+        //We want to pause this loop and call it
+        else if (item.method == 'waits.forElement'){
+          var func = eval('windmill.jsTest.actions.' + item.method);
+          //Add a parameter so we know the js framework
+          //is calling the function inside waits.forElement
+          item.params.orig = 'js';
+          func(item.params);
+          //Let the js test framework know that it's in a waiting state
+          this.waiting = true;
+        }
         else {
           // Get the UI action to execute
           var func = eval('windmill.jsTest.actions.' + item.method);
@@ -405,8 +419,11 @@ windmill.jsTest = new function () {
             "<br>Params: " + fleegix.json.serialize(item.params));
         }
       }
-      var f = function () { _this.runTestItemArray.apply(_this); };
-      setTimeout(f, t);
+      if (!this.waiting){
+        var f = function () { _this.runTestItemArray.apply(_this); };
+        setTimeout(f, t);
+      }
+
     }
   };
   this.handleErr = function (e) {
@@ -493,7 +510,7 @@ windmill.jsTest.actions.loadActions = function () {
   };
   // Build wrappers for controller, controller.extensions,
   // controller.waits
-  var names = ['', 'extensions'];
+  var names = ['', 'extensions','waits'];
   for (var i = 0; i < names.length; i++) {
     var name = names[i];
     var namespace = name ? windmill.controller[name] : windmill.controller;
