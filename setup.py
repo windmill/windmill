@@ -16,7 +16,7 @@ from setuptools import setup, find_packages
 import os
 
 PACKAGE_NAME = "windmill"
-PACKAGE_VERSION = "0.3.3pre"
+PACKAGE_VERSION = "0.3.4pre"
 
 SUMMARY = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging and recording capabilities.'
 
