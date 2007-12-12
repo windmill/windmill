@@ -355,17 +355,16 @@ windmill.ui.remote = new function () {
     var c = windmill.remote.document.createElement("td");
     c.colSpan = "2";
     c.appendChild(s);
-    r.appendChild(c);
-    var c = windmill.remote.document.createElement("td");
 
-    c.innerHTML += '<td><a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\''+action.id+
+    c.innerHTML += '&nbsp&nbsp&nbsp&nbsp&nbsp<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\''+action.id+
     '\')" style="height:18px;width:18px;" src="img/play.png"></a><a alt="Delete Action" href="#">'+
     '<img border=0 onclick="windmill.ui.remote.deleteAction(\''+action.id+'\')" style="height:18px;width:18px;" '+
     'src="img/trash.png"></a><a onclick="windmill.ui.remote.addActionAbove(\''+action.id+
     '\')" href="#"><img border=0  src="img/addup.png"></a><a onclick="windmill.ui.remote.addActionBelow(\''+action.id+
-    '\')" href="#"><img border=0  src="img/adddown.png"></a></td>';
- 
-
+    '\')" href="#"><img border=0  src="img/adddown.png"></a>';
+    if (windmill.browser.isIE){ 
+      c.innerHTML += '<br>';
+    }
     r.appendChild(c);
     t.appendChild(r);
 

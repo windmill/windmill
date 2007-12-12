@@ -75,7 +75,8 @@ windmill.events = new function (){
     evt.ctrlKey = controlKeyDown;
     return evt;
   };
-    
+  
+  
   /* Fire an event in a browser-compatible manner */
   this.triggerEvent = function (element, eventType, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
 
@@ -99,7 +100,54 @@ windmill.events = new function (){
       element.dispatchEvent(evt);
     }
   };
-    
+  
+  this.getKeyCodeFromKeySequence = function (keySequence) {
+    var match = /^\\(\d{1,3})$/.exec(keySequence);
+    if (match != null) {
+        return match[1];
+    }
+    match = /^.$/.exec(keySequence);
+    if (match != null) {
+        return match[0].charCodeAt(0);
+    }
+    // this is for backward compatibility with existing tests
+    // 1 digit ascii codes will break however because they are used for the digit chars
+    match = /^\d{2,3}$/.exec(keySequence);
+    if (match != null) {
+        return match[0];
+    }
+      windmill.ui.results.writeResult("invalid keySequence");
+  }
+  
+  this.triggerKeyEvent = function (element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
+    var keycode = windmill.events.getKeyCodeFromKeySequence(keySequence);
+    canBubble = (typeof(canBubble) == undefined) ? true : canBubble;
+    if (element.fireEvent) {
+        var keyEvent = windmill.events.createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
+        keyEvent.keyCode = keycode;
+        element.fireEvent('on' + eventType, keyEvent);
+    }
+    else {
+        var evt;
+        if (window.KeyEvent) {
+            evt = document.createEvent('KeyEvents');
+            evt.initKeyEvent(eventType, true, true, window, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown, keycode, keycode);
+        } else {
+           evt = document.createEvent('UIEvents');
+            
+            evt.shiftKey = shiftKeyDown;
+            evt.metaKey = metaKeyDown;
+            evt.altKey = altKeyDown;
+            evt.ctrlKey = controlKeyDown;
+
+            evt.initUIEvent(eventType, true, true, window, 1);
+            evt.keyCode = keycode;
+            evt.which = keycode;
+        }
+        element.dispatchEvent(evt);
+    }
+  }
+
   /* Fire a mouse event in a browser-compatible manner */
   this.triggerMouseEvent = function (element, eventType, canBubble, clientX, clientY, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
     clientX = clientX ? clientX : 0;

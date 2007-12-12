@@ -155,8 +155,7 @@ windmill.controller = new function () {
     setTimeout('done()', 2000);
     return true;
   };
-
-
+  
   //Type Function
   this.type = function (param_object){
 
@@ -180,9 +179,15 @@ windmill.controller = new function () {
         actualValue = stringValue.substr(0, maxLength);
       }
     }
-     
-    //Set the value
-    element.value = actualValue;
+    
+    var s = actualValue;
+    for (var c = 0; c < s.length; c++){
+      if (!windmill.browser.isSafari){
+        windmill.events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
+      }
+      element.value += s.charAt(c);
+      windmill.events.triggerKeyEvent(element, 'keyup', s.charAt(c), true, false,false, false,false);
+    }
      
     // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
     //Another wierd chrome thing?
@@ -358,6 +363,9 @@ windmill.controller = new function () {
     }
     return false;
   }
+  
+  // The browser nav buttons
+  
   
   /********************************************************************************
   /* DOM location functionality, all used for various types of lookups in the DOM

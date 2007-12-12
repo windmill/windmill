@@ -50,7 +50,7 @@ windmill.xhr = new function () {
 	      windmill.ui.results.writeStatus("Running " + windmill.xhr.xhrResponse.result.method + "...");
 	      windmill.ui.playback.setPlaying();
       }
-      else{ 
+      else{
         windmill.ui.playback.resetPlayBack();
         windmill.ui.results.writeStatus("Waiting for tests...");
       }
@@ -63,35 +63,35 @@ windmill.xhr = new function () {
       	action_timer.setName(windmill.xhr.xhrResponse.result.method);
       	action_timer.startTime();
                 
-	  //If the action already exists in the UI, skip all the creating suite stuff
-  	if (windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid) != null){
-  	  var action = windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid);
-  	  action.style.background = 'lightyellow';
-  	}
-  	//If its a command we don't want to build any UI
-  	else if (windmill.xhr.xhrResponse.result.method.split(".")[0] == 'commands'){
-  	  //do nothing
-  	}
-  	else {
-  	  //If the suite name is null, set it to default
-  	  if (windmill.xhr.xhrResponse.result.suite_name == null){
-  	    windmill.xhr.xhrResponse.result.suite_name = 'Default';
-  	  }
-  	  var suite = windmill.ui.remote.getSuite(windmill.xhr.xhrResponse.result.suite_name);
+	      //If the action already exists in the UI, skip all the creating suite stuff
+      	if (windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid) != null){
+      	  var action = windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid);
+      	  action.style.background = 'lightyellow';
+      	}
+      	//If its a command we don't want to build any UI
+      	else if (windmill.xhr.xhrResponse.result.method.split(".")[0] == 'commands'){
+      	  //do nothing
+      	}
+      	else {
+      	  //If the suite name is null, set it to default
+      	  if (windmill.xhr.xhrResponse.result.suite_name == null){
+      	    windmill.xhr.xhrResponse.result.suite_name = 'Default';
+      	  }
+      	  var suite = windmill.ui.remote.getSuite(windmill.xhr.xhrResponse.result.suite_name);
                     
-  	  //Add the action to the suite
-  	  var action = windmill.ui.remote.buildAction(windmill.xhr.xhrResponse.result.method,windmill.xhr.xhrResponse.result.params);
-  	  var suite = windmill.remote.$(windmill.xhr.xhrResponse.result.suite_name);
-  	  suite.appendChild(action);
-  	  //IE Hack
-  	  if (windmill.browser.isIE){ windmill.remote.$(action.id).innerHTML = action.innerHTML; }
-  	  var ide = windmill.remote.$('ide');
+      	  //Add the action to the suite
+      	  var action = windmill.ui.remote.buildAction(windmill.xhr.xhrResponse.result.method,windmill.xhr.xhrResponse.result.params);
+      	  var suite = windmill.remote.$(windmill.xhr.xhrResponse.result.suite_name);
+      	  suite.appendChild(action);
+      	  //IE Hack
+      	  if (windmill.browser.isIE){ windmill.remote.$(action.id).innerHTML = action.innerHTML; }
+      	  var ide = windmill.remote.$('ide');
                 
-  	  //If the settings box is checked, scroll to the bottom
-  	  if ( windmill.remote.$('autoScroll').checked == true){
-  	    ide.scrollTop = ide.scrollHeight;
-  	  }
-  	}
+      	  //If the settings box is checked, scroll to the bottom
+      	  if ( windmill.remote.$('autoScroll').checked == true){
+      	    ide.scrollTop = ide.scrollHeight;
+      	  }
+      	}
                 
 	//Forgotten case; If the windmill.runTests is false, but we are trying to change it back to true with a command
 	//This fix runs all commands regardless  
