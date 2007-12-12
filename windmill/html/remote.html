@@ -67,10 +67,21 @@
 	<div id="runningStatus" align="center"><b>Status:</b> Nothing yet..</div>
 	
 	<div id="controllers">
-		<a href="#" title="Toggle Recorder"><img height="28px" width="28px" alt="Toggle Recorder" name='record' id="record" border=no src="img/record.png" onClick="toggleRec();" ></a>
-		&nbsp<a href="#" title="Play All"><img height="28px" width="28px" alt="Play All" name ='playback' id="playback" border=no src="img/playback.png" onClick="togglePlay();"></a>
-		&nbsp<a href="#" title="Toggle DOM Explorer"><img height="28px" width="28px" alt="Toggle DOM Explorer" name ='explorer' id="explorer" border=no src="img/xon.png" onClick="toggleExplore();"></a>
-		&nbsp<a href="#" title="Toggle Assert Explorer"><img height="28px" width="28px" alt="Toggle Assert Explorer" name ='assertx' id="assertx" border=no src="img/axon.png" onClick="toggleAExplore();"></a>
+		<a href="#" title="Toggle Recorder">
+			<img height="28px" width="28px" alt="Toggle Recorder" name='record' id="record" border=no src="img/record.png" onClick="toggleRec();">
+			</a>
+
+		<a href="#" title="Play All">
+			<img height="28px" width="28px" alt="Play All" name ='playback' id="playback" border=no src="img/playback.png" onClick="togglePlay();">
+		</a>
+
+		<a href="#" title="Toggle DOM Explorer">
+			<img height="28px" width="28px" alt="Toggle DOM Explorer" name ='explorer' id="explorer" border=no src="img/xon.png" onClick="toggleExplore();">
+		</a>
+
+		<a href="#" title="Toggle Assert Explorer">
+			<img height="28px" width="28px" alt="Toggle Assert Explorer" name ='assertx' id="assertx" border=no src="img/axon.png" onClick="toggleAExplore();">
+		</a>
 	</div>
 	
 	<div id="domExp">
@@ -160,6 +171,10 @@
 		<br>
 		<h3>System</h3>
 		<table style="font:14px arial;">
+			<tr>
+				<td>Throw JavaScript errors, full debug:</td>
+				<td> <INPUT TYPE=checkbox UNCHECKED ID='throwDebug'></td>
+			</tr>
 			<tr>
 				<td>Break on failure:</td>
 				<td> <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="windmill.ui.toggleBreak();"></td>

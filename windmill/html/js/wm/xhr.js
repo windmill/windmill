@@ -119,7 +119,10 @@ windmill.xhr = new function () {
 					    "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
 	    //action.style.background = '#FF9692';
 	    result = false;
-	    throw(error);
+	    //If the option to throw errors is set
+	    if ($('throwDebug').checked == true){
+	      throw(error);
+      }
 	  }
 	}
 	else { 
