@@ -117,7 +117,7 @@ windmill.xhr = new function () {
 	    windmill.ui.results.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + 
 					    "</b><br>Parameters: " + to_write +
 					    "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
-	    action.style.background = '#FF9692';
+	    //action.style.background = '#FF9692';
 	    result = false;
 	    throw(error);
 	  }
@@ -191,6 +191,9 @@ windmill.xhr = new function () {
       var jsonObject = new json_call('1.1', 'next_action');
       var jsonString = fleegix.json.serialize(jsonObject);
       
+      // Don't trap errors in the XHR call
+      fleegix.xhr.debug = true;
+
       //Execute the post to get the next action
       //Set the xhr timeout to be really high
       //handle the timeout manually

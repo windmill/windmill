@@ -33,7 +33,7 @@ windmill.jsTest = new function () {
     head.removeChild(script);
     return true;
   }
-  function globalEval(code, testWin) {
+  function globalEval(path, code, testWin) {
     var win = testWin ? windmill.testWindow : window;
     // Do we have a working eval?
     if (typeof brokenEval == 'undefined') {
@@ -46,16 +46,22 @@ windmill.jsTest = new function () {
         delete window.__EVAL_TEST__;
       }
     }
-    if (brokenEval) {
-      //if (window.execScript) {
-        //win.execScript(code);
-      //}
-      //else {
+    // Try to eval the code
+    try {
+      if (brokenEval) {
         appendScriptTag(win, code);
-      //}
+      }
+      else {
+        win.eval.call(win, code);
+      }
     }
-    else {
-      win.eval.call(win, code);
+    // Pass along syntax errors
+    catch (e) {
+      var err = new Error("Error eval'ing code in file '" +
+        path + "' (" + e.message + ")");
+      err.name = e.name;
+      err.stack = e.stack;
+      throw err;
     }
   };
   function combineLists(listA, listB) {
@@ -160,7 +166,7 @@ windmill.jsTest = new function () {
   this.doTestRegistration = function(path) {
     var str = this.getFile(path);
     // Eval in window scope
-    globalEval(str, false);
+    globalEval(path, str, false);
     return true;
   };
   // Can be called from the eval of an initialize.js file --
@@ -170,8 +176,9 @@ windmill.jsTest = new function () {
   };
   // Can be called from the eval of an initialize.js file --
   // parses a JS namespace object for functions that
-  // start with 'test_'. Does not guarantee the order of
-  // tests run
+  // start with 'test_'. Does not *guarantee* the order of
+  // tests run, but all existing ECMAScript implementations
+  // actually do a for/in in the order properties are added
   this.registerTestNamespace = function (name) {
     this.testNamespaces.push(name);
   };
@@ -180,20 +187,16 @@ windmill.jsTest = new function () {
     var str = '';
     function parseObj(obj, namespace) {
       var re = /^test_/;
-      var o = obj;
-      for (var p in o) {
-        var item = o[p];
-        if (!re.test(p)) {
-          str += p + ': ' + item + ', ';
-        }
-
+      var parseObj = obj;
+      for (var parseProp in parseObj) {
+        var item = parseObj[parseProp];
         // Functions or Arrays with names beginning with 'test_'
         if ((typeof item == 'function' ||
-          typeof item.push == 'function') && re.test(p)) {
-          arr.push(namespace + '.' + p);
+          typeof item.push == 'function') && re.test(parseProp)) {
+          arr.push(namespace + '.' + parseProp);
         }
         else if (typeof item == 'object') {
-          var n = namespace + '.' + p;
+          var n = namespace + '.' + parseProp;
           parseObj(item, n);
         }
       }
@@ -214,27 +217,26 @@ windmill.jsTest = new function () {
     else {
       var win = this.runInTestWindowScope ?
         windmill.testWindow : window;
-      parseObj(win[name], name);
+      var tObj = win[name];
+      if (!tObj) {
+        throw new Error('Test namespace "' + name +
+          '" does not exist -- it is not defined in any of your test files.');
+      }
+      else {
+        parseObj(tObj, name);
+      }
     }
     this.testList = combineLists(this.testList, arr);
   };
   this.getTestNames = function () {
-    if (this.regFile) {
+    // Specific test registrations in register.js
+    if (!this.regFile) {
+      throw new Error('No register.js file found.');
+    }
+    else {
       var n = this.testNamespaces;
       for (var i = 0; i < n.length; i++) {
         this.parseTestNamespace(n[i]);
-      }
-    }
-    else {
-      var re = /^test_/;
-      var arr = [];
-      for (var p in window) {
-        var item = window[p];
-        if ((typeof item == 'function'
-          || typeof item.push == 'function') && re.test(p)) {
-          arr.push(p);
-        }
-        this.testList = arr;
       }
     }
     if (this.testList.length) {
@@ -256,7 +258,7 @@ windmill.jsTest = new function () {
       }
       var str = this.getFile(path);
       // Eval in window scope
-      globalEval(str, this.runInTestWindowScope);
+      globalEval(path, str, this.runInTestWindowScope);
     }
     // Then eval the test files
     for (var i = 0; i < tests.length; i++) {
@@ -269,7 +271,7 @@ windmill.jsTest = new function () {
         this.testScriptSrc += str + '\n';
       }
       // Eval in window scope
-      globalEval(str, this.runInTestWindowScope);
+      globalEval(path, str, this.runInTestWindowScope);
     }
     return true;
   };
@@ -278,14 +280,28 @@ windmill.jsTest = new function () {
   };
   this.runTests = function () {
     var arr = null; // parseTestName recurses through this
-    var p = null; // Appended to by parseTestName
+    var parseObjPath = null; // Appended to by parseTestName
     var testName = '';
     var testFunc = null;
     var win = this.runInTestWindowScope ?
       windmill.testWindow : window;
-    var parseTestName = function (n) {
-      p = !n ? win : p[n];
-      return arr.length ? parseTestName(arr.shift()) : p;
+    var parseTestName = function (name) {
+      parseObjPath = !name ? win : parseObjPath[name];
+      if (!parseObjPath) {
+        var errMsg = 'Test "' + testName + '" does not exist.';;
+        // The syntax-error possibility is only for browsers with
+        // a broken eval (IE, Safari 2) -- the script-append hack
+        // blindly sets the text of the script without checking syntax
+        if (brokenEval) {
+          errMsg += ' Either this object is not defined in' +
+            ' any test file, or there is a syntax error in the file where it is defined.';
+        }
+        else {
+          errMsg += ' This object is not defined in any test file.';
+        }
+        throw new Error(errMsg);
+      }
+      return arr.length ? parseTestName(arr.shift()) : parseObjPath;
     };
     if (this.testOrder.length == 0) {
       this.finish();
@@ -299,9 +315,9 @@ windmill.jsTest = new function () {
       // property/key onto the window obj from the array
       // 'foo.bar.baz' => arr = ['foo', 'bar', 'baz']
       // parseTestName:
-      // p = window['foo'] =>
-      // p = window['foo']['bar'] =>
-      // p = window['foo']['bar']['baz']
+      // parseObjPath = window['foo'] =>
+      // parseObjPath = window['foo']['bar'] =>
+      // parseObjPath = window['foo']['bar']['baz']
       testFunc = parseTestName();
       // Tell IDE what is going on
       windmill.ui.results.writeStatus('Running '+ testName + '...');
@@ -330,7 +346,8 @@ windmill.jsTest = new function () {
         // Holy crap, what a god-awful hack this is
         // There *has* to be a better way to do this
         var execStr = 'window.execFunc = ' +
-          testFunc.toString() + '; try { window.execFunc.call(window); } catch(e) { window.jsTest.handleErr.call(window.jsTest, e); }';
+          testFunc.toString() + '; try { window.execFunc.call(window); }' +
+          ' catch(e) { window.jsTest.handleErr.call(window.jsTest, e); }';
         windmill.testWindow.execScript(execStr);
       }
       else {
@@ -338,7 +355,8 @@ windmill.jsTest = new function () {
       }
       this.currentJsTestTimer.endTime();
       //write to the results tab in the IDE
-      windmill.ui.results.writeResult("<br><b>Test:</b> " + testName + "<br>Test Result:" + true);
+      windmill.ui.results.writeResult("<br><b>Test:</b> " + testName +
+        "<br>Test Result:" + true);
       //send report for pass
       windmill.jsTest.sendJSReport(testName, true, null,
         this.currentJsTestTimer);
@@ -358,7 +376,8 @@ windmill.jsTest = new function () {
     else {
       var item = this.testItemArray.funcs.shift();
       if (typeof item == 'undefined') {
-        throw new Error('Test item in array-style test is undefined -- likely a trailing comma separator has caused this.');
+        throw new Error('Test item in array-style test is undefined --' +
+          ' likely a trailing comma separator has caused this.');
       }
       if (typeof item == 'function' ||
         (document.all && item.toString().indexOf('function') == 0)) {
@@ -382,7 +401,8 @@ windmill.jsTest = new function () {
           // Execute the UI action with the set params
           windmill.ui.results.writeStatus('Running '+ item.method + '...');
           func(item.params);
-          windmill.ui.results.writeResult("<br><b>Action:</b> " + item.method + "<br>Params: " + fleegix.json.serialize(item.params));
+          windmill.ui.results.writeResult("<br><b>Action:</b> " + item.method +
+            "<br>Params: " + fleegix.json.serialize(item.params));
         }
       }
       var f = function () { _this.runTestItemArray.apply(_this); };
@@ -404,7 +424,8 @@ windmill.jsTest = new function () {
   };
   this.getFile = function (path) {
     var file = fleegix.xhr.doReq({ url: path,
-	  async: false });
+	  async: false,
+    preventCache: true });
     return file;
   };
 };
