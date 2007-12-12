@@ -20,6 +20,7 @@ from time import sleep
 import wsgi_fileserver
 
 def setup_module(module):
+    functest.registry['browser'] = functest.registry.get('browser', 'safari')
     windmill.authoring.setup_module(module)
 
     application = wsgi_fileserver.WSGIFileServerApplication(root_path=os.path.dirname(__file__), mount_point='/windmill-unittests/')
