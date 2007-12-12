@@ -89,12 +89,12 @@ def do_test(filename, load=False):
         if load:
             functest.registry['browser_debugging'] = "True"
             xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False, 'priority':'normal'}})
-        else:
-            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
         functest.global_settings.test_filter = filter_string
         from windmill.authoring import WindmillFunctestRunner, post_collector
         functest.collector.Collector.post_collection_functions.append(post_collector)
         functest.run_framework(test_args=[module_name], test_runner=WindmillFunctestRunner())
+        if load:
+            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
     
     if module_name is not None:    
         run_thread = Thread(target=run_functest)
@@ -103,11 +103,11 @@ def do_test(filename, load=False):
     else:
         if load:
             xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False, 'priority':'normal'}})
-        else:
-            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False, 'priority':'normal'}})
         xmlrpc_client.run_tests(tests=[ 
             simplejson.loads(l) for l in re.compile("\{.*\}").findall(open(filename, 'r').read())
             ])
+        if load:
+            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
     
     
 
