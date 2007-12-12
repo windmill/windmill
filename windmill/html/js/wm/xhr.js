@@ -119,7 +119,7 @@ windmill.xhr = new function () {
 					    "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');     
 	    action.style.background = '#FF9692';
 	    result = false;
-	    //throw(error);
+	    throw(error);
 	  }
 	}
 	else { 
