@@ -326,7 +326,22 @@ windmill.controller = new function () {
     
     return true;
   };
-
+  
+  
+  //Browser navigation functions
+  this.goBack = function(param_object){
+    windmill.testWindow.history.back();
+    return true;
+  }
+  this.goForward = function(param_object){
+    windmill.testWindow.history.forward();
+    return true;
+  }
+  this.refresh = function(param_object){
+    windmill.testWindow.location.reload(true);
+    return true;
+  }
+  
   //After the app reloads you have to re overwrite the alert function for the TestingApp
   this.reWriteAlert = function(param_object){
     windmill.rwAlert = true;
