@@ -188,47 +188,57 @@ windmill.jsTest = new function () {
   this.parseTestNamespace = function (name) {
     var arr = [];
     var str = '';
-    function parseObj(obj, namespace) {
+    function parseNamespaceObj(obj, namespace) {
       var re = /^test_/;
       var parseObj = obj;
+      // Only functions and arrays
+      var isTestable = function (o) {
+        if (document.all) {
+          // IE loses type info for functions across window boundries
+          if ((o.toString && o.toString().indexOf('function')) == 0 ||
+            (o.push && typeof o.length == 'number')) {
+            return true;
+          }
+        }
+        else {
+          if (typeof o == 'function' || typeof o.push == 'function') {
+            return true;
+          }
+        }
+      };
+      if (parseObj.setup && isTestable(parseObj.setup)) {
+        arr.push(namespace + '.setup');
+      }
       for (var parseProp in parseObj) {
         var item = parseObj[parseProp];
-        // Functions or Arrays with names beginning with 'test_'
-        if ((typeof item == 'function' ||
-          typeof item.push == 'function') && re.test(parseProp)) {
-          arr.push(namespace + '.' + parseProp);
+        // functions or arrays 
+        if (isTestable(item)) {
+          // Only those with names beginning with 'test_'
+          if (re.test(parseProp)) {
+            arr.push(namespace + '.' + parseProp);
+          }
         }
-        else if (typeof item == 'object') {
+        // Possible namespace objects -- look for more tests
+        else {
           var n = namespace + '.' + parseProp;
-          parseObj(item, n);
+          parseNamespaceObj(item, n);
         }
       }
-    }
-    // IE-only. Use regex-fu against the source code --
-    // functions objects appear to drop their type across
-    // windows
-    if (window.execScript) {
-      re = new RegExp('(' + name + '.*\\.test_.+)(\\s+=)', 'gm');
-      var m = [];
-      while (m = re.exec(this.testScriptSrc)) {
-        arr.push(m[1]);
+      if (parseObj.teardown && isTestable(parseObj.teardown)) {
+        arr.push(namespace + '.teardown');
       }
     }
-    // Non-shite browsers, parse through the tree of the
-    // namespace obj, looking for functions or arrays of
-    // functions beginning with 'test_'
+    var win = this.runInTestWindowScope ?
+      windmill.testWindow : window;
+    var tObj = win[name];
+    if (!tObj) {
+      throw new Error('Test namespace "' + name +
+        '" does not exist -- it is not defined in any of your test files.');
+    }
     else {
-      var win = this.runInTestWindowScope ?
-        windmill.testWindow : window;
-      var tObj = win[name];
-      if (!tObj) {
-        throw new Error('Test namespace "' + name +
-          '" does not exist -- it is not defined in any of your test files.');
-      }
-      else {
-        parseObj(tObj, name);
-      }
+      parseNamespaceObj(tObj, name);
     }
+
     this.testList = combineLists(this.testList, arr);
   };
   this.getTestNames = function () {
