@@ -194,7 +194,6 @@ windmill.events = new function (){
 
 	          // work around for http://jira.openqa.org/browse/SEL-280 -- make the event available somewhere:
 	        }
-
 	        element.fireEvent('on' + eventType, evt);
         }
       }

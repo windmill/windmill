@@ -27,6 +27,8 @@ var windmill = new function () {
     //How long xhr waits in seconds before calling the timout function
     this.xhrTimeout = 180;
     
+    this.serviceDelay = 1000;
+    
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*
     this.waiting = false;
@@ -43,6 +45,11 @@ var windmill = new function () {
     //The app your testing
     this.testWindowStr = 'windmill.testWindow';
     this.testWindow = opener;
+    
+    this.openWindow;
+    
+    //Keep track of windows the page opened with pointers
+    this.windowReg = new fleegix.hash.Hash();
     
     //This is so that if you are doing multiple frame testing
     //And you have to change testingApp to point at various frames
@@ -67,6 +74,8 @@ var windmill = new function () {
         windmill.controller.continueLoop();
       }
       try {
+        //rewrite the open function to keep track of windows popping up
+        //windmill.controller.reWriteOpen();
         windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
         browser.current_ua + ".</b><br>");
         windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + 
@@ -98,10 +107,16 @@ var windmill = new function () {
         clearTimeout(windmill.loadTimeoutId);
       }
       
+      //rewrite the open function to keep track of windows popping up
+      //windmill.controller.reWriteOpen();
       //Making rewrite alert persist through the session
       if (windmill.reAlert == true){
         windmill.controller.reWriteAlert();
       }
+      //Ovveride the window.open, so we can keep a registry of
+      //Windows getting popped up
+      
+      
       //We need to define the windmill object in the
       //test window to allow the JS test framework
       //to access different functionality

@@ -148,6 +148,11 @@ windmill.controller.commands.setOptions = function (param_object){
   }
   if(typeof param_object.runTests != "undefined") {
     windmill.runTests = param_object.runTests;
+    //Attempt to make the loading process a bit faster than running
+    if (windmill.runTests == false){
+     windmill.serviceDelay = 0;
+    }
+    else{ windmill.serviceDelay = 1000; }
   }
   
   return true;

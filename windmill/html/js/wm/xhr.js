@@ -121,7 +121,10 @@ windmill.xhr = new function () {
 	    result = false;
 	    //If the option to throw errors is set
 	    if ($('throwDebug').checked == true){
-	      throw(error);
+	      if (console.log){
+	        console.log(error);
+        }
+        else { throw(error); }
       }
 	  }
 	}
@@ -164,7 +167,7 @@ windmill.xhr = new function () {
       }
     }
       //Get the next action from the service
-      setTimeout("windmill.xhr.getNext()", 1000);
+      setTimeout("windmill.xhr.getNext()", windmill.serviceDelay);
   };
           
   //Send the report

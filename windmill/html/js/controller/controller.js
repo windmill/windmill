@@ -327,6 +327,19 @@ windmill.controller = new function () {
     return true;
   };
   
+  this.mouseover = function (param_object){
+    var mdnElement = this._lookupDispatch(param_object);
+    windmill.events.triggerMouseEvent(mdnElement, 'mouseover', true);
+    
+    return true;
+  };
+
+  this.mouseout = function (param_object){
+    var mdnElement = this._lookupDispatch(param_object);
+    windmill.events.triggerMouseEvent(mdnElement, 'mouseout', true);
+    
+    return true;
+  };
   
   //Browser navigation functions
   this.goBack = function(param_object){
@@ -345,17 +358,17 @@ windmill.controller = new function () {
   //After the app reloads you have to re overwrite the alert function for the TestingApp
   this.reWriteAlert = function(param_object){
     windmill.rwAlert = true;
-    windmill.testWindow.window.alert = function(s){
+    windmill.testWindow.alert = function(s){
       windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
     };
     
     rwaRecurse = function(frame){
-      var iframeCount = frame.window.frames.length;
-      var iframeArray = frame.window.frames;
+      var iframeCount = frame.frames.length;
+      var iframeArray = frame.frames;
       
       for (var i=0;i<iframeCount;i++){
           try{
-  	        iframeArray[i].window.alert = function(s){
+  	        iframeArray[i].alert = function(s){
         		  windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
      	      };
   	        rwaRecurse(iframeArray[i]);
@@ -370,7 +383,49 @@ windmill.controller = new function () {
     
     return true;
   };
-   
+  
+    //After the app reloads you have to re overwrite the alert function for the TestingApp
+ /* this.reWriteOpen = function(param_object){
+    //Keep track of the real window open function
+    windmill.openWindow = windmill.testWindow.open;
+    
+    windmill.testWindow.open = function(){
+      //alert('asda');
+      var args = Array.prototype.slice.call(arguments);
+      var p = windmill.openWindow.apply(window, args);
+      var date = new Date();
+      var wid = date.getTime();
+      windmill.varRegistry.addItem(wid,p);
+      return p;
+    };
+    
+    rwaRecurse = function(frame){
+      var iframeCount = frame.frames.length;
+      var iframeArray = frame.frames;
+      
+      for (var i=0;i<iframeCount;i++){
+          try{
+  	        iframeArray[i].open = function(){
+               var args = Array.prototype.slice.call(arguments);
+               var p = windmill.openWindow.apply(window, args);
+               var date = new Date();
+               var wid = date.getTime();
+               windmill.varRegistry.addItem(wid,p);
+               return p;
+     	      };
+  	        rwaRecurse(iframeArray[i]);
+          }
+          catch(error){             
+           	windmill.ui.results.writeResult('There was a problem rewriting open on one of your iframes, is it cross domain?' +
+  					  'Binding to all others.' + error);     
+          }
+        }
+    }
+    rwaRecurse(windmill.testWindow);
+    
+    return true;
+  };
+   */
   //Allow the user to set the testWindow to a different window 
   //or frame within the page 
   this.setTestWindow = function(param_object){
