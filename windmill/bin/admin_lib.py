@@ -198,6 +198,11 @@ def runserver_action(shell_objects):
             while ( len(shell_objects['httpd'].controller_queue.queue) is not 0 ) or (
                     len(shell_objects['httpd'].test_resolution_suite.unresolved) is not 0 ):
                 sleep(1)
+        
+        else:
+            windmill.runserver_running = True
+            while windmill.runserver_running:
+                sleep(1)
             
         teardown(shell_objects)
 
