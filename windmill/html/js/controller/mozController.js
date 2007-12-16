@@ -24,18 +24,20 @@ windmill.controller.what = function() {
 windmill.controller.click = function(param_object){
       var element = this._lookupDispatch(param_object);
       if (!element){ return false; }
-      element.addEventListener('click', function(evt) {
-           preventDefault = evt.getPreventDefault();
-       }, false);
-       
+      try{
+        element.addEventListener('click', function(evt) {
+             preventDefault = evt.getPreventDefault();
+         }, false);
+      }
+      catch(err){}
+      
        // Trigger the event.
        // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
        windmill.events.triggerMouseEvent(element, 'mousedown', true);
        windmill.events.triggerMouseEvent(element, 'mouseup', true);
        windmill.events.triggerMouseEvent(element, 'click', true);
-             
-       	if (!browser.isChrome && !preventDefault) {
-	        if (element.href) {
+       	if (!browser.isChrome && !preventDefault && !param_object.ignoreHREF) {
+	        if (!param_object.ignoreHREF &&  element.href) {
              windmill.controller.open({"url":element.href});
              
              //if the url is calling JS then its ajax and we don't need to wait for any full page load.. hopefully.

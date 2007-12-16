@@ -195,7 +195,9 @@ windmill.ui.recorder = new function () {
     fleegix.event.listen(frame, 'onunload', windmill, 'unloaded');
     fleegix.event.listen(frame.document, 'ondblclick', this, 'writeJsonClicks');
     fleegix.event.listen(frame.document, 'onchange', this, 'writeJsonChange');
-    fleegix.event.listen(frame.document, 'onclick', this, 'writeJsonClicks');    
+    fleegix.event.listen(frame.document, 'onclick', this, 'writeJsonClicks');
+    fleegix.event.listen(frame.document, 'onmousedown', this, 'writeJsonClicks');    
+    
     
     var iframeCount = frame.window.frames.length;
     var iframeArray = frame.window.frames;
@@ -207,6 +209,7 @@ windmill.ui.recorder = new function () {
 	        fleegix.event.listen(iframeArray[i].document, 'ondblclick', this, 'writeJsonClicks');
 	        fleegix.event.listen(iframeArray[i].document, 'onchange', this, 'writeJsonChange');
 	        fleegix.event.listen(iframeArray[i].document, 'onclick', this, 'writeJsonClicks');
+
 	        this.recRecursiveBind(iframeArray[i]);
         }
         catch(error){             
@@ -245,6 +248,7 @@ windmill.ui.recorder = new function () {
 	        fleegix.event.unlisten(iframeArray[i].document, 'ondblclick', this, 'writeJsonClicks');
       	  fleegix.event.unlisten(iframeArray[i].document, 'onchange', this, 'writeJsonChange');
       	  fleegix.event.unlisten(iframeArray[i].document, 'onclick', this, 'writeJsonClicks');
+
       	  this.recRecursiveUnBind(iframeArray[i]);
         }
         catch(error){             

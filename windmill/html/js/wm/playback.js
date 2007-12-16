@@ -32,18 +32,32 @@ windmill.ui.playback = new function () {
   };
   
   //Send the tests to be played back
-  this.sendPlayBack = function (uuid){
+  this.sendPlayBack = function (uuid, suiteOnly){
     var appending = false;
-    if (typeof(uuid) == 'undefined'){ appending = true; }
-
-    var testArray    = [];
-    var suites = windmill.remote.$('ideForm').childNodes;
-    var s      = 1;
-      
+    var testArray = [];
+    
+    //if we don't pass an action to start at just play them all
+    if (!uuid && !suiteOnly){ appending = true; }
+    
+    //if we want to play them all in a provided suite
+    if (!uuid && suiteOnly){
+      appending = true;
+      var suites = new Array();
+      suites.push('\n   ');
+      suites.push($(suiteOnly));
+    }
+    
+    //else play every suite in the IDE
+    else{ var suites = windmill.remote.$('ideForm').childNodes; }
+    
+    //default the nodeType to 1 (firefox)
+    var s = 1;
     //In IE we start our iteration at 0, else 1 for the first suite
     if (suites[0].nodeType == 1){
       var s = 0;
     }
+    
+    //Iterate through the entire IDE starting playback
     for (var i = s; i < suites.length; i++){
       if (suites[i].hasChildNodes()){
 	      for (var j = 1; j < suites[i].childNodes.length; j++){

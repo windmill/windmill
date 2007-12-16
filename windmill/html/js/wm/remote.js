@@ -142,7 +142,8 @@ windmill.ui.remote = new function () {
       //suite.style.height='40px';
       suite.style.border = '1px solid black';
       suite.innerHTML = "<table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>"+suiteName+
-	    "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+suiteName+
+	    "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'"+suiteName+
+	    "\')\">[play]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'"+suiteName+
 	    "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'"+suiteName+
 	    "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.ui.toggleCollapse(\'"+suiteName+
 	    "\')\">[hide/show]</a></span></td></tr></table>";
