@@ -43,6 +43,7 @@ windmill.ui.recorder = new function () {
         locator = 'link';
   	    locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig,"");
   	    locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
+  	    locValue = locValue.replace(/^\s*(\b.*\b|)\s*$/, '');
       }
       else{
         var stringXpath = getXSPath(e.target);   
@@ -195,9 +196,7 @@ windmill.ui.recorder = new function () {
     fleegix.event.listen(frame, 'onunload', windmill, 'unloaded');
     fleegix.event.listen(frame.document, 'ondblclick', this, 'writeJsonClicks');
     fleegix.event.listen(frame.document, 'onchange', this, 'writeJsonChange');
-    fleegix.event.listen(frame.document, 'onclick', this, 'writeJsonClicks');
-    fleegix.event.listen(frame.document, 'onmousedown', this, 'writeJsonClicks');    
-    
+    fleegix.event.listen(frame.document, 'onclick', this, 'writeJsonClicks');    
     
     var iframeCount = frame.window.frames.length;
     var iframeArray = frame.window.frames;
