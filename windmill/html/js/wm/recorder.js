@@ -145,6 +145,7 @@ windmill.ui.recorder = new function () {
     this.recordOff();
     //keep track of the recorder state, for page refreshes
     this.recordState = true;
+    windmill.remote.$('record').src = 'img/stoprecord.png';
     
     //if when loading the listener didn't get attached
     //we attach it if they are recording because we need to know
