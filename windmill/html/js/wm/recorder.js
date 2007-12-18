@@ -43,7 +43,6 @@ windmill.ui.recorder = new function () {
         locator = 'link';
   	    locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig,"");
   	    locValue = locValue.replace(/^\s*(.*?)\s*$/,"$1");
-  	    locValue = locValue.replace(/^\s*(\b.*\b|)\s*$/, '');
       }
       else{
         var stringXpath = getXSPath(e.target);   
@@ -60,7 +59,7 @@ windmill.ui.recorder = new function () {
     if (locValue != ""){
       var params = {};
       params[locator] = locValue;
-     
+
       if(e.type == 'dblclick'){
 	      windmill.ui.remote.addAction(windmill.ui.remote.buildAction('doubleClick', params));
       }
