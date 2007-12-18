@@ -190,6 +190,36 @@ windmill.jsTest = new function () {
   this.registerTestNamespace = function (name) {
     this.testNamespaces.push(name);
   };
+  // Grab the contents of the test files, and eval
+  // them in window scope
+  this.loadTestFiles = function () {
+    var tests = this.testFiles;
+    // The aggregated source code for the tests
+    this.testScriptSrc = '';
+    // Eval any init files first
+    for (var i = 0; i < tests.length; i++) {
+      var path = tests[i];
+      if (path.indexOf('/initialize.js') == -1) {
+        continue;
+      }
+      var str = this.getFile(path);
+      // Eval in window scope
+      globalEval(path, str, this.runInTestWindowScope);
+    }
+    // Then eval the test files
+    for (var i = 0; i < tests.length; i++) {
+      var path = tests[i];
+      if (path.indexOf('/initialize.js') > -1) {
+        continue;
+      }
+      var str = this.getFile(path);
+      // Append to aggregate source
+      this.testScriptSrc += str + '\n';
+      // Eval in window scope
+      globalEval(path, str, this.runInTestWindowScope);
+    }
+    return true;
+  };
   this.parseTestNamespace = function (name) {
     var arr = [];
     var isTestable = function (o) {
@@ -251,8 +281,17 @@ windmill.jsTest = new function () {
   this.getTestNames = function () {
     // No register.js
     if (!this.regFile) {
-      var re = /(var\s+|function\s+)(test_[^\s(]+)/gm;
-      while (m = re.exec(this.testScriptSrc)) {
+      var code = this.testScriptSrc;
+      var re;
+      // Ignore anything in multiline comments
+      // Simplified version of original regex from unitedscripters.com
+      re = /\/\*(.|\n)*?\*\//g;
+      code = code.replace(re, '');
+      // Find any symbol with name staring with "test_"
+      // in the top-level window scope
+      // This will ignore anything in a one-line //-style comment
+      re = /(^var\s+|^function\s+)(test_[^\s(]+)/gm;
+      while (m = re.exec(code)) {
         this.testNamespaces.push(m[2]);
       }
     }
@@ -271,36 +310,6 @@ windmill.jsTest = new function () {
     else {
       throw new Error('No tests to run.');
     }
-  };
-  // Grab the contents of the test files, and eval
-  // them in window scope
-  this.loadTestFiles = function () {
-    var tests = this.testFiles;
-    // The aggregated source code for the tests
-    this.testScriptSrc = '';
-    // Eval any init files first
-    for (var i = 0; i < tests.length; i++) {
-      var path = tests[i];
-      if (path.indexOf('/initialize.js') == -1) {
-        continue;
-      }
-      var str = this.getFile(path);
-      // Eval in window scope
-      globalEval(path, str, this.runInTestWindowScope);
-    }
-    // Then eval the test files
-    for (var i = 0; i < tests.length; i++) {
-      var path = tests[i];
-      if (path.indexOf('/initialize.js') > -1) {
-        continue;
-      }
-      var str = this.getFile(path);
-      // Append to aggregate source
-      this.testScriptSrc += str + '\n';
-      // Eval in window scope
-      globalEval(path, str, this.runInTestWindowScope);
-    }
-    return true;
   };
   this.setAssumedLocation = function () {
     assumedLocation = this.getActualLocation();
