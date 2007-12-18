@@ -28,27 +28,16 @@ windmill.controller.locateElementByIdentifer = function(identifier, inDocument, 
 };
   
 windmill.controller.click = function(param_object){        
-  var element = this._lookupDispatch(param_object);
-  if (!element){ return false; }
-  // Trigger the event.
-  // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-  windmill.events.triggerMouseEvent(element, 'mousedown', true);
-  windmill.events.triggerMouseEvent(element, 'mouseup', true);
-  windmill.events.triggerMouseEvent(element, 'click', true);
-        
-  if (!param_object.ignoreHREF && element.href && (element.href.indexOf('javascript:', 0) == -1)){
-    windmill.controller.open({"url":element.href});
-  }
-  else{
-    while (element = element.parentNode) {
-       if (element.href) {
-         windmill.controller.open({"url":element.href});
-         break;
-       }
-     }
-  }
+   var element = this._lookupDispatch(param_object);
+    if (!element){ return false; }
+    windmill.events.triggerEvent(element, 'focus', false);
 
-  return true;
+    // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
+    try {windmill.events.triggerMouseEvent(element, 'mousedown', true); } catch(err){}
+    try {windmill.events.triggerMouseEvent(element, 'mouseup', true); } catch(err){}
+    try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}
+  
+   return true;
 };
   
 //there is a problem with checking via click in safari

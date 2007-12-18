@@ -46,28 +46,20 @@ windmill.controller.radio = function(param_object){
 
 //Safari Click function
 windmill.controller.click = function(param_object){
-   
-   var element = this._lookupDispatch(param_object);
-   if (!element){
-       return false;
-   }
-      // Trigger the event.
-      // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-      windmill.events.triggerMouseEvent(element, 'mousedown', true);
-      windmill.events.triggerMouseEvent(element, 'mouseup', true);
-      windmill.events.triggerMouseEvent(element, 'click', true);
+    var element = this._lookupDispatch(param_object);
+    if (!element){ return false; }
+    windmill.events.triggerEvent(element, 'focus', false);
       
-     if (!param_object.ignoreHREF &&  element.href && (element.href.indexOf('javascript:', 0) == -1)){
-       windmill.controller.open({"url":element.href});
-     }
-    else{
-      while (element = element.parentNode) {
-        if (element.href) {
-          windmill.controller.open({"url":element.href});
-          break;
-        }
+      // For form element it is simple.
+      if (element['click']) {
+          element['click']();
       }
-    }
+      else{
+        // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
+        windmill.events.triggerMouseEvent(element, 'mousedown', true);
+        windmill.events.triggerMouseEvent(element, 'mouseup', true);
+        windmill.events.triggerMouseEvent(element, 'click', true);
+      }
    return true;
 };
 

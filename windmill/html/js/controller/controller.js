@@ -156,11 +156,6 @@ windmill.controller = new function () {
     return true;
   };
   
-  this.clickAjax = function(param_object){
-    param_object.ignoreHREF = true;
-    return windmill.controller.click(param_object);
-  }
-  
   //Type Function
   this.type = function (param_object){
 

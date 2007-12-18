@@ -22,43 +22,46 @@ windmill.controller.what = function() {
 
 //Click function for Mozilla with Chrome
 windmill.controller.click = function(param_object){
-      var element = this._lookupDispatch(param_object);
-      if (!element){ return false; }
-      try{
-        element.addEventListener('click', function(evt) {
-             preventDefault = evt.getPreventDefault();
-         }, false);
-      }
-      catch(err){}
-      
-       // Trigger the event.
-       // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-       windmill.events.triggerMouseEvent(element, 'mousedown', true);
-       windmill.events.triggerMouseEvent(element, 'mouseup', true);
-       windmill.events.triggerMouseEvent(element, 'click', true);
-       	if (!browser.isChrome && !preventDefault && !param_object.ignoreHREF) {
-	        if (!param_object.ignoreHREF &&  element.href) {
-             windmill.controller.open({"url":element.href});
-             
-             //if the url is calling JS then its ajax and we don't need to wait for any full page load.. hopefully.
-             if (element.href.indexOf('javascript:', 0) == -1){
-                  windmill.xhr.loopState = false;
-                  return true;
+    var element = this._lookupDispatch(param_object);
+    if (!element){ return false; }
+    windmill.events.triggerEvent(element, 'focus', false);
+
+    // Add an event listener that detects if the default action has been prevented.
+    // (This is caused by a javascript onclick handler returning false)
+    // we capture the whole event, rather than the getPreventDefault() state at the time,
+    // because we need to let the entire event bubbling and capturing to go through
+    // before making a decision on whether we should force the href
+    var savedEvent = null;
+
+    element.addEventListener('click', function(evt) {
+        savedEvent = evt;
+    }, false);
+
+    // Trigger the event.
+    windmill.events.triggerMouseEvent(element, 'mousedown', true);
+    windmill.events.triggerMouseEvent(element, 'mouseup', true);
+    windmill.events.triggerMouseEvent(element, 'click', true);
+
+    // Perform the link action if preventDefault was set.
+    // In chrome URL, the link action is already executed by triggerMouseEvent.
+    if (!browser.isChrome && savedEvent != null && !savedEvent.getPreventDefault()) {
+        if (element.href) {
+            windmill.xhr.loopState = false;
+            windmill.controller.open({"url": element.href});
+        } 
+        else {
+            var itrElement = element;
+            while (itrElement != null) {
+              if (itrElement.href) {
+                windmill.xhr.loopState = false;
+                windmill.controller.open({"url": itrElement.href});
+                break;
               }
-           }
-           //It is common place for an event to bubble, which is why many sites
-           //will place a click listener on an elements parent and expect that to catch
-           //the event and fire it, we need to replicate that.
-           else{
-             while (element = element.parentNode) {
-               if (element.href) {
-                 windmill.controller.open({"url":element.href});
-                 break;
-               }
-             }
-           }
+              itrElement = itrElement.parentNode;
+            }
         }
-       return true;     
+    }
+  return true;    
 };
 
 //there is a problem with checking via click in safari

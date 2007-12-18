@@ -22,14 +22,13 @@ windmill.registry = new function () {
 
 //Setup all the current methods supported
 windmill.registry.locator.push('id','link','xpath','jsid', 'name');
-windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js');
+windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js', 'status');
 
 //Setup method registry
 windmill.registry.methods['open']                = {'locator': false, 'option': 'url' };
 windmill.registry.methods['waits.sleep']         = {'locator': false, 'option': 'milliseconds' };
 windmill.registry.methods['waits.forElement']    = {'locator': true, 'option': 'timeout' };
 windmill.registry.methods['click']               = {'locator': true, 'option': false };
-windmill.registry.methods['clickAjax']            = {'locator': true, 'option': false };
 windmill.registry.methods['doubleClick']         = {'locator': true, 'option': false};
 windmill.registry.methods['mousedown']           = {'locator': true, 'option': false};
 windmill.registry.methods['mouseup']             = {'locator': true, 'option': false};
