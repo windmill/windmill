@@ -17,7 +17,11 @@ Copyright 2007, Open Source Applications Foundation
 var jum = windmill.controller.asserts;
 
 windmill.jsTest = new function () {
+
+  // Private vars
   var brokenEval;
+  var assumedLocation = '';
+
   function appendScriptTag(win, code) {
     var script = win.document.createElement('script');
     script.type = 'text/javascript';
@@ -80,6 +84,7 @@ windmill.jsTest = new function () {
   this.testNamespaces;
   this.testList;
   this.testOrder;
+  this.testOrderMappings;
   this.testItemArray;
   this.testFailures;
   this.testCount;
@@ -89,7 +94,7 @@ windmill.jsTest = new function () {
   this.currentJsTestTimer;
   this.jsSuiteSummary;
   this.waiting;
-  
+
   // Initialize everything to starting vals
   this.init = function () {
     windmill.testWindow.windmill = windmill;
@@ -99,22 +104,23 @@ windmill.jsTest = new function () {
     this.testNamespaces = [];
     this.testList = [];
     this.testOrder = null;
+    this.testOrderMappings = {};
     this.testItemArray = null;
     this.testFailures = [];
     this.testCount = 0;
     this.testFailureCount = 0;
     this.runInTestWindowScope = true;
     this.waiting = false;
-
-  }
+  };
   // Main function to run a directory of JS tests
   this.run = function (testFiles) {
     this.actions.loadActions();
     this.init();
     this.doSetup(testFiles);
-    this.loadTests();
+    this.loadTestFiles();
+    this.setAssumedLocation();
     this.getTestNames();
-    this.runTests();
+    this.runNextTest();
   };
   this.finish = function () {
     this.testCount = this.testList.length;
@@ -164,20 +170,19 @@ windmill.jsTest = new function () {
     this.testFiles = tests;
     return true;
   };
-  // Run any init code in the init file, and grab
-  // the ordered list of tests to run
+  // Grab the ordered list of tests to run
   this.doTestRegistration = function(path) {
     var str = this.getFile(path);
     // Eval in window scope
     globalEval(path, str, false);
     return true;
   };
-  // Can be called from the eval of an initialize.js file --
+  // Can be called from the eval of an register.js file --
   // registers all the tests to be run, in order
   this.registerTests = function (arr) {
-    this.testList = combineLists(this.testList, arr);
+    this.testNamespaces = combineLists(this.testNamespaces, arr);
   };
-  // Can be called from the eval of an initialize.js file --
+  // Can be called from the eval of a register.js file --
   // parses a JS namespace object for functions that
   // start with 'test_'. Does not *guarantee* the order of
   // tests run, but all existing ECMAScript implementations
@@ -187,73 +192,81 @@ windmill.jsTest = new function () {
   };
   this.parseTestNamespace = function (name) {
     var arr = [];
-    var str = '';
-    function parseNamespaceObj(obj, namespace) {
+    var isTestable = function (o) {
+      if (document.all) {
+        // IE loses type info for functions across window boundries
+        if ((o.toString && o.toString().indexOf('function')) == 0 ||
+          (o.push && typeof o.length == 'number')) {
+          return true;
+        }
+      }
+      else {
+        if (typeof o == 'function' || typeof o.push == 'function') {
+          return true;
+        }
+      }
+    };
+    var parseNamespaceObj = function(obj, namespace) {
       var re = /^test_/;
       var parseObj = obj;
       // Only functions and arrays
-      var isTestable = function (o) {
-        if (document.all) {
-          // IE loses type info for functions across window boundries
-          if ((o.toString && o.toString().indexOf('function')) == 0 ||
-            (o.push && typeof o.length == 'number')) {
-            return true;
-          }
-        }
-        else {
-          if (typeof o == 'function' || typeof o.push == 'function') {
-            return true;
-          }
-        }
-      };
       if (parseObj.setup && isTestable(parseObj.setup)) {
         arr.push(namespace + '.setup');
       }
       for (var parseProp in parseObj) {
         var item = parseObj[parseProp];
-        // functions or arrays 
-        if (isTestable(item)) {
-          // Only those with names beginning with 'test_'
-          if (re.test(parseProp)) {
+        // Only things with names beginning with 'test_'
+        if (re.test(parseProp)) {
+        // functions or arrays
+          if (isTestable(item)) {
             arr.push(namespace + '.' + parseProp);
           }
-        }
-        // Possible namespace objects -- look for more tests
-        else {
-          var n = namespace + '.' + parseProp;
-          parseNamespaceObj(item, n);
+          // Possible namespace objects -- look for more tests
+          else {
+            var n = namespace + '.' + parseProp;
+            parseNamespaceObj(item, n);
+          }
         }
       }
       if (parseObj.teardown && isTestable(parseObj.teardown)) {
         arr.push(namespace + '.teardown');
       }
-    }
-    var win = this.runInTestWindowScope ?
-      windmill.testWindow : window;
-    var tObj = win[name];
-    if (!tObj) {
+    };
+    var baseObj = this.lookupObjRef(name);
+    if (!baseObj) {
       throw new Error('Test namespace "' + name +
         '" does not exist -- it is not defined in any of your test files.');
     }
     else {
-      parseNamespaceObj(tObj, name);
+      if (isTestable(baseObj)) {
+        arr.push(name);
+      }
+      else {
+        parseNamespaceObj(baseObj, name);
+      }
     }
 
     this.testList = combineLists(this.testList, arr);
   };
   this.getTestNames = function () {
-    // Specific test registrations in register.js
+    // No register.js
     if (!this.regFile) {
-      throw new Error('No register.js file found.');
-    }
-    else {
-      var n = this.testNamespaces;
-      for (var i = 0; i < n.length; i++) {
-        this.parseTestNamespace(n[i]);
+      var re = /(var\s+|function\s+)(test_[^\s(]+)/gm;
+      while (m = re.exec(this.testScriptSrc)) {
+        this.testNamespaces.push(m[2]);
       }
     }
+    var n = this.testNamespaces;
+    for (var i = 0; i < n.length; i++) {
+      this.parseTestNamespace(n[i]);
+    }
     if (this.testList.length) {
+      // Clone the list
       this.testOrder = this.testList.slice();
+      // Create the reverse map of tests -- test name is the hash key
+      for (var i = 0; i < this.testOrder.length; i++) {
+        this.testOrderMappings[this.testOrder[i]] = false;
+      }
     }
     else {
       throw new Error('No tests to run.');
@@ -261,8 +274,10 @@ windmill.jsTest = new function () {
   };
   // Grab the contents of the test files, and eval
   // them in window scope
-  this.loadTests = function () {
+  this.loadTestFiles = function () {
     var tests = this.testFiles;
+    // The aggregated source code for the tests
+    this.testScriptSrc = '';
     // Eval any init files first
     for (var i = 0; i < tests.length; i++) {
       var path = tests[i];
@@ -280,28 +295,36 @@ windmill.jsTest = new function () {
         continue;
       }
       var str = this.getFile(path);
-      if (window.execScript) {
-        this.testScriptSrc += str + '\n';
-      }
+      // Append to aggregate source
+      this.testScriptSrc += str + '\n';
       // Eval in window scope
       globalEval(path, str, this.runInTestWindowScope);
     }
     return true;
   };
+  this.setAssumedLocation = function () {
+    assumedLocation = this.getActualLocation();
+  };
+  this.getActualLocation = function () {
+    var win = this.getCurrentTestScope();
+    return win.document.location.href;
+  };
   this.showMsg = function (msg) {
     alert(msg);
   };
-  this.runTests = function () {
-    var arr = null; // parseTestName recurses through this
-    var parseObjPath = null; // Appended to by parseTestName
-    var testName = '';
-    var testFunc = null;
+  this.getCurrentTestScope = function () {
     var win = this.runInTestWindowScope ?
       windmill.testWindow : window;
-    var parseTestName = function (name) {
-      parseObjPath = !name ? win : parseObjPath[name];
-      if (!parseObjPath) {
-        var errMsg = 'Test "' + testName + '" does not exist.';;
+    return win;
+  };
+  this.lookupObjRef = function (objPathString) {
+    var arr = objPathString.split('.');
+    var win = this.getCurrentTestScope();
+    var baseObj;
+    var parseObjPath = function (name) {
+      baseObj = !name ? win : baseObj[name];
+      if (!baseObj) {
+        var errMsg = 'Test "' + objPathString + '" does not exist.';;
         // The syntax-error possibility is only for browsers with
         // a broken eval (IE, Safari 2) -- the script-append hack
         // blindly sets the text of the script without checking syntax
@@ -314,24 +337,34 @@ windmill.jsTest = new function () {
         }
         throw new Error(errMsg);
       }
-      return arr.length ? parseTestName(arr.shift()) : parseObjPath;
+      return arr.length ? parseObjPath(arr.shift()) : baseObj;
     };
+    // call parseObjPath recursively to append each
+    // property/key onto the window obj from the array
+    // 'foo.bar.baz' => arr = ['foo', 'bar', 'baz']
+    // baseObj = window['foo'] =>
+    // baseObj = window['foo']['bar'] =>
+    // baseObj = window['foo']['bar']['baz']
+    return parseObjPath();
+  };
+  this.runNextTest = function () {
+    var testName = '';
+    var testFunc = null;
     if (this.testOrder.length == 0) {
       this.finish();
     }
     else {
+      // If the window we're running tests in has
+      // changed locations, reload all the test files
+      // into the app scope
+      if (assumedLocation != this.getActualLocation()) {
+        var waitForIt = this.loadTestFiles();
+        this.setAssumedLocation();
+      }
+
       // Get the test name
       testName = this.testOrder.shift();
-      // Split into array of string keys keys on dot-properties
-      arr = testName.split('.');
-      // call parseTestName recursively to append each
-      // property/key onto the window obj from the array
-      // 'foo.bar.baz' => arr = ['foo', 'bar', 'baz']
-      // parseTestName:
-      // parseObjPath = window['foo'] =>
-      // parseObjPath = window['foo']['bar'] =>
-      // parseObjPath = window['foo']['bar']['baz']
-      testFunc = parseTestName();
+      testFunc = this.lookupObjRef(testName);
       // Tell IDE what is going on
       windmill.ui.results.writeStatus('Running '+ testName + '...');
       if (testFunc.length > 0) {
@@ -340,13 +373,16 @@ windmill.jsTest = new function () {
       }
       else if (typeof testFunc == 'function' ||
         (document.all && testFunc.toString().indexOf('function') == 0)) {
-        this.runTest(testName, testFunc);
-        this.runTests();
+        var success = this.runSingleTestFunction(testName, testFunc);
+        if (success) {
+          this.testOrderMappings[testName] = true;
+        }
+        this.runNextTest();
       }
     }
     return true;
   };
-  this.runTest = function (testName, testFunc) {
+  this.runSingleTestFunction = function (testName, testFunc) {
     //Do some timing of test run
     this.currentTestName = testName;
     var timer = new windmill.TimeObj();
@@ -355,36 +391,34 @@ windmill.jsTest = new function () {
     this.currentJsTestTimer = timer;
     // Run the test
     try {
-      if (document.all && this.runInTestWindowScope) {
-        // Holy crap, what a god-awful hack this is
-        // There *has* to be a better way to do this
-        var execStr = 'window.execFunc = ' +
-          testFunc.toString() + '; try { window.execFunc.call(window); }' +
-          ' catch(e) { window.jsTest.handleErr.call(window.jsTest, e); }';
-        windmill.testWindow.execScript(execStr);
-      }
-      else {
-        testFunc();
-      }
+      // Actually executing the function object
+      // -----------------------
+      testFunc();
+      // -----------------------
       this.currentJsTestTimer.endTime();
-      //write to the results tab in the IDE
+      // Write to the results tab in the IDE
       windmill.ui.results.writeResult("<br><b>Test:</b> " + testName +
         "<br>Test Result:" + true);
-      //send report for pass
+      // Send report for pass
       windmill.jsTest.sendJSReport(testName, true, null,
         this.currentJsTestTimer);
+      return true;
     }
     // For each failure, create a TestFailure obj, add
     // to the failures list
     catch (e) {
       this.handleErr(e);
+      return false;
     }
   };
   this.runTestItemArray = function () {
     var _this = this;
     var t = 0;
+    // If the array of UI action objects is empty, go back
+    // to the normal test loop -- get the next test, etc.
     if (this.testItemArray.funcs.length == 0) {
-      this.runTests();
+      this.testOrderMappings[this.testItemArray.name] = true;
+      this.runNextTest();
     }
     else {
       var item = this.testItemArray.funcs.shift();
@@ -394,7 +428,7 @@ windmill.jsTest = new function () {
       }
       if (typeof item == 'function' ||
         (document.all && item.toString().indexOf('function') == 0)) {
-        this.runTest(this.testItemArray.name, item);
+        this.runSingleTestFunction(this.testItemArray.name, item);
       }
       else {
         // If the action is a sleep, set the sleep
@@ -415,25 +449,23 @@ windmill.jsTest = new function () {
         }
         else {
           // Get the UI action to execute
-          var func = eval('windmill.jsTest.actions.' + item.method);
-          // Check for any shortcut vars in jsids, replace with
-          // real JS paths
-          var jsid = item.params.jsid;
-          if (typeof jsid != 'undefined' && jsid.indexOf('{$') > -1) {
-            item.params.jsid = windmill.controller.handleVariable(jsid);
-          }
+          var testActionFunc = eval('windmill.jsTest.actions.' + item.method);
+          // CheX0r for any needed string replacements for {$*} shortcuts
+          item.params = windmill.utilities.doShortcutStringReplacements(item.params);
           // Execute the UI action with the set params
           windmill.ui.results.writeStatus('Running '+ item.method + '...');
-          func(item.params);
+          testActionFunc(item.params);
           windmill.ui.results.writeResult("<br><b>Action:</b> " + item.method +
             "<br>Params: " + fleegix.json.serialize(item.params));
+          if (this.testItemArray.name == 'setup') {
+
+          };
         }
       }
       if (!this.waiting){
         var f = function () { _this.runTestItemArray.apply(_this); };
         setTimeout(f, t);
       }
-
     }
   };
   this.handleErr = function (e) {
@@ -519,8 +551,8 @@ windmill.jsTest.actions.loadActions = function () {
     };
   };
   // Build wrappers for controller, controller.extensions,
-  // controller.waits
-  var names = ['', 'extensions','waits'];
+  // controller.waits, controller.asserts
+  var names = ['', 'extensions','waits', 'asserts'];
   for (var i = 0; i < names.length; i++) {
     var name = names[i];
     var namespace = name ? windmill.controller[name] : windmill.controller;

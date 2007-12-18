@@ -32,4 +32,16 @@ windmill.utilities = new function () {
 	  async: false });
     return file;
   };
-}
+  
+  // Do string replacements for {$*} shortcuts
+  this.doShortcutStringReplacements = function (paramObj) {
+    var replObj = paramObj || {};
+    for (var propName in replObj) {
+      var prop = replObj[propName];
+      if (typeof prop == 'string' && prop.indexOf('{$') > -1) {
+        replObj[propName] = windmill.controller.handleVariable(prop);
+      }
+    }
+    return replObj;
+  };
+};
