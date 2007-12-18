@@ -34,6 +34,11 @@ var closeDialog = function(id){
   $('gray').style.visibility = 'hidden';
 };
 var openDialog = function(id){
+  //Turn off explorers and recorder
+  windmill.ui.recorder.recordOff();
+  windmill.ui.domexplorer.domExplorerOff();
+	windmill.ui.assertexplorer.assertExplorerOff();
+	  
   $(id).style.display = 'block';
   $('gray').style.visibility = 'visible';
 };

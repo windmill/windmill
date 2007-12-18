@@ -166,6 +166,8 @@ windmill.ui.recorder = new function () {
      
   this.recordOff = function(){
     this.recordState = false;
+    windmill.remote.$('record').src = 'img/record.png';
+
     try{
       this.recRecursiveUnBind(windmill.testWindow);
     }

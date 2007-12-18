@@ -17,6 +17,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 //Playback Functionality
 //*********************************
 windmill.ui.playback = new function () {
+  
   //Keep track of the status of the playback
   this.running = false;
   
@@ -33,6 +34,11 @@ windmill.ui.playback = new function () {
   
   //Send the tests to be played back
   this.sendPlayBack = function (uuid, suiteOnly){
+    //Turn off explorers and recorder
+    windmill.ui.recorder.recordOff();
+    windmill.ui.domexplorer.domExplorerOff();
+	  windmill.ui.assertexplorer.assertExplorerOff();
+	
     var appending = false;
     var testArray = [];
     
