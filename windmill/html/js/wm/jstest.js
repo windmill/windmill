@@ -239,27 +239,30 @@ windmill.jsTest = new function () {
     var parseNamespaceObj = function(obj, namespace) {
       var re = /^test_/;
       var parseObj = obj;
+      var doParse = function (parseItem, parseItemName) {
+        // functions or arrays
+          if (isTestable(parseItem)) {
+            arr.push(namespace + '.' + parseItemName);
+          }
+          // Possible namespace objects -- look for more tests
+          else {
+            var n = namespace + '.' + parseItemName;
+            parseNamespaceObj(parseItem, n);
+          }
+      };
       // Only functions and arrays
-      if (parseObj.setup && isTestable(parseObj.setup)) {
-        arr.push(namespace + '.setup');
+      if (parseObj.setup) {
+        doParse(parseObj.setup, 'setup');
       }
       for (var parseProp in parseObj) {
         var item = parseObj[parseProp];
         // Only things with names beginning with 'test_'
         if (re.test(parseProp)) {
-        // functions or arrays
-          if (isTestable(item)) {
-            arr.push(namespace + '.' + parseProp);
-          }
-          // Possible namespace objects -- look for more tests
-          else {
-            var n = namespace + '.' + parseProp;
-            parseNamespaceObj(item, n);
-          }
+          doParse(item, parseProp);
         }
       }
-      if (parseObj.teardown && isTestable(parseObj.teardown)) {
-        arr.push(namespace + '.teardown');
+      if (parseObj.teardown) {
+        doParse(parseObj.teardown, 'teardown');
       }
     };
     var baseObj = this.lookupObjRef(name);
