@@ -21,6 +21,8 @@ windmill.jsTest = new function () {
   // Private vars
   var brokenEval;
   var assumedLocation = '';
+  var basePath = '';
+  var loadedJSCodeFiles ={};
 
   function appendScriptTag(win, code) {
     var script = win.document.createElement('script');
@@ -118,8 +120,8 @@ windmill.jsTest = new function () {
     this.init();
     this.doSetup(testFiles);
     this.loadTestFiles();
-    this.setAssumedLocation();
     this.getTestNames();
+    this.setAssumedLocation();
     this.runNextTest();
   };
   this.finish = function () {
@@ -129,12 +131,12 @@ windmill.jsTest = new function () {
   };
   // Pull out the init file from the list of files
   // if there is one
-  this.doSetup = function (tests) {
+  this.doSetup = function (testFiles) {
     var regIndex = null;
     var initIndex = null;
     var dirs = [];
-    for (var i = 0; i < tests.length; i++) {
-      var t = tests[i];
+    for (var i = 0; i < testFiles.length; i++) {
+      var t = testFiles[i];
       if (t.indexOf('/register.js') > -1) {
         regIndex = i;
       }
@@ -144,18 +146,18 @@ windmill.jsTest = new function () {
     // to call registerTests or registerTestNamespace
     if (typeof regIndex == 'number') {
       this.regFile = true;
-      var regPath = tests[regIndex];
-      tests.splice(regIndex, 1);
+      var regPath = testFiles[regIndex];
+      testFiles.splice(regIndex, 1);
       this.doTestRegistration(regPath);
     }
     // Remove any directories or non-js files returned
-    for (var i = 0; i < tests.length; i++) {
+    for (var i = 0; i < testFiles.length; i++) {
       if (t.indexOf('\.js') == -1) {
         dirs.push(i);
       }
     }
     for (var i = 0; i < dirs.length; i++) {
-      tests.splice(dirs[i], 1);
+      testFiles.splice(dirs[i], 1);
     }
     // Load the asserts into the test window scope
     // as the 'jum' object
@@ -167,10 +169,10 @@ windmill.jsTest = new function () {
     }
     // Test files include any initialize.js environ setup
     // files in the directories
-    this.testFiles = tests;
+    this.testFiles = testFiles;
     return true;
   };
-  // Grab the ordered list of tests to run
+  // Grab any ordered list of tests to run if register.js exists
   this.doTestRegistration = function(path) {
     var str = this.getFile(path);
     // Eval in window scope
@@ -193,12 +195,17 @@ windmill.jsTest = new function () {
   // Grab the contents of the test files, and eval
   // them in window scope
   this.loadTestFiles = function () {
-    var tests = this.testFiles;
+    var testFiles = this.testFiles;
+    var basePathArr = testFiles[0].split('/windmill-jstest/');
+   
+    loadedJSCodeFiles = {};
+
+    basePath = basePathArr[0] + '/windmill-jstest/';
     // The aggregated source code for the tests
     this.testScriptSrc = '';
     // Eval any init files first
-    for (var i = 0; i < tests.length; i++) {
-      var path = tests[i];
+    for (var i = 0; i < testFiles.length; i++) {
+      var path = testFiles[i];
       if (path.indexOf('/initialize.js') == -1) {
         continue;
       }
@@ -207,16 +214,34 @@ windmill.jsTest = new function () {
       globalEval(path, str, this.runInTestWindowScope);
     }
     // Then eval the test files
-    for (var i = 0; i < tests.length; i++) {
-      var path = tests[i];
-      if (path.indexOf('/initialize.js') > -1) {
+    for (var i = 0; i < testFiles.length; i++) {
+      var path = testFiles[i].replace(basePath, '');
+      if (path.indexOf('initialize.js') > -1) {
         continue;
       }
-      var str = this.getFile(path);
+      this.includeJSCodeFile(path);
+    }
+    return true;
+  };
+  this.require = function (path) {};
+  this.includeJSCodeFile = function (path) {
+    var fullPath = basePath + path;
+    if (typeof loadedJSCodeFiles[path] == 'undefined') { 
+      var code = this.getFile(fullPath);
+      var re = /^windmill.jsTest.require\((\S+?)\);\n/gm;
+      var requires = [];
+      while (m = re.exec(code)) {
+         requires.push(m);
+      }
+      for (var i = 0; i < requires.length; i++) {
+        var path = requires[i][1].replace(/'/g, '').replace(/"/g, '');
+        var waitForIt = this.includeJSCodeFile(path);
+      }
       // Append to aggregate source
-      this.testScriptSrc += str + '\n';
+      this.testScriptSrc += code + '\n';
       // Eval in window scope
-      globalEval(path, str, this.runInTestWindowScope);
+      globalEval(path, code, this.runInTestWindowScope);
+      loadedJSCodeFiles[path] = true;
     }
     return true;
   };
@@ -433,6 +458,8 @@ windmill.jsTest = new function () {
       this.runNextTest();
     }
     else {
+      // FIXME: Use try/catch here in case code this is pointing
+      // to has gone bye-bye because of redirect in app window
       var item = this.testItemArray.funcs.shift();
       if (typeof item == 'undefined') {
         throw new Error('Test item in array-style test is undefined --' +
