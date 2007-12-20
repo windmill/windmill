@@ -14,10 +14,21 @@ Copyright 2006-2007, Open Source Applications Foundation
  limitations under the License.
 */
 
-//Functions for writing status to the UI
 /***************************************/
 windmill.service = new function () {
+  //Dynamically build assertNots into the registry for every assert that isn't jum
+  this.buildNotAsserts = function(){
+    for (var meth in windmill.controller.asserts){
+      if ((meth.charAt(0) != '_') && (!windmill.controller.asserts[meth].jsUnitAssert) && (typeof(windmill.controller.asserts[meth]) != 'object')){
 
+        var newMethName = meth.replace('assert','');
+        windmill.registry.methods['asserts.assertNot'+newMethName] = {
+          'locator': windmill.registry.methods['asserts.'+meth].locator,
+           'option': windmill.registry.methods['asserts.'+meth].option };
+      }
+    }
+  } 
+  
   this.getParsedLocation = function(loc) {
     var str = '';
     str += loc.protocol + '//' + loc.hostname;

@@ -104,9 +104,19 @@ windmill.xhr = new function () {
 	      windmill.controller.stopLoop();
 	    }
 	    if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1){
-	      var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
-	      var result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);
+	      //if asserts.assertNotSomething we need to set the result to !result
+	      if(windmill.xhr.xhrResponse.result.method.indexOf('asserts.assertNot') != -1){
+	        var mArray = windmill.xhr.xhrResponse.result.method.split(".");
+	        var m = mArray[1].replace('Not','');             
+	        var result = !windmill.controller[mArray[0]][m](windmill.xhr.xhrResponse.result.params);
+        }
+        //Normal asserts and waits
+        else{
+	        var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
+	        var result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);
+        }
 	    }
+	    //Every other action that isn't namespaced
 	    else{	
 	      var result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params);
 	    }

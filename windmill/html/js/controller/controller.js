@@ -232,7 +232,7 @@ windmill.controller = new function () {
     if (changed) {
       windmill.events.triggerEvent(element, 'change', true);
     }
-    
+
     return true;
   };
 

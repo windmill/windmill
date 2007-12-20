@@ -66,6 +66,7 @@ var windmill = new function () {
     
     this.Start = function(){
       windmill.service.setStartURL();
+      windmill.service.buildNotAsserts();
       
       if (windmill.testWindow.document.title == "Windmill Testing Framework"){
         windmill.controller.waits._forNotTitleAttach({"title":"Windmill Testing Framework"});

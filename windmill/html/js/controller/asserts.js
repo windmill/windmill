@@ -296,12 +296,12 @@ windmill.controller.asserts._AssertFactory = new function () {
       // Run the assert
       var res = expr.apply(window, args);
       if (res) {
-	return true;
+	      return true;
       }
       else {
-	var message = meth + ' -- ' +
+	      var message = meth + ' -- ' +
         createErrMsg(asrt.errMsg, args);
-	throw new windmill.controller.asserts._WindmillAssertException(comment, message);
+	      throw new windmill.controller.asserts._WindmillAssertException(comment, message);
       }
     };
   };

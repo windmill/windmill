@@ -48,7 +48,9 @@ windmill.controller.waits.forElement = function (param_object) {
         windmill.jsTest.waiting = false;
         windmill.jsTest.handleErr('waits.forElement timed out after ' + timout + ' seconds.');
       }
-      windmill.controller.continueLoop();
+      else {
+        windmill.controller.continueLoop();
+      }
       return false;
     }
     var n = windmill.controller._lookupDispatch(p);
@@ -65,11 +67,13 @@ windmill.controller.waits.forElement = function (param_object) {
     else{
       //windmill.waiting = false;
         c = function(){
-          windmill.controller.continueLoop();
           //If this method is being called by the js test framework
           if (param_object.orig == 'js'){
             windmill.jsTest.waiting = false;
             windmill.jsTest.runTestItemArray();
+          }
+          else{
+            windmill.controller.continueLoop();
           }
         }
       setTimeout('c()',1000);
