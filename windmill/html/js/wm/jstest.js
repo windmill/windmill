@@ -21,7 +21,8 @@ windmill.jsTest = new function () {
   // Private vars
   var brokenEval;
   var assumedLocation = '';
-  var basePath = '';
+  var serverBasePath = '';
+  var jsFilesBasePath = '';
   var loadedJSCodeFiles ={};
 
   function appendScriptTag(win, code) {
@@ -78,6 +79,24 @@ windmill.jsTest = new function () {
       arr = arr.split(',');
     }
     return arr;
+  }
+  function parseRelativePath(baseP, requireP) {
+    if (!baseP || !requireP) {
+      throw new Error(
+        'parseRelativePath requires both a base path and require path.');
+    }
+    var basePath = baseP;
+    var requirePath = requireP;
+    while (requirePath.indexOf('../') == 0) {
+      basePath = basePath.substring(0, basePath.lastIndexOf('/'));
+      requirePath = requirePath.substr(3);
+    }
+    if (basePath == serverBasePath) {
+      throw new Error('Relative path for required file "' +
+        basePath + '" is not valid.');
+    }
+    var newAbsPath = basePath + '/' + requirePath;
+    return newAbsPath.replace(jsFilesBasePath, '');
   }
 
   this.testFiles;
@@ -196,11 +215,11 @@ windmill.jsTest = new function () {
   // them in window scope
   this.loadTestFiles = function () {
     var testFiles = this.testFiles;
-    var basePathArr = testFiles[0].split('/windmill-jstest/');
+    serverBasePath = testFiles[0].split('/windmill-jstest/')[0];
+    jsFilesBasePath = serverBasePath + '/windmill-jstest/';
 
     loadedJSCodeFiles = {};
 
-    basePath = basePathArr[0] + '/windmill-jstest/';
     // The aggregated source code for the tests
     this.testScriptSrc = '';
     // Eval any init files first
@@ -215,7 +234,7 @@ windmill.jsTest = new function () {
     }
     // Then eval the test files
     for (var i = 0; i < testFiles.length; i++) {
-      var path = testFiles[i].replace(basePath, '');
+      var path = testFiles[i].replace(jsFilesBasePath, '');
       if (path.indexOf('initialize.js') > -1) {
         continue;
       }
@@ -225,17 +244,19 @@ windmill.jsTest = new function () {
   };
   this.require = function (path) {};
   this.includeJSCodeFile = function (path) {
-    var fullPath = basePath + path;
+    var fileFullPath = jsFilesBasePath + path;
+    var fileBasePath = fileFullPath.substring(0, fileFullPath.lastIndexOf('/'));
     if (typeof loadedJSCodeFiles[path] == 'undefined') {
-      var code = this.getFile(fullPath);
+      var code = this.getFile(fileFullPath);
       var re = /^windmill.jsTest.require\((\S+?)\);\n/gm;
       var requires = [];
       while (m = re.exec(code)) {
          requires.push(m);
       }
       for (var i = 0; i < requires.length; i++) {
-        var path = requires[i][1].replace(/'/g, '').replace(/"/g, '');
-        var waitForIt = this.includeJSCodeFile(path);
+        var requirePath = requires[i][1].replace(/'/g, '').replace(/"/g, '');
+        requirePath = parseRelativePath(fileBasePath, requirePath);
+        var waitForIt = this.includeJSCodeFile(requirePath);
       }
       // Append to aggregate source
       this.testScriptSrc += code + '\n';
@@ -343,6 +364,9 @@ windmill.jsTest = new function () {
       }
     }
     var n = this.testNamespaces;
+    if (!n.length) {
+      throw new Error('No tests or test namespaces to parse.');
+    }
     for (var i = 0; i < n.length; i++) {
       this.parseTestNamespace(n[i]);
     }
@@ -489,7 +513,7 @@ windmill.jsTest = new function () {
         this.runSingleTestFunction(this.testItemArray.name, item);
           var action = {};
           action.method = 'function';
-          action.params = 'Code is being executed';
+          action.params = '(JavaScript code is being executed)';
           var a = windmill.xhr.createActionFromSuite('jsTests', action);
           windmill.xhr.setActionBackground(a,true,action);
       }
