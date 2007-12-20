@@ -263,6 +263,7 @@ windmill.jsTest = new function () {
           return true;
         }
       }
+      return false;
     };
     var parseNamespaceObj = function(obj, namespace) {
       var re = /^test_/;
@@ -278,18 +279,33 @@ windmill.jsTest = new function () {
             parseNamespaceObj(parseItem, n);
           }
       };
-      // Only functions and arrays
-      if (parseObj.setup) {
+      // Check for a setup or teardown -- note that you can't
+      // just test to see if the property is undefined ...
+      // The prop may exist on the object, but be undefined because
+      // it points at something with an undefined value
+      var hasSetup = false;
+      var hasTeardown = false;
+      for (var parseProp in parseObj) {
+        if (parseProp == 'setup') {
+          hasSetup = true;
+        }
+        if (parseProp == 'teardown') {
+          hasTeardown = true;
+        }
+      }
+      // Parse the setup if it exists
+      if (hasSetup) {
         doParse(parseObj.setup, 'setup');
       }
+      // Parse any properties named according to the "test_" convention
       for (var parseProp in parseObj) {
         var item = parseObj[parseProp];
-        // Only things with names beginning with 'test_'
         if (re.test(parseProp)) {
           doParse(item, parseProp);
         }
       }
-      if (parseObj.teardown) {
+      // Parse the teardown if it exists
+      if (hasTeardown) {
         doParse(parseObj.teardown, 'teardown');
       }
     };
