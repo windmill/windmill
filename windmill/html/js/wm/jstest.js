@@ -197,7 +197,7 @@ windmill.jsTest = new function () {
   this.loadTestFiles = function () {
     var testFiles = this.testFiles;
     var basePathArr = testFiles[0].split('/windmill-jstest/');
-   
+
     loadedJSCodeFiles = {};
 
     basePath = basePathArr[0] + '/windmill-jstest/';
@@ -226,7 +226,7 @@ windmill.jsTest = new function () {
   this.require = function (path) {};
   this.includeJSCodeFile = function (path) {
     var fullPath = basePath + path;
-    if (typeof loadedJSCodeFiles[path] == 'undefined') { 
+    if (typeof loadedJSCodeFiles[path] == 'undefined') {
       var code = this.getFile(fullPath);
       var re = /^windmill.jsTest.require\((\S+?)\);\n/gm;
       var requires = [];
