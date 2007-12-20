@@ -247,7 +247,10 @@ windmill.jsTest = new function () {
   };
   this.parseTestNamespace = function (name) {
     var arr = [];
-    var isTestable = function (o) {
+    var isTestable = function (o, n) {
+      if (!o) {
+        throw new Error('Object "' + n + '" is undefined or does not exist.');
+      }
       if (document.all) {
         // IE loses type info for functions across window boundries
         if ((o.toString && o.toString().indexOf('function')) == 0 ||
@@ -266,7 +269,7 @@ windmill.jsTest = new function () {
       var parseObj = obj;
       var doParse = function (parseItem, parseItemName) {
         // functions or arrays
-          if (isTestable(parseItem)) {
+          if (isTestable(parseItem, parseItemName)) {
             arr.push(namespace + '.' + parseItemName);
           }
           // Possible namespace objects -- look for more tests
@@ -296,7 +299,7 @@ windmill.jsTest = new function () {
         '" does not exist -- it is not defined in any of your test files.');
     }
     else {
-      if (isTestable(baseObj)) {
+      if (isTestable(baseObj, name)) {
         arr.push(name);
       }
       else {
