@@ -268,15 +268,15 @@ windmill.controller.asserts._AssertFactory = new function () {
 						 }
       }
       finally {
-	r = r.substr(0, 1).toUpperCase() + r.substr(1);
-	return r;
+        r = r.substr(0, 1).toUpperCase() + r.substr(1);
+        return r;
       }
     }
     this.createAssert = function (meth) {
       return function () {
-	var args = Array.prototype.slice.call(arguments);
-	args.unshift(meth);
-	return _this.doAssert.apply(_this, args);
+      var args = Array.prototype.slice.call(arguments);
+      args.unshift(meth);
+      return _this.doAssert.apply(_this, args);
       }
     }
     this.doAssert = function () {
@@ -306,14 +306,15 @@ windmill.controller.asserts._AssertFactory = new function () {
     };
   };
 
-  // Create all the assert methods on windmill.controller.asserts
-  // Using the items in the assertRegistry
-  for (var meth in windmill.controller.asserts.assertRegistry) {
-    windmill.controller.asserts[meth] = windmill.controller.asserts._AssertFactory.createAssert(meth);
-  }
+// Create all the assert methods on windmill.controller.asserts
+// Using the items in the assertRegistry
+for (var meth in windmill.controller.asserts.assertRegistry) {
+  windmill.controller.asserts[meth] = windmill.controller.asserts._AssertFactory.createAssert(meth);
+  windmill.controller.asserts[meth].jsUnitAssert = true;
+}
 
-  windmill.controller.asserts._WindmillAssertException = function (comment, message) {
-    this.comment = comment;
-    this.message = message;
-  };
+windmill.controller.asserts._WindmillAssertException = function (comment, message) {
+  this.comment = comment;
+  this.message = message;
+};
 
