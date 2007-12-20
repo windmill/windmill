@@ -1,5 +1,5 @@
 
-var splashPageImg = new function () {
+windmillHomeTest.test_splashPageImg = new function () {
   this.test_beginImageLoaded = function () {
     var img = $('mottoImgBegin');
     jum.assertImageLoaded(img);
