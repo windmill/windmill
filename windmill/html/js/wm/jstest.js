@@ -487,12 +487,24 @@ windmill.jsTest = new function () {
       if (typeof item == 'function' ||
         (document.all && item.toString().indexOf('function') == 0)) {
         this.runSingleTestFunction(this.testItemArray.name, item);
+          var action = {};
+          action.method = 'function';
+          action.params = 'Code is being executed';
+          var a = windmill.xhr.createActionFromSuite('jsTests', action);
+          windmill.xhr.setActionBackground(a,true,action);
       }
       else {
         // If the action is a sleep, set the sleep
         // wait interval for the setTimeout loop
         if (item.method == 'waits.sleep') {
           t = item.params.milliseconds;
+           //Build some UI
+          var action = {};
+          action.method = item.method;
+          action.params = item.params;
+          var a = windmill.xhr.createActionFromSuite('jsTests', action);
+          windmill.xhr.setActionBackground(a,true,action);
+          
         }
         //If the waits.forElement is called
         //We want to pause this loop and call it
@@ -598,8 +610,18 @@ windmill.jsTest.actions.loadActions = function () {
       var cwTimer = new windmill.TimeObj();
       cwTimer.setName(meth);
       cwTimer.startTime();
+    
+      //Build some UI
+      var action = {};
+      if (name){ action.method = name+'.'+meth; }
+      else { action.method = meth; }
+      action.params = eval(args[0]);
+      var a = windmill.xhr.createActionFromSuite('jsTests', action);
       //Run the action in the UI
       var result = namespace[meth].apply(namespace, args);
+      //Set results
+      windmill.xhr.setActionBackground(a,result,action);
+
       //End the timer
       cwTimer.endTime();
       //Send a report to the backend
