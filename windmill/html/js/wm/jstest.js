@@ -105,7 +105,6 @@ windmill.jsTest = new function () {
   this.testNamespaces;
   this.testList;
   this.testOrder;
-  this.testOrderMappings;
   this.testItemArray;
   this.testFailures;
   this.testCount;
@@ -118,14 +117,12 @@ windmill.jsTest = new function () {
 
   // Initialize everything to starting vals
   this.init = function () {
-    windmill.testWindow.windmill = windmill;
     this.testFiles = null;
     this.testScriptSrc = '';
     this.regFile = false;
     this.testNamespaces = [];
     this.testList = [];
     this.testOrder = null;
-    this.testOrderMappings = {};
     this.testItemArray = null;
     this.testFailures = [];
     this.testCount = 0;
@@ -153,7 +150,6 @@ windmill.jsTest = new function () {
   this.doSetup = function (testFiles) {
     var regIndex = null;
     var initIndex = null;
-    var dirs = [];
     for (var i = 0; i < testFiles.length; i++) {
       var t = testFiles[i];
       if (t.indexOf('/register.js') > -1) {
@@ -172,18 +168,7 @@ windmill.jsTest = new function () {
     // Remove any directories or non-js files returned
     for (var i = 0; i < testFiles.length; i++) {
       if (t.indexOf('\.js') == -1) {
-        dirs.push(i);
-      }
-    }
-    for (var i = 0; i < dirs.length; i++) {
-      testFiles.splice(dirs[i], 1);
-    }
-    // Load the asserts into the test window scope
-    // as the 'jum' object
-    if (this.runInTestWindowScope) {
-      windmill.testWindow.jum = windmill.controller.asserts;
-      if (document.all) {
-        windmill.testWindow.jsTest = this;
+        throw new Error('Non-js file in list of JavaScript test files.');
       }
     }
     // Test files include any initialize.js environ setup
@@ -217,9 +202,17 @@ windmill.jsTest = new function () {
     var testFiles = this.testFiles;
     serverBasePath = testFiles[0].split('/windmill-jstest/')[0];
     jsFilesBasePath = serverBasePath + '/windmill-jstest/';
+    
+    // Create a ref to the windmill object in the testing app
+    windmill.testWindow.windmill = windmill;
+
+    // Load the asserts into the test window scope
+    // as the 'jum' object
+    if (this.runInTestWindowScope) {
+      windmill.testWindow.jum = windmill.controller.asserts;
+    }
 
     loadedJSCodeFiles = {};
-
     // The aggregated source code for the tests
     this.testScriptSrc = '';
     // Eval any init files first
@@ -238,7 +231,7 @@ windmill.jsTest = new function () {
       if (path.indexOf('initialize.js') > -1) {
         continue;
       }
-      this.includeJSCodeFile(path);
+      var waitForIt = this.includeJSCodeFile(path);
     }
     return true;
   };
@@ -373,10 +366,6 @@ windmill.jsTest = new function () {
     if (this.testList.length) {
       // Clone the list
       this.testOrder = this.testList.slice();
-      // Create the reverse map of tests -- test name is the hash key
-      for (var i = 0; i < this.testOrder.length; i++) {
-        this.testOrderMappings[this.testOrder[i]] = false;
-      }
     }
     else {
       throw new Error('No tests to run.');
@@ -428,6 +417,7 @@ windmill.jsTest = new function () {
     return parseObjPath();
   };
   this.runNextTest = function () {
+    var _this = this;
     var testName = '';
     var testFunc = null;
     if (this.testOrder.length == 0) {
@@ -438,8 +428,13 @@ windmill.jsTest = new function () {
       // changed locations, reload all the test files
       // into the app scope
       if (assumedLocation != this.getActualLocation()) {
-        var waitForIt = this.loadTestFiles();
-        this.setAssumedLocation();
+        var f = function () {
+          var waitForIt = _this.loadTestFiles.apply(_this);
+          _this.setAssumedLocation.apply(_this);
+          _this.runNextTest.apply(_this);
+        };
+        setTimeout(f, 2000);
+        return false;
       }
 
       // Get the test name
@@ -448,15 +443,16 @@ windmill.jsTest = new function () {
       // Tell IDE what is going on
       windmill.ui.results.writeStatus('Running '+ testName + '...');
       if (testFunc.length > 0) {
-        this.testItemArray = { name: testName, funcs: testFunc }
+        this.testItemArray = {
+          name: testName, 
+          funcs: testFunc, 
+          count: testFunc.length, 
+          incr: 0 };
         this.runTestItemArray();
       }
       else if (typeof testFunc == 'function' ||
         (document.all && testFunc.toString().indexOf('function') == 0)) {
         var success = this.runSingleTestFunction(testName, testFunc);
-        if (success) {
-          this.testOrderMappings[testName] = true;
-        }
         this.runNextTest();
       }
     }
@@ -496,14 +492,14 @@ windmill.jsTest = new function () {
     var t = 0;
     // If the array of UI action objects is empty, go back
     // to the normal test loop -- get the next test, etc.
-    if (this.testItemArray.funcs.length == 0) {
-      this.testOrderMappings[this.testItemArray.name] = true;
+    if (this.testItemArray.incr == this.testItemArray.count) {
       this.runNextTest();
     }
     else {
       // FIXME: Use try/catch here in case code this is pointing
       // to has gone bye-bye because of redirect in app window
-      var item = this.testItemArray.funcs.shift();
+      var item = this.testItemArray.funcs[this.testItemArray.incr];
+      this.testItemArray.incr++;
       if (typeof item == 'undefined') {
         throw new Error('Test item in array-style test is undefined --' +
           ' likely a trailing comma separator has caused this.');
