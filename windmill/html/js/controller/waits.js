@@ -46,7 +46,7 @@ windmill.controller.waits.forElement = function (param_object) {
       if (param_object.orig == 'js'){
         windmill.jsTest.runTestItemArray();
         windmill.jsTest.waiting = false;
-        windmill.jsTest.handleErr('waits.forElement timed out after ' + timout + ' seconds.');
+        windmill.jsTest.handleErr('waits.forElement timed out after ' + timeout + ' seconds.');
       }
       else {
         windmill.controller.continueLoop();
