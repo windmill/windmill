@@ -231,31 +231,19 @@ windmill.jsTest = new function () {
       if (path.indexOf('initialize.js') > -1) {
         continue;
       }
-      var waitForIt = this.includeJSCodeFile(path);
+      var waitForIt = this.require(path);
     }
     return true;
   };
-  this.require = function (path) {};
-  this.includeJSCodeFile = function (path) {
+  this.require = function (path) {
     var fileFullPath = jsFilesBasePath + path;
-    var fileBasePath = fileFullPath.substring(0, fileFullPath.lastIndexOf('/'));
-    if (typeof loadedJSCodeFiles[path] == 'undefined') {
+    if (typeof loadedJSCodeFiles[fileFullPath] == 'undefined') {
       var code = this.getFile(fileFullPath);
-      var re = /^windmill.jsTest.require\((\S+?)\);\n/gm;
-      var requires = [];
-      while (m = re.exec(code)) {
-         requires.push(m);
-      }
-      for (var i = 0; i < requires.length; i++) {
-        var requirePath = requires[i][1].replace(/'/g, '').replace(/"/g, '');
-        requirePath = parseRelativePath(fileBasePath, requirePath);
-        var waitForIt = this.includeJSCodeFile(requirePath);
-      }
       // Append to aggregate source
       this.testScriptSrc += code + '\n';
       // Eval in window scope
-      globalEval(path, code, this.runInTestWindowScope);
-      loadedJSCodeFiles[path] = true;
+      globalEval(fileFullPath, code, this.runInTestWindowScope);
+      loadedJSCodeFiles[fileFullPath] = true;
     }
     return true;
   };
