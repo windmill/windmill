@@ -202,7 +202,7 @@ windmill.jsTest = new function () {
     var testFiles = this.testFiles;
     serverBasePath = testFiles[0].split('/windmill-jstest/')[0];
     jsFilesBasePath = serverBasePath + '/windmill-jstest/';
-    
+
     // Create a ref to the windmill object in the testing app
     windmill.testWindow.windmill = windmill;
 
@@ -444,9 +444,8 @@ windmill.jsTest = new function () {
       windmill.ui.results.writeStatus('Running '+ testName + '...');
       if (testFunc.length > 0) {
         this.testItemArray = {
-          name: testName, 
-          funcs: testFunc, 
-          count: testFunc.length, 
+          name: testName,
+          count: testFunc.length,
           incr: 0 };
         this.runTestItemArray();
       }
@@ -496,9 +495,23 @@ windmill.jsTest = new function () {
       this.runNextTest();
     }
     else {
-      // FIXME: Use try/catch here in case code this is pointing
-      // to has gone bye-bye because of redirect in app window
-      var item = this.testItemArray.funcs[this.testItemArray.incr];
+      // If the window we're running tests in has
+      // changed locations, reload all the test files
+      // into the app scope
+      if (assumedLocation != this.getActualLocation()) {
+        var f = function () {
+          var waitForIt = _this.loadTestFiles.apply(_this);
+          _this.setAssumedLocation.apply(_this);
+          _this.runTestItemArray.apply(_this);
+        };
+        setTimeout(f, 2000);
+        return false;
+      }
+      // Look up the array-style test item by string path again
+      // in case tests have reloaded due to window location change
+      var testItemArray = this.lookupObjRef(this.testItemArray.name);
+      // Get the next item in the array
+      var item = testItemArray[this.testItemArray.incr];
       this.testItemArray.incr++;
       if (typeof item == 'undefined') {
         throw new Error('Test item in array-style test is undefined --' +
@@ -524,7 +537,7 @@ windmill.jsTest = new function () {
           action.params = item.params;
           var a = windmill.xhr.createActionFromSuite('jsTests', action);
           windmill.xhr.setActionBackground(a,true,action);
-          
+
         }
         //If the waits.forElement is called
         //We want to pause this loop and call it
@@ -630,7 +643,7 @@ windmill.jsTest.actions.loadActions = function () {
       var cwTimer = new windmill.TimeObj();
       cwTimer.setName(meth);
       cwTimer.startTime();
-    
+
       //Build some UI
       var action = {};
       if (name){ action.method = name+'.'+meth; }
