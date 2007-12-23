@@ -119,6 +119,11 @@ windmill.xhr = new function () {
         }
         else { throw(error); }
       }
+      else {
+        if (!$('toggleBreak').checked) {
+          windmill.controller.continueLoop();
+        }
+      }
 	  }
 	}
 	else { 
