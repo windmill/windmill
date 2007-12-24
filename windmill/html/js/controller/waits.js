@@ -33,12 +33,18 @@ windmill.controller.waits.forJSTrue = function (paramObj) {
 
   var count = 0;
   var p = paramObj || {};
-  var timeout = p.timeout || 20000;
+  var timeout = 20000;
   var isJsTest = (p.orig == 'js');
   var testCondition = p.test;
     
-  if (typeof timeout != 'number'){
-    throw new Error('waits.forTrue timeout value must be a number.');
+  // If we get the weird string "NaN" (yes, the actual 
+  // string, "NaN" :)) value from the IDE, or some other 
+  // unusable string , just use the default value of 2 seconds
+  if (!isNaN(timeout)) {
+    timeout = p.timeout;
+    if (typeof timeout != 'number'){
+      timeout = parseInt(timeout, 10);
+    }
   }
 
   var lookup = function () {
