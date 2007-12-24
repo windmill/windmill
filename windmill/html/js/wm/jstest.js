@@ -529,7 +529,7 @@ windmill.jsTest = new function () {
         }
         //If the waits.forElement is called
         //We want to pause this loop and call it
-        else if (item.method == 'waits.forElement'){
+        else if (item.method == 'waits.forElement' || item.method == 'waits.forTrue'){
           var func = eval('windmill.jsTest.actions.' + item.method);
           //Add a parameter so we know the js framework
           //is calling the function inside waits.forElement

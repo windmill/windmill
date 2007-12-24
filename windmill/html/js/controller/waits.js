@@ -28,22 +28,22 @@ windmill.controller.waits.sleep = function (param_object) {
   return true;
 };
   
-//wait for an element to show up on the page
-//if it doesn't after a provided timeout, defaults to 20 seconds
-windmill.controller.waits.forElement = function (param_object) { 
+windmill.controller.waits.forJSTrue = function (paramObj) { 
   _this = this;
 
-  var timeout = 20000;
   var count = 0;
-  var p = param_object;
+  var p = paramObj || {};
+  var timeout = p.timeout || 20000;
+  var isJsTest = (p.orig == 'js');
+  var testCondition = p.test;
     
-  if (p.timeout && p.timeout != NaN){
-    timeout = p.timeout;
+  if (typeof timeout != 'number'){
+    throw new Error('waits.forTrue timeout value must be a number.');
   }
 
-  this.lookup = function(){
-    if (count >= timeout){
-      if (param_object.orig == 'js'){
+  var lookup = function () {
+    if (count >= timeout) {
+      if (isJsTest) {
         windmill.jsTest.runTestItemArray();
         windmill.jsTest.waiting = false;
         windmill.jsTest.handleErr('waits.forElement timed out after ' + timeout + ' seconds.');
@@ -53,22 +53,28 @@ windmill.controller.waits.forElement = function (param_object) {
       }
       return false;
     }
-    var n = windmill.controller._lookupDispatch(p);
     count += 2500;
-      
-    this.check(n);
-  }
     
-  this.check = function(n){   
-    if (!n){
-      var x = setTimeout(function () { _this.lookup(); }, 1500);
+    // Get a result
+    var result;
+    if (typeof testCondition == 'string') {
+      result = eval(testCondition);
     }
-
-    else{
-      //windmill.waiting = false;
-        c = function(){
+    else if (typeof testCondition == 'function') {
+      result = testCondition();
+    }
+    else {
+      throw new Error('waits.forTrue test condition must be a string or function.');
+    }
+    result = !!result; // Make sure we've got a Boolean
+    
+    if (!result){
+      var x = setTimeout(lookup, 1500);
+    }
+    else {
+        c = function () {
           //If this method is being called by the js test framework
-          if (param_object.orig == 'js'){
+          if (isJsTest) {
             windmill.jsTest.waiting = false;
             windmill.jsTest.runTestItemArray();
           }
@@ -76,16 +82,28 @@ windmill.controller.waits.forElement = function (param_object) {
             windmill.controller.continueLoop();
           }
         }
-      setTimeout('c()',1000);
+      setTimeout(c, 1000);
     }
   }
-   
-  this.lookup();
+    
+  lookup();
    
   //waits are going to wait, so I return true
   //Optimally it would return false if it times out, so when it does return false
   //the calling code will jump back up and process the ui accordingly
   return true;
+
+};
+
+//wait for an element to show up on the page
+//if it doesn't after a provided timeout, defaults to 20 seconds
+windmill.controller.waits.forElement = function (paramObj) { 
+    var p = paramObj || {};
+    var f = function () {
+      return windmill.controller._lookupDispatch(p);
+    };
+    p.test = f;
+    return windmill.controller.waits.forJSTrue(p);
 };
   
 //This is more of an internal function used by wait and click events
