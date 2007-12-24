@@ -52,20 +52,33 @@ class Frame(wx.Frame):
 
         ##setup the file menu and associated events
         fileMenu = wx.Menu()
-        self.Bind(wx.EVT_MENU, self.OnRunTest, fileMenu.Append(wx.NewId(), "Run &Test File", "Select a test to run."))
-
-	fileMenu.AppendSeparator()	
 	
 	self.Bind(wx.EVT_MENU, self.OnCloseWindow, fileMenu.Append(wx.ID_EXIT, "E&xit", "Exit Windmill"))
 
 	##setup the test menu and associated events
 	testMenu = wx.Menu()
-	self.Bind(wx.EVT_MENU, self.OnRunDir, testMenu.Append(wx.NewId(), "Run Test &Directory", "Select a directory to run."))	
-	testMenu.AppendSeparator()
 	
-	self.Bind(wx.EVT_MENU, self.OnLoadTest, testMenu.Append(wx.NewId(), "Load Test", "Loads a single test"))
-	self.Bind(wx.EVT_MENU, self.OnLoadDir, testMenu.Append(wx.NewId(), "Load Test Directory", "Load a directory full of tests"))
+	###setup run
+	runMenu = wx.Menu()
+	self.Bind(wx.EVT_MENU, self.OnRunTest, runMenu.Append(wx.NewId(), "&Test File(s)", "Select a test to run."))
+	
+	#self.Bind(wx.EVT_MENU, self.OnRunJSDir, runMenu.Append(wx.NewId(), "Test JS &Directory", "Select a javascript directory to run."))	
+	
+	self.Bind(wx.EVT_MENU, self.OnRunDir, runMenu.Append(wx.NewId(), "Test &Directory", "Select a directory to run."))
+	
+	testMenu.AppendMenu(wx.NewId(), "Run", runMenu)
+	
+	testMenu.AppendSeparator()
 
+	###setup load
+	loadMenu = wx.Menu()
+
+	self.Bind(wx.EVT_MENU, self.OnLoadTest, loadMenu.Append(wx.NewId(), "&Test File(s)", "Loads a single test"))
+	#self.Bind(wx.EVT_MENU, self.OnLoadJSDir, runMenu.Append(wx.NewId(), "Load JS &Directory", "Select a javascript directory to load."))
+	self.Bind(wx.EVT_MENU, self.OnLoadDir, loadMenu.Append(wx.NewId(), "Test &Directory", "Load a directory full of tests"))
+
+	testMenu.AppendMenu(wx.NewId(), "Load", loadMenu)
+	
         ##setup the tools menu
 	toolsMenu = wx.Menu()
 	self.Bind(wx.EVT_MENU, self.OnClearQueue, toolsMenu.Append(wx.NewId(), "Clear Queue", "Clear the Queue"))	
@@ -267,30 +280,46 @@ class Frame(wx.Frame):
     def OnRunTest(self, event):
         #popup a dialog here to run it
         dialog = wx.FileDialog (None,
-                                message = u"Choose a Test",
+                                message = u"Choose Test(s)",
                                 defaultFile = u"",	
-                                wildcard = u"Python files (*.py)|*.py|Json files (*.json)|*.json",
-                                style = wx.OPEN|wx.CHANGE_DIR)        
+				wildcard = u"|Json files (*.json)|*.json|Python files (*.py)|*.py", #|*.js|Python files (*.py)|*.py
+                                style = wx.OPEN|wx.CHANGE_DIR | wx.MULTIPLE)        
 
 	if dialog.ShowModal() == wx.ID_OK:
-	    filename = dialog.GetPath()
+	    filename = dialog.GetPaths()
 	    
-	    if filename.find(".py") is not -1:
-		print "Running the python version of run test"
-		x = Thread(target=self.shell_objects['run_test'], args=[filename])
+#	    if filename.find(".js") is not -1:
+#		print "Running the python version of run test"
+#		x = Thread(target=self.shell_objects['run_js_test'], args=[filename])
 		
-	    else:
-		print "Running the json version of run test"
-		x = Thread(target=self.shell_objects['run_test'], args=[filename])
+#	    else:
+	    x = Thread(target=self.shell_objects['run_test'], args=[filename])
 				
 	    x.start()
+
+    def OnRunJSDir(self, event):
+	dialog = wx.DirDialog(None,
+		      message = u"Choose js directory to run")
+
+	if dialog.ShowModal() == wx.ID_OK:
+	    x = Thread(target=self.shell_objects['run_js_dir'], args=[dialog.GetPath()])
+	    x.start()
+
+    def OnLoadJSDir(self, event):
+	dialog = wx.DirDialog(None,
+		      message = u"Choose js directory to load")
+
+	if dialog.ShowModal() == wx.ID_OK:
+	    x = Thread(target=self.shell_objects['load_js_dir'], args=[dialog.GetPath()])
+	    x.start()
+
 
     def OnRunDir(self, event):
 	dialog = wx.DirDialog(None,
 			      message = u"Choose directory to load")
     
 	if dialog.ShowModal() == wx.ID_OK:
-	    x = Thread(target=   self.shell_objects['run_test'], args=[dialog.GetPath()])
+	    x = Thread(target=self.shell_objects['run_test'], args=[dialog.GetPath()])
 	    x.start()
 	    
     def OnLoadTest(self, event):
@@ -298,18 +327,16 @@ class Frame(wx.Frame):
         dialog = wx.FileDialog (None,
                                 message = u"Choose a Test",
                                 defaultFile = u"",
-                                wildcard = u"Python files (*.py)|*.py|Json files (*.json)|*.json",
-                                style = wx.OPEN|wx.CHANGE_DIR)        
+                                wildcard = u"Json files (*.json)|*.json|Python files (*.py)|*.py", #|*.js|Python files (*.py)|*.py
+                                style = wx.OPEN|wx.CHANGE_DIR|wx.MULTIPLE)        
 
 	if dialog.ShowModal() == wx.ID_OK:
-	    filename = dialog.GetPath()
-	    
-	    if filename.find(".py") is not -1:
-		x = Thread(target=self.shell_objects['load_test'], args=[filename])
-	    
-	    else:
-		x = Thread(target=self.shell_objects['load_test'], args=[filename])
-	    
+	    filename = dialog.GetPaths()
+
+#	    if filename.find(".js") is not -1:
+#           x = Thread(target=self.shell_objects['load_js_test'], args=[filename]) 
+#	    else:
+	    x = Thread(target=self.shell_objects['load_test'], args=[filename])
 	    x.start()
 
     def OnLoadDir(self, event):
@@ -317,9 +344,10 @@ class Frame(wx.Frame):
 			      message = u"Choose directory to load")
     
 	if dialog.ShowModal() == wx.ID_OK:
-	    x = Thread(target=self.shell_objects['load_test'], args=[dialog.GetPath()])
-	
-	x.start()
+	    x = Thread(target=self.shell_objects['load_test'], args=[dialog.GetPath()])		    
+	    
+	    x.start()
+	    
 
     def OnChangeLogeLvl(self, event):
         self.theLogger.setLevel(logging._levelNames[event.GetString()])
