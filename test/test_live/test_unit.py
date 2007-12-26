@@ -24,18 +24,20 @@ def test_wmunti1():
     assert client.click(id=u'subBtn')['result']
     
     # Tests that sleeps actually wait for long enough
-    # start = datetime.now()
+    start = datetime.now()
     assert client.waits.sleep(milliseconds=u'3000')['result']
-    #end = datetime.now()
-    #assert ( end - start ).seconds >= 3
+    end = datetime.now()
+    print (end - start)
+    assert ( end - start ).seconds >= 3
     
     assert client.asserts.assertText(validator=u'', id=u'sleeper')['result']
     
     # Tests that an 8 second sleep actually waits long enough
-    #start = datetime.now()
+    start = datetime.now()
     assert client.waits.sleep(milliseconds=u'8000')['result']
-    #end = datetime.now()
-    #assert ( end - start ).seconds >= 8
+    end = datetime.now()
+    print (end - start)
+    assert ( end - start ).seconds >= 8
     
     assert client.asserts.assertText(validator=u'Slept', id=u'sleeper')['result']
     assert client.type(text=u'my test text', id=u'junkfield')['result']
