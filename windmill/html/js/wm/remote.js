@@ -132,11 +132,11 @@ windmill.ui.remote = new function () {
       suite.style.position = 'relative';
       suite.id = suiteName;
       
-      if (document.all) {
+      if (windmill.browser.isIE) {
 	      var vWidth = windmill.remote.fleegix.dom.getViewportWidth();
 	      suite.style.width = (vWidth - 22) + 'px';
       }
-      else { suite.style.width = "100%"; }
+      else { suite.style.width = "99%"; }
       suite.style.background = "lightblue";
       suite.style.overflow = 'hidden';
       //suite.style.height='40px';
