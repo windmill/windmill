@@ -28,6 +28,9 @@
 			else if(browser.isSafari){
 				url = 'js/controller/safController.js';
 			}
+			else if (browser.isOpera){
+				url = 'js/controller/opController.js';
+			}
 			document.write('<script src="', url, '" type="text/javascript"><\/script>');
 		</script>
 		<script type="text/javascript" src="js/controller/commands.js"></script>
