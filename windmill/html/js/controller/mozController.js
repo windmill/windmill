@@ -41,26 +41,28 @@ windmill.controller.click = function(param_object){
     windmill.events.triggerMouseEvent(element, 'mousedown', true);
     windmill.events.triggerMouseEvent(element, 'mouseup', true);
     windmill.events.triggerMouseEvent(element, 'click', true);
-
-    // Perform the link action if preventDefault was set.
-    // In chrome URL, the link action is already executed by triggerMouseEvent.
-    if (!browser.isChrome && savedEvent != null && !savedEvent.getPreventDefault()) {
-        if (element.href) {
-            windmill.xhr.loopState = false;
-            windmill.controller.open({"url": element.href});
-        } 
-        else {
-            var itrElement = element;
-            while (itrElement != null) {
-              if (itrElement.href) {
-                windmill.xhr.loopState = false;
-                windmill.controller.open({"url": itrElement.href});
-                break;
+    try{
+      // Perform the link action if preventDefault was set.
+      // In chrome URL, the link action is already executed by triggerMouseEvent.
+      if (!browser.isChrome && savedEvent != null && !savedEvent.getPreventDefault()) {
+          if (element.href) {
+              windmill.xhr.loopState = false;
+              windmill.controller.open({"url": element.href});
+          } 
+          else {
+              var itrElement = element;
+              while (itrElement != null) {
+                if (itrElement.href) {
+                  windmill.xhr.loopState = false;
+                  windmill.controller.open({"url": itrElement.href});
+                  break;
+                }
+                itrElement = itrElement.parentNode;
               }
-              itrElement = itrElement.parentNode;
-            }
-        }
+          }
+      }
     }
+    catch(err){}
   return true;    
 };
 
