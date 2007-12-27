@@ -15,22 +15,28 @@ Copyright 2006-2007, Open Source Applications Foundation
 */
 
 //Wait a specified number of milliseconds
-windmill.controller.waits.sleep = function (param_object) { 
+windmill.controller.waits.sleep = function (paramObj, obj) { 
   windmill.waiting = true;
-  //console.log('inside sleep');
+
   done = function(){
-    //console.log('inside done');
     windmill.waiting = false;
     windmill.controller.continueLoop();
-    return true;
+    //we passed the id in the parms object of the action in the ide
+    var aid = paramObj.aid;
+    delete paramObj.aid;
+    //set the result in the ide
+    windmill.xhr.setWaitBgAndReport(aid,true,obj);
   }    
-  setTimeout('done()', param_object.milliseconds);
+  setTimeout('done()', paramObj.milliseconds);
   return true;
 };
   
-windmill.controller.waits.forJSTrue = function (paramObj) { 
+windmill.controller.waits.forJSTrue = function (paramObj, obj) { 
   _this = this;
-
+  
+  //we passed the id in the parms object of the action in the ide
+  var aid = paramObj.aid;
+  delete paramObj.aid;
   var count = 0;
   var p = paramObj || {};
   var timeout = 20000;
@@ -40,10 +46,9 @@ windmill.controller.waits.forJSTrue = function (paramObj) {
   // If we get the weird string "NaN" (yes, the actual 
   // string, "NaN" :)) value from the IDE, or some other 
   // unusable string , just use the default value of 2 seconds
-  if (!isNaN(timeout)) {
-    timeout = p.timeout;
-    if (typeof timeout != 'number'){
-      timeout = parseInt(timeout, 10);
+  if (p.timeout) {
+    if (parseInt(p.timeout, 10) != NaN){
+      timeout = p.timeout;
     }
   }
 
@@ -57,7 +62,8 @@ windmill.controller.waits.forJSTrue = function (paramObj) {
       else {
         windmill.controller.continueLoop();
       }
-      return false;
+        windmill.xhr.setWaitBgAndReport(aid,false,obj);
+        return false;
     }
     count += 2500;
     
@@ -74,9 +80,7 @@ windmill.controller.waits.forJSTrue = function (paramObj) {
     }
     result = !!result; // Make sure we've got a Boolean
     
-    if (!result){
-      var x = setTimeout(lookup, 1500);
-    }
+    if (!result){ var x = setTimeout(lookup, 1500); }
     else {
         c = function () {
           //If this method is being called by the js test framework
@@ -84,9 +88,10 @@ windmill.controller.waits.forJSTrue = function (paramObj) {
             windmill.jsTest.waiting = false;
             windmill.jsTest.runTestItemArray();
           }
-          else{
-            windmill.controller.continueLoop();
-          }
+          else{ windmill.controller.continueLoop(); }
+        
+           //set the result in the ide
+            windmill.xhr.setWaitBgAndReport(aid,true,obj);
         }
       setTimeout(c, 1000);
     }
@@ -103,13 +108,13 @@ windmill.controller.waits.forJSTrue = function (paramObj) {
 
 //wait for an element to show up on the page
 //if it doesn't after a provided timeout, defaults to 20 seconds
-windmill.controller.waits.forElement = function (paramObj) { 
+windmill.controller.waits.forElement = function (paramObj,obj) { 
     var p = paramObj || {};
     var f = function () {
       return windmill.controller._lookupDispatch(p);
     };
     p.test = f;
-    return windmill.controller.waits.forJSTrue(p);
+    return windmill.controller.waits.forJSTrue(p, obj);
 };
   
 //This is more of an internal function used by wait and click events

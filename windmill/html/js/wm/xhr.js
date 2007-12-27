@@ -59,9 +59,9 @@ windmill.xhr = new function () {
       if (windmill.xhr.xhrResponse.result.method != 'defer'){
               
 	      //Put on windmill main page that we are running something
-      	var action_timer = new TimeObj();
-      	action_timer.setName(windmill.xhr.xhrResponse.result.method);
-      	action_timer.startTime();
+      	windmill.xhr.action_timer = new TimeObj();
+      	windmill.xhr.action_timer.setName(windmill.xhr.xhrResponse.result.method);
+      	windmill.xhr.action_timer.startTime();
                 
 	      //If the action already exists in the UI, skip all the creating suite stuff
       	if (windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid) != null){
@@ -85,6 +85,7 @@ windmill.xhr = new function () {
 	    //Wait/open needs to not grab the next action immediately
 	    if ((windmill.xhr.xhrResponse.result.method.split(".")[0] == 'waits')){
 	      windmill.controller.stopLoop();
+	      windmill.xhr.xhrResponse.result.params.aid = action.id;
 	    }
 	    if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1){
 	      //if asserts.assertNotSomething we need to set the result to !result
@@ -96,7 +97,7 @@ windmill.xhr = new function () {
         //Normal asserts and waits
         else{
 	        var mArray = windmill.xhr.xhrResponse.result.method.split(".");                       
-	        var result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params);
+	        var result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params, windmill.xhr.xhrResponse.result);
         }
 	    }
 	    //Every other action that isn't namespaced
@@ -131,18 +132,18 @@ windmill.xhr = new function () {
 	  windmill.ui.results.writeStatus("Loading " + windmill.xhr.xhrResponse.result.method + "...");
 	  result == true; 
 	}
-	  
-	    //End timer and store
-	    action_timer.endTime();
-
+      var m = windmill.xhr.xhrResponse.result.method.split(".");
 	    //Send the report if it's not in the commands namespace, we only call report for test actions
-	    if ((windmill.xhr.xhrResponse.result.method.split(".")[0] != 'commands') && (windmill.runTests == true)){
-	      windmill.xhr.sendReport(windmill.xhr.xhrResponse.result.method, result, action_timer);
+	    if ((m[0] != 'commands') && (m[0] != 'waits') && (windmill.runTests == true)){
+	      //End timer and store
+	      windmill.xhr.action_timer.endTime();
+	      windmill.xhr.sendReport(windmill.xhr.xhrResponse.result.method, result, windmill.xhr.action_timer);
         windmill.xhr.setActionBackground(action,result, windmill.xhr.xhrResponse.result);
-  	}
+        //Do the timer write
+  	    windmill.xhr.action_timer.write(fleegix.json.serialize(windmill.xhr.xhrResponse.result.params));
+  	  }
 
-  	  //Do the timer write
-  	  action_timer.write(fleegix.json.serialize(windmill.xhr.xhrResponse.result.params));
+  
     }
   }
       //Get the next action from the service
@@ -151,11 +152,12 @@ windmill.xhr = new function () {
       
   //Send the report
   this.sendReport = function(method, result, timer){
+    
     var reportHandler = function(str){
       response = eval('(' + str + ')');
       if (!response.result == 200){ windmill.ui.results.writeResult('Error: Report receiving non 200 response.'); }
-    }
-    var result_string = fleegix.json.serialize(windmill.xhr.xhrResponse.result)
+    };
+    var result_string = fleegix.json.serialize(windmill.xhr.xhrResponse.result);
     var test_obj = {"result":result,"uuid": windmill.xhr.xhrResponse.result.params.uuid,"starttime":timer.getStart(),"endtime":timer.getEnd() };        
     var json_object = new json_call('1.1', 'report');
     json_object.params = test_obj;
@@ -200,7 +202,7 @@ windmill.xhr = new function () {
     var h = function(str){
       windmill.ui.results.writeResult('Cleared backend queue, ' + str);
     }
-    var test_obj = { };        
+    var test_obj = {};        
     var json_object = new json_call('1.1', 'clear_queue');
     var json_string = fleegix.json.serialize(json_object);       
     //Actually send the report
@@ -230,6 +232,8 @@ windmill.xhr = new function () {
   };
   
   this.setActionBackground = function(action,result,obj){
+      //Waits return immediately, so we need to let them update their status
+      if (obj.method.split('.')[0] == 'waits'){ return; }
       if (result != true){
   	       if (typeof(action) != 'undefined'){ action.style.background = '#FF9692'; }
   	       windmill.ui.results.writeResult("<br>Action: <b>" + obj.method + 
@@ -246,6 +250,33 @@ windmill.xhr = new function () {
   					    "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');     
   	      if ((typeof(action) != 'undefined') && (windmill.runTests == true)){ action.style.background = '#C7FFCC'; }
   	    }
+  };
+  this.setWaitBgAndReport = function(aid,result,obj){
+      var action = $(aid);
+      windmill.xhr.action_timer.endTime();
+
+      if (result != true){
+  	       if (typeof(action) != 'undefined'){ action.style.background = '#FF9692'; }
+  	       windmill.ui.results.writeResult("<br>Action: <b>" + obj.method + 
+  					    "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');   
+  	        //if the continue on error flag has been set by the shell.. then we just keep on going
+  	        if (windmill.stopOnFailure == true){
+  	          windmill.xhr.loopState = false;
+  	          windmill.ui.results.writeStatus("Paused, error?...");    
+  	        }
+  	      }
+  	    else {
+  	      //Write to the result tab
+  	      windmill.ui.results.writeResult("<br>Action: <b>" + obj.method + 
+  					    "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');     
+  	      try{ if ((typeof(action) != 'undefined') && (windmill.runTests == true)){ action.style.background = '#C7FFCC'; } }
+  	      catch(err){}
+  	    }
+  	    //Send the report
+  	    windmill.xhr.xhrResponse.result = obj;
+  	    windmill.xhr.sendReport(obj.method, result, windmill.xhr.action_timer);
+        windmill.xhr.action_timer.write(fleegix.json.serialize(obj.params));
+
   };
   
 };

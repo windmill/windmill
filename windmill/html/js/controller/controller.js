@@ -184,9 +184,12 @@ windmill.controller = new function () {
     
     var s = actualValue;
     for (var c = 0; c < s.length; c++){
-      if ((!windmill.browser.isSafari) || (windmill.browser.isOpera)){
+      if ((!windmill.browser.isSafari) && (!windmill.browser.isOpera)){
         windmill.events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
-       windmill.events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false);
+      }
+      else if (windmill.browser.isOpera){
+       windmill.events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
+       windmill.events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false); 
       }
       element.value += s.charAt(c);
       windmill.events.triggerKeyEvent(element, 'keyup', s.charAt(c), true, false,false, false,false);
