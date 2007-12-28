@@ -52,6 +52,8 @@ START_IE            = False
 START_SAFARI        = False
 
 JAVASCRIPT_TEST_DIR = None
+JAVASCRIPT_TEST_FILTER = None
+JAVASCRIPT_TEST_PHASE = None
 
 # Browser prefs
 MOZILLA_COMMAND = None

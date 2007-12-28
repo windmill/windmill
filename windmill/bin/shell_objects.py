@@ -14,6 +14,7 @@
 #   limitations under the License.
 
 import windmill
+import uuid
 import sys, os, logging, re
 from time import sleep
 from windmill.authoring import frame
@@ -108,10 +109,8 @@ run_test.__doc__ = "Run the test file or directory passed to this function"
 load_test = lambda filename : do_test(filename, load=True)    
 load_test.__name__ = 'load_test'
 run_test.__doc__ = "Load the test file or directory passed to this function"   
-    
-def run_js_test_dir(dirname):
-    """Mount the directory and send all javascript file links to the IDE in order to execute those test urls under the jsUnit framework"""
-    # Mount the fileserver application for tests
+
+def run_js_tests(js_dir, test_filter=None, phase=None):
     from wsgi_fileserver import WSGIFileServerApplication
     application = WSGIFileServerApplication(root_path=os.path.abspath(dirname), mount_point='/windmill-jstest/')
     from windmill.server import wsgi
@@ -124,10 +123,17 @@ def run_js_test_dir(dirname):
         if not os.path.split(directory)[-1].startswith('.'):
             additional_dir = directory.replace(dirname, '')
             js_files.extend( [additional_dir+'/'+f for f in files if f.endswith('.js')]  )
-    os.path.walk(dirname, parse_files, 'x') 
+    os.path.walk(dirname, parse_files, 'x')
     
-    xmlrpc_client.add_command({'method':'commands.jsTests', 
-                               'params':{'tests':[base_url+f for f in js_files ]}})
+    kwargs = {}
+    kwargs['files'] = [base_url+f for f in js_files ]
+    kwargs['uuid'] = str(uuid.uuid1())
+    if test_filter:
+        kwargs['filter'] = test_filter
+    if phase:
+        kwargs['phase'] = phase
+    xmlrpc_client.add_command({'method':'commands.jsTests', 'params':kwargs})
+    
 
 def load_extensions_dir(dirname):
    """Mount the directory and send all javascript file links to the IDE in order to execute those test urls under the jsUnit framework"""

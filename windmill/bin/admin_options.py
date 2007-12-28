@@ -78,7 +78,7 @@ class StartFirefox(GeneralBoolSettingToTrue):
     setting = 'START_FIREFOX'
     
 class StartIE(GeneralBoolSettingToTrue):
-    """Start the internet explorer browser. Windmows Only."""
+    """Start the internet explorer browser. Windows Only."""
     option_names = ('x', 'ie')
     setting = 'START_IE'
     
@@ -96,11 +96,27 @@ class StartSafari(GeneralBoolSettingToTrue):
 #         windmill.settings[self.setting] = True
 #         windmill.settings['PYTHON_TEST_FILE'] = value
 
-class RunJavascriptTest(object):
-    """Run a directory of javascript tests.
-        javascript tests use the unittest framework for test ordering and exclusions."""
-    option_names = (None, 'jstests')
+class JavascriptTestDir(object):
+    """JavaScript Test Framework : 
+        Root directory of JavaScript tests."""
+    option_names = (None, 'jsdir')
     setting = 'JAVASCRIPT_TEST_DIR'
+    def __call__(self, value):
+        windmill.settings[self.setting] = value
+        
+class JavascriptTestFilter(object):
+    """JavaScript Test Framework : 
+        Filter tests, example; ns:test_login,tests:test_user."""
+    option_names = (None, 'jsfilter')
+    setting = 'JAVASCRIPT_TEST_FILTER'
+    def __call__(self, value):
+        windmill.settings[self.setting] = value
+        
+class JavascriptTestRunOnly(object):
+    """JavaScript Test Framework : 
+        Specify the phases the framework should run example; setup,test,teardown"""
+    option_names = (None, 'jsphase')
+    setting = 'JAVASCRIPT_TEST_PHASE'
     def __call__(self, value):
         windmill.settings[self.setting] = value
 
@@ -157,10 +173,20 @@ def help(bin_name='windmill'):
                    getattr(module, x).__doc__ is not None ) ]:
         all_option_names.append(option.option_names)
         if hasattr(option, 'setting'):
-            default = ' Defaults to %s' % str(getattr(global_settings, option.setting, None))
+            if getattr(global_settings, option.setting, None) is not None:
+                default = ' Defaults to %s' % str(getattr(global_settings, option.setting, None))
+            else:
+                default = ''
         else:
             default = ''
-        options_string.append('    '+'  '.join([str(option.option_names), option.__doc__]) + default)
+        if option.option_names[0] is None:
+            options_string.append('    '+'  '.join(['('+str(option.option_names[1]+'='+')'), 
+                                  option.__doc__]) + default)
+        else:
+            options_string.append('    '+'  '.join([
+                                  str('('+option.option_names[0])+', '
+                                  +str(option.option_names[1])+'='+')',
+                                  option.__doc__]) + default)
 
     preamble = """windmill web test automation system.
     %s [-%s] action [option=value] [firefox|ie|safari] [http://www.example.com]
@@ -173,8 +199,8 @@ Available Actions:
                   windmill service. Still experimental.
     
 Available Options:""" % ( bin_name,
-                                           ''.join([ o[0] for o in all_option_names if o[0] is not None ]) 
-                                          )
+                         ''.join([ o[0] for o in all_option_names if o[0] is not None ]) 
+                        )
     print preamble
     print '\n'.join(options_string)
     

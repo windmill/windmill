@@ -35,6 +35,9 @@ def process_options(argv_list):
     # because of the way different arguments interact with each other
     # 8/27/2007 Gawd this is ugly, i would love to refactor this but I've
     # forgotten what it does -Mikeal
+    # 12/15/2007 Oh man, I'm going to add a feature to this without refactoring it.
+    # The issue with this code remains the same and no standard arg parsing 
+    # module can do what we need.
     for index in range(len(argv_list)):
         if index <= len(argv_list):
             # Grab the test url if one is given
@@ -43,31 +46,27 @@ def process_options(argv_list):
                 functest.registry['url'] = argv_list[index]
             elif not argv_list[index].startswith('-'):
                 # Any argument not starting with - is a regular named option
-                if argv_list[index][0].islower():
-                    value = None
-                    if argv_list[index].find('=') is not -1:
-                        name, value = argv_list[index].split('=')
+                value = None
+                if argv_list[index].find('=') is not -1:
+                    name, value = argv_list[index].split('=')
+                else:
+                    name = argv_list[index]
+                
+                if admin_options.options_dict.has_key(name):    
+                    processor = admin_options.options_dict[name]
+                    if value is None:
+                        processor()
                     else:
-                        name = argv_list[index]
-                    
-                    if admin_options.options_dict.has_key(name):    
-                        processor = admin_options.options_dict[name]
-                        if value is None:
-                            processor()
-                        else:
-                            processor(value)
-                    elif name in action_mapping.keys():
-                        action = action_mapping[name]
-                elif argv_list[index][0].isupper():
-                    value = argv_list[index][0]
-                    if value.find('=') is not -1:
-                        name, value = value.split('=')
-                        windmill.settings[name] = value
-                    else:
-                        if windmill.settings[value] is True:
-                            windmill.settings[value] = False
-                        elif windmill.settings[value] is False:
-                            windmill.settings[value] = True
+                        processor(value)
+                elif name in action_mapping.keys():
+                    action = action_mapping[name]
+                else:
+                     print argv_list[index].split('=')[0]+' is not a windmill argument. Sticking in functest registry.'
+                     if argv_list[index].find('=') is not -1:
+                         name, value = argv_list[index].split('=')
+                         functest.registry[name] = value
+                     else:
+                         functest.registry[argv_list[index]] = True
                             
             elif argv_list[index].startswith('-'):
                 # Take something like -efg and set the e, f, and g options
@@ -150,7 +149,9 @@ def setup():
         shell_objects.load_extensions_dir(windmill.settings['EXTENSIONS_DIR'])
          
     if windmill.settings['JAVASCRIPT_TEST_DIR']:
-        shell_objects.run_js_test_dir(windmill.settings['JAVASCRIPT_TEST_DIR'])
+        shell_objects.run_js_test_dir(windmill.settings['JAVASCRIPT_TEST_DIR'], 
+                                      windmill.settings['JAVASCRIPT_TEST_FILTER'],
+                                      windmill.settings['JAVASCRIPT_TEST_PHASE'])
          
     browser = [setting for setting in windmill.settings.keys() if setting.startswith('START_') and \
                                                                   windmill.settings[setting] is True]
