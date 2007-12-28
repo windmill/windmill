@@ -112,7 +112,7 @@ run_test.__doc__ = "Load the test file or directory passed to this function"
 
 def run_js_tests(js_dir, test_filter=None, phase=None):
     from wsgi_fileserver import WSGIFileServerApplication
-    application = WSGIFileServerApplication(root_path=os.path.abspath(dirname), mount_point='/windmill-jstest/')
+    application = WSGIFileServerApplication(root_path=os.path.abspath(js_dir), mount_point='/windmill-jstest/')
     from windmill.server import wsgi
     wsgi.add_namespace('windmill-jstest', application)
     # Build list of files and send to IDE
@@ -121,9 +121,9 @@ def run_js_tests(js_dir, test_filter=None, phase=None):
     js_files = []
     def parse_files(x, directory, files):
         if not os.path.split(directory)[-1].startswith('.'):
-            additional_dir = directory.replace(dirname, '')
+            additional_dir = directory.replace(js_dir, '')
             js_files.extend( [additional_dir+'/'+f for f in files if f.endswith('.js')]  )
-    os.path.walk(dirname, parse_files, 'x')
+    os.path.walk(js_dir, parse_files, 'x')
     
     kwargs = {}
     kwargs['files'] = [base_url+f for f in js_files ]
