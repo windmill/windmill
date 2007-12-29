@@ -117,6 +117,18 @@ windmill.controller.waits.forElement = function (paramObj,obj) {
     return windmill.controller.waits.forJSTrue(p, obj);
 };
   
+//wait for an element to show up on the page
+//if it doesn't after a provided timeout, defaults to 20 seconds
+windmill.controller.waits.forNotElement = function (paramObj,obj) { 
+    var p = paramObj || {};
+    var f = function () {
+      var node = windmill.controller._lookupDispatch(p);
+      return !node;
+    };
+    p.test = f;
+    return windmill.controller.waits.forJSTrue(p, obj);
+};
+  
 //This is more of an internal function used by wait and click events
 //To know when to try and reattach the listeners
 //But if users wanted this manually they could use it
