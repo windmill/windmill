@@ -113,7 +113,8 @@ windmill.jsTest = new function () {
   this.currentTestName;
   this.currentJsTestTimer;
   this.jsSuiteSummary;
-  this.waiting;
+  this.waiting; // Used by waits.sleep waits.forElement
+  this.testsPaused; // User settable
 
   // Initialize everything to starting vals
   this.init = function () {
@@ -408,7 +409,11 @@ windmill.jsTest = new function () {
     var _this = this;
     var testName = '';
     var testFunc = null;
-    if (this.testOrder.length == 0) {
+    if (this.testsPaused) {
+      setTimeout(runNextItemInArray, 1000);
+      return false;
+    }
+    else if (this.testOrder.length == 0) {
       this.finish();
     }
     else {
@@ -476,10 +481,15 @@ windmill.jsTest = new function () {
   };
   this.runTestItemArray = function () {
     var _this = this;
+    var runNextItemInArray = function () { _this.runTestItemArray.apply(_this); };
     var t = 0;
+    if (this.testsPaused) {
+      setTimeout(runNextItemInArray, 1000);
+      return false;
+    }
     // If the array of UI action objects is empty, go back
     // to the normal test loop -- get the next test, etc.
-    if (this.testItemArray.incr == this.testItemArray.count) {
+    else if (this.testItemArray.incr == this.testItemArray.count) {
       this.runNextTest();
     }
     else {
@@ -529,7 +539,9 @@ windmill.jsTest = new function () {
         }
         //If the waits.forElement is called
         //We want to pause this loop and call it
-        else if (item.method == 'waits.forElement' || item.method == 'waits.forTrue'){
+        else if (item.method == 'waits.forElement' ||
+          item.method == 'waits.forTrue' ||
+          item.method == 'waits.forNotElement'){
           var func = eval('windmill.jsTest.actions.' + item.method);
           //Add a parameter so we know the js framework
           //is calling the function inside waits.forElement
@@ -554,8 +566,7 @@ windmill.jsTest = new function () {
         }
       }
       if (!this.waiting){
-        var f = function () { _this.runTestItemArray.apply(_this); };
-        setTimeout(f, t);
+        setTimeout(runNextItemInArray, t);
       }
     }
   };
@@ -577,6 +588,12 @@ windmill.jsTest = new function () {
 	  async: false,
     preventCache: true });
     return file;
+  };
+  this.pauseTests = function () {
+    this.testsPaused = true;
+  };
+  this.resumeTests = function () {
+    this.testsPaused = false;
   };
 };
 
