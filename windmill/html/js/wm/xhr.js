@@ -252,6 +252,7 @@ windmill.xhr = new function () {
   	    }
   };
   this.setWaitBgAndReport = function(aid,result,obj){
+      if (!obj) { return false; }
       var action = $(aid);
       windmill.xhr.action_timer.endTime();
 
