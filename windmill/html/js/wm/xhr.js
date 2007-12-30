@@ -43,18 +43,15 @@ function() {
         if (windmill.xhr.xhrResponse.error) {
             windmill.ui.results.writeResult("There was a JSON syntax error: '" + 
             windmill.xhr.xhrResponse.error + "'");
-
         }
         else {
             if (windmill.xhr.xhrResponse.result.method != 'defer') {
                 windmill.ui.results.writeStatus("Running " + windmill.xhr.xhrResponse.result.method + "...");
                 windmill.ui.playback.setPlaying();
-
             }
             else {
                 windmill.ui.playback.resetPlayBack();
                 windmill.ui.results.writeStatus("Waiting for tests...");
-
             }
 
             //Init and start performance but not if the protocol defer
@@ -69,7 +66,6 @@ function() {
                 if (windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid) != null) {
                     var action = windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid);
                     action.style.background = 'lightyellow';
-
                 }
                 //If its a command we don't want to build any UI
                 else if (windmill.xhr.xhrResponse.result.method.split(".")[0] == 'commands') {
@@ -77,7 +73,6 @@ function() {
                     }
                 else {
                     var action = windmill.xhr.createActionFromSuite(windmill.xhr.xhrResponse.result.suite_name, windmill.xhr.xhrResponse.result);
-
                 }
 
                 //Forgotten case; If the windmill.runTests is false, but we are trying to change it back to true with a command
@@ -90,7 +85,6 @@ function() {
                         if ((windmill.xhr.xhrResponse.result.method.split(".")[0] == 'waits')) {
                             windmill.controller.stopLoop();
                             windmill.xhr.xhrResponse.result.params.aid = action.id;
-
                         }
                         if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1) {
                             //if asserts.assertNotSomething we need to set the result to !result
@@ -98,22 +92,17 @@ function() {
                                 var mArray = windmill.xhr.xhrResponse.result.method.split(".");
                                 var m = mArray[1].replace('Not', '');
                                 var result = !windmill.controller[mArray[0]][m](windmill.xhr.xhrResponse.result.params);
-
                             }
                             //Normal asserts and waits
                             else {
                                 var mArray = windmill.xhr.xhrResponse.result.method.split(".");
                                 var result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params, windmill.xhr.xhrResponse.result);
-
                             }
-
                         }
                         //Every other action that isn't namespaced
                         else {
                             var result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params);
-
                         }
-
                     }
                     catch(error) {
                         windmill.ui.results.writeResult("<font color=\"#FF0000\">There was an error in the " + 
@@ -127,29 +116,22 @@ function() {
                         if ($('throwDebug').checked == true) {
                             if (console.log) {
                                 console.log(error);
-
                             }
                             else {
                                 throw (error);
                             }
-
                         }
                         else {
                             if (!$('toggleBreak').checked) {
                                 windmill.controller.continueLoop();
-
                             }
-
                         }
-
                     }
-
                 }
                 else {
                     //we must be loading, change the status to reflect that
                     windmill.ui.results.writeStatus("Loading " + windmill.xhr.xhrResponse.result.method + "...");
                     result == true;
-
                 }
                 var m = windmill.xhr.xhrResponse.result.method.split(".");
                 //Send the report if it's not in the commands namespace, we only call report for test actions
@@ -160,11 +142,8 @@ function() {
                     windmill.xhr.setActionBackground(action, result, windmill.xhr.xhrResponse.result);
                     //Do the timer write
                     windmill.xhr.action_timer.write(fleegix.json.serialize(windmill.xhr.xhrResponse.result.params));
-
                 }
-
             }
-
         }
         //Get the next action from the service
         setTimeout("windmill.xhr.getNext()", windmill.serviceDelay);
@@ -173,13 +152,11 @@ function() {
 
     //Send the report
     this.sendReport = function(method, result, timer) {
-
         var reportHandler = function(str) {
             response = eval('(' + str + ')');
             if (!response.result == 200) {
                 windmill.ui.results.writeResult('Error: Report receiving non 200 response.');
             }
-
         };
         var result_string = fleegix.json.serialize(windmill.xhr.xhrResponse.result);
         var test_obj = {
@@ -193,7 +170,6 @@ function() {
         var json_string = fleegix.json.serialize(json_object);
         //Actually send the report
         fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', json_string);
-
     };
 
 
@@ -202,7 +178,6 @@ function() {
         //write to the output tab what is going on
         var handleTimeout = function() {
             windmill.ui.results.writeResult('One of the XHR requests to the server timed out.');
-
         }
 
         if (windmill.xhr.loopState) {
@@ -235,7 +210,6 @@ function() {
     this.clearQueue = function() {
         var h = function(str) {
             windmill.ui.results.writeResult('Cleared backend queue, ' + str);
-
         }
         var test_obj = {};
         var json_object = new json_call('1.1', 'clear_queue');
@@ -249,7 +223,6 @@ function() {
         //If the suite name is null, set it to default
         if (suiteName == null) {
             suiteName = 'Default';
-
         }
         var suite = windmill.ui.remote.getSuite(suiteName);
 
@@ -266,17 +239,12 @@ function() {
         //If the settings box is checked, scroll to the bottom
         if (windmill.remote.$('autoScroll').checked == true) {
             ide.scrollTop = ide.scrollHeight;
-
         }
         return action;
-
     };
 
     this.setActionBackground = function(action, result, obj) {
-        //Waits return immediately, so we need to let them update their status
-        if (obj.method.split('.')[0] == 'waits') {
-            return;
-        }
+ 
         if (result != true) {
             if (typeof(action) != 'undefined') {
                 action.style.background = '#FF9692';
@@ -287,9 +255,7 @@ function() {
             if (windmill.stopOnFailure == true) {
                 windmill.xhr.loopState = false;
                 windmill.ui.results.writeStatus("Paused, error?...");
-
             }
-
         }
         else {
             //Write to the result tab
@@ -298,14 +264,13 @@ function() {
             if ((typeof(action) != 'undefined') && (windmill.runTests == true)) {
                 action.style.background = '#C7FFCC';
             }
-
         }
-
     };
     this.setWaitBgAndReport = function(aid, result, obj) {
         if (!obj) {
             return false;
         }
+        
         var action = $(aid);
         windmill.xhr.action_timer.endTime();
 
@@ -319,9 +284,7 @@ function() {
             if (windmill.stopOnFailure == true) {
                 windmill.xhr.loopState = false;
                 windmill.ui.results.writeStatus("Paused, error?...");
-
             }
-
         }
         else {
             //Write to the result tab
@@ -333,14 +296,14 @@ function() {
                 }
             }
             catch(err) {}
-
         }
         //Send the report
         windmill.xhr.xhrResponse.result = obj;
-        windmill.xhr.sendReport(obj.method, result, windmill.xhr.action_timer);
+        //Don't report if we are running js tests
+        if (obj.params.orig != 'js'){
+          windmill.xhr.sendReport(obj.method, result, windmill.xhr.action_timer);
+        }
         windmill.xhr.action_timer.write(fleegix.json.serialize(obj.params));
-
-
     };
 
 

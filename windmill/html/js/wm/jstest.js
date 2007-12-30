@@ -533,20 +533,21 @@ windmill.jsTest = new function () {
           var action = {};
           action.method = item.method;
           action.params = item.params;
-          var a = windmill.xhr.createActionFromSuite('jsTests', action);
-          windmill.xhr.setActionBackground(a,true,action);
+          action.params.orig = 'js';
 
+          var a = windmill.xhr.createActionFromSuite('jsTests', action);
+          windmill.xhr.setWaitBgAndReport(a.id,true,action);
         }
         //If the waits.forElement is called
         //We want to pause this loop and call it
         else if (item.method == 'waits.forElement' ||
           item.method == 'waits.forTrue' ||
-          item.method == 'waits.forNotElement'){
+          item.method == 'waits.forNotElement'){  
           var func = eval('windmill.jsTest.actions.' + item.method);
           //Add a parameter so we know the js framework
           //is calling the function inside waits.forElement
           item.params.orig = 'js';
-          func(item.params);
+          func(item.params, item);
           //Let the js test framework know that it's in a waiting state
           this.waiting = true;
         }
@@ -655,10 +656,15 @@ windmill.jsTest.actions.loadActions = function () {
       else { action.method = meth; }
       action.params = eval(args[0]);
       var a = windmill.xhr.createActionFromSuite('jsTests', action);
+      //Set the id in the IDE so we can manipulate it
+      action.params.aid = a.id;
+      
       //Run the action in the UI
       var result = namespace[meth].apply(namespace, args);
-      //Set results
-      windmill.xhr.setActionBackground(a,result,action);
+      //Set results, but not for waits, they do it themselves
+      if (action.method.indexOf('waits') == -1){
+        windmill.xhr.setActionBackground(a,result,action);
+      }
 
       //End the timer
       cwTimer.endTime();

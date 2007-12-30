@@ -42,7 +42,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj) {
   var timeout = 20000;
   var isJsTest = (p.orig == 'js');
   var testCondition = p.test;
-    
+  
   // If we get the weird string "NaN" (yes, the actual 
   // string, "NaN" :)) value from the IDE, or some other 
   // unusable string , just use the default value of 2 seconds
