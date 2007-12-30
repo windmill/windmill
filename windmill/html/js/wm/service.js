@@ -15,62 +15,74 @@ Copyright 2006-2007, Open Source Applications Foundation
 */
 
 /***************************************/
-windmill.service = new function () {
-  //Dynamically build assertNots into the registry for every assert that isn't jum
-  this.buildNotAsserts = function(){
-    for (var meth in windmill.controller.asserts){
-      if ((meth.charAt(0) != '_') && (!windmill.controller.asserts[meth].jsUnitAssert) && (typeof(windmill.controller.asserts[meth]) != 'object')){
+windmill.service = new
+function() {
+    //Dynamically build assertNots into the registry for every assert that isn't jum
+    this.buildNotAsserts = function() {
+        for (var meth in windmill.controller.asserts) {
+            if ((meth.charAt(0) != '_') && (!windmill.controller.asserts[meth].jsUnitAssert) && (typeof(windmill.controller.asserts[meth]) != 'object')) {
 
-        var newMethName = meth.replace('assert','');
-        windmill.registry.methods['asserts.assertNot'+newMethName] = {
-          'locator': windmill.registry.methods['asserts.'+meth].locator,
-           'option': windmill.registry.methods['asserts.'+meth].option };
-      }
-    }
-  } 
-  
-  this.getParsedLocation = function(loc) {
-    var str = '';
-    str += loc.protocol + '//' + loc.hostname;
-    str += loc.port ? ':' + loc.port : '';
-    return str;
-  }
+                var newMethName = meth.replace('assert', '');
+                windmill.registry.methods['asserts.assertNot' + newMethName] = {
+                    'locator': windmill.registry.methods['asserts.' + meth].locator,
+                    'option': windmill.registry.methods['asserts.' + meth].option
+                };
 
-  //Set the URL we are starting out testing
-  this.setStartURL = function(){
-    var json_object = new json_call('1.1', 'set_test_url');
-    var params_obj = {};
-    var loc = window.location;
-    params_obj.url = windmill.service.getParsedLocation(loc);
-    json_object.params = params_obj;
-    var json_string = fleegix.json.serialize(json_object)
+            }
 
-    var resp = function(str){
-      return true;
+        }
+
     }
 
-    result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-    resp(result);
-  };
+    this.getParsedLocation = function(loc) {
+        var str = '';
+        str += loc.protocol + '//' + loc.hostname;
+        str += loc.port ? ':' + loc.port: '';
+        return str;
 
-  //Set the URL we are testing in the python service
-  this.setTestURL = function(){
-    try{
-      var json_object = new json_call('1.1', 'set_test_url');
-      var params_obj = {};
-      var loc = windmill.testWindow.location;
-      params_obj.url =  windmill.service.getParsedLocation(loc);
-      json_object.params = params_obj;
-      var json_string = fleegix.json.serialize(json_object)
-
-      var resp = function(str){
-	      return true;
-      }
-
-      result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-      resp(result);
     }
-    catch(er){
-    }
-  };
+
+    //Set the URL we are starting out testing
+    this.setStartURL = function() {
+        var json_object = new json_call('1.1', 'set_test_url');
+        var params_obj = {};
+        var loc = window.location;
+        params_obj.url = windmill.service.getParsedLocation(loc);
+        json_object.params = params_obj;
+        var json_string = fleegix.json.serialize(json_object)
+
+        var resp = function(str) {
+            return true;
+
+        }
+
+        result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+        resp(result);
+
+    };
+
+    //Set the URL we are testing in the python service
+    this.setTestURL = function() {
+        try {
+            var json_object = new json_call('1.1', 'set_test_url');
+            var params_obj = {};
+            var loc = windmill.testWindow.location;
+            params_obj.url = windmill.service.getParsedLocation(loc);
+            json_object.params = params_obj;
+            var json_string = fleegix.json.serialize(json_object)
+
+            var resp = function(str) {
+                return true;
+
+            }
+
+            result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+            resp(result);
+
+        }
+        catch(er) {
+            }
+
+    };
+
 };

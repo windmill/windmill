@@ -14,135 +14,145 @@ Copyright 2006-2007, Open Source Applications Foundation
  limitations under the License.
 */
 
-var windmill = new function () {
-    
+var windmill = new
+function() {
+
     //More namespacing
-    this.builder={};
-    this.helpers={};
-    
+    this.builder = {};
+    this.helpers = {};
+
     //The timeout for page loading, if the onload is never called
     //how long do we wait before we start firing tests again
     this.timeout = 20000;
-    
+
     //How long xhr waits in seconds before calling the timout function
     this.xhrTimeout = 180;
-    
+
     this.serviceDelay = 500;
-    
+
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*
     this.waiting = false;
-    
+
     //The timeout ID of whatever is keeping
     //us from continuing the tests runs, if it reaches
     //windmill.timeout we stop the timeout and continue on
     this.loadTimeoutId = 0;
-    
+
     //We need to allow users to store data locally
     //So we are using the fleegix hash data structure
     this.varRegistry = new fleegix.hash.Hash();
-    
+
     //The app your testing
     this.testWindowStr = 'windmill.testWindow';
     this.testWindow = opener;
-    
+
     this.openWindow;
-    
+
     //Keep track of windows the page opened with pointers
     this.windowReg = new fleegix.hash.Hash();
-    
+
     //This is so that if you are doing multiple frame testing
     //And you have to change testingApp to point at various frames
     //You can still keep track of the base window
-    this.baseTestWindow = opener;    
+    this.baseTestWindow = opener;
     this.remoteLoaded = false;
     this.remote = parent.window;
-    
+
     this.browser = null;
-    
-    this.init = function (b){
-      this.browser = b;
+
+    this.init = function(b) {
+        this.browser = b;
     }
-    
-    this.Start = function(){
-      windmill.service.setStartURL();
-      windmill.service.buildNotAsserts();
-      
-      if (windmill.testWindow.document.title == "Windmill Testing Framework"){
-        windmill.controller.waits._forNotTitleAttach({"title":"Windmill Testing Framework"});
-      }
-      else{
-        windmill.controller.continueLoop();
-      }
-      try {
-        //rewrite the open function to keep track of windows popping up
-        //windmill.controller.reWriteOpen();
-        windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
-        browser.current_ua + ".</b><br>");
-        windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + 
-        browser.current_ua + ".</b><br>");
-      }
-      catch(err){}
-      //setTimeout("windmill.controller.continueLoop()", 2000);  
-      //Set a variable so that windmill knows that the remote has fully loaded
-      this.remoteLoaded = true;
+
+    this.Start = function() {
+        windmill.service.setStartURL();
+        windmill.service.buildNotAsserts();
+
+        if (windmill.testWindow.document.title == "Windmill Testing Framework") {
+            windmill.controller.waits._forNotTitleAttach({
+                "title": "Windmill Testing Framework"
+            });
+
+        }
+        else {
+            windmill.controller.continueLoop();
+
+        }
+        try {
+            //rewrite the open function to keep track of windows popping up
+            //windmill.controller.reWriteOpen();
+            windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
+            browser.current_ua + ".</b><br>");
+            windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + 
+            browser.current_ua + ".</b><br>");
+
+        }
+        catch(err) {}
+        //setTimeout("windmill.controller.continueLoop()", 2000);  
+        //Set a variable so that windmill knows that the remote has fully loaded
+        this.remoteLoaded = true;
+
     }
-    
+
     //When the page is unloaded turn off the loop until it loads the new one
-    this.unloaded = function(){
-      this.controller.stopLoop();
-      checkPage = function(){ windmill.controller.waits.forPageLoad({}); }
-      setTimeout('checkPage()', 1000);
+    this.unloaded = function() {
+        this.controller.stopLoop();
+        checkPage = function() {
+            windmill.controller.waits.forPageLoad({});
+        }
+        setTimeout('checkPage()', 1000);
     }
-    
+
     //On load setup all the listener stuff
     //Set the listener on the testingApp on unload
-    this.loaded = function(){
-      //When the waits happen I set a timeout
-      //to ensure that if it takes longer than the
-      //windmill default timeout to load
-      //we start running tests.. failover incase something
-      //breaks, but we don't want this same code to get
-      //called twice, so I clear it here
-      if (windmill.loadTimeoutId != 0){
-        clearTimeout(windmill.loadTimeoutId);
-      }
-      
-      //rewrite the open function to keep track of windows popping up
-      //windmill.controller.reWriteOpen();
-      //Making rewrite alert persist through the session
-      if (windmill.reAlert == true){
-        windmill.controller.reWriteAlert();
-      }
-      //Ovveride the window.open, so we can keep a registry of
-      //Windows getting popped up
-      
-      
-      //We need to define the windmill object in the
-      //test window to allow the JS test framework
-      //to access different functionality
-       windmill.testWindow.windmill = windmill;
-       
-       //Reset the explorer and recorder to what
-       //they were before the new page load
-       windmill.ui.domexplorer.setExploreState();
-       windmill.ui.recorder.setRecState();
-       fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
-       fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
+    this.loaded = function() {
+        //When the waits happen I set a timeout
+        //to ensure that if it takes longer than the
+        //windmill default timeout to load
+        //we start running tests.. failover incase something
+        //breaks, but we don't want this same code to get
+        //called twice, so I clear it here
+        if (windmill.loadTimeoutId != 0) {
+            clearTimeout(windmill.loadTimeoutId);
 
-     delayed = function(){
-      if (windmill.waiting == false){
-         windmill.controller.continueLoop();
-      }
-     }
-     setTimeout('delayed()', 1000);
+        }
+
+        //rewrite the open function to keep track of windows popping up
+        //windmill.controller.reWriteOpen();
+        //Making rewrite alert persist through the session
+        if (windmill.reAlert == true) {
+            windmill.controller.reWriteAlert();
+        }
+        //Ovveride the window.open, so we can keep a registry of
+        //Windows getting popped up
+
+        //We need to define the windmill object in the
+        //test window to allow the JS test framework
+        //to access different functionality
+        windmill.testWindow.windmill = windmill;
+
+        //Reset the explorer and recorder to what
+        //they were before the new page load
+        windmill.ui.domexplorer.setExploreState();
+        windmill.ui.recorder.setRecState();
+        fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
+        fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
+
+        delayed = function() {
+            if (windmill.waiting == false) {
+                windmill.controller.continueLoop();
+            }
+        }
+        setTimeout('delayed()', 1000);
     }
-    
+
     //windmill Options to be set
     this.stopOnFailure = false;
     this.runTests = true;
     this.rwAlert = false;
-    
+
+
 };
 
 //Set the browser

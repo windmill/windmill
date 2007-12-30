@@ -14,7 +14,9 @@ Copyright 2006-2007, Open Source Applications Foundation
  limitations under the License.
 */
 
-windmill.performance = new function () {
-  //Setting up a performance timing object
-  timing = new TimeObj();
+windmill.performance = new
+function() {
+    //Setting up a performance timing object
+    timing = new TimeObj();
+
 };
