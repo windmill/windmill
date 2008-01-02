@@ -90,7 +90,9 @@ class WindmillChooserApplication(object):
         return response
             
     def __call__(self, environ, start_response):
-        return self.handler(environ, start_response)
+        response = self.handler(environ, start_response)
+        for x in response:
+            yield x
                           
         
 def make_windmill_server(http_port=None, js_path=None):
