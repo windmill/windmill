@@ -142,7 +142,7 @@ function() {
                 windmill.controller.continueLoop();
             }
         }
-        setTimeout(delayed(), 1000);
+        setTimeout('delayed()', 1000);
     };
 
     //windmill Options to be set
