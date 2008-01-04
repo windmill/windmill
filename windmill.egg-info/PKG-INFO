@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: windmill
-Version: 0.3.6pre
+Version: 0.3.7pre
 Summary: Web testing framework intended for complete automation of user interface testing, with strong test debugging and recording capabilities.
 Home-page: http://windmill.osafoundation.org/
 Author: Open Source Applications Foundation

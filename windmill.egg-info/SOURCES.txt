@@ -41,9 +41,12 @@ test/test_live/test_transforms.py
 test/test_live/test_unit.py
 test/test_live/unit_tester.html
 test/test_live/jstests/initialize.js
-test/test_live/jstests/jsid_scope_validation.js
-test/test_live/jstests/register.js
-test/test_live/jstests/splash_page_img.js
+test/test_live/jstests/test_jum_asserts.js
+test/test_live/jstests/test_reload_test_code.js
+test/test_live/jstests/test_splash_img.js
+test/test_live/jstests/test_windmill_home.js
+test/test_live/jstests/shared/test_nav_windmill_book.js
+test/test_live/jstests/shared/test_nav_windmill_home.js
 windmill/__init__.py
 windmill.egg-info/PKG-INFO
 windmill.egg-info/SOURCES.txt
@@ -104,6 +107,7 @@ windmill/html/js/controller/commands.js
 windmill/html/js/controller/controller.js
 windmill/html/js/controller/ieController.js
 windmill/html/js/controller/mozController.js
+windmill/html/js/controller/opController.js
 windmill/html/js/controller/safController.js
 windmill/html/js/controller/waits.js
 windmill/html/js/extensions/extensions.js
