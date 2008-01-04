@@ -34,13 +34,11 @@ function Load() {
         alert('We detected a popup blocker, please disable it while ' + 
         'you are using Windmill as we load the UI in a popup window. This requires a reload of the page.');
     }
-    else{ 
-      //Set the test domain in the remote to set later on page loads
-      remote.testURL = hostname.replace('www.','');
-      remote.docdom = document.domain;
-    }
     
     redirect = function() {
+        //Set the test domain in the remote to set later on page loads
+        remote.testURL = hostname.replace('www.','');
+        remote.docdom = document.domain;
         window.location = urlSTR;
     }
     setTimeout('redirect()', 2500);
