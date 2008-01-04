@@ -22,7 +22,7 @@ windmill.registry = new function () {
 
 //Setup all the current methods supported
 windmill.registry.locator.push('id','link','xpath','jsid', 'name');
-windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js', 'status');
+windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js', 'status','domain');
 
 //Setup method registry
 windmill.registry.methods['open']                = {'locator': false, 'option': 'url' };
@@ -46,6 +46,7 @@ windmill.registry.methods['setTestWindow']       = {'locator': false, 'option': 
 windmill.registry.methods['setOptions']         = {'locator': false, 'option':'stopOnFailure'};
 windmill.registry.methods['reWriteAlert']       = {'locator': false, 'option': false };
 windmill.registry.methods['storeURL']           = {'locator': true, 'option': false };
+windmill.registry.methods['setDomain']           = {'locator': false, 'option': 'domain' };
 windmill.registry.methods['complex']            = {'locator': false, 'option': false };
 windmill.registry.methods['asserts.assertJS']    = {'locator': false, 'option': 'js' };
 windmill.registry.methods['asserts.assertProperty'] = {'locator': true, 'option': 'validator' };

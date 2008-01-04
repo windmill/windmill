@@ -22,16 +22,13 @@ function() {
     this.setExploreState = function() {
         if (this.exploreState == true) {
             this.domExplorerOn();
-
         }
-
     }
 
     //Reset the border to what it was before the mouse over
     this.resetBorder = function(e) {
         e.target.style.border = '';
         //e.target.style.border = this.domExplorerBorder;
-
     }
 
     //Display the id in the remote
@@ -180,9 +177,7 @@ function() {
                 windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);
 
             }
-
         }
-
     }
 
     this.dxRecursiveUnBind = function(frame) {

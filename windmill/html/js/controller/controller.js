@@ -127,7 +127,19 @@ windmill.controller = new function () {
   
   //After a page is done loading, continue the loop
   this.continueLoop = function (){
+      
     cont = function(){
+      //If the doc domain has changed
+      //and we can't get to it, try updating it
+      try{
+        var v = opener.document.domain;
+        if (!v){
+          document.domain = testURL;
+        }
+      }
+      catch(err){
+        document.domain = testURL;
+      }
       $('loopLink').innerHTML = 'Pause Loop';
       windmill.xhr.loopState = true;
       windmill.xhr.getNext();
@@ -314,6 +326,12 @@ windmill.controller = new function () {
     else{
       return false;
     }
+  }
+  
+  //Allow the user to update the document.domain for the IDE
+  this.setDomain = function(param_object){
+    document.domain = param_object.domain;
+    return true;
   }
 
   //Directly access mouse events

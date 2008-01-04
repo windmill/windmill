@@ -60,7 +60,7 @@ function() {
     this.remote = parent.window;
 
     this.browser = null;
-
+        
     this.init = function(b) {
         this.browser = b;
     }
@@ -68,16 +68,19 @@ function() {
     this.Start = function() {
         windmill.service.setStartURL();
         windmill.service.buildNotAsserts();
-
-        if (windmill.testWindow.document.title == "Windmill Testing Framework") {
-            windmill.controller.waits._forNotTitleAttach({
-                "title": "Windmill Testing Framework"
-            });
-
+        
+        try{
+          if (windmill.testWindow.document.title == "Windmill Testing Framework") {
+              windmill.controller.waits._forNotTitleAttach({
+                  "title": "Windmill Testing Framework"
+              });
+          }
+          else {
+              windmill.controller.continueLoop();
+          }
         }
-        else {
-            windmill.controller.continueLoop();
-
+        catch(err){
+          windmill.controller.continueLoop();
         }
         try {
             //rewrite the open function to keep track of windows popping up
@@ -92,8 +95,7 @@ function() {
         //setTimeout("windmill.controller.continueLoop()", 2000);  
         //Set a variable so that windmill knows that the remote has fully loaded
         this.remoteLoaded = true;
-
-    }
+    };
 
     //When the page is unloaded turn off the loop until it loads the new one
     this.unloaded = function() {
@@ -102,7 +104,7 @@ function() {
             windmill.controller.waits.forPageLoad({});
         }
         setTimeout('checkPage()', 1000);
-    }
+    };
 
     //On load setup all the listener stuff
     //Set the listener on the testingApp on unload
@@ -113,17 +115,12 @@ function() {
         //we start running tests.. failover incase something
         //breaks, but we don't want this same code to get
         //called twice, so I clear it here
-        if (windmill.loadTimeoutId != 0) {
-            clearTimeout(windmill.loadTimeoutId);
-
-        }
+        if (windmill.loadTimeoutId != 0) { clearTimeout(windmill.loadTimeoutId); }
 
         //rewrite the open function to keep track of windows popping up
         //windmill.controller.reWriteOpen();
         //Making rewrite alert persist through the session
-        if (windmill.reAlert == true) {
-            windmill.controller.reWriteAlert();
-        }
+        if (windmill.reAlert == true) { windmill.controller.reWriteAlert(); }
         //Ovveride the window.open, so we can keep a registry of
         //Windows getting popped up
 
@@ -136,23 +133,23 @@ function() {
         //they were before the new page load
         windmill.ui.domexplorer.setExploreState();
         windmill.ui.recorder.setRecState();
+        
         fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
         fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
-
+  
         delayed = function() {
             if (windmill.waiting == false) {
                 windmill.controller.continueLoop();
             }
         }
-        setTimeout('delayed()', 1000);
-    }
+        setTimeout(delayed(), 1000);
+    };
 
     //windmill Options to be set
     this.stopOnFailure = false;
     this.runTests = true;
     this.rwAlert = false;
-
-
+    
 };
 
 //Set the browser

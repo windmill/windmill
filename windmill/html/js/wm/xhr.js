@@ -51,7 +51,7 @@ function() {
             }
             else {
                 windmill.ui.playback.resetPlayBack();
-                windmill.ui.results.writeStatus("Waiting for tests...");
+                windmill.ui.results.writeStatus("Ready, Waiting for tests...");
             }
 
             //Init and start performance but not if the protocol defer

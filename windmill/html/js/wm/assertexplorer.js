@@ -171,7 +171,6 @@ function() {
             'we are getting cross domain exceptions.');
             windmill.remote.$('assertx').src = 'img/axon.png';
             this.exploreState = false;
-
         }
 
     }

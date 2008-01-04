@@ -164,12 +164,10 @@ var scroll = function() {
         $('autoScroll').checked = false;
 
     }
-
 }
 
 function verticalOnly(item) {
     item.toolManDragGroup.verticalOnly()
-
 }
 
 function saveOrder(item) {
@@ -183,7 +181,6 @@ function saveOrder(item) {
         ToolMan.junkdrawer().serializeList(list), 365)
 
     })
-
 }
 
 var doSubmit = function() {
@@ -192,5 +189,4 @@ var doSubmit = function() {
 windmill.remote.init = function() {
     windmill.remote.shell = new fleegix.shell.Shell($('shellForm').shellInput, $('shellOutput'));
     windmill.Start();
-
 };

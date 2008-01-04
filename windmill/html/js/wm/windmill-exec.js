@@ -26,17 +26,22 @@ function Load() {
     load.innerHTML = '<center><img src="img/wlogo.png"><br>Loading <img src="img/loading.gif"></center>';
     document.body.appendChild(load);
     fleegix.dom.center(load);
-
+    
     var remote = window.open('remote.html', 'windmill_Remote', 'width=465,height=500,toolbar=no,' + 
     'location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');
+    
     if (!remote) {
         alert('We detected a popup blocker, please disable it while ' + 
         'you are using Windmill as we load the UI in a popup window. This requires a reload of the page.');
-
     }
+    else{ 
+      //Set the test domain in the remote to set later on page loads
+      remote.testURL = hostname.replace('www.','');
+      remote.docdom = document.domain;
+    }
+    
     redirect = function() {
         window.location = urlSTR;
-
     }
     setTimeout('redirect()', 2500);
 
