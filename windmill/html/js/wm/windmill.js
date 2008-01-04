@@ -109,6 +109,17 @@ function() {
     //On load setup all the listener stuff
     //Set the listener on the testingApp on unload
     this.loaded = function() {
+        //If the doc domain has changed
+        //and we can't get to it, try updating it
+        try{
+          var v = opener.document.domain;
+          if (!v){
+            document.domain = testURL;
+          }
+        }
+        catch(err){
+          document.domain = testURL;
+        }
         //When the waits happen I set a timeout
         //to ensure that if it takes longer than the
         //windmill default timeout to load
