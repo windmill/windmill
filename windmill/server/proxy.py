@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__)
 _hoppish = {
     'connection':1, 'keep-alive':1, 'proxy-authenticate':1,
     'proxy-authorization':1, 'te':1, 'trailers':1, 'transfer-encoding':1,
-    'upgrade':1, 'proxy-connection':1 }
+    'upgrade':1, 'proxy-connection':1, 
+    'p3p':1 #Not actually a hop-by-hop header, just really annoying 
+    }
     
 def is_hop_by_hop(header):
     """check if the given header is hop_by_hop"""
