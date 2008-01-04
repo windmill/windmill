@@ -45,7 +45,8 @@ class IterativeResponse(object):
             yield self.response_instance.read(1024)
             while self.response_instance.chunk_left is not None:
                 if self.response_instance.chunk_left < 1024:
-                    yield self.response_instance.read(self.response_instance.chunk_left)
+                    yield self.response_instance.read()
+                    self.response_instance.chunk_left = None
                 else:
                     yield self.response_instance.read(1024)
         else:
