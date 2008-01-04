@@ -68,20 +68,25 @@ function() {
     this.Start = function() {
         windmill.service.setStartURL();
         windmill.service.buildNotAsserts();
-        
+        windmill.docDomain = window.location.hostname.replace('www.','');
+        //If the doc domain has changed
+        //and we can't get to it, try updating it
         try{
-          if (windmill.testWindow.document.title == "Windmill Testing Framework") {
-              windmill.controller.waits._forNotTitleAttach({
-                  "title": "Windmill Testing Framework"
-              });
-          }
-          else {
-              windmill.controller.continueLoop();
-          }
+          var v = opener.document.domain;
         }
         catch(err){
-          windmill.controller.continueLoop();
+          document.domain = windmill.docDomain;
         }
+        
+        if (windmill.testWindow.document.title == "Windmill Testing Framework") {
+            windmill.controller.waits._forNotTitleAttach({
+                "title": "Windmill Testing Framework"
+            });
+        }
+        else {
+            windmill.controller.continueLoop();
+        }
+
         try {
             //rewrite the open function to keep track of windows popping up
             //windmill.controller.reWriteOpen();
@@ -109,17 +114,6 @@ function() {
     //On load setup all the listener stuff
     //Set the listener on the testingApp on unload
     this.loaded = function() {
-        //If the doc domain has changed
-        //and we can't get to it, try updating it
-        try{
-          var v = opener.document.domain;
-          if (!v){
-            document.domain = testURL;
-          }
-        }
-        catch(err){
-          document.domain = testURL;
-        }
         //When the waits happen I set a timeout
         //to ensure that if it takes longer than the
         //windmill default timeout to load
@@ -128,6 +122,14 @@ function() {
         //called twice, so I clear it here
         if (windmill.loadTimeoutId != 0) { clearTimeout(windmill.loadTimeoutId); }
 
+        //If the doc domain has changed
+        //and we can't get to it, try updating it
+        try{
+          var v = opener.document.domain;
+        }
+        catch(err){
+          document.domain = windmill.docDomain;
+        }
         //rewrite the open function to keep track of windows popping up
         //windmill.controller.reWriteOpen();
         //Making rewrite alert persist through the session

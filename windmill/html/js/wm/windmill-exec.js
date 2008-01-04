@@ -36,9 +36,6 @@ function Load() {
     }
     
     redirect = function() {
-        //Set the test domain in the remote to set later on page loads
-        remote.testURL = hostname.replace('www.','');
-        remote.docdom = document.domain;
         window.location = urlSTR;
     }
     setTimeout('redirect()', 2500);

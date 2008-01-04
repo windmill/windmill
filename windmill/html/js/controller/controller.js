@@ -129,17 +129,15 @@ windmill.controller = new function () {
   this.continueLoop = function (){
       
     cont = function(){
-      //If the doc domain has changed
-      //and we can't get to it, try updating it
-      try{
-        var v = opener.document.domain;
-        if (!v){
-          document.domain = testURL;
+        //If the doc domain has changed
+        //and we can't get to it, try updating it
+        try{
+          var v = opener.document.domain;
         }
-      }
-      catch(err){
-        document.domain = testURL;
-      }
+        catch(err){
+          document.domain = windmill.docDomain;
+        }
+        
       $('loopLink').innerHTML = 'Pause Loop';
       windmill.xhr.loopState = true;
       windmill.xhr.getNext();
