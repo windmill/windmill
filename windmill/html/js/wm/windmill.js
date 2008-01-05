@@ -147,8 +147,10 @@ function() {
         windmill.ui.domexplorer.setExploreState();
         windmill.ui.recorder.setRecState();
         
-        fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
-        fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
+        if (windmill.testWindow && windmill.testWindow.onunload){
+          fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
+          fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
+        }
   
         delayed = function() {
             if (windmill.waiting == false) {
