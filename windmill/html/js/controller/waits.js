@@ -128,18 +128,23 @@ windmill.controller.waits.forNotElement = function (paramObj,obj) {
     p.test = f;
     return windmill.controller.waits.forJSTrue(p, obj);
 };
-  
+
+
+
 //This is more of an internal function used by wait and click events
 //To know when to try and reattach the listeners
 //But if users wanted this manually they could use it
 windmill.controller.waits.forPageLoad = function (param_object) { 
   _this = this;
   
-  //Attach an onload listener to the new window
-  //fleegix.event.unlisten(windmill.testWindow, 'onload', windmill, 'loaded');
-  //fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
-
-  var timeout = 20000;
+  try{
+    //Attach an onload listener to the new window
+    fleegix.event.unlisten(windmill.testWindow, 'onload', windmill, 'loaded');
+    fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
+  }
+  catch(err){}
+  
+  var timeout = 80000;
   var count = 0;
   var p = param_object;
     
@@ -195,7 +200,7 @@ windmill.controller.waits.forPageLoad = function (param_object) {
 windmill.controller.waits._forNotTitleAttach = function (param_object) { 
   _this = this;
 
-  var timeout = 20000;
+  var timeout = 80000;
   var count = 0;
   var p = param_object;
     

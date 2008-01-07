@@ -28,7 +28,7 @@ function() {
     //How long xhr waits in seconds before calling the timout function
     this.xhrTimeout = 180;
 
-    this.serviceDelay = 500;
+    this.serviceDelay = 300;
 
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*
