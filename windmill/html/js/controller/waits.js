@@ -239,6 +239,7 @@ windmill.controller.waits._forNotTitleAttach = function (param_object) {
         }
       }
       catch(err){ this.lookup() }
+        fleegix.event.suppressHandlerErrors(windmill.testWindow, 'onload');
         fleegix.event.unlisten(windmill.testWindow, 'onload', windmill, 'loaded');
         fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
       return true;

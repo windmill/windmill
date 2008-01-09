@@ -23,7 +23,10 @@ windmill.jsTest = new function () {
   var assumedLocation = '';
   var serverBasePath = '';
   var jsFilesBasePath = '';
-  var loadedJSCodeFiles ={};
+  var loadedJSCodeFiles = {};
+  var testFilter = '';
+  var testPhases = '';
+  var testListReverseMap = {};
 
   function appendScriptTag(win, code) {
     var script = win.document.createElement('script');
@@ -118,6 +121,9 @@ windmill.jsTest = new function () {
 
   // Initialize everything to starting vals
   this.init = function () {
+    testFilter = '';
+    testPhases = '';
+
     this.testFiles = null;
     this.testScriptSrc = '';
     this.regFile = false;
@@ -132,13 +138,17 @@ windmill.jsTest = new function () {
     this.waiting = false;
   };
   // Main function to run a directory of JS tests
-  this.run = function (testFiles) {
+  this.run = function (paramObj) {
     this.actions.loadActions();
-    this.init();
-    this.doSetup(testFiles);
+    this.init(); // Init props to default states
+    this.doSetup(paramObj);
     this.loadTestFiles();
-    this.getTestNames();
-    this.setAssumedLocation();
+    this.getCompleteListOfTestNames();
+    this.limitByFilterAndPhase();
+    this.recordCurrentLocation();
+    this.start();
+  };
+  this.start = function () {
     this.runNextTest();
   };
   this.finish = function () {
@@ -146,11 +156,14 @@ windmill.jsTest = new function () {
     this.testFailureCount = this.testFailures.length;
     windmill.controller.commands.jsTestResults();
   };
-  // Pull out the init file from the list of files
-  // if there is one
-  this.doSetup = function (testFiles) {
+  this.doSetup = function (paramObj) {
+    var testFiles = paramObj.files;
     var regIndex = null;
     var initIndex = null;
+
+    testFilter = paramObj.filter || null;
+    testPhases = paramObj.phase || null;
+
     for (var i = 0; i < testFiles.length; i++) {
       var t = testFiles[i];
       if (t.indexOf('/register.js') > -1) {
@@ -328,7 +341,7 @@ windmill.jsTest = new function () {
 
     this.testList = combineLists(this.testList, arr);
   };
-  this.getTestNames = function () {
+  this.getCompleteListOfTestNames = function () {
     // No register.js
     if (!this.regFile) {
       var code = this.testScriptSrc;
@@ -352,15 +365,119 @@ windmill.jsTest = new function () {
     for (var i = 0; i < n.length; i++) {
       this.parseTestNamespace(n[i]);
     }
-    if (this.testList.length) {
-      // Clone the list
-      this.testOrder = this.testList.slice();
-    }
-    else {
+    if (!this.testList.length) {
       throw new Error('No tests to run.');
     }
   };
-  this.setAssumedLocation = function () {
+  this.limitByFilterAndPhase = function () {
+    if (testFilter || testPhases) {
+      // Get a hash of the tests to run
+      var limitedList = [];
+      var testList = this.testList;
+
+      // Make a reverse map of the test names, so we can
+      // test for the existence of any given name
+      for (var i = 0; i < testList.length; i++) {
+        testListReverseMap[testList[i]] = false;
+      }
+      var inclSetupPhase = !!(testPhases && testPhases.indexOf('setup') > -1);
+      var inclTestPhase = !!(testPhases && testPhases.indexOf('test') > -1);
+      var inclTeardownPhase = !!(testPhases && testPhases.indexOf('teardown') > -1);
+
+      // Filter on desired test/namespace, and limit to specified phases
+      // for that test/namespace
+      if (testFilter) {
+        var isNamespace = (testFilter.indexOf('ns:') == 0);
+        if (isNamespace) {
+          testFilter = testFilter.replace('ns:', '');
+          // FIXME: Make sure this namespace is valid
+        }
+        else {
+          // Make sure the filtered-for test exists
+          if (typeof testListReverseMap[testFilter] == 'undefined') {
+            throw new Error('Filtered test "' + testFilter + '" does not exist.');
+          }
+        }
+        // Split the namespace path into its components
+        // We'll be looking at each link in the chain for setups/teardowns
+        var pathArray = testFilter.split(/\./g);
+        var objPath = '';
+        // Setups
+        if (!testPhases || inclSetupPhase) {
+          // Parse down the namespace chain, looking for setups
+          // For namespace filters, look all the way down the chain,
+          // for tests, ignore the last item
+          var limit = isNamespace ? pathArray.length : pathArray.length - 1;
+          for (var i = 0; i < limit; i++) {
+            objPath = pathArray[i] + '.setup';
+            if (typeof testListReverseMap[objPath] != 'undefined') {
+              limitedList.push(objPath);
+            }
+          }
+        }
+        // Actual tests
+        if (!testPhases || inclTestPhase) {
+          // Namespace filter -- add any non-setup, non-teardown items
+          if (isNamespace) {
+            var re = /\.setup$|\.teardown$/;
+            for (var i = 0; i < testList.length; i++) {
+              var testName = testList[i];
+              if (testName.indexOf(testFilter) == 0 && !re.test(testName)) {
+                limitedList.push(testName);
+              }
+            }
+          }
+          // Test name filter -- just add the single test
+          else {
+            limitedList.push(testFilter);
+          }
+        }
+        // Teardowns
+        if (!testPhases || inclTeardownPhase) {
+          // Parse back up the namespace chain, looking for teardowns
+          // For namespace filters, start at the very bottom of the chain,
+          // for tests, ignore the bottom item
+          var limit = isNamespace ? pathArray.length - 1 : pathArray.length - 2;
+          for (var i = limit; i > -1; i--) {
+            objPath = pathArray[i] + '.teardown';
+            if (typeof testListReverseMap[objPath] != 'undefined') {
+              limitedList.push(objPath);
+            }
+          }
+        }
+      }
+      // No test filter, just limit to specified phases
+      // FIXME: I don't think this option makes any logical sense
+      else if (testPhases) {
+        var setupRe = /\.setup$/;
+        var teardownRe = /\.teardown$/;
+        var testName;
+        var keepTest;
+        for (var i = 0; i < testList.length; i++) {
+          testName = testList[i];
+          keepTest = false;
+          switch (true) {
+            case (setupRe.test(testName) && inclSetupPhase):
+              keepTest = true;
+              break;
+            case ((!setupRe.test(testName) && !teardownRe.test(testName)) && inclTestPhase):
+              keepTest = true;
+              break;
+            case (teardownRe.test(testName) && inclTeardownPhase):
+              keepTest = true;
+              break;
+          }
+          if (keepTest) {
+            limitedList.push(testName);
+          }
+        }
+      }
+      this.testList = limitedList;
+    }
+    // Clone the list
+    this.testOrder = this.testList.slice();
+  };
+  this.recordCurrentLocation = function () {
     assumedLocation = this.getActualLocation();
   };
   this.getActualLocation = function () {
@@ -423,7 +540,7 @@ windmill.jsTest = new function () {
       if (assumedLocation != this.getActualLocation()) {
         var f = function () {
           var waitForIt = _this.loadTestFiles.apply(_this);
-          _this.setAssumedLocation.apply(_this);
+          _this.recordCurrentLocation.apply(_this);
           _this.runNextTest.apply(_this);
         };
         setTimeout(f, 2000);
@@ -499,7 +616,7 @@ windmill.jsTest = new function () {
       if (assumedLocation != this.getActualLocation()) {
         var f = function () {
           var waitForIt = _this.loadTestFiles.apply(_this);
-          _this.setAssumedLocation.apply(_this);
+          _this.recordCurrentLocation.apply(_this);
           _this.runTestItemArray.apply(_this);
         };
         setTimeout(f, 2000);
@@ -542,7 +659,7 @@ windmill.jsTest = new function () {
         //We want to pause this loop and call it
         else if (item.method == 'waits.forElement' ||
           item.method == 'waits.forTrue' ||
-          item.method == 'waits.forNotElement'){  
+          item.method == 'waits.forNotElement'){
           var func = eval('windmill.jsTest.actions.' + item.method);
           //Add a parameter so we know the js framework
           //is calling the function inside waits.forElement
@@ -658,7 +775,7 @@ windmill.jsTest.actions.loadActions = function () {
       var a = windmill.xhr.createActionFromSuite('jsTests', action);
       //Set the id in the IDE so we can manipulate it
       action.params.aid = a.id;
-      
+
       //Run the action in the UI
       var result = namespace[meth].apply(namespace, args);
       //Set results, but not for waits, they do it themselves

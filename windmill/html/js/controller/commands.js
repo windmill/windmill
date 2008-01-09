@@ -182,7 +182,6 @@ windmill.controller.commands.jsTests = function (paramObj) {
     //Setup needed variables
     windmill.jsTest.actions.loadActions();
     var wm = windmill.jsTest.actions;
-    
     var testFiles = paramObj.files;
     if (!testFiles.length) {
       throw new Error('No JavaScript tests to run.');
@@ -196,7 +195,7 @@ windmill.controller.commands.jsTests = function (paramObj) {
     jsSuiteSummary.startTime();
     _j.jsSuiteSummary = jsSuiteSummary;
 
-    _j.run(testFiles);
+    _j.run(paramObj);
 };
 
 //Commands function to hande the test results of the js tests
