@@ -184,9 +184,6 @@ function() {
             var jsonObject = new json_call('1.1', 'next_action');
             var jsonString = fleegix.json.serialize(jsonObject);
 
-            // Don't trap errors in the XHR call
-            fleegix.xhr.debug = true;
-
             //Execute the post to get the next action
             //Set the xhr timeout to be really high
             //handle the timeout manually

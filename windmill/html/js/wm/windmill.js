@@ -171,5 +171,4 @@ function() {
 windmill.init(browser);
 //Setup a convenience variable
 var _w = windmill.testWindow;
-//Turn on fleegix debuging
-fleegix.xhr.debug = true;
+fleegix.xhr.defaultTimeoutSeconds = windmill.xhrTimeout;
