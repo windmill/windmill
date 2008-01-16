@@ -172,3 +172,4 @@ windmill.init(browser);
 //Setup a convenience variable
 var _w = windmill.testWindow;
 fleegix.xhr.defaultTimeoutSeconds = windmill.xhrTimeout;
+fleegix.event.compatibilityMode = true;
