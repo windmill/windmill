@@ -68,7 +68,17 @@ function() {
     this.Start = function() {
         windmill.service.setStartURL();
         windmill.service.buildNotAsserts();
-        windmill.docDomain = window.location.hostname.replace('www.','');
+        
+        var arr = window.location.hostname.split('.');
+        if (arr.length > 2){
+          arr.shift();
+          windmill.docDomain = arr.join('.');
+        }
+        else {
+          windmill.docDomain = window.location.hostname;
+        }
+        //windmill.docDomain = window.location.hostname.replace('www.','');
+
         //If the doc domain has changed
         //and we can't get to it, try updating it
         try{
