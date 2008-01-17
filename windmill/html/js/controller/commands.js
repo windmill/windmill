@@ -157,29 +157,9 @@ windmill.controller.commands.setOptions = function (param_object){
   
   return true;
 };
-  
-//If we have an error at any time during playback we may
-//want to know the exact state and contents of the testing window
-//this function takes the innerHTML, removes the new lines and sends
-//the contents back to the service so that they can be used for debugging
-windmill.controller.commands.getDOM = function (param_object){
-  var dom = windmill.testWindow.document.documentElement.innerHTML.replace('\n','');
-    
-  //Send to the server
-  var json_object = new json_call('1.1', 'command_result');
-  var params_obj = {"status":true, "uuid":param_object.uuid, "result":dom};
-  json_object.params = params_obj;
-  var json_string = fleegix.json.serialize(json_object)
 
-  var resp = function(str){ return true; }
-    
-  result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-  resp(result); 
-};
-
-//Same as getDOM except I am adding back in the opening and closing html tags
-//to make it a real page
-windmill.controller.commands.getPage = function (param_object){
+//Get the document HTML
+windmill.controller.commands.getPageText = function (param_object){
   var dom = windmill.testWindow.document.documentElement.innerHTML.replace('\n','');
   dom = '<html>' + dom + '</html>';
   //Send to the server
