@@ -177,6 +177,23 @@ windmill.controller.commands.getDOM = function (param_object){
   resp(result); 
 };
 
+//Same as getDOM except I am adding back in the opening and closing html tags
+//to make it a real page
+windmill.controller.commands.getPage = function (param_object){
+  var dom = windmill.testWindow.document.documentElement.innerHTML.replace('\n','');
+  dom = '<html>' + dom + '</html>';
+  //Send to the server
+  var json_object = new json_call('1.1', 'command_result');
+  var params_obj = {"status":true, "uuid":param_object.uuid, "result":dom};
+  json_object.params = params_obj;
+  var json_string = fleegix.json.serialize(json_object)
+
+  var resp = function(str){ return true; }
+    
+  result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+  resp(result); 
+};
+
 //Function to start the running of jsTests
 windmill.controller.commands.jsTests = function (paramObj) {
     //Setup needed variables
