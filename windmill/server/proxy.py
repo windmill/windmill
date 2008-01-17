@@ -188,7 +188,7 @@ class WindmillProxyApplication(object):
                 response = new_response
 
         # Remove hop by hop headers
-        hopped_headers = response.getheaders()        
+        hopped_headers = [ (x.lower(), y,) for x, y in [ z.split(':', 1) for z in str(response.msg).splitlines() if ':' in z]]
         headers = copy.copy(hopped_headers)
         for header in hopped_headers:
             if is_hop_by_hop(header[0]):
