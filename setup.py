@@ -13,7 +13,7 @@
 #   limitations under the License.
 
 from setuptools import setup, find_packages
-import os
+import os, sys
 
 PACKAGE_NAME = "windmill"
 PACKAGE_VERSION = "0.3.8pre"
@@ -29,6 +29,12 @@ We are a relatively young project, but as far as we know we already implement a 
 Thanks for your interest and participation!
 """
 
+if os.name == 'nt' or sys.platform == 'cygwin':
+    simplejson = 'simplejson == 1.6'
+else:
+    simplejson = 'simplejson >= 1.7.1'
+
+
 setup(name=PACKAGE_NAME,
       version=PACKAGE_VERSION,
       description=SUMMARY,
@@ -43,7 +49,7 @@ setup(name=PACKAGE_NAME,
       scripts=[os.path.join(os.path.dirname(__file__),'scripts','windmill')],
       platforms =['Any'],
       install_requires = ['CherryPy >= 3.0.2',
-                          'simplejson >= 1.7.1',
+                          simplejson,
                           'wsgi_jsonrpc >= 0.2.2',
                           'wsgi_xmlrpc >= 0.2.3',
                           'wsgi_fileserver >= 0.2.3',
