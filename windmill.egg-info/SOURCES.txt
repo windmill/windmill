@@ -117,6 +117,7 @@ windmill/html/js/lib/helpers.js
 windmill/html/js/lib/jsutils.js
 windmill/html/js/lib/toolman.js
 windmill/html/js/lib/fleegix_js/trunk/fleegix.js
+windmill/html/js/lib/fleegix_js/trunk/fleegix.js.uncompressed.js
 windmill/html/js/lib/fleegix_js/trunk/plugins/hash.js
 windmill/html/js/lib/fleegix_js/trunk/plugins/shell.js
 windmill/html/js/lib/xpath/dom.js
