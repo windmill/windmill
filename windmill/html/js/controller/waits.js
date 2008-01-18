@@ -214,12 +214,12 @@ windmill.controller.waits._forNotTitleAttach = function (param_object) {
     }
     try {
       if (windmill.testWindow.document.title == p.title){
-	      var n = null;
+	      var n = false;
       }
       else { var n = true };
     }
     catch(err){
-      n = null;
+      n = false;
     }
     count += 2500;
       
@@ -242,6 +242,8 @@ windmill.controller.waits._forNotTitleAttach = function (param_object) {
         fleegix.event.suppressHandlerErrors(windmill.testWindow, 'onload');
         fleegix.event.unlisten(windmill.testWindow, 'onload', windmill, 'loaded');
         fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
+        _this.lookup();
+
       return true;
     }
   }

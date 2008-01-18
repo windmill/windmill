@@ -85,7 +85,18 @@ function() {
           var v = opener.document.domain;
         }
         catch(err){
-          document.domain = windmill.docDomain;
+          try {
+            document.domain = windmill.docDomain;
+          }
+          catch(err){
+            if (arr.length > 2){
+              arr.shift();
+              document.domain = arr.join('.');
+            }
+            else {
+              document.domain = windmill.docDomain;
+            }
+          }
         }
         
         if (windmill.testWindow.document.title == "Windmill Testing Framework") {
