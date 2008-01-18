@@ -66,16 +66,14 @@ else:
                          )
 
 if 'develop' in sys.argv or 'upload' in sys.argv:
-    extra_options['install_requires'] = ['cherrypy >= 3.0.1',
-                                         'simplejson',
-                                         'dateutil',
-                                         # All these wsgi_ libraries used to be part of
-                                         # windmill but are now seperate libraries.
-                                         'wsgi_proxy',
-                                         'wsgi_jsonrpc',
-                                         'wsgi_xmlrpc',
-                                         'wsgi_fileserver >= 0.2.3',
-                                        ]
+    extra_options['install_requires'] = ['CherryPy >= 3.0.2',
+                                        'simplejson >= 1.7.1',
+                                        'wsgi_jsonrpc >= 0.2.2',
+                                        'wsgi_xmlrpc >= 0.2.3',
+                                        'wsgi_fileserver >= 0.2.3',
+                                        'functest >= 0.7.1',
+                                        ],
+
 
 setup(
     name='windmill',
