@@ -45,10 +45,18 @@ html_redirection = """
 
 
 def find_default_interface_name():
+    if windmill.settings['NETWORK_INTERFACE_NAME'] is not None:
+        return windmill.settings['NETWORK_INTERFACE_NAME']
     target_host = urlparse.urlparse(windmill.settings['TEST_URL']).hostname
     interface_id = commands.getoutput('route get '+target_host).split('interface:')[1].split('\n')[:1][0].replace(' ', '')
     all_inet = commands.getoutput(windmill.settings['NETWORKSETUP_BINARY']+' -listallhardwareports').split('\n\n')
-    interface_name = [ l for l in all_inet if l.find(interface_id) is not -1 ][0].split('\n')[0].split(' ')[-1]
+    try:
+        interface_name = [ l for l in all_inet if l.find(interface_id) is not -1 ][0].split('\n')[0].split(' ')[-1]
+    except IndexError:
+        print "ERROR: Cannot figure out interface name, please set NETWORK_INTERFACE_NAME in local settings file"
+        from windmill.bin import admin_lib
+        admin_lib.teardown(admin_lib.shell_objects_dict)
+        sys.exit()
     
     # interfaces = commands.getoutput().split('\n\n')
     # print 'interfaces::\n', '\n'.join(interfaces)

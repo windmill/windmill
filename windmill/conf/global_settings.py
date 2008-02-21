@@ -66,6 +66,7 @@ MOZILLA_CREATE_NEW_PROFILE     = True
 MOZILLA_PROFILE_PATH = tempfile.mkdtemp(suffix='.windmill')
 
 if PLATFORM == 'darwin':
+    NETWORK_INTERFACE_NAME = None
     firefoxApp = os.path.join('Applications', 'Firefox.app')
     firefoxDir = os.path.join(os.path.expanduser('~/'), firefoxApp)
 
