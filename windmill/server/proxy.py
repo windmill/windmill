@@ -35,22 +35,22 @@ def is_hop_by_hop(header):
 
 initial_forwarding_registry = {}
 forwarding_registry = {}
-
-class IterativeResponse(object):
-    def __init__(self, response_instance):
-        self.response_instance = response_instance
-        
-    def __iter__(self):
-        if self.response_instance.chunked:
-            yield self.response_instance.read(1024)
-            while self.response_instance.chunk_left is not None:
-                if self.response_instance.chunk_left < 1024:
-                    yield self.response_instance.read()
-                    self.response_instance.chunk_left = None
-                else:
-                    yield self.response_instance.read(1024)
-        else:
-            yield self.response_instance.read()
+# 
+# class IterativeResponse(object):
+#     def __init__(self, response_instance):
+#         self.response_instance = response_instance
+#         
+#     def __iter__(self):
+#         if self.response_instance.chunked:
+#             yield self.response_instance.read(1024)
+#             while self.response_instance.chunk_left is not None:
+#                 if self.response_instance.chunk_left < 1024:
+#                     yield self.response_instance.read()
+#                     self.response_instance.chunk_left = None
+#                 else:
+#                     yield self.response_instance.read(1024)
+#         else:
+#             yield self.response_instance.read()
 
 class WindmillProxyApplication(object):
     """Application to handle requests that need to be proxied"""
@@ -195,7 +195,7 @@ class WindmillProxyApplication(object):
                 headers.remove(header)
         
         start_response(response.status.__str__()+' '+response.reason, headers)
-        return IterativeResponse(response)
+        return [response.read()]
 
 
     def __call__(self, environ, start_response):
