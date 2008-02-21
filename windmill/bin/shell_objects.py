@@ -98,6 +98,7 @@ def do_test(filename, load=False):
     
     if module_name is not None:    
         run_thread = Thread(target=run_functest)
+        getattr(run_thread, 'setDaemon', lambda x: x)(True)
         from windmill.bin import admin_lib
         admin_lib.on_ide_awake.append(run_thread.start)
     

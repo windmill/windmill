@@ -95,6 +95,7 @@ def run_threaded(console_level=logging.INFO):
     httpd, console_handler = setup_servers(console_level)
     
     httpd_thread = Thread(target=httpd.start)
+    getattr(httpd_thread, 'setDaemon', lambda x: x)(True)
     httpd_thread.start()
     while not httpd.ready:
         sleep(.5)
