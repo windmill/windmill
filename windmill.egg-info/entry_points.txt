@@ -1,0 +1,4 @@
+
+        [console_scripts]
+        windmill = windmill.bin.windmill_bin:main
+      
