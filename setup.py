@@ -40,7 +40,6 @@ setup(name=PACKAGE_NAME,
       include_package_data = True,
       packages = find_packages(exclude=['test', 'test.test_live']),
       package_data = {'': ['*.js', '*.css', '*.html', '*.txt', ],},
-      scripts=[os.path.join(os.path.dirname(__file__),'scripts','windmill')],
       platforms =['Any'],
       install_requires = ['CherryPy >= 3.0.2',
                           'simplejson >= 1.7.1',
@@ -49,6 +48,10 @@ setup(name=PACKAGE_NAME,
                           'wsgi_fileserver >= 0.2.3',
                           'functest >= 0.7.1',
                           ],
+      entry_points="""
+        [console_scripts]
+        windmill = windmill.bin.windmill_bin:main
+      """,
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Console',
                    'Intended Audience :: Developers',

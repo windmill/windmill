@@ -11,7 +11,6 @@ contrib/pyselenium/src/seleniumservercontrol.py
 contrib/pyselenium/src/seleniumunittest.py
 scripts/build_and_release.py
 scripts/mikeals_b_and_r.py
-scripts/windmill
 splash-page/fleegix.js
 splash-page/fleegix.js.uncompressed.js
 splash-page/index.html
@@ -51,6 +50,7 @@ windmill/__init__.py
 windmill.egg-info/PKG-INFO
 windmill.egg-info/SOURCES.txt
 windmill.egg-info/dependency_links.txt
+windmill.egg-info/entry_points.txt
 windmill.egg-info/requires.txt
 windmill.egg-info/top_level.txt
 windmill/authoring/__init__.py
