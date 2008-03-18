@@ -70,6 +70,11 @@ def show_queue():
 
 def do_test(filename, load=False):
     """Run or load the test file or directory passed to this function"""
+    if ',' in filename:
+        for f in filename.split(','):
+            do_test(filename, load)
+        return None
+    
     def json_test(filename):
         if os.path.isfile(filename) and not os.path.isfile(os.path.join(os.path.dirname(filename), '__init__.py')):
             None, load_json_test_file(filename)
@@ -101,7 +106,6 @@ def do_test(filename, load=False):
         getattr(run_thread, 'setDaemon', lambda x: x)(True)
         from windmill.bin import admin_lib
         admin_lib.on_ide_awake.append(run_thread.start)
-    
 
 run_test = lambda filename : do_test(filename, load=False)
 run_test.__name__ = 'run_test'
@@ -109,7 +113,7 @@ run_test.__doc__ = "Run the test file or directory passed to this function"
 
 load_test = lambda filename : do_test(filename, load=True)    
 load_test.__name__ = 'load_test'
-run_test.__doc__ = "Load the test file or directory passed to this function"   
+load_test.__doc__ = "Load the test file or directory passed to this function"   
 
 def run_js_tests(js_dir, test_filter=None, phase=None):
     from wsgi_fileserver import WSGIFileServerApplication
