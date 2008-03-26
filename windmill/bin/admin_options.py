@@ -23,18 +23,6 @@ class LogLevel(object):
         level = getattr(logging, value)
         windmill.settings['CONSOLE_LOG_LEVEL'] = getattr(logging, value)
         return level
-        
-class ExitOnDone(object):
-    """Exit after all tests have run."""
-    option_names = ('e', 'exit')
-    def __call__(self):
-        windmill.settings['EXIT_ON_DONE'] = True
-    
-class Debug(object):    
-    """Turn on debugging."""    
-    option_names = ('d', 'debug')
-    def __call__(self):
-        windmill.settings['CONSOLE_LOG_LEVEL'] = getattr(logging, 'DEBUG')
     
 # class TestFile(object):
 #     """Set the test file to run on startup."""
@@ -62,15 +50,29 @@ class LoadTest(object):
     def __call__(self, value):
         windmill.settings['LOAD_TEST'] = os.path.abspath(os.path.expanduser(value))    
         
-class GeneralBoolSettingToTrue(object):
+class GeneralBool(object):
+    pass        
+        
+class GeneralBoolSettingToTrue(GeneralBool):
     """Base class for setting a generic value to True."""
     def __call__(self):
         windmill.settings[self.setting] = True
         
-class GeneralBoolSettingToFalse(object):
+class GeneralBoolSettingToFalse(GeneralBool):
     """Base class for setting a generic value to False."""
     def __call__(self):
         windmill.settings[self.setting] = False
+
+class ExitOnDone(GeneralBoolSettingToTrue):
+    """Exit after all tests have run."""
+    option_names = ('e', 'exit')
+    setting = 'EXIT_ON_DONE'
+
+class Debug(GeneralBoolSettingToTrue):    
+    """Turn on debugging."""    
+    option_names = ('d', 'debug')
+    def __call__(self):
+        windmill.settings['CONSOLE_LOG_LEVEL'] = getattr(logging, 'DEBUG')
         
 class StartFirefox(GeneralBoolSettingToTrue):
     """Start the firefox browser."""
@@ -180,13 +182,23 @@ def help(bin_name='windmill'):
         else:
             default = ''
         if option.option_names[0] is None:
-            options_string.append('    '+'  '.join(['('+str(option.option_names[1]+'='+')'), 
-                                  option.__doc__]) + default)
+            if not issubclass(option, GeneralBool):
+                options_string.append('    '+''.join([str(option.option_names[1])+'='+' :: ', 
+                                      option.__doc__]) + default)
+            else:
+                options_string.append('    '+''.join([str(option.option_names[1])+' :: ', 
+                                      option.__doc__]) + default)
         else:
-            options_string.append('    '+'  '.join([
-                                  str('('+option.option_names[0])+', '
-                                  +str(option.option_names[1])+'='+')',
-                                  option.__doc__]) + default)
+            if not issubclass(option, GeneralBool):
+                options_string.append('    '+''.join([
+                                      '-'+str(option.option_names[0])+', '
+                                      +str(option.option_names[1])+'='+' :: ',
+                                      option.__doc__]) + default)
+            else:
+                options_string.append('    '+''.join([
+                                      '-'+str(option.option_names[0])+', '
+                                      +str(option.option_names[1])+' :: ',
+                                      option.__doc__]) + default)
 
     preamble = """windmill web test automation system.
     %s [-%s] action [option=value] [firefox|ie|safari] [http://www.example.com]

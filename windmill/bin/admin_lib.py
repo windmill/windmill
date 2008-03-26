@@ -70,7 +70,7 @@ def process_options(argv_list):
                             
             elif argv_list[index].startswith('-'):
                 # Take something like -efg and set the e, f, and g options
-                options = argv_list[index].replace('-')
+                options = argv_list[index].replace('-', '')
                 for option in options:
                     admin_options.flags_dict[option]()
     
