@@ -22,3 +22,4 @@ teardown_directories = []
 
 is_active = None
 in_shell = False
+block_exit = False

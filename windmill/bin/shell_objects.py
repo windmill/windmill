@@ -70,6 +70,7 @@ def show_queue():
 
 def do_test(filename, load=False):
     """Run or load the test file or directory passed to this function"""
+    windmill.block_exit = True
     if ',' in filename:
         for f in filename.split(','):
             do_test(filename, load)
@@ -100,6 +101,7 @@ def do_test(filename, load=False):
         functest.run_framework(test_args=[module_name], test_runner=WindmillFunctestRunner())
         if load:
             xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
+        windmill.block_exit = False
     
     if module_name is not None:    
         run_thread = Thread(target=run_functest)
