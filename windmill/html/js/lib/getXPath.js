@@ -44,8 +44,12 @@ function getXPath(node, path) {
     }
 
     if(node.nodeType == 1) {
-      //path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 0 ? "["+count+"]" : ''));
-      path.push(node.nodeName.toLowerCase() + (node.id ? "" : count > 0 ? "["+count+"]" : ''));
+      if ($('absXpaths').checked){
+        path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 0 ? "["+count+"]" : ''));
+      }
+      else{
+        path.push(node.nodeName.toLowerCase() + (node.id ? "" : count > 0 ? "["+count+"]" : ''));
+      }
     }
     return path;
   };

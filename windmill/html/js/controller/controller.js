@@ -232,20 +232,20 @@ windmill.controller = new function () {
     var changed = false;
     for (var i = 0; i < element.options.length; i++) {
       var option = element.options[i];
-      if (option.selected && option != optionToSelect) {
+      if (option.selected && option != optionToSelect) {        
         option.selected = false;
         changed = true;
       }
-      else if (!option.selected && option == optionToSelect) {
+      else if (!option.selected && option == optionToSelect) {        
         option.selected = true;
-        changed = true;
+        changed = true;        
       }
     }
+  
 
     if (changed) {
       windmill.events.triggerEvent(element, 'change', true);
     }
-
     return true;
   };
 

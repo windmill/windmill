@@ -42,13 +42,18 @@
  overflow: auto; overflow-y: auto; overflow-x: hidden;
 }
 
-#ideForm {
+#ideForm {x
  width:100%;
 }
 
 #navigation {
- height:6%;
+ position:absolute;
+ padding:8px;
+ height:10px;
+ bottom:5px;
  font:11px arial;
+ background:white;
+ left:10%;
 }
 
 #gray {

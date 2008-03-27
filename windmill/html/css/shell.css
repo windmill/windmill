@@ -2,7 +2,7 @@
  position:relative;
  overflow: auto; 
  font-size: 10px; 
- height: 320px; 
+ height: 300px; 
  width: 98%; 
  border: 1px solid #aaa; 
  border-bottom: 0px; 
@@ -10,7 +10,7 @@
 }
 
 #shellInput{
- width: 300px; 
+ width: 98%; 
  font-size: 14px; 
  height: 20px; 
  line-height: 20px; 

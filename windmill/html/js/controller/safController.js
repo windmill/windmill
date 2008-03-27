@@ -56,8 +56,10 @@ windmill.controller.click = function(param_object){
       }
       else{
         // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-        windmill.events.triggerMouseEvent(element, 'mousedown', true);
-        windmill.events.triggerMouseEvent(element, 'mouseup', true);
+        if (element.nodeName != 'SELECT'){
+          windmill.events.triggerMouseEvent(element, 'mousedown', true);
+          windmill.events.triggerMouseEvent(element, 'mouseup', true);
+        }
         windmill.events.triggerMouseEvent(element, 'click', true);
       }
    return true;

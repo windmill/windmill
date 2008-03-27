@@ -64,13 +64,11 @@ function() {
             if (typeof(oldLocator) != 'undefined') {
                 windmill.remote.$(id + "locator").value = oldLocator;
                 windmill.remote.$(id + "locatorType").value = oldLocatorType;
-
             }
-
         }
         catch(err) {
             //throw it away
-            }
+        }
 
         //safari hack for resizing the suite div to accomodate the new action
         windmill.remote.$(id).style.height = '';
@@ -200,9 +198,9 @@ function() {
                 }
 
         }
-        var dragsort = ToolMan.dragsort()
-        var junkdrawer = ToolMan.junkdrawer()
-        dragsort.makeListSortable(windmill.remote.$(suite.id), verticalOnly, saveOrder)
+    //    var dragsort = ToolMan.dragsort()
+      //  var junkdrawer = ToolMan.junkdrawer()
+    //    dragsort.makeListSortable(windmill.remote.$(suite.id), verticalOnly, saveOrder)
 
         return suite;
 
@@ -253,10 +251,8 @@ function() {
 
                 }
 
-
                 //var str = fleegix.json.serialize(actionObj);
                 testArray.push(actionObj);
-
             }
 
             var respRun = function(str) {
@@ -266,7 +262,6 @@ function() {
                 //window.open(response.result);
                 window.open(response.result, null, "height=500,width=600,status=no,toolbar=no,menubar=no,location=no,resizable=yes");
                 return true;
-
             }
 
             //Get the language to save these suckers in
@@ -283,12 +278,10 @@ function() {
             var json_string = fleegix.json.serialize(json_object)
             fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
 
-
         }
         else {
             windmill.remote.alert('You need test actions to save!');
         }
-
     };
 
     //This function takes a method and it's params and returns a DOM
@@ -299,7 +292,6 @@ function() {
         if (method == null) {
             method = 'click';
             params.id = '';
-
         }
         //If no params were passed
         if (typeof(params) == 'undefined') {
@@ -497,12 +489,11 @@ function() {
             i0.id = action.id + 'locator';
             //in firefox there was a bug moving the focus to the element we clicked, not sure why
             //but this seems to fix it. 
-            if (!windmill.browser.isIE) {
+          /*  if (!windmill.browser.isIE) {
                 i0.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElem(\'' + i0.id + '\')');
                 i0.setAttribute('onClick', 'windmill.remote.$(\'' + i0.id + '\').focus();');
-
             }
-
+        */
             c.appendChild(i0);
             r.appendChild(c);
             t.appendChild(r);
@@ -511,7 +502,6 @@ function() {
         //if its an action that takes no params at all set a min height
         else {
             t.style.height = '40px';
-
         }
 
         //If this method has a option
@@ -569,12 +559,11 @@ function() {
 
             }
             i1.id = action.id + 'option';
-            if (!windmill.browser.isIE) {
+       /*     if (!windmill.browser.isIE) {
                 i1.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElem(\'' + i1.id + '\')');
-                i1.setAttribute('onClick', 'windmill.remote.$(\'' + i1.id + '\').focus();');
-
+                i1.setAttribute('onClick', 'windmill.remote.$(\'' + i1.id + '\').focus();');                
             }
-
+        */
             c.appendChild(i1);
             r.appendChild(c);
             t.appendChild(r);

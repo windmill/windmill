@@ -44,7 +44,8 @@ a:hover {
  top:8%;
  display:none;
  border:1px solid black;
- z-index:10;   
+ z-index:10;
+ overflow:auto;
 }
 
 .texta {

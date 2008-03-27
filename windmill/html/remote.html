@@ -15,7 +15,6 @@
 		<script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/shell.js"></script>
 		<script type="text/javascript" src="js/lib/getXPath.js"></script>
 		<script type="text/javascript" src="js/wm/windmill.js"></script>
-		<script type="text/javascript" src="js/lib/toolman.js"></script>
 		<script type="text/javascript" src="js/wm/registry.js"></script>
 		<script type="text/javascript" src="js/wm/service.js"></script>
 		<script type="text/javascript" src="js/controller/controller.js"></script>
@@ -95,10 +94,9 @@
 		</form>
 	</div>
 	
-	<div id="navigation" style="font-weight:bold;" align=center>
+	<div id="navigation" style="font-weight:bold;">
 	  
-	   <span style="font-weight: bold;"> 
-      <a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Resume Loop</a>&nbsp | &nbsp
+	   <span style="font-weight: bold;font-style:italic;"> 
 	    <a href="#" onclick="javascript:openDialog('shell')">Shell</a>&nbsp
 			<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
 			<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
@@ -120,7 +118,7 @@
 					<td align="left" style="width:92%;color:#456068;">
 						<strong style="font-size:16px;">Output</strong>
 					</td>
-					<td style="font: 9pt arial;">
+					<td style="font: 9pt arial;font-weight:bold;padding:5px;">
 					  <a href="#" onclick="javascript:closeDialog('output');">Close</a>
 				  </td>
 				</tr>
@@ -142,7 +140,7 @@
 					<td align="left" style="width:92%;color:#456068;">
 						<strong style="font-size:16px;">Windmill Shell</strong>
 					</td>
-					<td style="font: 9pt arial;">
+					<td style="font: 9pt arial;font-weight:bold;padding:5px;";>
 						<a href="#" onclick="javascript:closeDialog('shell');">Close</a>
 					</td>
 				</tr>
@@ -165,7 +163,7 @@
 					<td align="left" style="width:92%;color:#456068;">
 						<strong style="font-size:16px;">Windmill Settings</strong>
 					</td>
-					<td style="font: 9pt arial;">
+					<td style="font: 9pt arial;font-weight:bold;padding:5px;">
 						<a href="#" onclick="javascript:closeDialog('settings');">Close</a>
 					</td>
 				</tr>
@@ -173,6 +171,8 @@
 		</div>
 		<br>
 		<h3>System</h3>
+		<a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Resume Loop</a>: Pause/Resume the Windmill IDE from polling the server.<br><br>
+      	
 		<table style="font:14px arial;">
 			<tr>
 				<td>Throw JavaScript errors, full debug:</td>
@@ -213,6 +213,10 @@
 			<tr>
 				<td>Use XPath only for explorer/recorder:</td>
 				<td> <INPUT TYPE=checkbox ID='useXpath'></td>
+			</tr>
+			<tr>
+				<td>Record detailed XPath's (vs absolute):</td>
+				<td> <INPUT TYPE=checkbox ID='absXpaths'></td>
 			</tr>
 		</table>
 		<br><br>

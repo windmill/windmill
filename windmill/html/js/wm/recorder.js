@@ -94,7 +94,6 @@ function() {
 
     //Writing json to the remote for the change events
     this.writeJsonChange = function(e) {
-
         if (this.recordState == false) {
             return;
         }
@@ -102,7 +101,6 @@ function() {
         var locValue = '';
 
         if (windmill.remote.$('useXpath').checked == false) {
-
             if (e.target.id != "") {
                 locator = 'id';
                 locValue = e.target.id;
@@ -111,15 +109,12 @@ function() {
             else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")) {
                 locator = 'name';
                 locValue = e.target.name;
-
             }
             else {
                 var stringXpath = getXSPath(e.target);
                 locator = 'xpath';
                 locValue = stringXpath;
-
             }
-
         }
         else {
             var stringXpath = getXSPath(e.target);
@@ -148,13 +143,14 @@ function() {
 
         }
         else if (e.target.type == 'select-one') {
-            params['option'] = e.target.value;
+            //we do playback based on the text, not the value
+            //params['option'] = e.target.value;
+            params['option'] = e.target.options[e.target.selectedIndex].text;
             windmill.ui.remote.addAction(windmill.ui.remote.buildAction('select', params));
 
         }
         else if (e.target.type == 'radio') {
             windmill.ui.remote.addAction(windmill.ui.remote.buildAction('radio', params));
-
         }
         //The check function is only around now for reverse compatibilty, click does the
         //correct thing now in all browsers after the update to safari
