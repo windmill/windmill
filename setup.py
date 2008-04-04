@@ -12,6 +12,8 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+assert False
+
 from setuptools import setup, find_packages
 import os, sys
 
@@ -28,6 +30,17 @@ We are a relatively young project, but as far as we know we already implement a 
 
 Thanks for your interest and participation!
 """
+
+base_dependencies = ['CherryPy >= 3.0.2',
+                     'simplejson >= 1.7.1',
+                     'wsgi_jsonrpc >= 0.2.2',
+                     'wsgi_xmlrpc >= 0.2.3',
+                     'wsgi_fileserver >= 0.2.3',
+                     'functest >= 0.7.1',
+                     ]
+                
+python_24_dependencies = ['xmlrpclib >= 1.0.1',
+                          '']
 
 setup(name=PACKAGE_NAME,
       version=PACKAGE_VERSION,
