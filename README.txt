@@ -3,10 +3,12 @@ to find up-to-date information would be online:
 
   http://windmill.osafoundation.org/trac/wiki/WindmillBook
 
-
 Another great location is the mailing list:
 
   http://lists.osafoundation.org/mailman/listinfo/windmill-dev
 
+You can check build status at:
+
+  http://windmill.buildbot.pythonesque.org
 
    
