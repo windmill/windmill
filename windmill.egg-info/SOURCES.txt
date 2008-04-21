@@ -16,6 +16,7 @@ splash-page/fleegix.js.uncompressed.js
 splash-page/index.html
 splash-page/main.css
 splash-page/windmill_site.js
+splash-page/images/windmill_banner.png
 splash-page/images/windmill_bg.png
 splash-page/images/windmill_header.png
 splash-page/images/windmill_heading_bg.png

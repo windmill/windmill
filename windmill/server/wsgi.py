@@ -93,7 +93,26 @@ class WindmillChooserApplication(object):
         response = self.handler(environ, start_response)
         for x in response:
             yield x
-                          
+
+import cherrypy
+
+class WindmillHTTPRequest(cherrypy.wsgiserver.HTTPRequest):
+    """HTTPRequest subclass to overload some problematic methods"""
+    def parse_request(self):
+        """Parse the next HTTP request start-line and message-headers."""
+        self.rfile.maxlen = self.max_request_header_size
+        self.rfile.bytes_read = 0
+        
+        try:
+            self._parse_request()
+        except cherrypy.wsgiserver.MaxSizeExceeded:
+            self.simple_response("413 Request Entity Too Large")
+            return
+        except Exception:
+            print "Big ass failure", str(dict([(x, getattr(self, x),) for x in dir(self)]))
+            self.close_connection = True
+            
+cherrypy.wsgiserver.HTTPRequest = WindmillHTTPRequest
         
 def make_windmill_server(http_port=None, js_path=None):
     
@@ -125,7 +144,7 @@ def make_windmill_server(http_port=None, js_path=None):
     global add_namespace
     add_namespace = windmill_chooser_app.add_namespace
     
-    import cherrypy
+    
     httpd = cherrypy.wsgiserver.CherryPyWSGIServer(('0.0.0.0', http_port), 
                                 windmill_chooser_app, server_name='windmill-http', numthreads=50)
 
