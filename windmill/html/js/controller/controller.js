@@ -139,8 +139,10 @@ windmill.controller = new function () {
         }
         
       $('loopLink').innerHTML = 'Pause Loop';
+     if (windmill.xhr.loopState == false){
       windmill.xhr.loopState = true;
       windmill.xhr.getNext();
+    }
     }
     //Just making sure the page is fully loaded
     setTimeout("cont()", 1000);
