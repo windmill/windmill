@@ -175,7 +175,7 @@ function() {
         
         delayed = function() {
           if (windmill.waiting == false) {
-            windmill.xhr.getNext();
+            windmill.controller.continueLoop();
           }
         }
         setTimeout('delayed()', 0);

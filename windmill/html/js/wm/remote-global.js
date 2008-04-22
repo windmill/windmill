@@ -70,7 +70,7 @@ var toggleRec = function() {
 var togglePlay = function() {
     if ($('playback').src.indexOf("img/playback.png") != -1) {
         windmill.ui.results.writeStatus("Playing IDE Actions...");
-        windmill.xhr.getNext();
+        windmill.controller.continueLoop();
         windmill.ui.playback.sendPlayBack();
         $('playback').src = 'img/playbackstop.png';
 
