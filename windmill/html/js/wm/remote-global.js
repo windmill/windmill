@@ -35,6 +35,8 @@ var json_call = function(version, method, params) {
 var closeDialog = function(id) {
     $(id).style.display = 'none';
     $('gray').style.visibility = 'hidden';
+    $('ide').style.display = 'block';
+    
 
 };
 var openDialog = function(id) {
@@ -45,6 +47,7 @@ var openDialog = function(id) {
 
     $(id).style.display = 'block';
     $('gray').style.visibility = 'visible';
+    $('ide').style.display = 'none';
 
 };
 

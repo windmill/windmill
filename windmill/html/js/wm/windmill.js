@@ -23,12 +23,12 @@ function() {
 
     //The timeout for page loading, if the onload is never called
     //how long do we wait before we start firing tests again
-    this.timeout = 20000;
+    this.timeout = 10000;
 
     //How long xhr waits in seconds before calling the timout function
     this.xhrTimeout = 180;
 
-    this.serviceDelay = 300;
+    this.serviceDelay = 400;
 
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*
@@ -50,8 +50,8 @@ function() {
     this.openWindow;
 
     //Keep track of windows the page opened with pointers
-    this.windowReg = new fleegix.hash.Hash();
-
+    this.windowReg = new fleegix.hash.Hash();    
+    
     //This is so that if you are doing multiple frame testing
     //And you have to change testingApp to point at various frames
     //You can still keep track of the base window
@@ -172,13 +172,13 @@ function() {
           fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
           fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
         }
-  
+        
         delayed = function() {
-            if (windmill.waiting == false) {
-                windmill.controller.continueLoop();
-            }
+          if (windmill.waiting == false) {
+            windmill.xhr.getNext();
+          }
         }
-        setTimeout('delayed()', 1000);
+        setTimeout('delayed()', 0);
     };
 
     //windmill Options to be set

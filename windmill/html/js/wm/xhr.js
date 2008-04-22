@@ -31,7 +31,6 @@ function() {
 
     //action callback
     this.actionHandler = function(str) {
-
         //If the are variables passed we need to do our lex and replace
         if ((str.indexOf('{$') != -1) && (windmill.runTests == true)) {
             str = windmill.controller.handleVariable(str);
@@ -175,6 +174,7 @@ function() {
 
     //Get the next action from the server
     this.getNext = function() {
+        
         //write to the output tab what is going on
         var handleTimeout = function() {
             windmill.ui.results.writeResult('One of the XHR requests to the server timed out.');

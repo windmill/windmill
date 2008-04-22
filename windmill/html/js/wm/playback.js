@@ -164,7 +164,7 @@ function() {
 
         }
 
-        setTimeout('doCall()', 1000);
+        setTimeout('doCall()', 100);
 
     }
 
