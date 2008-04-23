@@ -172,20 +172,21 @@ def setup():
 
 def teardown(shell_objects):
     """Teardown the server, threads, and open browsers."""
-    windmill.is_active = False
+    if windmill.is_active:
+        windmill.is_active = False
     
-    shell_objects['clear_queue']()
+        shell_objects['clear_queue']()
     
-    for controller in windmill.settings['controllers']:
-        controller.stop()
-        del(controller)
+        for controller in windmill.settings['controllers']:
+            controller.stop()
+            del(controller)
         
-    for directory in windmill.teardown_directories:
-        if os.path.isdir(directory):
-            shutil.rmtree(directory)
+        for directory in windmill.teardown_directories:
+            if os.path.isdir(directory):
+                shutil.rmtree(directory)
 
-    while shell_objects['httpd_thread'].isAlive():
-        shell_objects['httpd'].stop()
+        while shell_objects['httpd_thread'].isAlive():
+            shell_objects['httpd'].stop()
 
 
 def runserver_action(shell_objects):
