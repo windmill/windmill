@@ -1,6 +1,6 @@
 CherryPy >= 3.0.2
 simplejson >= 1.7.1
-wsgi_jsonrpc >= 0.2.2
-wsgi_xmlrpc >= 0.2.3
-wsgi_fileserver >= 0.2.3
+wsgi-jsonrpc
+wsgi-xmlrpc
+wsgi-fileserver
 functest >= 0.7.1
