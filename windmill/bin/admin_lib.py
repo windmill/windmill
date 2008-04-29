@@ -150,7 +150,7 @@ def setup():
         shell_objects.load_extensions_dir(windmill.settings['EXTENSIONS_DIR'])
          
     if windmill.settings['JAVASCRIPT_TEST_DIR']:
-        shell_objects.run_js_test_dir(windmill.settings['JAVASCRIPT_TEST_DIR'], 
+        shell_objects.run_js_tests(windmill.settings['JAVASCRIPT_TEST_DIR'], 
                                       windmill.settings['JAVASCRIPT_TEST_FILTER'],
                                       windmill.settings['JAVASCRIPT_TEST_PHASE'])
          
