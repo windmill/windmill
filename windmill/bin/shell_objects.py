@@ -73,7 +73,7 @@ def do_test(filename, load=False):
     windmill.block_exit = True
     if ',' in filename:
         for f in filename.split(','):
-            do_test(filename, load)
+            do_test(f, load)
         return None
     
     def json_test(filename):
