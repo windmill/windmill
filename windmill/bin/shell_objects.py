@@ -78,7 +78,7 @@ def do_test(filename, load=False):
     
     def json_test(filename):
         if os.path.isfile(filename) and not os.path.isfile(os.path.join(os.path.dirname(filename), '__init__.py')):
-            None, load_json_test_file(filename)
+            return None, load_json_test_file(filename)
         else:
             return os.path.dirname(os.path.abspath(filename)), [
                                f for f in filename.split('/') if f != ''][-1].split('.')[0]
