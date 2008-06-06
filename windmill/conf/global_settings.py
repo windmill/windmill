@@ -94,12 +94,12 @@ elif sys.platform == 'linux2':
 
     if firefoxBin is not None and os.path.isfile(firefoxBin):
         MOZILLA_BINARY = firefoxBin
-
-    if os.path.isdir('/usr/share/firefox/defaults/profile'):
-        MOZILLA_DEFAULT_PROFILE = '/usr/share/firefox/defaults/profile'
-    if os.path.isdir('/usr/lib/mozilla-firefox/defaults/profile'):
-        MOZILLA_DEFAULT_PROFILE = '/usr/lib/mozilla-firefox/defaults/profile'
     
+    for path in ('/usr/lib/iceweasel/defaults/profile',
+                 '/usr/share/firefox/defaults/profile',
+                 '/usr/lib/mozilla-firefox/defaults/profile',):
+        if os.path.isdir(path):
+            MOZILLA_DEFAULT_PROFILE = path
 
 elif os.name == 'nt' or sys.platform == 'cygwin':
     IE_BINARY  = os.path.join(os.environ['ProgramFiles'], 'Internet Explorer', 'iexplore.exe')
