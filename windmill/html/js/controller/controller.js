@@ -378,7 +378,7 @@ windmill.controller = new function () {
   
   //After the app reloads you have to re overwrite the alert function for the TestingApp
   this.reWriteAlert = function(param_object){
-    windmill.rwAlert = true;
+    windmill.reAlert = true;
     windmill.testWindow.alert = function(s){
       windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
     };
