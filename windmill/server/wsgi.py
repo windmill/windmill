@@ -21,6 +21,7 @@ import socket
 import random
 from urlparse import urlparse
 import logging
+from time import sleep
 logger = logging.getLogger(__name__)
 
 import windmill
@@ -77,7 +78,8 @@ class WindmillChooserApplication(object):
 
     def handler(self, environ, start_response):
         """Windmill app chooser"""
-        
+        if environ['PATH_INFO'] == '/windmill-jsonrpc/':
+            sleep(.2)
         reconstruct_url(environ)
 
         for key in self.namespaces.keys():

@@ -90,7 +90,7 @@ class RunJsonFile(object):
                     assert result
 
 expression = re.compile("\{.*\}")
-    
+
 def post_collector(module):
     if os.path.isdir(module.functest_module_path):
         directory = module.functest_module_path
