@@ -16,8 +16,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 
 //Functions for interacting with the remote
 /***************************************/
-windmill.ui.remote = new
-function() {
+windmill.ui.remote = new function() {
     this.selectedElement = null;
 
     this.scrollRecorderTextArea = function() {
@@ -48,36 +47,29 @@ function() {
         var method = methodObj[selected].value;
         //Preserve the value that was in there
         try {
-            var oldLocator = $(id + "locator").value;
-            var oldLocatorType = $(id + "locatorType").value;
-
+          var oldLocator = $(id + "locator").value;
+          var oldLocatorType = $(id + "locatorType").value;
         }
-        catch(err) {
-            //throw it away 
-            }
+        catch(err) { }
         var newAction = this.buildAction(method, {
             'uuid': id
         });
         $(id).innerHTML = newAction.innerHTML;
         //only try to replace them if this particular action had a locator to begin with
         try {
-            if (typeof(oldLocator) != 'undefined') {
-                $(id + "locator").value = oldLocator;
-                $(id + "locatorType").value = oldLocatorType;
-            }
+          if (typeof(oldLocator) != 'undefined') {
+            $(id + "locator").value = oldLocator;
+            $(id + "locatorType").value = oldLocatorType;
+          }
         }
-        catch(err) {
-            //throw it away
-        }
+        catch(err) {}
 
         //safari hack for resizing the suite div to accomodate the new action
         $(id).style.height = '';
-
     };
 
     this.setRemoteElem = function(id) {
-        this.selectedElement = id;
-
+      this.selectedElement = id;
     };
 
     this.addActionAbove = function(uuid) {
@@ -86,14 +78,12 @@ function() {
         parent.insertBefore(newAction, $(uuid));
         //IE hack
         if (windmill.browser.isIE) {
-            $(newAction.id).innerHTML = newAction.innerHTML;
+          $(newAction.id).innerHTML = newAction.innerHTML;
         }
         else {
-            $(newAction.id + "locator").focus();
+          $(newAction.id + "locator").focus();
         }
-
         fleegix.fx.fadeIn($(newAction.id));
-
     };
 
     this.addActionBelow = function(uuid) {
@@ -107,9 +97,7 @@ function() {
         else {
             $(newAction.id + "locator").focus();
         }
-
         fleegix.fx.fadeIn($(newAction.id));
-
     };
 
     this.deleteAction = function(uuid) {

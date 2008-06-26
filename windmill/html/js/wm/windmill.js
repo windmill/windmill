@@ -14,8 +14,7 @@ Copyright 2006-2007, Open Source Applications Foundation
  limitations under the License.
 */
 
-var windmill = new
-function() {
+var windmill = new function() {
 
     //More namespacing
     this.builder = {};
@@ -58,16 +57,11 @@ function() {
     this.baseTestWindow = opener;
     this.remoteLoaded = false;
     this.remote = parent.window;
-
     this.browser = null;
         
-    this.init = function(b) {
-        this.browser = b;
-    }
+    this.init = function(b) { this.browser = b;}
 
     this.Start = function() {
-        windmill.testWindow.windmill = windmill;
-      
         windmill.service.setStartURL();
         windmill.service.buildNotAsserts();
         
@@ -122,6 +116,8 @@ function() {
         catch(err) {}
         //setTimeout("windmill.controller.continueLoop()", 2000);  
         //Set a variable so that windmill knows that the remote has fully loaded
+        windmill.testWindow.windmill = windmill;
+        
         this.remoteLoaded = true;
     };
 

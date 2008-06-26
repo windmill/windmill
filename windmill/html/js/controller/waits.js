@@ -139,19 +139,22 @@ windmill.controller.waits.forNotElement = function (paramObj,obj) {
 //To know when to try and reattach the listeners
 //But if users wanted this manually they could use it
 windmill.controller.waits.forPageLoad = function (paramObj,obj) {
-  var p = paramObj || {};
-  var f = function () {
-    try {
-      var d = windmill.testWindow.document;
-    }catch(err){ d = null;}
+  var sl = function(){
+    var p = paramObj || {};
+    var f = function () {
+      try {
+        var d = windmill.testWindow.document;
+      }catch(err){ d = null;}
     
-    if (d != null){
-      return true;
-    }
-    return false;
-  };
-  p.test = f;
-  return windmill.controller.waits.forJSTrue(p, obj);
+      if (d != null){
+        return true;
+      }
+      return false;
+    };
+    p.test = f;
+    return windmill.controller.waits.forJSTrue(p, obj);
+  }
+  setTimeout(sl, 1000);
 }
   
 //Turn the loop back on when the page in the testingApp window is loaded
