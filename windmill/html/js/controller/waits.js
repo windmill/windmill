@@ -35,7 +35,7 @@ windmill.controller.waits.sleep = function (paramObj, obj) {
   return true;
 };
   
-windmill.controller.waits.forJSTrue = function (paramObj, obj) { 
+windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) { 
   _this = this;
   
   //we passed the id in the parms object of the action in the ide
@@ -43,7 +43,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj) {
   delete paramObj.aid;
   var count = 0;
   var p = paramObj || {};
-  var timeout = 60000;
+  var timeout = 20000;
   var isJsTest = (p.orig == 'js');
   var testCondition = p.test;
   
@@ -64,7 +64,8 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj) {
         windmill.jsTest.handleErr('waits.forElement timed out after ' + timeout + ' seconds.');
       }
       else {
-        windmill.controller.continueLoop();
+        if (pageLoad){ windmill.loaded(); }
+        else{ windmill.controller.continueLoop(); }
       }
         windmill.xhr.setWaitBgAndReport(aid,false,obj);
         return false;
@@ -92,7 +93,10 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj) {
             windmill.jsTest.waiting = false;
             windmill.jsTest.runTestItemArray();
           }
-          else{ windmill.controller.continueLoop(); }
+          else{ 
+             if (pageLoad){ windmill.loaded(); }
+             else{ windmill.controller.continueLoop(); }
+          }
         
            //set the result in the ide
             windmill.xhr.setWaitBgAndReport(aid,true,obj);
@@ -158,7 +162,7 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
       return false;
     };
     p.test = f;
-    return windmill.controller.waits.forJSTrue(p, obj);
+    return windmill.controller.waits.forJSTrue(p, obj, true);
   }
   setTimeout(sl, 3000);
 }
