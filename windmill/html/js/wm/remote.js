@@ -57,10 +57,10 @@ windmill.ui.remote = new function() {
         $(id).innerHTML = newAction.innerHTML;
         //only try to replace them if this particular action had a locator to begin with
         try {
-          if (typeof(oldLocator) != 'undefined') {
+//          if (typeof(oldLocator) != 'undefined') {
             $(id + "locator").value = oldLocator;
             $(id + "locatorType").value = oldLocatorType;
-          }
+//          }
         }
         catch(err) {}
 

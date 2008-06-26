@@ -188,9 +188,8 @@ windmill.controller = new function () {
   this.open = function (param_object) {
     //We need to tell the service where we are before we
     //head to a new page
-  
     try{ windmill.testWindow.location = param_object.url; }
-    catch(err){return false;}
+    catch(err){ return false; }
     
     return true;
   };

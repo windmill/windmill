@@ -46,14 +46,12 @@ windmill.controller.click = function(param_object){
       // In chrome URL, the link action is already executed by triggerMouseEvent.
       if (!browser.isChrome && savedEvent != null && !savedEvent.getPreventDefault()) {
           if (element.href) {
-              windmill.xhr.loopState = false;
               windmill.controller.open({"url": element.href});
           } 
           else {
               var itrElement = element;
               while (itrElement != null) {
                 if (itrElement.href) {
-                  windmill.xhr.loopState = false;
                   windmill.controller.open({"url": itrElement.href});
                   break;
                 }
