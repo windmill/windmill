@@ -94,17 +94,24 @@
 		</form>
 	</div>
 	
-	<div id="navigation" style="font-weight:bold;">
+	<div id="navigation" style="font-weight:bold">
 	  
-	   <span style="font-weight: bold;font-style:italic;"> 
+	   <span style="font-weight: bold;"> 
 	    <a href="#" onclick="javascript:openDialog('shell')">Shell</a>&nbsp
 			<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
 			<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
 		</span>
 		<span>| &nbsp
-			<a href="#" onclick="windmill.ui.incRecSuite();windmill.ui.remote.getSuite();"> Add Suite</a>&nbsp | &nbsp
-			<a href="#" onclick="windmill.ui.remote.addAction();">Add Action</a>&nbsp | &nbsp
-		  <a href="#" onclick="windmill.ui.remote.clearIDE()">Clear IDE</a>&nbsp
+		  Actions: <select id="actionDD">
+		    <option selected>--</option>
+		    <option onclick="windmill.ui.incRecSuite();windmill.ui.remote.getSuite();resetDD()">Add Suite</option>
+		    <option onclick="windmill.ui.remote.addAction();resetDD()">Add Action</option>
+		    <option onclick="windmill.ui.remote.actionFromJSON();resetDD()">Action from JSON</option>
+  			<option onclick="windmill.ui.remote.clearIDE();resetDD()">Clear IDE</option>
+		  </select>
+			<!--><a href="#" onclick="windmill.ui.incRecSuite();windmill.ui.remote.getSuite();"> Add Suite</a>&nbsp | &nbsp
+			<a href="#" onclick="windmill.ui.remote.addAction();">Add Action</a>&nbsp | &nbsp 
+		  <a href="#" onclick="windmill.ui.remote.clearIDE()">Clear IDE</a>&nbsp<-->
 		</span>
 	</div>
 	

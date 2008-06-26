@@ -138,6 +138,16 @@ windmill.ui.remote = new function() {
 
     };
 
+    this.actionFromJSON = function(){
+      var json = prompt("Enter JSON String", '{"params": {"xpath": "/html/body"}, "method": "click"}');
+      try { 
+        var actionObj = eval('('+json+')');
+        var action = windmill.ui.remote.buildAction(actionObj.method, actionObj.params);
+        windmill.ui.remote.addAction(action);
+      }
+      catch(err){alert('Please enter valid JSON');}
+    }
+
     this.getSuite = function(suiteName) {
 
         if (!suiteName) {

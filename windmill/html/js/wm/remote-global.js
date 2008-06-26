@@ -51,6 +51,10 @@ var openDialog = function(id) {
 
 };
 
+var resetDD = function(){
+  $('actionDD').selectedIndex = 0;
+}
+
 var toggleRec = function() {
     if ($('record').src.indexOf("img/record.png") != -1) {
         windmill.ui.domexplorer.domExplorerOff();
