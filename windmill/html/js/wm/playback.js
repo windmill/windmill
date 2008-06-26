@@ -61,7 +61,9 @@ windmill.ui.playback = new function() {
       //default the nodeType to 1 (firefox)
       var s = 1;
       //In IE we start our iteration at 0, else 1 for the first suite
-      if (suites[0].nodeType == 1) { var s = 0; }
+      try {
+        if (suites[0].nodeType == 1) { var s = 0; }
+      }catch(err){ return;}
 
       //Iterate through the entire IDE starting playback
       for (var i = s; i < suites.length; i++) {

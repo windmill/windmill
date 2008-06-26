@@ -143,8 +143,8 @@ windmill.controller.waits.forNotElement = function (paramObj,obj) {
 //To know when to try and reattach the listeners
 //But if users wanted this manually they could use it
 windmill.controller.waits.forPageLoad = function (paramObj,obj) {
+  var p = paramObj || {};
   var sl = function(){
-    var p = paramObj || {};
     var f = function () {
       try {
         var v = opener.document.domain;
