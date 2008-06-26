@@ -131,13 +131,13 @@ windmill.controller = new function () {
     cont = function(){
         //If the doc domain has changed
         //and we can't get to it, try updating it
-        try{
+        try {
           var v = opener.document.domain;
         }
         catch(err){
           document.domain = windmill.docDomain;
         }
-        
+      
       $('loopLink').innerHTML = 'Pause Loop';
       if (windmill.xhr.loopState == false){
         windmill.xhr.loopState = true;
@@ -188,14 +188,10 @@ windmill.controller = new function () {
   this.open = function (param_object) {
     //We need to tell the service where we are before we
     //head to a new page
+  
     try{ windmill.testWindow.location = param_object.url; }
-    catch(err){}
-    //Turn off loop until the onload for the iframe restarts it
-      done = function(){
-        windmill.controller.waits.forPageLoad({});
-        return true;
-      }
-    setTimeout('done()', 2000);
+    catch(err){return false;}
+    
     return true;
   };
   

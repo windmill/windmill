@@ -43,7 +43,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj) {
   delete paramObj.aid;
   var count = 0;
   var p = paramObj || {};
-  var timeout = 20000;
+  var timeout = 60000;
   var isJsTest = (p.orig == 'js');
   var testCondition = p.test;
   
@@ -143,7 +143,13 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
     var p = paramObj || {};
     var f = function () {
       try {
-        var d = windmill.testWindow.document;
+        var v = opener.document.domain;
+      }
+      catch(err){
+        document.domain = windmill.docDomain;
+      }
+      try {
+        var d = windmill.testWindow.document.body;
       }catch(err){ d = null;}
     
       if (d != null){
@@ -154,7 +160,7 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
     p.test = f;
     return windmill.controller.waits.forJSTrue(p, obj);
   }
-  setTimeout(sl, 1000);
+  setTimeout(sl, 3000);
 }
   
 //Turn the loop back on when the page in the testingApp window is loaded

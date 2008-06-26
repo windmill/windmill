@@ -22,8 +22,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 //to the current browser, this means that the functionality in the controller
 //object is only for the current browser, and there is only one copy of the code being
 //loaded into the browser for performance.
-windmill.xhr = new
-function() {
+windmill.xhr = new function() {
 
     //Keep track of the loop state, running or paused
     this.loopState = false;
