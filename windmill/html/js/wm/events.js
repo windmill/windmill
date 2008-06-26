@@ -16,29 +16,22 @@ Copyright 2006-2007, Open Source Applications Foundation
 
 //All the functionaly relating to launching events in javascript
 //windmill.events.*
-windmill.events = new
-function() {
+windmill.events = new function() {
 
     // Returns the text in this element
     this.getText = function(element) {
-        var text = "";
+      var text = "";
 
-        var isRecentFirefox = (browser.isMozilla);
-        if (isRecentFirefox || browser.isKonqueror || browser.isSafari || browser.isOpera) {
-            text = windmill.events.getTextContent(element);
+      var isRecentFirefox = (browser.isMozilla);
+      if (isRecentFirefox || browser.isKonqueror || browser.isSafari || browser.isOpera) {
+        text = windmill.events.getTextContent(element);
+      } 
+      else if (element.textContent) { text = element.textContent; } 
+      else if (element.innerText) { text = element.innerText; }
 
-        } else if (element.textContent) {
-            text = element.textContent;
-
-        } else if (element.innerText) {
-            text = element.innerText;
-
-        }
-
-        text = windmill.helpers.normalizeNewlines(text);
-        text = windmill.helpers.normalizeSpaces(text);
-        return text.trim();
-
+      text = windmill.helpers.normalizeNewlines(text);
+      text = windmill.helpers.normalizeSpaces(text);
+      return text.trim();
     };
 
     this.getTextContent = function(element, preformatted) {

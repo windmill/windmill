@@ -151,6 +151,38 @@ windmill.controller = new function () {
   this.stopLoop = function () {
     windmill.xhr.loopState = false;
   };
+  //expects a name and js param
+  this.storeVarFromJS = function (param_object) {
+    //extract the options
+    var arr = param_object.options.split('|');
+    param_object.name = arr[0];
+    param_object.js = arr[1];
+    
+    //make sure we got a valid js string
+    if (typeof param_object.js == 'string') {
+      try {
+        param_object.value = eval.call(windmill.testWindow, param_object.js);
+      }
+      catch(err){
+        param_object.value = "error";
+      }
+    }
+    else{
+      param_object.value = "error";
+    }
+    if (param_object.value == "error"){
+      return false;
+    }
+    //if the code evaled and returned a value add it
+    if (windmill.varRegistry.hasKey('{$'+param_object.name +'}')){
+      windmill.varRegistry.removeItem('{$'+param_object.name +'}');
+      windmill.varRegistry.addItem('{$'+param_object.name +'}',param_object.value);
+    }
+    else{
+      windmill.varRegistry.addItem('{$'+param_object.name +'}',param_object.value);
+    }
+    return true;
+  }
 
   //open an url in the webapp iframe
   this.open = function (param_object) {

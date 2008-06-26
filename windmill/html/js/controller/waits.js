@@ -17,7 +17,11 @@ Copyright 2006-2007, Open Source Applications Foundation
 //Wait a specified number of milliseconds
 windmill.controller.waits.sleep = function (paramObj, obj) { 
   windmill.waiting = true;
-
+  //if a number of milliseconds werent provided in a int format
+  if ((paramObj.milliseconds == "") || (parseInt(paramObj.milliseconds, 10) == NaN)){
+    paramObj.milliseconds = 5000;
+  }
+  
   done = function(){
     windmill.waiting = false;
     windmill.controller.continueLoop();
@@ -45,7 +49,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj) {
   
   // If we get the weird string "NaN" (yes, the actual 
   // string, "NaN" :)) value from the IDE, or some other 
-  // unusable string , just use the default value of 2 seconds
+  // unusable string , just use the default value of 20 seconds
   if (p.timeout) {
     if (parseInt(p.timeout, 10) != NaN){
       timeout = p.timeout;
@@ -134,64 +138,20 @@ windmill.controller.waits.forNotElement = function (paramObj,obj) {
 //This is more of an internal function used by wait and click events
 //To know when to try and reattach the listeners
 //But if users wanted this manually they could use it
-windmill.controller.waits.forPageLoad = function (param_object) { 
-  _this = this;
-  
-  try{
-    //Attach an onload listener to the new window
-    fleegix.event.unlisten(windmill.testWindow, 'onload', windmill, 'loaded');
-    fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
-  }
-  catch(err){}
-  
-  var timeout = 80000;
-  var count = 0;
-  var p = param_object;
+windmill.controller.waits.forPageLoad = function (paramObj,obj) {
+  var p = paramObj || {};
+  var f = function () {
+    try {
+      var d = windmill.testWindow.document;
+    }catch(err){ d = null;}
     
-  if (p.timeout){
-    timeout = p.timeout;
-  }
-  this.lookup = function(){
-    if (count >= timeout){
-      windmill.controller.continueLoop();
-      return false;
-    }
-    //var n = windmill.controller._lookupDispatch(p);
-    try { var n = windmill.testWindow.document;}
-    catch(err) { var n = false; }
-    
-    count += 2500;
-    this.check(n);
-  }
-    
-  this.check = function(n){   
-    if (!n){
-      var x = setTimeout(function () { _this.lookup(); }, 1000);
-    }
-    else{
-      //If we get here it means that the window onload wasn't attached
-      //or it was attached and wiped out. We were able to grab the document
-      //Object so the page is mostly loaded, reattach the listener
-      try {
-        if (typeof(windmill.testWindow.onload.listenReg) == 'undefined'){
-          windmill.loaded();
-        }
-      }
-      catch(err){ windmill.loaded(); }
-      //default with the timeout to start running tests again if onload never gets launched
+    if (d != null){
       return true;
     }
-  }
-  this.lookup();
-  
-  //if windmill.timeout goes by and the tests haven't been started
-  //We go ahead and start them, longer waits can happen by changing windmill.timeout
-  ct = function(){ 
-	 	windmill.controller.continueLoop(); 
-	}       
- 	windmill.loadTimeoutId = setTimeout('ct()', windmill.timeout);
-  
-  return true;
+    return false;
+  };
+  p.test = f;
+  return windmill.controller.waits.forJSTrue(p, obj);
 }
   
 //Turn the loop back on when the page in the testingApp window is loaded

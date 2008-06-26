@@ -62,8 +62,8 @@ function() {
                 windmill.xhr.action_timer.startTime();
 
                 //If the action already exists in the UI, skip all the creating suite stuff
-                if (windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid) != null) {
-                    var action = windmill.remote.$(windmill.xhr.xhrResponse.result.params.uuid);
+                if ($(windmill.xhr.xhrResponse.result.params.uuid) != null) {
+                    var action = $(windmill.xhr.xhrResponse.result.params.uuid);
                     action.style.background = 'lightyellow';
                 }
                 //If its a command we don't want to build any UI
@@ -171,6 +171,9 @@ function() {
         fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', json_string);
     };
 
+    this.handleErr = function(){
+      setTimeout("windmill.xhr.getNext()", windmill.serviceDelay);
+    }
 
     //Get the next action from the server
     this.getNext = function() {
@@ -191,6 +194,7 @@ function() {
             fleegix.xhr.doReq({
                 method: 'POST',
                 handleSuccess: this.actionHandler,
+                handleErr: this.handleErr,
                 responseFormat: 'text',
                 url: '/windmill-jsonrpc/',
                 timeoutSeconds: windmill.xhrTimeout,
@@ -225,16 +229,16 @@ function() {
 
         //Add the action to the suite
         var action = windmill.ui.remote.buildAction(actionObj.method, actionObj.params);
-        //var suite = windmill.remote.$(result);
+        //var suite = $(result);
         suite.appendChild(action);
         //IE Hack
         if (windmill.browser.isIE) {
-            windmill.remote.$(action.id).innerHTML = action.innerHTML;
+            $(action.id).innerHTML = action.innerHTML;
         }
-        var ide = windmill.remote.$('ide');
+        var ide = $('ide');
 
         //If the settings box is checked, scroll to the bottom
-        if (windmill.remote.$('autoScroll').checked == true) {
+        if ($('autoScroll').checked == true) {
             ide.scrollTop = ide.scrollHeight;
         }
         return action;

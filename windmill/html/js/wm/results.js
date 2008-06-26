@@ -21,7 +21,7 @@ function() {
 
     //Writing to the performance tab
     this.writePerformance = function(str) {
-        var resultsDiv = windmill.remote.$("perfOut");
+        var resultsDiv = $("perfOut");
         resultsDiv.innerHTML = str + "<br>" + resultsDiv.innerHTML
 
     }
@@ -31,7 +31,7 @@ function() {
         //that is trying to be run, because this code either stalls or dies
         //this makes sure, and is set by the remote onload
         if (windmill.remoteLoaded == true) {
-            var status = windmill.remote.$("runningStatus");
+            var status = $("runningStatus");
             status.innerHTML = '<b>Status:</b> ' + str;
 
         }
@@ -40,7 +40,7 @@ function() {
 
     //Writing to the results tab
     this.writeResult = function(str) {
-        var resultsDiv = windmill.remote.$("resOut");
+        var resultsDiv = $("resOut");
         resultsDiv.innerHTML = str + "<br>" + resultsDiv.innerHTML;
 
     }

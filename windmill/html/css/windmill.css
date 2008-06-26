@@ -1,16 +1,15 @@
 body, html
 {	
-
 	font-size: 11px;
 	margin: 0px;
 	padding: 0px;
 	text-align: left;
 	font-family:  "Verdana", "Arial", sans-serif; 
-    width: 100%;	/* make the body expand to fill the visible window */
-    height: 100%;
-    overflow: hidden;	/* erase window level scrollbars */
-    padding: 0 0 0 0;
-    margin: 0 0 0 0; 
+  width: 100%;	/* make the body expand to fill the visible window */
+  height: 100%;
+  overflow: hidden;	/* erase window level scrollbars */
+  padding: 0 0 0 0;
+  margin: 0 0 0 0; 
 
 }
 a {
@@ -36,16 +35,16 @@ a:hover {
 }
 
 .dialog {
- position:absolute;
- background-color:white;
- left:10%;
- width:80%;
- height:80%;
- top:8%;
- display:none;
- border:1px solid black;
- z-index:10;
- overflow:auto;
+  position:absolute;
+  background-color:white;
+  left:10%;
+  width:80%;
+  height:80%;
+  top:8%;
+  display:none;
+  border:1px solid black;
+  z-index:10;
+  overflow:auto;
 }
 
 .texta {
@@ -58,9 +57,8 @@ a:hover {
 }
 
 .smalloption {
- font:10px arial;
- height:19px;
- border:solid 0 #fff;
- background: transparent url("../img/text_elem_gradient.gif"); 
-
+  font:10px arial;
+  height:19px;
+  border:solid 0 #fff;
+  background: transparent url("../img/text_elem_gradient.gif"); 
 }

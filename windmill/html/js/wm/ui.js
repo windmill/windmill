@@ -37,19 +37,19 @@ function() {
     }
 
     this.toggleCollapse = function(id) {
-        if (windmill.remote.$(id).style.height == '18px') {
-            windmill.remote.$(id).style.height = '';
+        if ($(id).style.height == '18px') {
+            $(id).style.height = '';
 
         }
         else {
-            windmill.remote.$(id).style.height = '18px';
+            $(id).style.height = '18px';
         }
 
     };
 
     //Allowing the stopOnFailure switch to be controlled from the UI
     this.toggleBreak = function() {
-        var breakCheckBox = windmill.remote.$('toggleBreak');
+        var breakCheckBox = $('toggleBreak');
         if (breakCheckBox.checked) {
             windmill.stopOnFailure = true;
 

@@ -28,7 +28,7 @@ function() {
     //How long xhr waits in seconds before calling the timout function
     this.xhrTimeout = 180;
 
-    this.serviceDelay = 400;
+    this.serviceDelay = 500;
 
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*
@@ -66,6 +66,8 @@ function() {
     }
 
     this.Start = function() {
+        windmill.testWindow.windmill = windmill;
+      
         windmill.service.setStartURL();
         windmill.service.buildNotAsserts();
         

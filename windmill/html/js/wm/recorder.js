@@ -35,7 +35,7 @@ function() {
         var locator = '';
         var locValue = '';
 
-        if (windmill.remote.$('useXpath').checked == false) {
+        if ($('useXpath').checked == false) {
             if (e.target.id != "") {
                 locator = 'id';
                 locValue = e.target.id;
@@ -76,7 +76,7 @@ function() {
 
             }
             else {
-                if (windmill.remote.$("clickOn").checked == true) {
+                if ($("clickOn").checked == true) {
                     windmill.ui.remote.addAction(windmill.ui.remote.buildAction('click', params));
 
                 }
@@ -100,7 +100,7 @@ function() {
         var locator = '';
         var locValue = '';
 
-        if (windmill.remote.$('useXpath').checked == false) {
+        if ($('useXpath').checked == false) {
             if (e.target.id != "") {
                 locator = 'id';
                 locValue = e.target.id;
@@ -171,7 +171,7 @@ function() {
         this.recordOff();
         //keep track of the recorder state, for page refreshes
         this.recordState = true;
-        windmill.remote.$('record').src = 'img/stoprecord.png';
+        $('record').src = 'img/stoprecord.png';
 
         //if when loading the listener didn't get attached
         //we attach it if they are recording because we need to know
@@ -185,14 +185,14 @@ function() {
         }
         catch(error) {
             windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
-            windmill.remote.$('record').src = 'img/record.png';
+            $('record').src = 'img/record.png';
             this.recordState = false;
         }
     }
 
     this.recordOff = function() {
         this.recordState = false;
-        windmill.remote.$('record').src = 'img/record.png';
+        $('record').src = 'img/record.png';
 
         try {
             this.recRecursiveUnBind(windmill.testWindow);
