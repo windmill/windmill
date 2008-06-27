@@ -179,4 +179,29 @@ var doSubmit = function() {
 init = function() {
     shell = new fleegix.shell.Shell($('shellForm').shellInput, $('shellOutput'));
     windmill.Start();
+    //make the action drop down work in a browser compatible way
+    var dispatchDD = function(e){
+      var sel = e.target.options[e.target.options.selectedIndex].id;
+      switch(sel){
+        case 'addSuite':
+          windmill.ui.incRecSuite();
+          windmill.ui.remote.getSuite();
+        break;
+        case 'addAction':
+          windmill.ui.remote.addAction();
+        break;
+        case 'addActionJSON':
+          windmill.ui.remote.actionFromJSON();
+        break;
+        case 'clearIDE':
+          windmill.ui.remote.clearIDE();
+        break;
+        default:
+          resetDD();
+        break;
+      }
+      resetDD();
+    }
+    fleegix.event.listen($('actionDD'), 'onchange', dispatchDD);
+    
 };

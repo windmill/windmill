@@ -104,10 +104,10 @@
 		<span>| &nbsp
 		  Actions: <select id="actionDD">
 		    <option selected>--</option>
-		    <option onclick="windmill.ui.incRecSuite();windmill.ui.remote.getSuite();resetDD()">Add Suite</option>
-		    <option onclick="windmill.ui.remote.addAction();resetDD()">Add Action</option>
-		    <option onclick="windmill.ui.remote.actionFromJSON();resetDD()">Action from JSON</option>
-  			<option onclick="windmill.ui.remote.clearIDE();resetDD()">Clear IDE</option>
+		    <option id="addSuite">Add Suite</option>
+		    <option id="addAction">Add Action</option>
+		    <option id="addActionJSON">Action from JSON</option>
+  			<option id="clearIDE">Clear IDE</option>
 		  </select>
 			<!--><a href="#" onclick="windmill.ui.incRecSuite();windmill.ui.remote.getSuite();"> Add Suite</a>&nbsp | &nbsp
 			<a href="#" onclick="windmill.ui.remote.addAction();">Add Action</a>&nbsp | &nbsp 
