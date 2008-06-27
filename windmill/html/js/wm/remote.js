@@ -294,6 +294,16 @@ windmill.ui.remote = new function() {
 
         //var action = this.constructAction(method,'','',windmill.registry.methods[method].option,parms[windmill.registry.methods[method].option]);
         var action = document.createElement('div');
+        //if the user turns on the option to run actions by hitting enter
+        var catchEnter = function(e){
+          if (e.keyCode == 13){
+            var aid = e.target.id.replace("locator","");
+            aid = aid.replace("option", "");
+            windmill.ui.playback.sendPlayBack(aid);
+          }
+        }
+        fleegix.event.listen(action, 'onkeypress', catchEnter);
+        
         if (typeof(params.uuid) == 'undefined') {
             var date = new Date();
             action.id = date.getTime();
@@ -345,22 +355,15 @@ windmill.ui.remote = new function() {
             i.id = action.id + 'params';
             i.className = 'texta';
 
-            if (windmill.browser.isIE) {
-                i.setAttribute('value', fleegix.json.serialize(params));
-
-            }
-            else {
-                i.value = fleegix.json.serialize(params);
-
-            }
-
+            if (windmill.browser.isIE) { i.setAttribute('value', fleegix.json.serialize(params)); }
+            else { i.value = fleegix.json.serialize(params); }
+            
             c.appendChild(i);
             r.appendChild(c);
             t.appendChild(r);
 
             action.appendChild(t);
             return action;
-
         }
 
         //We need a table to format this

@@ -192,7 +192,7 @@
 			<tr>
 				<td>Suppress Javascript Alerts:</td><td> <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts'></td>
 			</tr>
-			<tr>
+		  <tr>
 				<td>Suite Save Formatting:</td>
 				<td> 
 					<SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
@@ -215,7 +215,7 @@
 			</tr>
 			<tr>
 				<td>Action play button cascades:</td>
-				<td> <INPUT TYPE=checkbox CHECKED ID='playCascade'></td>
+				<td> <INPUT TYPE=checkbox UNCHECKED ID='playCascade'></td>
 			</tr>
 			<tr>
 				<td>Use XPath only for explorer/recorder:</td>
@@ -225,6 +225,10 @@
 				<td>Record detailed XPath's (vs absolute):</td>
 				<td> <INPUT TYPE=checkbox ID='absXpaths'></td>
 			</tr>
+					<tr>
+    				<td>Play action by hitting 'return/enter':</td>
+    				<td> <INPUT TYPE=checkbox CHECKED ID='playOnReturn'></td>
+    			</tr>
 		</table>
 		<br><br>
 		<a href='#' onclick="windmill.testWindow.document.location.reload()">Reload Testing Application</a>: This reloads your page, without resetting Windmill.
