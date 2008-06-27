@@ -36,15 +36,16 @@ windmill.xhr = new function() {
         }
 
         windmill.xhr.xhrResponse = eval('(' + str + ')');
-
+        var resp = windmill.xhr.xhrResponse;
+        
         //If there was a legit json response
-        if (windmill.xhr.xhrResponse.error) {
+        if (resp.error) {
             windmill.ui.results.writeResult("There was a JSON syntax error: '" + 
-            windmill.xhr.xhrResponse.error + "'");
+            resp.error + "'");
         }
         else {
-            if (windmill.xhr.xhrResponse.result.method != 'defer') {
-                windmill.ui.results.writeStatus("Running " + windmill.xhr.xhrResponse.result.method + "...");
+            if (resp.result.method != 'defer') {
+                windmill.ui.results.writeStatus("Running " + resp.result.method + "...");
                 windmill.ui.playback.setPlaying();
             }
             else {
@@ -53,60 +54,60 @@ windmill.xhr = new function() {
             }
 
             //Init and start performance but not if the protocol defer
-            if (windmill.xhr.xhrResponse.result.method != 'defer') {
+            if (resp.result.method != 'defer') {
 
                 //Put on windmill main page that we are running something
                 windmill.xhr.action_timer = new TimeObj();
-                windmill.xhr.action_timer.setName(windmill.xhr.xhrResponse.result.method);
+                windmill.xhr.action_timer.setName(resp.result.method);
                 windmill.xhr.action_timer.startTime();
 
                 //If the action already exists in the UI, skip all the creating suite stuff
-                if ($(windmill.xhr.xhrResponse.result.params.uuid) != null) {
-                    var action = $(windmill.xhr.xhrResponse.result.params.uuid);
+                if ($(resp.result.params.uuid) != null) {
+                    var action = $(resp.result.params.uuid);
                     action.style.background = 'lightyellow';
                 }
                 //If its a command we don't want to build any UI
-                else if (windmill.xhr.xhrResponse.result.method.split(".")[0] == 'commands') {
+                else if (resp.result.method.split(".")[0] == 'commands') {
                     //do nothing
                     }
                 else {
-                    var action = windmill.xhr.createActionFromSuite(windmill.xhr.xhrResponse.result.suite_name, windmill.xhr.xhrResponse.result);
+                    var action = windmill.xhr.createActionFromSuite(resp.result.suite_name, resp.result);
                 }
 
                 //Forgotten case; If the windmill.runTests is false, but we are trying to change it back to true with a command
                 //This fix runs all commands regardless  
                 //Run the action
                 //If it's a user extension.. run it
-                if ((windmill.runTests == true) || (windmill.xhr.xhrResponse.result.method.split(".")[0] == 'commands')) {
+                if ((windmill.runTests == true) || (resp.result.method.split(".")[0] == 'commands')) {
                     try {
                         //Wait/open needs to not grab the next action immediately
-                        if ((windmill.xhr.xhrResponse.result.method.split(".")[0] == 'waits')) {
+                        if ((resp.result.method.split(".")[0] == 'waits')) {
                             windmill.controller.stopLoop();
-                            windmill.xhr.xhrResponse.result.params.aid = action.id;
+                            resp.result.params.aid = action.id;
                         }
-                        if (windmill.xhr.xhrResponse.result.method.indexOf('.') != -1) {
+                        if (resp.result.method.indexOf('.') != -1) {
                             //if asserts.assertNotSomething we need to set the result to !result
-                            if (windmill.xhr.xhrResponse.result.method.indexOf('asserts.assertNot') != -1) {
-                                var mArray = windmill.xhr.xhrResponse.result.method.split(".");
+                            if (resp.result.method.indexOf('asserts.assertNot') != -1) {
+                                var mArray = resp.result.method.split(".");
                                 var m = mArray[1].replace('Not', '');
-                                var result = !windmill.controller[mArray[0]][m](windmill.xhr.xhrResponse.result.params);
+                                var result = !windmill.controller[mArray[0]][m](resp.result.params);
                             }
                             //Normal asserts and waits
                             else {
-                                var mArray = windmill.xhr.xhrResponse.result.method.split(".");
-                                var result = windmill.controller[mArray[0]][mArray[1]](windmill.xhr.xhrResponse.result.params, windmill.xhr.xhrResponse.result);
+                                var mArray = resp.result.method.split(".");
+                                var result = windmill.controller[mArray[0]][mArray[1]](resp.result.params, resp.result);
                             }
                         }
                         //Every other action that isn't namespaced
                         else {
-                            var result = windmill.controller[windmill.xhr.xhrResponse.result.method](windmill.xhr.xhrResponse.result.params);
+                            var result = windmill.controller[resp.result.method](resp.result.params);
                         }
                     }
                     catch(error) {
                         windmill.ui.results.writeResult("<font color=\"#FF0000\">There was an error in the " + 
-                        windmill.xhr.xhrResponse.result.method + " action. " + error + "</font>");
-                        windmill.ui.results.writeResult("<br>Action: <b>" + windmill.xhr.xhrResponse.result.method + 
-                        "</b><br>Parameters: " + fleegix.json.serialize(windmill.xhr.xhrResponse.result.params) + 
+                        resp.result.method + " action. " + error + "</font>");
+                        windmill.ui.results.writeResult("<br>Action: <b>" + resp.result.method + 
+                        "</b><br>Parameters: " + fleegix.json.serialize(resp.result.params) + 
                         "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
 
                         result = false;
@@ -128,18 +129,18 @@ windmill.xhr = new function() {
                 }
                 else {
                     //we must be loading, change the status to reflect that
-                    windmill.ui.results.writeStatus("Loading " + windmill.xhr.xhrResponse.result.method + "...");
+                    windmill.ui.results.writeStatus("Loading " + resp.result.method + "...");
                     result == true;
                 }
-                var m = windmill.xhr.xhrResponse.result.method.split(".");
+                var m = resp.result.method.split(".");
                 //Send the report if it's not in the commands namespace, we only call report for test actions
                 if ((m[0] != 'commands') && (m[0] != 'waits') && (windmill.runTests == true)) {
                     //End timer and store
                     windmill.xhr.action_timer.endTime();
-                    windmill.xhr.sendReport(windmill.xhr.xhrResponse.result.method, result, windmill.xhr.action_timer);
-                    windmill.xhr.setActionBackground(action, result, windmill.xhr.xhrResponse.result);
+                    windmill.xhr.sendReport(resp.result.method, result, windmill.xhr.action_timer);
+                    windmill.xhr.setActionBackground(action, result, resp.result);
                     //Do the timer write
-                    windmill.xhr.action_timer.write(fleegix.json.serialize(windmill.xhr.xhrResponse.result.params));
+                    windmill.xhr.action_timer.write(fleegix.json.serialize(resp.result.params));
                 }
             }
         }
@@ -248,9 +249,12 @@ windmill.xhr = new function() {
         if (result != true) {
             if (typeof(action) != 'undefined') {
                 action.style.background = '#FF9692';
+                action.parentNode.style.border = "1px solid red";
             }
             windmill.ui.results.writeResult("<br>Action: <b>" + obj.method + 
-            "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
+            "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
+            "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
+            
             //if the continue on error flag has been set by the shell.. then we just keep on going
             if (windmill.stopOnFailure == true) {
                 windmill.xhr.loopState = false;
@@ -260,26 +264,29 @@ windmill.xhr = new function() {
         else {
             //Write to the result tab
             windmill.ui.results.writeResult("<br>Action: <b>" + obj.method + 
-            "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');
+            "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
+            "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');
+            
             if ((typeof(action) != 'undefined') && (windmill.runTests == true)) {
                 action.style.background = '#C7FFCC';
+                if (action.parentNode.style.border.indexOf("black") != -1){
+                  action.parentNode.style.border = "1px solid green";
+                }
             }
         }
     };
     this.setWaitBgAndReport = function(aid, result, obj) {
-        if (!obj) {
-            return false;
-        }
+        if (!obj) { return false; }
         
         var action = $(aid);
         windmill.xhr.action_timer.endTime();
 
         if (result != true) {
-            if (typeof(action) != 'undefined') {
-                action.style.background = '#FF9692';
-            }
+            if (typeof(action) != 'undefined') { action.style.background = '#FF9692'; }
             windmill.ui.results.writeResult("<br>Action: <b>" + obj.method + 
-            "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
+            "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
+            "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
+            
             //if the continue on error flag has been set by the shell.. then we just keep on going
             if (windmill.stopOnFailure == true) {
                 windmill.xhr.loopState = false;
@@ -289,7 +296,9 @@ windmill.xhr = new function() {
         else {
             //Write to the result tab
             windmill.ui.results.writeResult("<br>Action: <b>" + obj.method + 
-            "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');
+            "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
+            "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');
+            
             try {
                 if ((typeof(action) != 'undefined') && (windmill.runTests == true)) {
                     action.style.background = '#C7FFCC';

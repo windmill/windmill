@@ -44,15 +44,19 @@ windmill.ui.playback = new function() {
       var appending = false;
       var testArray = [];
 
+      //if they just passed a suite
+      if (!uuid || uuid == null) { appending = true; }
       //if we don't pass an action to start at just play them all
-      if (!uuid && !suiteOnly) { appending = true; }
-
+      //if (!uuid && !suiteOnly) { appending = true; }
+      
+      
       //if we want to play them all in a provided suite
       if (!uuid && suiteOnly) {
         appending = true;
         var suites = new Array();
         suites.push('\n   ');
         suites.push($(suiteOnly));
+        $(suiteOnly).style.border = "1px solid black";
       }
 
       //else play every suite in the IDE
@@ -112,7 +116,7 @@ windmill.ui.playback = new function() {
 
                   //if they don't want the play button for each action to cascade
                   //Just play that particular action, unless the big play button was hit
-                  if (($('playCascade').checked == false) && (typeof(uuid) != 'undefined')) {
+                  if (($('playCascade').checked == false) && (uuid != undefined) && (uuid != null)) {
                       appending = false;
                   }
               }

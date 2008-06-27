@@ -173,7 +173,7 @@ windmill.ui.remote = new function() {
             suite.style.overflow = 'hidden';
             //suite.style.height='40px';
             suite.style.border = '1px solid black';
-            suite.innerHTML = "<table style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>" + suiteName + 
+            suite.innerHTML = "<table id='"+suiteName+"Header' style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>" + suiteName + 
             "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
             "\')\">[play]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'" + suiteName + 
             "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'" + suiteName + 
@@ -184,11 +184,9 @@ windmill.ui.remote = new function() {
             $('ideForm').appendChild(suite);
 
             try {
+                var h = $(suite.id).previousSibling.style.height;
                 //If the last suite is expanded, collapse it
-                if ($(suite.id).previousSibling.style.height != '18px') {
-                    windmill.ui.toggleCollapse($(suite.id).previousSibling.id);
-
-                }
+                if (h != '18px') { windmill.ui.toggleCollapse($(suite.id).previousSibling.id); }
             } catch(err) { }
 
         }
