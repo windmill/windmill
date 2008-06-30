@@ -17,11 +17,9 @@ Copyright 2006-2007, Open Source Applications Foundation
 //If the user went directly to remote.html
 if (!opener) {
     document.location = '/windmill-serv/start.html';
-
 }
 var $ = function(id) {
     return document.getElementById(id);
-
 };
 
 //json_call
@@ -29,15 +27,12 @@ var json_call = function(version, method, params) {
     this.version = version || null;
     this.method = method || null;
     this.params = params || [];
-
 };
 
 var closeDialog = function(id) {
     $(id).style.display = 'none';
     $('gray').style.visibility = 'hidden';
     $('ide').style.display = 'block';
-    
-
 };
 var openDialog = function(id) {
     //Turn off explorers and recorder
@@ -62,12 +57,10 @@ var toggleRec = function() {
         windmill.ui.recorder.recordOn();
         opener.window.focus();
         $('record').src = 'img/stoprecord.png';
-
     }
     else {
         windmill.ui.recorder.recordOff();
         $('record').src = 'img/record.png';
-
     }
 
 }
@@ -83,7 +76,6 @@ var togglePlay = function() {
         windmill.ui.playback.running = false;
         $('playback').src = 'img/playback.png';
         windmill.xhr.clearQueue();
-
     }
 
 }
@@ -91,12 +83,10 @@ var toggleLoop = function() {
     if ($('loopLink').innerHTML.indexOf('Pause') != -1) {
         $('loopLink').innerHTML = 'Resume Loop';
         windmill.controller.stopLoop();
-
     }
     else {
         $('loopLink').innerHTML = 'Pause Loop';
         windmill.controller.continueLoop();
-
     }
 
 }
@@ -104,22 +94,18 @@ var toggleLoop = function() {
 var toggleExplore = function() {
     if ($('explorer').src.indexOf("img/xon.png") != -1) {
         //Turn off the recorder to avoid confusion
-        if (windmill.ui.recorder.recordState == true) {
-            toggleRec();
-        }
+        if (windmill.ui.recorder.recordState == true) { toggleRec(); }
         $('domExp').style.visibility = 'visible';
         $('domExp').innerHTML = '';
         windmill.ui.domexplorer.domExplorerOn();
         opener.window.focus();
         $('explorer').src = 'img/xoff.png';
-
     }
     else {
         $('domExp').style.visibility = 'hidden';
         windmill.ui.domexplorer.domExplorerOff();
         $('explorer').src = 'img/xon.png';
         $('domExp').innerHTML = '';
-
     }
 
 }
@@ -127,22 +113,18 @@ var toggleExplore = function() {
 var toggleAExplore = function() {
     if ($('assertx').src.indexOf("img/axon.png") != -1) {
         //Turn off the recorder to avoid confusion
-        if (windmill.ui.recorder.recordState == true) {
-            toggleRec();
-        }
+        if (windmill.ui.recorder.recordState == true) { toggleRec(); }
         $('domExp').style.visibility = 'visible';
         $('domExp').innerHTML = '';
         windmill.ui.assertexplorer.assertExplorerOn();
         opener.window.focus();
         $('assertx').src = 'img/axoff.png';
-
     }
     else {
         $('domExp').style.visibility = 'hidden';
         windmill.ui.assertexplorer.assertExplorerOff();
         $('assertx').src = 'img/axon.png';
         $('domExp').innerHTML = '';
-
     }
 
 }
@@ -162,15 +144,9 @@ var scroll = function() {
 
     //If this offset that I get from the above math is less than 4
     //Then they are back at the bottom and we turn auto scroll back on
-    if (Math.abs(c) < 4) {
-        $('autoScroll').checked = true;
-
-    }
+    if (Math.abs(c) < 4) { $('autoScroll').checked = true; }
     //If not we keep auto scroll off
-    else {
-        $('autoScroll').checked = false;
-
-    }
+    else { $('autoScroll').checked = false; }
 }
 
 var doSubmit = function() {
@@ -178,7 +154,7 @@ var doSubmit = function() {
 }
 init = function() {
     shell = new fleegix.shell.Shell($('shellForm').shellInput, $('shellOutput'));
-    windmill.Start();
+    setTimeout("windmill.start()", 1000);
     //make the action drop down work in a browser compatible way
     var dispatchDD = function(e){
       var sel = e.target.options[e.target.options.selectedIndex].id;
@@ -203,5 +179,4 @@ init = function() {
       resetDD();
     }
     fleegix.event.listen($('actionDD'), 'onchange', dispatchDD);
-    
 };

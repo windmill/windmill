@@ -229,14 +229,14 @@ windmill.ui.remote = new function() {
                     }
                     if (windmill.registry.methods[actionObj.method].option) {
                         var si = $(suite.childNodes[j].id + 'optionType').selectedIndex;
-                        if (actionObj.method.split(".")[0] == 'waits') {
+                   /*     if (actionObj.method.split(".")[0] == 'waits') {
                             paramsObj[$(suite.childNodes[j].id + 'optionType')[si].value] = parseInt($(suite.childNodes[j].id + 'option').value);
 
                         }
-                        else {
+                        else {*/
                             paramsObj[$(suite.childNodes[j].id + 'optionType')[si].value] = $(suite.childNodes[j].id + 'option').value;
 
-                        }
+                        //}
 
                     }
                     actionObj.params = paramsObj;

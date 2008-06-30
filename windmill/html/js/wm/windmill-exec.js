@@ -16,7 +16,6 @@ Copyright 2006-2007, Open Source Applications Foundation
 
 //Loader function
 function Load() {
-
     var load = document.createElement('div');
     load.id = 'loading';
     load.style.font = '14pt georgia';
@@ -27,17 +26,15 @@ function Load() {
     document.body.appendChild(load);
     fleegix.dom.center(load);
     
-    var remote = window.open('remote.html', 'windmill_Remote', 'width=465,height=500,toolbar=no,' + 
+    var remUrl = window.location.href.replace("start.html", "remote.html");
+    var remote = window.open(remUrl, 'windmill_Remote', 'width=465,height=500,toolbar=no,' + 
     'location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');
-    
+   
     if (!remote) {
         alert('We detected a popup blocker, please disable it while ' + 
         'you are using Windmill as we load the UI in a popup window. This requires a reload of the page.');
-    }
-    
-    redirect = function() {
-        window.location = urlSTR;
-    }
-    setTimeout('redirect()', 2500);
+    }	
 
+    var redirect = function() { window.location = urlSTR; }
+    setTimeout(redirect, 2000);
 }

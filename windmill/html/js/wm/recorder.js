@@ -178,7 +178,7 @@ function() {
         //when the new page is loading so we can re-attach
         fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
         fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
-
+	
         windmill.ui.remote.getSuite();
         try {
             this.recRecursiveBind(windmill.testWindow);

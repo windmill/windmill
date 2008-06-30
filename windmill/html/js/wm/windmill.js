@@ -60,8 +60,33 @@ var windmill = new function() {
     this.browser = null;
         
     this.init = function(b) { this.browser = b;}
-
-    this.Start = function() {
+    this.start = function() {
+        shell = new fleegix.shell.Shell($('shellForm').shellInput, $('shellOutput'));
+        //make the action drop down work in a browser compatible way
+        var dispatchDD = function(e){
+          var sel = e.target.options[e.target.options.selectedIndex].id;
+          switch(sel){
+            case 'addSuite':
+              windmill.ui.incRecSuite();
+              windmill.ui.remote.getSuite();
+            break;
+            case 'addAction':
+              windmill.ui.remote.addAction();
+            break;
+            case 'addActionJSON':
+              windmill.ui.remote.actionFromJSON();
+            break;
+            case 'clearIDE':
+              windmill.ui.remote.clearIDE();
+            break;
+            default:
+              resetDD();
+            break;
+          }
+          resetDD();
+        }
+        fleegix.event.listen($('actionDD'), 'onchange', dispatchDD);
+        
         windmill.service.setStartURL();
         windmill.service.buildNotAsserts();
         
@@ -70,54 +95,44 @@ var windmill = new function() {
           arr.shift();
           windmill.docDomain = arr.join('.');
         }
-        else {
-          windmill.docDomain = window.location.hostname;
-        }
+        else { windmill.docDomain = window.location.hostname; }
         //windmill.docDomain = window.location.hostname.replace('www.','');
 
         //If the doc domain has changed
         //and we can't get to it, try updating it
-        try{
-          var v = opener.document.domain;
-        }
+        try{ var v = opener.document.domain; }
         catch(err){
-          try {
-            document.domain = windmill.docDomain;
-          }
+          try { document.domain = windmill.docDomain; }
           catch(err){
             if (arr.length > 2){
               arr.shift();
               document.domain = arr.join('.');
             }
-            else {
-              document.domain = windmill.docDomain;
-            }
+            else { document.domain = windmill.docDomain; }
           }
-        }
-        
-        if (windmill.testWindow.document.title == "Windmill Testing Framework") {
-            windmill.controller.waits._forNotTitleAttach({
-                "title": "Windmill Testing Framework"
-            });
-        }
-        else {
-            windmill.controller.continueLoop();
         }
 
         try {
-            //rewrite the open function to keep track of windows popping up
-            //windmill.controller.reWriteOpen();
-            windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
-            browser.current_ua + ".</b><br>");
-            windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + 
-            browser.current_ua + ".</b><br>");
-
+          if (windmill.testWindow.document.title == "Windmill Testing Framework") {
+              windmill.controller.waits._forNotTitleAttach({
+                  "title": "Windmill Testing Framework"
+              });
+          }
+          else { windmill.controller.continueLoop(); }
+          //rewrite the open function to keep track of windows popping up
+          //windmill.controller.reWriteOpen();
+          windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
+          browser.current_ua + ".</b><br>");
+          windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + 
+          browser.current_ua + ".</b><br>");
         }
-        catch(err) {}
+        catch(err) {
+			    //if the initial lode url was blah.com and redirected to www.blah.com
+			    window.location.href = 'http://www.'+window.location.hostname+"/windmill-serv/remote.html";
+		    }
         //setTimeout("windmill.controller.continueLoop()", 2000);  
         //Set a variable so that windmill knows that the remote has fully loaded
         windmill.testWindow.windmill = windmill;
-        
         this.remoteLoaded = true;
     };
 
@@ -143,12 +158,8 @@ var windmill = new function() {
 
         //If the doc domain has changed
         //and we can't get to it, try updating it
-        try{
-          var v = opener.document.domain;
-        }
-        catch(err){
-          document.domain = windmill.docDomain;
-        }
+        try{ var v = opener.document.domain; }
+        catch(err){ document.domain = windmill.docDomain; }
         //rewrite the open function to keep track of windows popping up
         //windmill.controller.reWriteOpen();
         //Making rewrite alert persist through the session
@@ -170,10 +181,10 @@ var windmill = new function() {
           fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
           fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
         }
-        
+		
         delayed = function() {
           if (windmill.waiting == false) {
-            windmill.controller.continueLoop();
+            windmill.controller.continueLoop(); 
           }
         }
         setTimeout('delayed()', 0);
@@ -183,7 +194,6 @@ var windmill = new function() {
     this.stopOnFailure = false;
     this.runTests = true;
     this.rwAlert = false;
-    
 };
 
 //Set the browser
