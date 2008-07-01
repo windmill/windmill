@@ -57,15 +57,27 @@ windmill.ui.remote = new function() {
         $(id).innerHTML = newAction.innerHTML;
         //only try to replace them if this particular action had a locator to begin with
         try {
-//          if (typeof(oldLocator) != 'undefined') {
+          if (typeof(oldLocator) != 'undefined') {
             $(id + "locator").value = oldLocator;
             $(id + "locatorType").value = oldLocatorType;
-//          }
+          }
         }
         catch(err) {}
 
         //safari hack for resizing the suite div to accomodate the new action
         $(id).style.height = '';
+        
+        //if the action was an open, automatically insert a waits.forPageLoad
+        //but only if the next action isn't already forPageLoad
+        var nextAction = $(id).nextSibling;
+        var nextMethod = null;
+        if (nextAction){
+          nextMethod = $(nextAction.id+"method").value;
+        } 
+        if (method == "open" && nextMethod != "waits.forPageLoad"){
+          this.addActionBelow(id,this.buildAction("waits.forPageLoad", {timeout:8000}));
+          $(id+"option").focus();
+        }
     };
 
     this.setRemoteElem = function(id) {
@@ -86,18 +98,17 @@ windmill.ui.remote = new function() {
         fleegix.fx.fadeIn($(newAction.id));
     };
 
-    this.addActionBelow = function(uuid) {
-        var newAction = this.buildAction(null, {});
+    this.addActionBelow = function(uuid, action) {
+        if (!action){ var action = this.buildAction(null, {}); }
         var parent = $(uuid).parentNode;
-        parent.insertBefore(newAction, $(uuid).nextSibling);
+        parent.insertBefore(action, $(uuid).nextSibling);
         //IE Hack
-        if (windmill.browser.isIE) {
-            $(newAction.id).innerHTML = newAction.innerHTML;
-        }
+        if (windmill.browser.isIE) { $(action.id).innerHTML = action.innerHTML; }
         else {
-            $(newAction.id + "locator").focus();
+          var loc = $(action.id + "locator");
+          if (loc){ loc.focus(); }
         }
-        fleegix.fx.fadeIn($(newAction.id));
+        fleegix.fx.fadeIn($(action.id));
     };
 
     this.deleteAction = function(uuid) {
