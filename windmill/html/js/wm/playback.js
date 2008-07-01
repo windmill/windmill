@@ -49,7 +49,6 @@ windmill.ui.playback = new function() {
       //if we don't pass an action to start at just play them all
       //if (!uuid && !suiteOnly) { appending = true; }
       
-      
       //if we want to play them all in a provided suite
       if (!uuid && suiteOnly) {
         appending = true;

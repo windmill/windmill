@@ -269,7 +269,7 @@ windmill.xhr = new function() {
             
             if ((typeof(action) != 'undefined') && (windmill.runTests == true)) {
                 action.style.background = '#C7FFCC';
-                if (action.parentNode.style.border.indexOf("black") != -1){
+                if (action.parentNode.style.border.indexOf("red") != -1){
                   action.parentNode.style.border = "1px solid green";
                 }
             }
