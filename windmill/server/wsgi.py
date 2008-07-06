@@ -125,9 +125,9 @@ def make_windmill_server(http_port=None, js_path=None):
     global add_namespace
     add_namespace = windmill_chooser_app.add_namespace
     
-    import cherrypy
-    httpd = cherrypy.wsgiserver.CherryPyWSGIServer(('0.0.0.0', http_port), 
-                                windmill_chooser_app, server_name='windmill-http', numthreads=50)
+    from cherrypy import wsgiserver
+    httpd = wsgiserver.CherryPyWSGIServer(('0.0.0.0', http_port), 
+                       windmill_chooser_app, server_name='windmill-http', numthreads=50)
 
     # Attach some objects to httpd for convenience
     httpd.controller_queue = queue
