@@ -18,7 +18,6 @@ from httplib import HTTPConnection
 from urlparse import urlparse
 import copy
 import logging
-import re
 
 logger = logging.getLogger(__name__)
 
@@ -53,31 +52,6 @@ forwarding_registry = {}
 #         else:
 #             yield self.response_instance.read()
 
-src_expression = re.compile('src=["\'](.*)["\']')
-import pyparsing
-imgStartTag, dummy = pyparsing.makeHTMLTags("iframe")
-
-
-def replace_src(body):
-    if windmill.settings['FORWARDING_TEST_URL'] is not None:
-        # if body.find('src=') is not -1:
-        #     print src_expression.findall(body), body.find('src='), body.rfind('src=')
-        # if body.find('slide.com') is not -1:
-        #     print 'found slide.com'
-        #     print body.find('src='), body.rfind('src='), body.find('community.slide.com')
-        test_netloc = urlparse(windmill.settings['FORWARDING_TEST_URL']).netloc
-        # for url in src_expression.findall(body):
-        print body.find('iframe')
-        for tokens,start,end in imgStartTag.scanString(body):
-            url = urlparse(tokens.src)
-            # url = urlparse(url)
-            print url.geturl()
-            if url.netloc != test_netloc:
-                body = body.replace(url.geturl(), url.geturl.replace(url.netloc, test_netloc))
-                initial_forwarding_registry[url.geturl().replace(url.netloc, test_netloc)] = url.netloc
-    return body
-    
-
 class WindmillProxyApplication(object):
     """Application to handle requests that need to be proxied"""
 
@@ -86,7 +60,6 @@ class WindmillProxyApplication(object):
     def handler(self, environ, start_response):
         """Proxy for requests to the actual http server"""
         url = urlparse(environ['reconstructed_url'])
-        #print url.geturl()
         
         def change_environ_domain(original_netloc, new_netloc, environ):
             """Swap out the domain for a given request environ"""
@@ -105,6 +78,7 @@ class WindmillProxyApplication(object):
            not url.netloc.startswith('localhost') ) and (
            not url.netloc.startswith('127.0.0.1') ):
             # Do our domain change magic
+            
             test_netloc = urlparse(windmill.settings['FORWARDING_TEST_URL']).netloc
             referer = environ.get('HTTP_REFERER', None)
 
@@ -201,7 +175,7 @@ class WindmillProxyApplication(object):
                 response = new_response
             else:
                 start_response(*connection.pop(0))
-                return [replace_src(connection.pop(0))]
+                return [connection.pop(0)]
         else:
             response = connection.getresponse()
         
@@ -221,11 +195,8 @@ class WindmillProxyApplication(object):
                 headers.remove(header)
         
         start_response(response.status.__str__()+' '+response.reason, headers)
-        return [replace_src(response.read())]
+        return [response.read()]
 
 
     def __call__(self, environ, start_response):
-        body = self.handler(environ, start_response)
-        if body[0].find('iframe') is not -1:
-            print environ['reconstructed_url']
-        return body
+        return self.handler(environ, start_response)
