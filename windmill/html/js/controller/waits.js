@@ -43,7 +43,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
   delete paramObj.aid;
   var count = 0;
   var p = paramObj || {};
-  var timeout = 20000;
+  var timeout = 10000;
   var isJsTest = (p.orig == 'js');
   var testCondition = p.test;
   
@@ -64,11 +64,14 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
         windmill.jsTest.handleErr('waits.forElement timed out after ' + timeout + ' seconds.');
       }
       else {
-        if (pageLoad){ windmill.loaded(); }
+        if (pageLoad){ 
+          windmill.loaded();
+          windmill.controller.continueLoop();
+        }
         else{ windmill.controller.continueLoop(); }
       }
-        windmill.xhr.setWaitBgAndReport(aid,false,obj);
-        return false;
+      windmill.xhr.setWaitBgAndReport(aid,false,obj);
+      return false;
     }
     count += 2500;
     

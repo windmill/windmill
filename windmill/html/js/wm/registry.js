@@ -30,7 +30,6 @@ windmill.registry.methods['waits.sleep']         = {'locator': false, 'option': 
 windmill.registry.methods['waits.forElement']    = {'locator': true, 'option': 'timeout' };
 windmill.registry.methods['waits.forNotElement']    = {'locator': true, 'option': 'timeout' };
 windmill.registry.methods['waits.forPageLoad']    = {'locator': false, 'option': 'timeout' };
-windmill.registry.methods['waits.forFrameLoad']    = {'locator': true, 'option': 'timeout' };
 windmill.registry.methods['click']               = {'locator': true, 'option': false };
 windmill.registry.methods['doubleClick']         = {'locator': true, 'option': false};
 windmill.registry.methods['mousedown']           = {'locator': true, 'option': false};
