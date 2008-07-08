@@ -56,25 +56,25 @@ JAVASCRIPT_TEST_FILTER = None
 JAVASCRIPT_TEST_PHASE = None
 
 # Browser prefs
-MOZILLA_COMMAND = None
+# MOZILLA_COMMAND = None
 SAFARI_BINARY   = None
 SAFARI_COMMAND  = None
 
 # Mozilla prefs
-MOZILLA_CREATE_NEW_PROFILE     = True
-
-MOZILLA_PROFILE_PATH = tempfile.mkdtemp(suffix='.windmill')
+# MOZILLA_CREATE_NEW_PROFILE     = True
+# 
+# MOZILLA_PROFILE_PATH = tempfile.mkdtemp(suffix='.windmill')
 
 if PLATFORM == 'darwin':
     NETWORK_INTERFACE_NAME = None
-    firefoxApp = os.path.join('Applications', 'Firefox.app')
-    firefoxDir = os.path.join(os.path.expanduser('~/'), firefoxApp)
-
-    if not os.path.isdir(firefoxDir):
-        firefoxDir = os.path.join('/', firefoxApp)
-
-    MOZILLA_DEFAULT_PROFILE = os.path.join(firefoxDir, 'Contents', 'MacOS', 'defaults', 'profile')
-    MOZILLA_BINARY          = os.path.join(firefoxDir, 'Contents', 'MacOS', 'firefox-bin')
+    # firefoxApp = os.path.join('Applications', 'Firefox.app')
+    # firefoxDir = os.path.join(os.path.expanduser('~/'), firefoxApp)
+    # 
+    # if not os.path.isdir(firefoxDir):
+    #     firefoxDir = os.path.join('/', firefoxApp)
+    # 
+    # MOZILLA_DEFAULT_PROFILE = os.path.join(firefoxDir, 'Contents', 'MacOS', 'defaults', 'profile')
+    # MOZILLA_BINARY          = os.path.join(firefoxDir, 'Contents', 'MacOS', 'firefox-bin')
     SAFARI_BINARY           = '/Applications/Safari.app/Contents/MacOS/Safari'
     
     import distutils.version, commands
@@ -89,33 +89,33 @@ if PLATFORM == 'darwin':
         elif os.path.isfile(os.path.join(networksetup_base, 'networksetup-panther')):
             NETWORKSETUP_BINARY = os.path.join(networksetup_base, 'networksetup-panther')
 
-elif sys.platform == 'linux2':
-    firefoxBin = findInPath('firefox')
-
-    if firefoxBin is not None and os.path.isfile(firefoxBin):
-        MOZILLA_BINARY = firefoxBin
-    
-    for path in ('/usr/lib/iceweasel/defaults/profile',
-                 '/usr/share/firefox/defaults/profile',
-                 '/usr/lib/mozilla-firefox/defaults/profile',):
-        if os.path.isdir(path):
-            MOZILLA_DEFAULT_PROFILE = path
+# elif sys.platform == 'linux2':
+#     firefoxBin = findInPath('firefox')
+# 
+#     if firefoxBin is not None and os.path.isfile(firefoxBin):
+#         MOZILLA_BINARY = firefoxBin
+#     
+#     for path in ('/usr/lib/iceweasel/defaults/profile',
+#                  '/usr/share/firefox/defaults/profile',
+#                  '/usr/lib/mozilla-firefox/defaults/profile',):
+#         if os.path.isdir(path):
+#             MOZILLA_DEFAULT_PROFILE = path
 
 elif os.name == 'nt' or sys.platform == 'cygwin':
     IE_BINARY  = os.path.join(os.environ['ProgramFiles'], 'Internet Explorer', 'iexplore.exe')
-    firefoxBin = findInPath('firefox')
-
-    if firefoxBin is None:
-        try:
-            firefoxBin = os.path.join(os.environ['ProgramFiles'], 'Mozilla Firefox', 'firefox.exe')
-        except:
-            firefoxBin = None
-
-    if firefoxBin is not None and os.path.isfile(firefoxBin):
-        firefoxDir = os.path.dirname(firefoxBin)
-
-        MOZILLA_BINARY          = firefoxBin
-        MOZILLA_DEFAULT_PROFILE = os.path.join(firefoxDir, 'defaults', 'profile')
+    # firefoxBin = findInPath('firefox')
+    # 
+    # if firefoxBin is None:
+    #     try:
+    #         firefoxBin = os.path.join(os.environ['ProgramFiles'], 'Mozilla Firefox', 'firefox.exe')
+    #     except:
+    #         firefoxBin = None
+    # 
+    # if firefoxBin is not None and os.path.isfile(firefoxBin):
+    #     firefoxDir = os.path.dirname(firefoxBin)
+    # 
+    #     MOZILLA_BINARY          = firefoxBin
+    #     MOZILLA_DEFAULT_PROFILE = os.path.join(firefoxDir, 'defaults', 'profile')
 
 
 if __name__ == '__main__':

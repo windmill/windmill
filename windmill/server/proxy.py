@@ -134,6 +134,7 @@ class WindmillProxyApplication(object):
                     if is_hop_by_hop(key) is False:
                         headers[key] = value
                     if key.lower() == 'location':
+                        # There should never be a legitimate redirect to /windmill-serv from a remote site
                         if '/windmill-serv' in value:
                             value = value.split('/windmill-serv')[0]
 
@@ -203,6 +204,7 @@ class WindmillProxyApplication(object):
             if is_hop_by_hop(header[0]):
                 headers.remove(header)
             elif header[0] == 'location':
+                # There should never be a legitimate redirect to /windmill-serv from a remote site
                 if '/windmill-serv' in header[1]:
                     i = headers.index(header)
                     location = header[1]

@@ -4,3 +4,4 @@ wsgi-jsonrpc
 wsgi-xmlrpc
 wsgi-fileserver
 functest >= 0.7.1
+mozrunner
