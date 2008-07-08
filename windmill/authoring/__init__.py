@@ -53,7 +53,7 @@ def teardown_module(module):
     """teardown_module function for functest based python tests"""
     try:
         while functest.registry.get('browser_debugging', False):
-            sleep(1)
+            sleep(.25)
     except KeyboardInterrupt:
         pass
     # Incase we're in runserver mode and test were passed to the windmill command line
@@ -61,7 +61,7 @@ def teardown_module(module):
         module.windmill_dict['xmlrpc_client'].stop_runserver() 
     else:
         admin_lib.teardown(module.windmill_dict)
-    sleep(.5)
+    sleep(.25)
     
 class RunJsonFile(object):
     def __init__(self, name, lines):

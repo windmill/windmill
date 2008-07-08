@@ -224,7 +224,7 @@ class RPCMethods(object):
         uuid = self.add_object(queue_method, action_object)
 
         while not resolution_suite.resolved.get(uuid):
-            sleep(.4)
+            sleep(.25)
         
         result = resolution_suite.resolved[uuid]
         result.pop('totaltime', None)

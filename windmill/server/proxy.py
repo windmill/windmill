@@ -133,6 +133,9 @@ class WindmillProxyApplication(object):
                     key = key.replace('HTTP_', '', 1).swapcase().replace('_', '-')
                     if is_hop_by_hop(key) is False:
                         headers[key] = value
+                    if key.lower() == 'location':
+                        if '/windmill-serv' in value:
+                            value = value.split('/windmill-serv')[0]
 
             # Handler headers that aren't HTTP_ in environ
             if environ.get('CONTENT_TYPE'):
@@ -174,6 +177,7 @@ class WindmillProxyApplication(object):
             if new_response is not None: 
                 response = new_response
             else:
+                
                 start_response(*connection.pop(0))
                 return [connection.pop(0)]
         else:
@@ -188,14 +192,23 @@ class WindmillProxyApplication(object):
                 response = new_response
 
         # Remove hop by hop headers
-        hopped_headers = [ (x.lower(), y,) for x, y in [ z.split(':', 1) for z in str(response.msg).splitlines() if ':' in z]]
-        headers = copy.copy(hopped_headers)
-        for header in hopped_headers:
-            if is_hop_by_hop(header[0]):
-                headers.remove(header)
+        headers = self.parse_headers(response)
         
         start_response(response.status.__str__()+' '+response.reason, headers)
         return [response.read()]
+
+    def parse_headers(self, response):
+        headers = [ (x.lower(), y,) for x, y in [ z.split(':', 1) for z in str(response.msg).splitlines() if ':' in z]]
+        for header in headers:
+            if is_hop_by_hop(header[0]):
+                headers.remove(header)
+            elif header[0] == 'location':
+                if '/windmill-serv' in header[1]:
+                    i = headers.index(header)
+                    location = header[1]
+                    headers.remove(header)
+                    headers.insert(i, ('location',location.split('/windmill-serv')[0],))
+        return headers
 
 
     def __call__(self, environ, start_response):

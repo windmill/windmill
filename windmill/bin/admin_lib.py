@@ -98,7 +98,7 @@ def run_threaded(console_level=logging.INFO):
     getattr(httpd_thread, 'setDaemon', lambda x: x)(True)
     httpd_thread.start()
     while not httpd.ready:
-        sleep(.5)
+        sleep(.25)
     
     return httpd, httpd_thread, console_handler
 
@@ -197,16 +197,16 @@ def runserver_action(shell_objects):
             while windmill.block_exit or ( 
                     len(shell_objects['httpd'].controller_queue.queue) is not 0 ) or (
                     len(shell_objects['httpd'].test_resolution_suite.unresolved) is not 0 ):
-                sleep(1)
+                sleep(.25)
         elif ( windmill.settings['RUN_TEST'] ):
             windmill.runserver_running = True
             while windmill.runserver_running:
-                sleep(1)
+                sleep(.25)
         
         else:
             windmill.runserver_running = True
             while windmill.runserver_running:
-                sleep(1)
+                sleep(.25)
             
         teardown(shell_objects)
 

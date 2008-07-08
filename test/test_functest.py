@@ -11,7 +11,7 @@ def test_functest_google_firefox_url():
     if not output.find('Passed: 4, Failed: 0, Skipped: 0') is not -1:
         print output
     assert output.find('Passed: 4, Failed: 0, Skipped: 0') is not -1
-    sleep(1)
+    sleep(.25)
     
 def test_functest_google_firefox_nourl():
     test_directory = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'files', 'functest_tests')
@@ -20,7 +20,7 @@ def test_functest_google_firefox_nourl():
     if not output.find('Passed: 2, Failed: 2, Skipped: 0') is not -1:
         print output
     assert output.find('Passed: 2, Failed: 2, Skipped: 0') is not -1
-    sleep(1)
+    sleep(.25)
     
 # if sys.platform == 'darwin':
 #     def test_functest_google_safari():
