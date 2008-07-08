@@ -149,24 +149,21 @@ windmill.events = new function() {
             if (window.KeyEvent) {
                 evt = document.createEvent('KeyEvents');
                 evt.initKeyEvent(eventType, true, true, window, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown, keycode, keycode);
-
-            } else {
-                evt = document.createEvent('UIEvents');
-
+            } 
+            else {
+                evt = document.createEvent('UIEvent');
                 evt.shiftKey = shiftKeyDown;
                 evt.metaKey = metaKeyDown;
                 evt.altKey = altKeyDown;
                 evt.ctrlKey = controlKeyDown;
 
                 evt.initUIEvent(eventType, true, true, window, 1);
+                evt.charCode = keycode;
                 evt.keyCode = keycode;
                 evt.which = keycode;
-
             }
             element.dispatchEvent(evt);
-
         }
-
     }
 
     /* Fire a mouse event in a browser-compatible manner */

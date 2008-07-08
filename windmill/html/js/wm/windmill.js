@@ -27,7 +27,7 @@ var windmill = new function() {
     //How long xhr waits in seconds before calling the timout function
     this.xhrTimeout = 180;
 
-    this.serviceDelay = 500;
+    this.serviceDelay = 400;
 
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*
@@ -58,7 +58,7 @@ var windmill = new function() {
     this.remoteLoaded = false;
     this.remote = parent.window;
     this.browser = null;
-        
+    
     this.init = function(b) { this.browser = b;}
     this.start = function() {
         shell = new fleegix.shell.Shell($('shellForm').shellInput, $('shellOutput'));

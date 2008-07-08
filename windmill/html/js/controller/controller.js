@@ -92,6 +92,22 @@ windmill.controller = new function () {
       s = 'Looking up name '+ param_object.name;
       element = this.findElement("name=" + param_object.name)
     }
+    //if name was passed
+    if(typeof param_object.classname != "undefined") {
+      if (param_object.classname.indexOf(',')){
+        var cn = param_object.classname.split(',');
+        var idx = cn[1];
+        var cn = cn[0];
+      }
+      else{
+        var cn = param_object.classname;
+        var idx = 0;
+      }
+      s = 'Looking up classname '+ cn;
+      element = windmill.testWindow.document.getElementsByClassName(cn)[idx];
+    }
+    
+    
     windmill.ui.results.writeResult(s);
     return element;
   };
@@ -191,52 +207,6 @@ windmill.controller = new function () {
     try{ windmill.testWindow.location = param_object.url; }
     catch(err){ return false; }
     
-    return true;
-  };
-  
-  //Type Function
-  this.type = function (param_object){
-
-    var element = this._lookupDispatch(param_object);
-    if (!element){
-      return false;
-    }
-    //clear the box
-    element.value = '';
-    //Get the focus on to the item to be typed in, or selected
-    windmill.events.triggerEvent(element, 'focus', false);
-    windmill.events.triggerEvent(element, 'select', true);
-     
-    //Make sure text fits in the textbox
-    var maxLengthAttr = element.getAttribute("maxLength");
-    var actualValue = param_object.text;
-    var stringValue = param_object.text;
-     
-    if (maxLengthAttr != null) {
-      var maxLength = parseInt(maxLengthAttr);
-      if (stringValue.length > maxLength) {
-        //truncate it to fit
-        actualValue = stringValue.substr(0, maxLength);
-      }
-    }
-    
-    var s = actualValue;
-    for (var c = 0; c < s.length; c++){
-      if ((!windmill.browser.isSafari) && (!windmill.browser.isOpera)){
-        windmill.events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
-      }
-      else if (windmill.browser.isOpera){
-       windmill.events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
-       windmill.events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false); 
-      }
-      element.value += s.charAt(c);
-      windmill.events.triggerKeyEvent(element, 'keyup', s.charAt(c), true, false,false, false,false);
-    }
-     
-    // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
-    //Another wierd chrome thing?
-    windmill.events.triggerEvent(element, 'change', true);
-     
     return true;
   };
 
@@ -363,13 +333,28 @@ windmill.controller = new function () {
   //Directly access mouse events
   this.mousedown = function (param_object){
       var mupElement = this._lookupDispatch(param_object);
+      if (mupElement == null){
+        mupElement = windmill.testWindow.document.body;
+      }
       windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  
     
       return true;
   };
-
+  
+  //Drag Drop functionality allowing functions passed to calculate cursor offsets
+  this.mousemove = function (param_object){
+    var p = param_object;
+    var webApp = windmill.testWindow;
+    var coords = p.coords.split(',');
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, coords[0], coords[1]);
+    return true;
+  };
+  
   this.mouseup = function (param_object){
     var mdnElement = this._lookupDispatch(param_object);
+    if (mdnElement == null){
+      mdnElement = windmill.testWindow.document.body;
+    }
     windmill.events.triggerMouseEvent(mdnElement, 'mouseup', true);
     
     return true;
@@ -431,49 +416,7 @@ windmill.controller = new function () {
     
     return true;
   };
-  
-    //After the app reloads you have to re overwrite the alert function for the TestingApp
- /* this.reWriteOpen = function(param_object){
-    //Keep track of the real window open function
-    windmill.openWindow = windmill.testWindow.open;
-    
-    windmill.testWindow.open = function(){
-      //alert('asda');
-      var args = Array.prototype.slice.call(arguments);
-      var p = windmill.openWindow.apply(window, args);
-      var date = new Date();
-      var wid = date.getTime();
-      windmill.varRegistry.addItem(wid,p);
-      return p;
-    };
-    
-    rwaRecurse = function(frame){
-      var iframeCount = frame.frames.length;
-      var iframeArray = frame.frames;
-      
-      for (var i=0;i<iframeCount;i++){
-          try{
-  	        iframeArray[i].open = function(){
-               var args = Array.prototype.slice.call(arguments);
-               var p = windmill.openWindow.apply(window, args);
-               var date = new Date();
-               var wid = date.getTime();
-               windmill.varRegistry.addItem(wid,p);
-               return p;
-     	      };
-  	        rwaRecurse(iframeArray[i]);
-          }
-          catch(error){             
-           	windmill.ui.results.writeResult('There was a problem rewriting open on one of your iframes, is it cross domain?' +
-  					  'Binding to all others.' + error);     
-          }
-        }
-    }
-    rwaRecurse(windmill.testWindow);
-    
-    return true;
-  };
-   */
+
   //Allow the user to set the testWindow to a different window 
   //or frame within the page 
   this.setTestWindow = function(param_object){

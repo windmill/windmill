@@ -87,3 +87,43 @@ windmill.controller.doubleClick = function(param_object) {
     return true;
 };
 
+//Type Function
+windmill.controller.type = function (param_object){
+
+  var element = this._lookupDispatch(param_object);
+  if (!element){
+    return false;
+  }
+
+  //clear the box
+  element.value = '';
+  //Get the focus on to the item to be typed in, or selected
+  windmill.events.triggerEvent(element, 'focus', false);
+  windmill.events.triggerEvent(element, 'select', true);
+
+  //Make sure text fits in the textbox
+  var maxLengthAttr = element.getAttribute("maxLength");
+  var actualValue = param_object.text;
+  var stringValue = param_object.text;
+   
+  if (maxLengthAttr != null) {
+    var maxLength = parseInt(maxLengthAttr);
+    if (stringValue.length > maxLength) {
+      //truncate it to fit
+      actualValue = stringValue.substr(0, maxLength);
+    }
+  }
+  
+  var s = actualValue;
+  for (var c = 0; c < s.length; c++){
+     element.value += s.charAt(c);
+     windmill.events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
+     windmill.events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false); 
+     windmill.events.triggerKeyEvent(element, 'keyup', s.charAt(c), true, false,false, false,false);
+  }
+  // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
+  //Another wierd chrome thing?
+  windmill.events.triggerEvent(element, 'change', true);
+   
+  return true;
+};
