@@ -127,6 +127,9 @@ windmill.controller.doubleClick = function(param_object) {
    for (var c = 0; c < s.length; c++){
      windmill.events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
      windmill.events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false); 
+     if (s.charAt(c) == "."){
+       element.value += s.charAt(c);
+     }
      windmill.events.triggerKeyEvent(element, 'keyup', s.charAt(c), true, false,false, false,false);
    }
     
