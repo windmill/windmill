@@ -15,8 +15,8 @@ Copyright 2006-2007, Open Source Applications Foundation
 */
 
 /***************************************/
-windmill.service = new
-function() {
+
+windmill.service = new function() {
     //Dynamically build assertNots into the registry for every assert that isn't jum
     this.buildNotAsserts = function() {
         for (var meth in windmill.controller.asserts) {
@@ -27,11 +27,8 @@ function() {
                     'locator': windmill.registry.methods['asserts.' + meth].locator,
                     'option': windmill.registry.methods['asserts.' + meth].option
                 };
-
             }
-
         }
-
     }
 
     this.getParsedLocation = function(loc) {
@@ -39,7 +36,6 @@ function() {
         str += loc.protocol + '//' + loc.hostname;
         str += loc.port ? ':' + loc.port: '';
         return str;
-
     }
 
     //Set the URL we are starting out testing
@@ -51,14 +47,9 @@ function() {
         json_object.params = params_obj;
         var json_string = fleegix.json.serialize(json_object)
 
-        var resp = function(str) {
-            return true;
-
-        }
-
+        var resp = function(str) { return true; }
         result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
         resp(result);
-
     };
 
     //Set the URL we are testing in the python service
@@ -71,18 +62,58 @@ function() {
             json_object.params = params_obj;
             var json_string = fleegix.json.serialize(json_object)
 
-            var resp = function(str) {
-                return true;
-
-            }
-
+            var resp = function(str) { return true; }
             result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
             resp(result);
-
         }
-        catch(er) {
-            }
-
+        catch(er) {}
     };
+};
 
+windmill.utilities = new function () {
+  //Append code and execute it
+  this.appendScriptTag = function(win, code) {
+    var script = win.document.createElement('script');
+    script.type = 'text/javascript';
+    var head = win.document.getElementsByTagName("head")[0] ||
+      win.document.documentElement;
+    if (document.all) {
+      script.text = code;
+    }
+    else {
+      script.appendChild(win.document.createTextNode(code));
+    }
+    head.appendChild(script);
+    head.removeChild(script);
+    return true;
+  };
+  
+  this.appendScript = function(win, url) {
+    var script = win.document.createElement('script');
+    script.type = 'text/javascript';
+    var head = win.document.getElementsByTagName("head")[0] ||
+      win.document.documentElement;
+      script.src = url;
+    head.appendChild(script);
+    return true;
+  };
+  
+  //Grab a file with xhr
+  this.getFile = function (path) {
+    var file = fleegix.xhr.doReq({ url: path,
+	  async: false });
+    return file;
+  };
+  
+  // Do string replacements for {$*} shortcuts
+  this.doShortcutStringReplacements = function (paramObj) {
+    var replObj = paramObj || {};
+    for (var propName in replObj) {
+      var prop = replObj[propName];
+      if (typeof prop == 'string' && prop.indexOf('{$') > -1) {
+        replObj[propName] = windmill.controller.handleVariable(prop);
+      }
+    }
+    return replObj;
+  };
 };

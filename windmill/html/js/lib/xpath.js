@@ -1,6 +1,688 @@
 // Copyright 2005 Google Inc.
 // All Rights Reserved
 //
+// Miscellania that support the ajaxslt implementation.
+//
+// Author: Steffen Meschkat <mesch@google.com>
+//
+
+function el(i) {
+  return document.getElementById(i);
+}
+
+function px(x) {
+  return x + 'px';
+}
+
+// Split a string s at all occurrences of character c. This is like
+// the split() method of the string object, but IE omits empty
+// strings, which violates the invariant (s.split(x).join(x) == s).
+function stringSplit(s, c) {
+  var a = s.indexOf(c);
+  if (a == -1) {
+    return [ s ];
+  }
+  
+  var parts = [];
+  parts.push(s.substr(0,a));
+  while (a != -1) {
+    var a1 = s.indexOf(c, a + 1);
+    if (a1 != -1) {
+      parts.push(s.substr(a + 1, a1 - a - 1));
+    } else {
+      parts.push(s.substr(a + 1));
+    } 
+    a = a1;
+  }
+
+  return parts;
+}
+
+// Returns the text value if a node; for nodes without children this
+// is the nodeValue, for nodes with children this is the concatenation
+// of the value of all children.
+function xmlValue(node) {
+  if (!node) {
+    return '';
+  }
+
+  var ret = '';
+  if (node.nodeType == DOM_TEXT_NODE ||
+      node.nodeType == DOM_CDATA_SECTION_NODE ||
+      node.nodeType == DOM_ATTRIBUTE_NODE) {
+    ret += node.nodeValue;
+
+  } else if (node.nodeType == DOM_ELEMENT_NODE ||
+             node.nodeType == DOM_DOCUMENT_NODE ||
+             node.nodeType == DOM_DOCUMENT_FRAGMENT_NODE) {
+    for (var i = 0; i < node.childNodes.length; ++i) {
+      ret += arguments.callee(node.childNodes[i]);
+    }
+  }
+  return ret;
+}
+
+// Returns the representation of a node as XML text.
+function xmlText(node) {
+  var ret = '';
+  if (node.nodeType == DOM_TEXT_NODE) {
+    ret += xmlEscapeText(node.nodeValue);
+    
+  } else if (node.nodeType == DOM_ELEMENT_NODE) {
+    ret += '<' + node.nodeName;
+    for (var i = 0; i < node.attributes.length; ++i) {
+      var a = node.attributes[i];
+      if (a && a.nodeName && a.nodeValue) {
+        ret += ' ' + a.nodeName;
+        ret += '="' + xmlEscapeAttr(a.nodeValue) + '"';
+      }
+    }
+
+    if (node.childNodes.length == 0) {
+      ret += '/>';
+
+    } else {
+      ret += '>';
+      for (var i = 0; i < node.childNodes.length; ++i) {
+        ret += arguments.callee(node.childNodes[i]);
+      }
+      ret += '</' + node.nodeName + '>';
+    }
+    
+  } else if (node.nodeType == DOM_DOCUMENT_NODE || 
+             node.nodeType == DOM_DOCUMENT_FRAGMENT_NODE) {
+    for (var i = 0; i < node.childNodes.length; ++i) {
+      ret += arguments.callee(node.childNodes[i]);
+    }
+  }
+  
+  return ret;
+}
+
+// Applies the given function to each element of the array.
+function mapExec(array, func) {
+  for (var i = 0; i < array.length; ++i) {
+    func(array[i]);
+  }
+}
+
+// Returns an array that contains the return value of the given
+// function applied to every element of the input array.
+function mapExpr(array, func) {
+  var ret = [];
+  for (var i = 0; i < array.length; ++i) {
+    ret.push(func(array[i]));
+  }
+  return ret;
+};
+
+// Reverses the given array in place.
+function reverseInplace(array) {
+  for (var i = 0; i < array.length / 2; ++i) {
+    var h = array[i];
+    var ii = array.length - i - 1;
+    array[i] = array[ii];
+    array[ii] = h;
+  }
+}
+
+// Shallow-copies an array.
+function copyArray(dst, src) { 
+  for (var i = 0; i < src.length; ++i) {
+    dst.push(src[i]);
+  }
+}
+
+function assert(b) {
+  if (!b) {
+    throw 'assertion failed';
+  }
+}
+
+// Based on
+// <http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247>
+var DOM_ELEMENT_NODE = 1;
+var DOM_ATTRIBUTE_NODE = 2;
+var DOM_TEXT_NODE = 3;
+var DOM_CDATA_SECTION_NODE = 4;
+var DOM_ENTITY_REFERENCE_NODE = 5;
+var DOM_ENTITY_NODE = 6;
+var DOM_PROCESSING_INSTRUCTION_NODE = 7;
+var DOM_COMMENT_NODE = 8;
+var DOM_DOCUMENT_NODE = 9;
+var DOM_DOCUMENT_TYPE_NODE = 10;
+var DOM_DOCUMENT_FRAGMENT_NODE = 11;
+var DOM_NOTATION_NODE = 12;
+
+
+var xpathdebug = false; // trace xpath parsing
+var xsltdebug = false; // trace xslt processing
+
+
+// Escape XML special markup chracters: tag delimiter < > and entity
+// reference start delimiter &. The escaped string can be used in XML
+// text portions (i.e. between tags).
+function xmlEscapeText(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// Escape XML special markup characters: tag delimiter < > entity
+// reference start delimiter & and quotes ". The escaped string can be
+// used in double quoted XML attribute value portions (i.e. in
+// attributes within start tags).
+function xmlEscapeAttr(s) {
+  return xmlEscapeText(s).replace(/\"/g, '&quot;');
+}
+
+// Escape markup in XML text, but don't touch entity references. The
+// escaped string can be used as XML text (i.e. between tags).
+function xmlEscapeTags(s) {
+  return s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// An implementation of the debug log. 
+
+var logging__ = false;
+
+function Log() {};
+
+Log.lines = [];
+
+Log.write = function(s) {
+    LOG.debug("xpath logging: " + s);
+};
+
+// Writes the given XML with every tag on a new line.
+Log.writeXML = function(xml) {
+  if (logging__) {
+    var s0 = xml.replace(/</g, '\n<');
+    var s1 = xmlEscapeText(s0);
+    var s2 = s1.replace(/\s*\n(\s|\n)*/g, '<br/>');
+    this.lines.push(s2);
+    this.show();
+  }
+}
+
+// Writes without any escaping
+Log.writeRaw = function(s) {
+  if (logging__) {
+    this.lines.push(s);
+    this.show();
+  }
+}
+
+Log.clear = function() {
+  if (logging__) {
+    var l = this.div();
+    l.innerHTML = '';
+    this.lines = [];
+  }
+}
+
+Log.show = function() {
+  var l = this.div();
+  l.innerHTML += this.lines.join('<br/>') + '<br/>';
+  this.lines = [];
+  l.scrollTop = l.scrollHeight;
+}
+
+Log.div = function() {
+  var l = document.getElementById('log');
+  if (!l) {
+    l = document.createElement('div');
+    l.id = 'log';
+    l.style.position = 'absolute';
+    l.style.right = '5px';
+    l.style.top = '5px';
+    l.style.width = '250px';
+    l.style.height = '150px';
+    l.style.overflow = 'auto';
+    l.style.backgroundColor = '#f0f0f0';
+    l.style.border = '1px solid gray';
+    l.style.fontSize = '10px';
+    l.style.padding = '5px';
+    document.body.appendChild(l);
+  }
+  return l;
+}
+
+
+function Timer() {}
+Timer.start = function() {}
+Timer.end = function() {}
+
+// Copyright 2005 Google Inc.
+// All Rights Reserved
+//
+// An XML parse and a minimal DOM implementation that just supportes
+// the subset of the W3C DOM that is used in the XSLT implementation.
+//
+// References: 
+//
+// [DOM] W3C DOM Level 3 Core Specification
+//       <http://www.w3.org/TR/2004/REC-DOM-Level-3-Core-20040407/>.
+//
+// 
+// Author: Steffen Meschkat <mesch@google.com>
+
+// NOTE: The split() method in IE omits empty result strings. This is
+// utterly annoying. So we don't use it here.
+
+// Resolve entities in XML text fragments. According to the DOM
+// specification, the DOM is supposed to resolve entity references at
+// the API level. I.e. no entity references are passed through the
+// API. See "Entities and the DOM core", p.12, DOM 2 Core
+// Spec. However, different browsers actually pass very different
+// values at the API.
+//
+function xmlResolveEntities(s) {
+
+  var parts = stringSplit(s, '&');
+
+  var ret = parts[0];
+  for (var i = 1; i < parts.length; ++i) {
+    var rp = stringSplit(parts[i], ';');
+    if (rp.length == 1) {
+      // no entity reference: just a & but no ;
+      ret += parts[i];
+      continue;
+    }
+    
+    var ch;
+    switch (rp[0]) {
+      case 'lt': 
+        ch = '<';
+        break;
+      case 'gt': 
+        ch = '>';
+        break;
+      case 'amp': 
+        ch = '&';
+        break;
+      case 'quot': 
+        ch = '"';
+        break;
+      case 'apos': 
+        ch = '\'';
+        break;
+      case 'nbsp': 
+        ch = String.fromCharCode(160);
+        break;
+      default:
+        // Cool trick: let the DOM do the entity decoding. We assign
+        // the entity text through non-W3C DOM properties and read it
+        // through the W3C DOM. W3C DOM access is specified to resolve
+        // entities. 
+        var span = window.document.createElement('span');
+        span.innerHTML = '&' + rp[0] + '; ';
+        ch = span.childNodes[0].nodeValue.charAt(0);
+    }
+    ret += ch + rp[1];
+  }
+
+  return ret;
+}
+
+
+// Parses the given XML string with our custom, JavaScript XML parser. Written
+// by Steffen Meschkat (mesch@google.com).
+function xmlParse(xml) {
+  Timer.start('xmlparse');
+  var regex_empty = /\/$/;
+
+  // See also <http://www.w3.org/TR/REC-xml/#sec-common-syn> for
+  // allowed chars in a tag and attribute name. TODO(mesch): the
+  // following is still not completely correct.
+
+  var regex_tagname = /^([\w:-]*)/;
+  var regex_attribute = /([\w:-]+)\s?=\s?('([^\']*)'|"([^\"]*)")/g;
+
+  var xmldoc = new XDocument();
+  var root = xmldoc;
+
+  // For the record: in Safari, we would create native DOM nodes, but
+  // in Opera that is not possible, because the DOM only allows HTML
+  // element nodes to be created, so we have to do our own DOM nodes.
+
+  // xmldoc = document.implementation.createDocument('','',null);
+  // root = xmldoc; // .createDocumentFragment();
+  // NOTE(mesch): using the DocumentFragment instead of the Document
+  // crashes my Safari 1.2.4 (v125.12).
+  var stack = [];
+
+  var parent = root;
+  stack.push(parent);
+
+  var x = stringSplit(xml, '<');
+  for (var i = 1; i < x.length; ++i) {
+    var xx = stringSplit(x[i], '>');
+    var tag = xx[0];
+    var text = xmlResolveEntities(xx[1] || '');
+
+    if (tag.charAt(0) == '/') {
+      stack.pop();
+      parent = stack[stack.length-1];
+
+    } else if (tag.charAt(0) == '?') {
+      // Ignore XML declaration and processing instructions
+    } else if (tag.charAt(0) == '!') {
+      // Ignore notation and comments
+    } else {
+      var empty = tag.match(regex_empty);
+      var tagname = regex_tagname.exec(tag)[1];
+      var node = xmldoc.createElement(tagname);
+
+      var att;
+      while (att = regex_attribute.exec(tag)) {
+        var val = xmlResolveEntities(att[3] || att[4] || '');
+        node.setAttribute(att[1], val);
+      }
+      
+      if (empty) {
+        parent.appendChild(node);
+      } else {
+        parent.appendChild(node);
+        parent = node;
+        stack.push(node);
+      }
+    }
+
+    if (text && parent != root) {
+      parent.appendChild(xmldoc.createTextNode(text));
+    }
+  }
+
+  Timer.end('xmlparse');
+  return root;
+}
+
+
+// Our W3C DOM Node implementation. Note we call it XNode because we
+// can't define the identifier Node. We do this mostly for Opera,
+// where we can't reuse the HTML DOM for parsing our own XML, and for
+// Safari, where it is too expensive to have the template processor
+// operate on native DOM nodes.
+function XNode(type, name, value, owner) {
+  this.attributes = [];
+  this.childNodes = [];
+
+  XNode.init.call(this, type, name, value, owner);
+}
+
+// Don't call as method, use apply() or call().
+XNode.init = function(type, name, value, owner) {
+  this.nodeType = type - 0;
+  this.nodeName = '' + name;
+  this.nodeValue = '' + value;
+  this.ownerDocument = owner;
+
+  this.firstChild = null;
+  this.lastChild = null;
+  this.nextSibling = null;
+  this.previousSibling = null;
+  this.parentNode = null;
+}
+
+XNode.unused_ = [];
+
+XNode.recycle = function(node) {
+  if (!node) {
+    return;
+  }
+
+  if (node.constructor == XDocument) {
+    XNode.recycle(node.documentElement);
+    return;
+  }
+
+  if (node.constructor != this) {
+    return;
+  }
+
+  XNode.unused_.push(node);
+  for (var a = 0; a < node.attributes.length; ++a) {
+    XNode.recycle(node.attributes[a]);
+  }
+  for (var c = 0; c < node.childNodes.length; ++c) {
+    XNode.recycle(node.childNodes[c]);
+  }
+  node.attributes.length = 0;
+  node.childNodes.length = 0;
+  XNode.init.call(node, 0, '', '', null);
+}
+
+XNode.create = function(type, name, value, owner) {
+  if (XNode.unused_.length > 0) {
+    var node = XNode.unused_.pop();
+    XNode.init.call(node, type, name, value, owner);
+    return node;
+  } else {
+    return new XNode(type, name, value, owner);
+  }
+}
+
+XNode.prototype.appendChild = function(node) {
+  // firstChild
+  if (this.childNodes.length == 0) {
+    this.firstChild = node;
+  }
+
+  // previousSibling
+  node.previousSibling = this.lastChild;
+
+  // nextSibling
+  node.nextSibling = null;
+  if (this.lastChild) {
+    this.lastChild.nextSibling = node;
+  }
+
+  // parentNode
+  node.parentNode = this;
+
+  // lastChild
+  this.lastChild = node;
+
+  // childNodes
+  this.childNodes.push(node);
+}
+
+
+XNode.prototype.replaceChild = function(newNode, oldNode) {
+  if (oldNode == newNode) {
+    return;
+  }
+
+  for (var i = 0; i < this.childNodes.length; ++i) {
+    if (this.childNodes[i] == oldNode) {
+      this.childNodes[i] = newNode;
+      
+      var p = oldNode.parentNode;
+      oldNode.parentNode = null;
+      newNode.parentNode = p;
+      
+      p = oldNode.previousSibling;
+      oldNode.previousSibling = null;
+      newNode.previousSibling = p;
+      if (newNode.previousSibling) {
+        newNode.previousSibling.nextSibling = newNode;
+      }
+      
+      p = oldNode.nextSibling;
+      oldNode.nextSibling = null;
+      newNode.nextSibling = p;
+      if (newNode.nextSibling) {
+        newNode.nextSibling.previousSibling = newNode;
+      }
+
+      if (this.firstChild == oldNode) {
+        this.firstChild = newNode;
+      }
+
+      if (this.lastChild == oldNode) {
+        this.lastChild = newNode;
+      }
+
+      break;
+    }
+  }
+}
+
+XNode.prototype.insertBefore = function(newNode, oldNode) {
+  if (oldNode == newNode) {
+    return;
+  }
+
+  if (oldNode.parentNode != this) {
+    return;
+  }
+
+  if (newNode.parentNode) {
+    newNode.parentNode.removeChild(newNode);
+  }
+
+  var newChildren = [];
+  for (var i = 0; i < this.childNodes.length; ++i) {
+    var c = this.childNodes[i];
+    if (c == oldNode) {
+      newChildren.push(newNode);
+
+      newNode.parentNode = this;
+
+      newNode.previousSibling = oldNode.previousSibling;
+      oldNode.previousSibling = newNode;
+      if (newNode.previousSibling) {
+        newNode.previousSibling.nextSibling = newNode;
+      }
+      
+      newNode.nextSibling = oldNode;
+
+      if (this.firstChild == oldNode) {
+        this.firstChild = newNode;
+      }
+    }
+    newChildren.push(c);
+  }
+  this.childNodes = newChildren;
+}
+
+XNode.prototype.removeChild = function(node) {
+  var newChildren = [];
+  for (var i = 0; i < this.childNodes.length; ++i) {
+    var c = this.childNodes[i];
+    if (c != node) {
+      newChildren.push(c);
+    } else {
+      if (c.previousSibling) {
+        c.previousSibling.nextSibling = c.nextSibling;
+      }
+      if (c.nextSibling) {
+        c.nextSibling.previousSibling = c.previousSibling;
+      }
+      if (this.firstChild == c) {
+        this.firstChild = c.nextSibling;
+      }
+      if (this.lastChild == c) {
+        this.lastChild = c.previousSibling;
+      }
+    }
+  }
+  this.childNodes = newChildren;
+}
+
+
+XNode.prototype.hasAttributes = function() {
+  return this.attributes.length > 0;
+}
+
+
+XNode.prototype.setAttribute = function(name, value) {
+  for (var i = 0; i < this.attributes.length; ++i) {
+    if (this.attributes[i].nodeName == name) {
+      this.attributes[i].nodeValue = '' + value;
+      return;
+    }
+  }
+  this.attributes.push(new XNode(DOM_ATTRIBUTE_NODE, name, value));
+}
+
+
+XNode.prototype.getAttribute = function(name) {
+  for (var i = 0; i < this.attributes.length; ++i) {
+    if (this.attributes[i].nodeName == name) {
+      return this.attributes[i].nodeValue;
+    }
+  }
+  return null;
+}
+
+XNode.prototype.removeAttribute = function(name) {
+  var a = [];
+  for (var i = 0; i < this.attributes.length; ++i) {
+    if (this.attributes[i].nodeName != name) {
+      a.push(this.attributes[i]);
+    }
+  }
+  this.attributes = a;
+}
+
+
+function XDocument() {
+  XNode.call(this, DOM_DOCUMENT_NODE, '#document', null, this);
+  this.documentElement = null;
+}
+
+XDocument.prototype = new XNode(DOM_DOCUMENT_NODE, '#document');
+
+XDocument.prototype.clear = function() {
+  XNode.recycle(this.documentElement);
+  this.documentElement = null;
+}
+
+XDocument.prototype.appendChild = function(node) {
+  XNode.prototype.appendChild.call(this, node);
+  this.documentElement = this.childNodes[0];
+}
+
+XDocument.prototype.createElement = function(name) {
+  return XNode.create(DOM_ELEMENT_NODE, name, null, this);
+}
+
+XDocument.prototype.createDocumentFragment = function() {
+  return XNode.create(DOM_DOCUMENT_FRAGMENT_NODE, '#document-fragment',
+                    null, this);
+}
+
+XDocument.prototype.createTextNode = function(value) {
+  return XNode.create(DOM_TEXT_NODE, '#text', value, this);
+}
+
+XDocument.prototype.createAttribute = function(name) {
+  return XNode.create(DOM_ATTRIBUTE_NODE, name, null, this);
+}
+
+XDocument.prototype.createComment = function(data) {
+  return XNode.create(DOM_COMMENT_NODE, '#comment', data, this);
+}
+
+XNode.prototype.getElementsByTagName = function(name, list) {
+  if (!list) {
+    list = [];
+  }
+
+  if (this.nodeName == name) {
+    list.push(this);
+  }
+
+  for (var i = 0; i < this.childNodes.length; ++i) {
+    this.childNodes[i].getElementsByTagName(name, list);
+  }
+
+  return list;
+}
+
+// Copyright 2005 Google Inc.
+// All Rights Reserved
+//
 // An XPath parser and evaluator written in JavaScript. The
 // implementation is complete except for functions handling
 // namespaces.
@@ -2220,4 +2902,68 @@ function xpathSortByKey(v1, v2) {
   }
 
   return 0;
+}
+
+/*
+Copyright 2006-2007, Open Source Applications Foundation
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+//Used for getting xpaths for elements in the DOM based on a given node
+function getXPath(node, path) {
+    path = path || [];
+
+    if(node.parentNode) {
+      path = getXPath(node.parentNode, path);
+    }
+
+    if(node.previousSibling) {
+      var count = 1;
+      var sibling = node.previousSibling
+      do {
+        if(sibling.nodeType == 1 && sibling.nodeName == node.nodeName) {count++;}
+        sibling = sibling.previousSibling;
+      } while(sibling);
+      if(count == 1) {count = null;}
+    } else if(node.nextSibling) {
+      var sibling = node.nextSibling;
+      do {
+        if(sibling.nodeType == 1 && sibling.nodeName == node.nodeName) {
+          var count = 1;
+          sibling = null;
+        } else {
+          var count = null;
+          sibling = sibling.previousSibling;
+        }
+      } while(sibling);
+    }
+
+    if(node.nodeType == 1) {
+      if ($('absXpaths').checked){
+        path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 0 ? "["+count+"]" : ''));
+      }
+      else{
+        path.push(node.nodeName.toLowerCase() + (node.id ? "" : count > 0 ? "["+count+"]" : ''));
+      }
+    }
+    return path;
+  };
+  
+  function getXSPath(node){
+    var xpArray = getXPath(node);
+    var stringXpath = xpArray.join('/');
+    stringXpath = '/'+stringXpath;
+    stringXpath = stringXpath.replace('//','/');
+    return stringXpath;
 }

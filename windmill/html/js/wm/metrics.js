@@ -13,7 +13,6 @@ Copyright 2006-2007, Open Source Applications Foundation
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-
 windmill.TimeObj = function() {
 
     var timeStarted = '0:0:0:0';
@@ -23,49 +22,35 @@ windmill.TimeObj = function() {
     var runTime = '';
     var identifier = '';
 
-
     this.getStart = function() {
         return timeStarted;
-
     }
-
     this.getEnd = function() {
         return timeEnded;
-
     }
-
     //Set the identifier 
     this.setName = function(identifier) {
         this.identifier = identifier;
-
     }
-
     //Calculate how long it took
     this.calculateTime = function() {
         runTime = endMS - startMS;
-
     }
-
     //Used for users who want to log the time and MS so they can compute how long a test took to run
     this.startTime = function() {
-
         var d = new Date();
         startMS = d.getTime();
         timeStarted = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours()
         + ':' + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z';
-
     }
 
     //Storing end time used for performance computation
     this.endTime = function(identifier) {
-
         var d = new Date();
         endMS = d.getTime();
         timeEnded = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + 'T' + d.getHours() + ':'
         + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z';
-
     }
-
     //Write to the log div
     this.write = function(parameters) {
         this.calculateTime();
@@ -77,18 +62,19 @@ windmill.TimeObj = function() {
 
         //perf_tab.scrollTop = perf_tab.scrollHeight;
         if (!parameters) {
-            perf_tab.innerHTML = "<br>Executing: " + this.identifier + perf_tab.innerHTML;
-
+            perf_tab.innerHTML = "<br>Executing: " + 
+            this.identifier + perf_tab.innerHTML;
         }
         else {
-            perf_tab.innerHTML = "<br>Executing: " + this.identifier + " - Parameters: " + parameters + perf_tab.innerHTML;
-
+            perf_tab.innerHTML = "<br>Executing: " + this.identifier +
+             " - Parameters: " + parameters + perf_tab.innerHTML;
         }
-
-
     }
-
-
 };
 
 var TimeObj = windmill.TimeObj;
+
+windmill.performance = new function() {
+  //Setting up a performance timing object
+  timing = new TimeObj();
+};

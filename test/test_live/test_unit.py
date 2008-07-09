@@ -83,5 +83,3 @@ def test_wmunti1():
     assert client.click(id=u'wfeBtn')['result']
     assert client.waits.forElement(id=u'created', timeout=u'40000')['result']
     assert client.asserts.assertNode(id=u'created')['result']
-    value = client.commands.getPageText()['result']
-    assert( value.find('<body>') != -1)

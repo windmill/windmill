@@ -201,10 +201,6 @@ windmill.ui.remote = new function() {
             } catch(err) { }
 
         }
-    //    var dragsort = ToolMan.dragsort()
-      //  var junkdrawer = ToolMan.junkdrawer()
-    //    dragsort.makeListSortable($(suite.id), verticalOnly, saveOrder)
-
         return suite;
 
     };
