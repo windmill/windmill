@@ -36,14 +36,14 @@
 		<script type="text/javascript" src="js/controller/asserts.js"></script>
 		<script type="text/javascript" src="js/controller/waits.js"></script>
 		<script type="text/javascript" src="js/wm/timing.js"></script>
-		<script type="text/javascript" src="js/wm/performance.js"></script>
+		<script type="text/javascript" src="js/wm/perf.js"></script>
 		<script type="text/javascript" src="js/wm/events.js"></script>
 		<script type="text/javascript" src="js/wm/ui.js"></script>
 		<script type="text/javascript" src="js/wm/playback.js"></script>
 		<script type="text/javascript" src="js/wm/remote.js"></script>
 		<script type="text/javascript" src="js/wm/recorder.js"></script>
-		<script type="text/javascript" src="js/wm/domexplorer.js"></script>
-		<script type="text/javascript" src="js/wm/assertexplorer.js"></script>
+		<script type="text/javascript" src="js/wm/dx.js"></script>
+		<script type="text/javascript" src="js/wm/ax.js"></script>
 		<script type="text/javascript" src="js/wm/results.js"></script>
 		<script type="text/javascript" src="js/wm/xhr.js"></script>
 		<script type="text/javascript" src="js/wm/jstest.js"></script>
@@ -51,9 +51,9 @@
 		<script type="text/javascript" src="js/lib/xpath/misc.js"></script>
 		<script type="text/javascript" src="js/lib/xpath/dom.js"></script>
 		<script type="text/javascript" src="js/lib/xpath/xpath.js"></script>
-	  	<script type="text/javascript" src="js/lib/helpers.js"></script>
+	  <script type="text/javascript" src="js/lib/helpers.js"></script>
 		<script type="text/javascript" src="js/extensions/extensions.js"></script>
-		<script type="text/javascript" src="js/wm/remote-global.js"></script>
+		<script type="text/javascript" src="js/wm/global.js"></script>
 		<script type="text/javascript" src="js/lib/jsutils.js"></script>
 
 
@@ -64,38 +64,40 @@
 		
 <body>
 <div id="main">
-	&nbsp
-	<img border=no style="height:41px;width:40px;" src="img/wmIcon.png" alt="Welcome to Windmill!">
-	<div id="runningStatus" align="center"><b>Status:</b> <br><br><h2>Loading, Please Wait...<h2></div>
+	<img border=no style="position:relative;left:3px;height:41px;width:40px;" 
+	  src="img/wmIcon.png" alt="Welcome to Windmill!">
+	<div id="runningStatus" align="center">
+	  <b>Status:</b><br><br>
+	  <h2>Loading, Please Wait...<h2>
+	</div>
 	
 	<div id="controllers">
 		<a href="#" title="Toggle Recorder">
-			<img height="28px" width="28px" alt="Toggle Recorder" name='record' id="record" border=no src="img/record.png" onClick="toggleRec();">
-			</a>
+			<img height="28px" width="28px" alt="Toggle Recorder" name='record' 
+			  id="record" border=no src="img/record.png" onClick="toggleRec();">
+		</a>
 
 		<a href="#" title="Play All">
-			<img height="28px" width="28px" alt="Play All" name ='playback' id="playback" border=no src="img/playback.png" onClick="togglePlay();">
+			<img height="28px" width="28px" alt="Play All" name ='playback' 
+			id="playback" border=no src="img/playback.png" onClick="togglePlay();">
 		</a>
 
 		<a href="#" title="Toggle DOM Explorer">
-			<img height="28px" width="28px" alt="Toggle DOM Explorer" name ='explorer' id="explorer" border=no src="img/xon.png" onClick="toggleExplore();">
+			<img height="28px" width="28px" alt="Toggle DOM Explorer" name ='explorer' 
+			id="explorer" border=no src="img/xon.png" onClick="toggleExplore();">
 		</a>
 
 		<a href="#" title="Toggle Assert Explorer">
-			<img height="28px" width="28px" alt="Toggle Assert Explorer" name ='assertx' id="assertx" border=no src="img/axon.png" onClick="toggleAExplore();">
+			<img height="28px" width="28px" alt="Toggle Assert Explorer" name ='assertx' 
+			id="assertx" border=no src="img/axon.png" onClick="toggleAExplore();">
 		</a>
 	</div>
 	
-	<div id="domExp">
-	</div>
-	
+	<div id="domExp"></div>
 	<div id="ide" onscroll="scroll();">
-		<form id="ideForm" name="ideForm" onsubmit="return false;">
-		</form>
+		<form id="ideForm" name="ideForm" onsubmit="return false;"></form>
 	</div>
-	
 	<div id="navigation" style="font-weight:bold">
-	  
 	   <span style="font-weight: bold;"> 
 	    <a href="#" onclick="javascript:openDialog('shell')">Shell</a>&nbsp
 			<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
@@ -109,15 +111,10 @@
 		    <option id="addActionJSON">Action from JSON</option>
   			<option id="clearIDE">Clear IDE</option>
 		  </select>
-			<!--><a href="#" onclick="windmill.ui.incRecSuite();windmill.ui.remote.getSuite();"> Add Suite</a>&nbsp | &nbsp
-			<a href="#" onclick="windmill.ui.remote.addAction();">Add Action</a>&nbsp | &nbsp 
-		  <a href="#" onclick="windmill.ui.remote.clearIDE()">Clear IDE</a>&nbsp<-->
 		</span>
-	</div>
-	
+	</div>	
 </div>
 <div id="gray"></div>
-
 <div id="output" class="dialog">
 		<div align="right">
 			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
@@ -231,11 +228,10 @@
     			</tr>
 		</table>
 		<br><br>
-		<a href='#' onclick="windmill.testWindow.document.location.reload()">Reload Testing Application</a>: This reloads your page, without resetting Windmill.
-		<br><br><br><br>
-
+		<a href='#' onclick="windmill.testWindow.document.location.reload()">
+		  Reload Testing Application
+		</a>: This reloads your page, without resetting Windmill.<br><br><br><br>
 	</form>
 </div>
-
 </body>
 </html>

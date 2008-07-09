@@ -17,19 +17,16 @@ Copyright 2006-2007, Open Source Applications Foundation
  <html>
 	<head>
 		<script type="text/javascript" src="js/lib/fleegix_js/trunk/fleegix.js"></script>
-		<script type="text/javascript" src="js/wm/windmill-exec.js"></script>
+		<script type="text/javascript" src="js/wm/wmexec.js"></script>
 		<script type="text/javascript">
 			//Enabling the ability to start out out a page that requires query parameters
 			//By parsing the url they requested and opening it and storing that url
 			//Then when we open write the iframe src we can give it the correct starting src attrib
 			var urlSTR = window.location.href.replace("/windmill-serv/start.html","");
       		fleegix.event.listen(window, 'onload', Load);
-			
 		</script>
 	</head>
 	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 	<title>Windmill Testing Framework</title>
-	
-	<body topmargin="0" leftmargin="0">	
-	</body>
+	<body topmargin="0" leftmargin="0"/>	
 <html>
