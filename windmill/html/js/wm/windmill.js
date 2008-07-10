@@ -113,7 +113,8 @@ var windmill = new function() {
         }
 
         try {
-          if (windmill.testWindow.document.title == "Windmill Testing Framework") {
+          var wdwTitle = windmill.testWindow.document.title;
+          if (wdwTitle == "Windmill Testing Framework") {
               windmill.controller.waits._forNotTitleAttach({
                   "title": "Windmill Testing Framework"
               });

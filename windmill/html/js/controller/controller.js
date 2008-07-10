@@ -36,8 +36,6 @@ windmill.controller = new function () {
   this.asserts              = {};
   this.waits                = {};
     
-  this.optionLocatorFactory = new OptionLocatorFactory();
-
     
   /*******************************
     /* Helper functions, non user facing
@@ -58,19 +56,22 @@ windmill.controller = new function () {
     //If a link was passed, lookup as link
     if(typeof param_object.link != "undefined") {
       s = 'Looking up link '+ param_object.link;
-      element = this.findElement("link=" + param_object.link)
+      //element = this.findElement("link=" + param_object.link)
+      element = elementslib.Element.LINK(param_object.link);
     }
     
     //if xpath was passed, lookup as xpath
     if(typeof param_object.xpath != "undefined") {
       s = 'Looking up xpath '+ param_object.xpath;        
-      element = this.findElement("xpath=" + param_object.xpath);
+      //element = this.findElement("xpath=" + param_object.xpath);
+      element = elementslib.Element.XPATH(param_object.xpath);
     }
     
     //if id was passed, do as such
     if(typeof param_object.id != "undefined") {
       s = 'Looking up id '+ param_object.id;
-      element = this.findElement("id=" + param_object.id)
+      //element = this.findElement("id=" + param_object.id)
+      element = elementslib.Element.ID(param_object.id);
     }
     
     //if jsid was passed
@@ -85,28 +86,19 @@ windmill.controller = new function () {
         eval ("jsid=" + this._getWindowStr() + '.' +param_object.jsid + ";");
       }
         s = 'Looking up jsid '+ jsid;
-        element = this.findElement("id=" + jsid);
+        element = elementslib.Element.ID(param_object.id);
     }
     //if name was passed
     if(typeof param_object.name != "undefined") {
       s = 'Looking up name '+ param_object.name;
-      element = this.findElement("name=" + param_object.name)
+      //element = this.findElement("name=" + param_object.name)
+      element = elementslib.Element.NAME(param_object.name);
     }
     //if name was passed
     if(typeof param_object.classname != "undefined") {
-      if (param_object.classname.indexOf(',')){
-        var cn = param_object.classname.split(',');
-        var idx = cn[1];
-        var cn = cn[0];
-      }
-      else{
-        var cn = param_object.classname;
-        var idx = 0;
-      }
-      s = 'Looking up classname '+ cn;
-      element = windmill.testWindow.document.getElementsByClassName(cn)[idx];
+      s = 'Looking up classname '+ param_object.classname;
+      element = elementslib.Element.CLASSNAME(param_object.classname);
     }
-    
     
     windmill.ui.results.writeResult(s);
     return element;
@@ -216,34 +208,33 @@ windmill.controller = new function () {
     var element = this._lookupDispatch(param_object);
     if (!element){ return false; }
       
-    var locatorType = param_object.locatorType || 'LABEL';
-    /*if (!("options" in element)) {
+    /*var locatorType = param_object.locatorType || 'LABEL';
+    if (!("options" in element)) {
     //throw new WindmillError("Specified element is not a Select (has no options)");
            
     }*/
     
-    var locator = this.optionLocatorFactory.fromLocatorString(
+    /*var locator = this.optionLocatorFactory.fromLocatorString(
   							    locatorType.toLowerCase() + '=' + param_object.option);
 
-    var optionToSelect = locator.findOption(element);
-    
+    var optionToSelect = locator.findOption(element);*/
     windmill.events.triggerEvent(element, 'focus', false);
-    var changed = false;
-    for (var i = 0; i < element.options.length; i++) {
-      var option = element.options[i];
-      if (option.selected && option != optionToSelect) {        
-        option.selected = false;
-        changed = true;
-      }
-      else if (!option.selected && option == optionToSelect) {        
-        option.selected = true;
-        changed = true;        
+    
+    var optionToSelect = null;
+    for (opt in element.options){
+      var el = element.options[opt]
+      if(el.innerHTML.indexOf(param_object.option) != -1){
+        if (el.selected && el.options[opt] == optionToSelect){
+          continue;
+        }
+        optionToSelect = el;
+        optionToSelect.selected = true;
+        windmill.events.triggerEvent(element, 'change', true);
+        break;
       }
     }
-  
-
-    if (changed) {
-      windmill.events.triggerEvent(element, 'change', true);
+    if (optionToSelect == null){
+      return false;
     }
     return true;
   };
@@ -426,475 +417,6 @@ windmill.controller = new function () {
     }
     return false;
   }
-  
-  // The browser nav buttons
-  
-  
-  /********************************************************************************
-  /* DOM location functionality, all used for various types of lookups in the DOM
-  /*********************************************************************************/
-        
-  // Refine a list of elements using a filter.
-  this.selectElementsBy = function (filterType, filter, elements) {
-    var filterFunction = this.filterFunctions[filterType];
-    if (! filterFunction) {
-      throw new WindmillError("Unrecognised element-filter type: '" + filterType + "'");
-    }
 
-    return filterFunction(filter, elements);
-  };
-
-  this.filterFunctions = {};
-
-  this.filterFunctions.name = function (name, elements) {
-    var selectedElements = [];
-    for (var i = 0; i < elements.length; i++) {
-      if (elements[i].name === name) {
-        selectedElements.push(elements[i]);
-      }
-    }
-    return selectedElements;
-  };
-
-  this.filterFunctions.value = function (value, elements) {
-    var selectedElements = [];
-    for (var i = 0; i < elements.length; i++) {
-      if (elements[i].value === value) {
-        selectedElements.push(elements[i]);
-      }
-    }
-    return selectedElements;
-  };
-
-  this.filterFunctions.index = function (index, elements) {
-    index = Number(index);
-    if (isNaN(index) || index < 0) {
-      //throw new WindmillError("Illegal Index: " + index);
-      //console.log('Error')
-
-    }
-    if (elements.length <= index) {
-      //throw new WindmillError("Index out of range: " + index);
-      //console.log('Error')
-    }
-    return [elements[index]];
-  };
-
-  this.selectElements = function (filterExpr, elements, defaultFilterType) {
-
-    var filterType = (defaultFilterType || 'value');
-
-    // If there is a filter prefix, use the specified strategy
-    var result = filterExpr.match(/^([A-Za-z]+)=(.+)/);
-    if (result) {
-      filterType = result[1].toLowerCase();
-      filterExpr = result[2];
-    }
-
-    return this.selectElementsBy(filterType, filterExpr, elements);
-  };
-
-    
-  //Registers all the ways to do a lookup
-  this._registerAllLocatorFunctions = function () {
-    // TODO - don't do this in the constructor - only needed once ever
-    this.locationStrategies = {};
-    for (var functionName in this) {
-      var result = /^locateElementBy([A-Z].+)$/.exec(functionName);
-      if (result != null) {
-        var locatorFunction = this[functionName];
-        if (typeof(locatorFunction) != 'function') {
-  	      continue;
-        }
-        // Use a specified prefix in preference to one generated from
-        // the function name
-        var locatorPrefix = locatorFunction.prefix || result[1].toLowerCase();
-        this.locationStrategies[locatorPrefix] = locatorFunction;
-      }
-  };
-
-        
-  //Find a locator based on a prefix.
-  this.findElementBy = function (locatorType, locator, inDocument, inWindow) {
-    var locatorFunction = this.locationStrategies[locatorType];
-    if (! locatorFunction) {
-      windmill.ui.results.writeResult("Unrecognised locator type: '" + locatorType + "'");
-    }
-            
-    return locatorFunction.call(this, locator, inDocument, inWindow);
-  };
-
-      
-  // The implicit locator, that is used when no prefix is supplied.
-  this.locationStrategies['implicit'] = function(locator, inDocument, inWindow) {
-    if (locator.startsWith('//')) {
-      return this.locateElementByXPath(locator, inDocument, inWindow);
-    }
-    if (locator.startsWith('document.')) {
-      return this.locateElementByDomTraversal(locator, inDocument, inWindow);
-    }
-           
-    return this.locateElementByIdentifier(locator, inDocument, inWindow);
-            
-  };
-}
-    
-this.findElement = function (locator) {
-    var locatorType = 'implicit';
-    var locatorString = locator;
-        
-    // If there is a locator prefix, use the specified strategy
-    var result = locator.match(/^([A-Za-z]+)=(.+)/);
-    if (result) {
-      locatorType = result[1].toLowerCase();
-      locatorString = result[2];
-    }
-    //Closure to store the actual element found
-    var e = null;
-    
-    //inline function to recursively find the element in the DOM, cross frame.
-    var findElementRecursive = function(w, locatorType, locatorString){
-      //do the lookup in the current window
-      element = windmill.controller.findElementBy(locatorType, locatorString, w.document, w);   
-      if (!element){
-        var frameCount = w.frames.length;
-        var frameArray = w.frames;   
-        for (var i=0;i<frameCount;i++){ findElementRecursive(frameArray[i], locatorType, locatorString); }
-      }
-      else {
-        e = element;
-      }
-    };   
-    
-    findElementRecursive(windmill.testWindow, locatorType, locatorString);
-    if (e) { return e; }
-
-    // Element was not found by any locator function.
-    windmill.ui.results.writeResult("Element " + locator + " not found");
-};
-
-
-    
-//Find the element with id - can't rely on getElementById, coz it returns by name as well in IE.. 
-this.locateElementById = function (identifier, inDocument, inWindow) {
-        
-  var element = inDocument.getElementById(identifier);
-  if (element && element.id === identifier) {
-    return element;
-  }
-  else {
-    return null;
-  }
-};
-
-    
-//Find an element by name, refined by (optional) element-filter expressions.
-this.locateElementByName = function (locator, document, inWindow) {
-  var elements = document.getElementsByTagName("*");
-
-  var filters = locator.split(' ');
-  filters[0] = 'name=' + filters[0];
-
-  while (filters.length) {
-    var filter = filters.shift();
-    elements = this.selectElements(filter, elements, 'value');
-  }
-
-  if (elements.length > 0) {
-    return elements[0];
-  }
-  return null;
-};
-
-
-// Finds an element using by evaluating the specified string.
-this.locateElementByDomTraversal = function (domTraversal, document, window) {
-
-  //var browserbot = this.browserbot;
-  var element = null;
-  try {
-    element = eval(domTraversal);
-  } catch (e) {
-    windmill.ui.results.writeResult("dom Traversal, element not found.");
-  }
-
-  if (!element) {
-    return null;
-  }
-
-  return element;
-};
-this.locateElementByDomTraversal.prefix = "dom";
-
-    
-//Finds an element identified by the xpath expression. Expressions _must_
-//begin with "//".
-this.locateElementByXPath = function (xpath, inDocument, inWindow) {
-
-  // Trim any trailing "/": not valid xpath, and remains from attribute
-  // locator.
-  if (xpath.charAt(xpath.length - 1) == '/') {
-    xpath = xpath.slice(0, -1);
-  }
-
-  // Handle //tag
-  var match = xpath.match(/^\/\/(\w+|\*)$/);
-  if (match) {
-    var elements = inDocument.getElementsByTagName(match[1].toUpperCase());
-    if (elements == null) return null;
-    return elements[0];
-  }
-
-  // Handle //tag[@attr='value']
-  var match = xpath.match(/^\/\/(\w+|\*)\[@(\w+)=('([^\']+)'|"([^\"]+)")\]$/);
-  if (match) {
-    // We don't return the value without checking if it is null first.
-    // This is beacuse in some rare cases, this shortcut actually WONT work
-    // but that the full XPath WILL. A known case, for example, is in IE
-    // when the attribute is onclick/onblur/onsubmit/etc. Due to a bug in IE
-    // this shortcut won't work because the actual function is returned
-    // by getAttribute() rather than the text of the attribute.
-    var val = this._findElementByTagNameAndAttributeValue(
-							  inDocument,
-							  match[1].toUpperCase(),
-							  match[2].toLowerCase(),
-							  match[3].slice(1, -1)
-							  );
-    if (val) {
-      return val;
-    }
-  }
-
-  // Handle //tag[text()='value']
-  var match = xpath.match(/^\/\/(\w+|\*)\[text\(\)=('([^\']+)'|"([^\"]+)")\]$/);
-  if (match) {
-    return this._findElementByTagNameAndText(
-					     inDocument,
-					     match[1].toUpperCase(),
-					     match[2].slice(1, -1)
-					     );
-  }
-
-  return this._findElementUsingFullXPath(xpath, inDocument);
-};
-
-this._findElementByTagNameAndAttributeValue = function (
-							inDocument, tagName, attributeName, attributeValue
-							) {
-  if (browser.isIE && attributeName == "class") {
-    attributeName = "className";
-  }
-  var elements = inDocument.getElementsByTagName(tagName);
-  for (var i = 0; i < elements.length; i++) {
-    var elementAttr = elements[i].getAttribute(attributeName);
-    if (elementAttr == attributeValue) {
-      return elements[i];
-    }
-  }
-  return null;
-};
-
-this._findElementByTagNameAndText = function (
-					      inDocument, tagName, text
-					      ) {
-  var elements = inDocument.getElementsByTagName(tagName);
-  for (var i = 0; i < elements.length; i++) {
-    if (windmill.events.getText((elements[i]) == text)) {
-      return elements[i];
-    }
-  }
-  return null;
-};
-
-this._namespaceResolver = function (prefix) {
-  if (prefix == 'html' || prefix == 'xhtml' || prefix == 'x') {
-    return 'http://www.w3.org/1999/xhtml';
-  } else if (prefix == 'mathml') {
-    return 'http://www.w3.org/1998/Math/MathML';
-  } else {
-    throw new Error("Unknown namespace: " + prefix + ".");
-  }
-}
-
-  this._findElementUsingFullXPath = function (xpath, inDocument, inWindow) {
-    // HUGE hack - remove namespace from xpath for IE
-    if (browser.isIE) {
-      xpath = xpath.replace(/x:/g, '')
-    }
-
-    // Use document.evaluate() if it's available
-    if (inDocument.evaluate) {
-      return inDocument.evaluate(xpath, inDocument, this._namespaceResolver, 0, null).iterateNext();
-    }
-
-    // If not, fall back to slower JavaScript implementation
-    var context = new ExprContext(inDocument);
-    var xpathObj = xpathParse(xpath);
-    var xpathResult = xpathObj.evaluate(context);
-    if (xpathResult && xpathResult.value) {
-      return xpathResult.value[0];
-    }
-    return null;
-  };
-
-/**
- * Finds a link element with text matching the expression supplied. Expressions must
- * begin with "link:".
- */
-this.locateElementByLinkText = function (linkText, inDocument, inWindow) {
-    
-  var links = inDocument.getElementsByTagName('a');
-       
-  for (var i = 0; i < links.length; i++) {
-    var element = links[i];
-    if (PatternMatcher.matches(linkText, windmill.events.getText(element))) {
-      return element;
-    }
-  }
-  return null;
-};
-this.locateElementByLinkText.prefix = "link";
-    
-//Register all the ways to lookup an element in a list to access dynamically
-this._registerAllLocatorFunctions();  
-
-};
-
-/**
- *  Factory for creating "Option Locators".
- *  An OptionLocator is an object for dealing with Select options (e.g. for
- *  finding a specified option, or asserting that the selected option of 
- *  Select element matches some condition.
- *  The type of locator returned by the factory depends on the locator string:
- *     label=<exp>  (OptionLocatorByLabel)
- *     value=<exp>  (OptionLocatorByValue)
- *     index=<exp>  (OptionLocatorByIndex)
- *     id=<exp>     (OptionLocatorById)
- *     <exp> (default is OptionLocatorByLabel).
- */
-function OptionLocatorFactory () {
-}
-
-OptionLocatorFactory.prototype.fromLocatorString = function (locatorString) {
-  var locatorType = 'label';
-  var locatorValue = locatorString;
-  // If there is a locator prefix, use the specified strategy
-  var result = locatorString.match(/^([a-zA-Z]+)=(.*)/);
-  if (result) {
-    locatorType = result[1];
-    locatorValue = result[2];
-  }
-  if (this.optionLocators == undefined) {
-    this.registerOptionLocators();
-  }
-  if (this.optionLocators[locatorType]) {
-    return new this.optionLocators[locatorType](locatorValue);
-  }
-
-  windmill.ui.results.writeResult("Unrecognised locator type: '" + locatorType + "'");
-};
-
-/**
- * To allow for easy extension, all of the option locators are found by
- * searching for all methods of OptionLocatorFactory.prototype that start
- * with "OptionLocatorBy".
- * TODO: Consider using the term "Option Specifier" instead of "Option Locator".
- */
-OptionLocatorFactory.prototype.registerOptionLocators = function () {
-  this.optionLocators={};
-  for (var functionName in this) {
-    var result = /OptionLocatorBy([A-Z].+)$/.exec(functionName);
-    if (result != null) {
-      var locatorName = result[1].lcfirst();
-      this.optionLocators[locatorName] = this[functionName];
-    }
-  }
-};
-
-/**
- *  OptionLocator for options identified by their labels.
- */
-OptionLocatorFactory.prototype.OptionLocatorByLabel = function (label) {
-  this.label = label;
-  this.labelMatcher = new PatternMatcher(this.label);
-  this.findOption = function(element) {
-    for (var i = 0; i < element.options.length; i++) {
-      if (this.labelMatcher.matches(element.options[i].text)) {
-	      return element.options[i];
-      }
-    }
-    windmill.ui.results.writeResult("Option with label '" + this.label + "' not found");
-  };
-
-  this.assertSelected = function (element) {
-    var selectedLabel = element.options[element.selectedIndex].text;
-    Assert.matches(this.label, selectedLabel)
-  };
-};
-
-/**
- *  OptionLocator for options identified by their values.
- */
-OptionLocatorFactory.prototype.OptionLocatorByValue = function (value) {
-  this.value = value;
-  this.valueMatcher = new PatternMatcher(this.value);
-  this.findOption = function(element) {
-    for (var i = 0; i < element.options.length; i++) {
-      if (this.valueMatcher.matches(element.options[i].value)) {
-	      return element.options[i];
-      }
-    }
-       
-    windmill.ui.results.writeResult("Option with value '" + this.value + "' not found");
-  };
-
-  this.assertSelected = function (element) {
-    var selectedValue = element.options[element.selectedIndex].value;
-    Assert.matches(this.value, selectedValue)
-  };
-};
-
-/**
- *  OptionLocator for options identified by their index.
- */
-OptionLocatorFactory.prototype.OptionLocatorByIndex = function (index) {
-  this.index = Number(index);
-  if (isNaN(this.index) || this.index < 0) {
-   
-    windmill.ui.results.writeResult("Illegal Index: " + index);
-    
-  }
-  this.findOption = function (element) {
-    if (element.options.length <= this.index) {        
-      windmill.ui.results.writeResult("Index out of range.  Only " + element.options.length + " options available");
-    }
-    return element.options[this.index];
-  };
-
-  this.assertSelected = function (element) {
-    Assert.equals(this.index, element.selectedIndex);
-  };
-};
-
-/**
- *  OptionLocator for options identified by their id.
- */
-OptionLocatorFactory.prototype.OptionLocatorById = function (id) {
-  this.id = id;
-  this.idMatcher = new PatternMatcher(this.id);
-  this.findOption = function(element) {
-    for (var i = 0; i < element.options.length; i++) {
-      if (this.idMatcher.matches(element.options[i].id)) {
-	      return element.options[i];
-      }
-    }
-    //windmill.windmill.ui.results.writeResult(.debug("Option with id '" + this.id + "' not found");
-       
-  };
-
-  this.assertSelected = function (element) {
-    var selectedId = element.options[element.selectedIndex].id;
-    Assert.matches(this.id, selectedId)
-  };
 };
 
