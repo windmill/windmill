@@ -402,8 +402,13 @@ windmill.ui.remote = new function() {
             var o = document.createElement('option');
             o.value = m;
             o.innerHTML += m;
-            s.appendChild(o);
+            var mObj = windmill.registry.methods[m];
+            
+            if (mObj.section != undefined){
+              o.disabled = true;
+            }
 
+            s.appendChild(o);
         }
         s.setAttribute("onchange", "windmill.ui.remote.methodChange('" + action.id + "');");
 
@@ -450,7 +455,6 @@ windmill.ui.remote = new function() {
                 locator = 'xpath';
             }
 
-
             //Setup second select
             var s1 = document.createElement('select');
             s1.className = 'smalloption';
@@ -461,9 +465,8 @@ windmill.ui.remote = new function() {
             if (locator) {
                 o1.value = locator;
                 o1.innerHTML += locator;
-
+                s1.appendChild(o1);
             }
-            s1.appendChild(o1);
 
             for (var i = 0; i < windmill.registry.locator.length; i++) {
                 var o1 = document.createElement('option');
@@ -523,20 +526,31 @@ windmill.ui.remote = new function() {
             var s2 = document.createElement('select');
             s2.className = 'smalloption';
             s2.id = action.id + 'optionType';
-
-            var o2 = document.createElement('option');
-            if (typeof(windmill.registry.methods[method].option) != 'undefined') {
-                o2.value = windmill.registry.methods[method].option;
-
+            
+            //if the options are a comma delimited list, build the drop down
+            if (windmill.registry.methods[method].option.indexOf(',') != -1){
+              optArr = windmill.registry.methods[method].option.split(',');
+              for (opt in optArr){
+                newOpt = document.createElement('option');
+                newOpt.value = optArr[opt];
+                newOpt.innerHTML = optArr[opt];
+                s2.appendChild(newOpt);
+              }
             }
-            o2.selected = 'selected';
-            o2.innerHTML += windmill.registry.methods[method].option;
-            s2.appendChild(o2);
-
-            var o2 = document.createElement('option');
+            else{
+              var o2 = document.createElement('option');
+              if (typeof(windmill.registry.methods[method].option) != 'undefined') {
+                  o2.value = windmill.registry.methods[method].option;
+              }
+              o2.selected = 'selected';
+              o2.innerHTML += windmill.registry.methods[method].option;
+              s2.appendChild(o2);
+            }
+            //add the blank option
+            /*var o2 = document.createElement('option');
             o2.value = '';
             o2.innerHTML += '';
-            s2.appendChild(o2);
+            s2.appendChild(o2);*/
 
             //This will give you a list of all the possible options
             //Keeping this here unless I find a reason to put it back/use it	
