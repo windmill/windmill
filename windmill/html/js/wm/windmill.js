@@ -136,6 +136,8 @@ var windmill = new function() {
         //Set a variable so that windmill knows that the remote has fully loaded
         windmill.testWindow.windmill = windmill;
         this.remoteLoaded = true;
+        $('loadRemote').style.display = "none";
+        $('cover').style.display = "none";
     };
 
     //When the page is unloaded turn off the loop until it loads the new one

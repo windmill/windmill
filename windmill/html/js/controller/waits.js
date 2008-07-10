@@ -122,7 +122,8 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
 windmill.controller.waits.forElement = function (paramObj,obj) { 
     var p = paramObj || {};
     var f = function () {
-      return windmill.controller._lookupDispatch(p);
+      try { return windmill.controller._lookupDispatch(p); }
+      catch(err){}
     };
     p.test = f;
     return windmill.controller.waits.forJSTrue(p, obj);
@@ -133,8 +134,11 @@ windmill.controller.waits.forElement = function (paramObj,obj) {
 windmill.controller.waits.forNotElement = function (paramObj,obj) { 
     var p = paramObj || {};
     var f = function () {
-      var node = windmill.controller._lookupDispatch(p);
-      return !node;
+      try{
+        var node = windmill.controller._lookupDispatch(p);
+        return !node; 
+      }
+      catch(err){}
     };
     p.test = f;
     return windmill.controller.waits.forJSTrue(p, obj);

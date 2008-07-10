@@ -88,6 +88,22 @@ a:hover {
   height:100%;
 }
 
+#cover {
+ position:absolute;
+ width:100%;
+ height:100%;
+ background-color:white;
+ opacity:.8;
+ z-index:5;
+}
+
+#icon {
+    position:relative;
+    left:3px;height:41px;
+    width:40px;
+    border:0px;
+}
+
 #runningStatus {
  position:absolute;
  width:300px;
@@ -96,6 +112,7 @@ a:hover {
  top:10px;
  font-size:12px;
  color:#456068; 
+ z-index:6;
 }
 
 #controllers {

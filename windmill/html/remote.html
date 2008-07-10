@@ -6,220 +6,238 @@
 	<title>Windmill IDE</title>
 	
 	<link rel="stylesheet" type="text/css" href="css/windmill.css"/>
-
-		<script type="text/javascript" src="js/lib/browserdetect.js"></script>
-		<script type="text/javascript" src="js/lib/fleegix_js/trunk/fleegix.js"></script>
-		<script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/hash.js"></script>
-		<script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/shell.js"></script>
-		<script type="text/javascript" src="js/lib/xpath.js"></script>
-		<script type="text/javascript" src="js/wm/windmill.js"></script>
-		<script type="text/javascript" src="js/wm/registry.js"></script>
-		<script type="text/javascript" src="js/wm/utils.js"></script>
-		<script type="text/javascript" src="js/controller/controller.js"></script>
-		<script type="text/javascript">
-			var url = 'js/controller/mozController.js';
-
-			if (browser.isIE){
-				url = 'js/controller/ieController.js';
-			}
-			else if(browser.isSafari){
-				url = 'js/controller/safController.js';
-			}
-			else if (browser.isOpera){
-				url = 'js/controller/opController.js';
-			}
-			document.write('<script src="', url, '" type="text/javascript"><\/script>');
-		</script>
-		<script type="text/javascript" src="js/controller/commands.js"></script>
-		<script type="text/javascript" src="js/controller/asserts.js"></script>
-		<script type="text/javascript" src="js/controller/waits.js"></script>
-		<script type="text/javascript" src="js/wm/metrics.js"></script>
-		<script type="text/javascript" src="js/wm/events.js"></script>
-		<script type="text/javascript" src="js/wm/ui.js"></script>
-		<script type="text/javascript" src="js/wm/remote.js"></script>
-		<script type="text/javascript" src="js/wm/dx.js"></script>
-		<script type="text/javascript" src="js/wm/ax.js"></script>
-		<script type="text/javascript" src="js/wm/results.js"></script>
-		<script type="text/javascript" src="js/wm/xhr.js"></script>
-		<script type="text/javascript" src="js/wm/global.js"></script>
-		<script type="text/javascript" src="js/wm/jstest.js"></script>
-		<script type="text/javascript" src="js/extensions/extensions.js"></script>
-
-	<script type="text/javascript" charset="utf-8">
-	  fleegix.event.listen(window, 'onload', windmill, 'start');
-	</script>
+	<script type="text/javascript" src="js/lib/browserdetect.js"></script>
+	<script type="text/javascript" src="js/lib/fleegix_js/trunk/fleegix.js"></script>
 </head>
 		
 <body>
-<div id="main">
-	<img border=no style="position:relative;left:3px;height:41px;width:40px;" 
-	  src="img/wmIcon.png" alt="Welcome to Windmill!">
-	<div id="runningStatus" align="center">
-	  <b>Status:</b><br><br>
-	  <h2>Loading, Please Wait...<h2>
-	</div>
+  <script type="text/javascript" charset="utf-8">
+     var load = document.createElement('div');
+      load.id = 'loadRemote';
+      load.style.font = '14pt georgia';
+      load.style.position = 'absolute';
+      load.style.zIndex = '99999';
+      load.style.display = 'block';
+      load.innerHTML = '<center><img src="img/loading.gif"></center>';
+      document.body.appendChild(load);
+      fleegix.dom.center(load);
+  </script>
+  <div id="cover"></div>
+  <div id="main">
+	  <img id="icon" src="img/wmIcon.png" alt="Welcome to Windmill!">
+	  <div id="runningStatus" align="center">
+	    <br><br><h2>Loading, Please Wait...<h2>
+	  </div>
 	
-	<div id="controllers">
-		<a href="#" title="Toggle Recorder">
-			<img height="28px" width="28px" alt="Toggle Recorder" name='record' 
-			  id="record" border=no src="img/record.png" onClick="toggleRec();">
-		</a>
+	  <div id="controllers">
+		  <a href="#" title="Toggle Recorder">
+			  <img height="28px" width="28px" alt="Toggle Recorder" name='record' 
+			    id="record" border=no src="img/record.png" onClick="toggleRec();">
+		  </a>
 
-		<a href="#" title="Play All">
-			<img height="28px" width="28px" alt="Play All" name ='playback' 
-			id="playback" border=no src="img/playback.png" onClick="togglePlay();">
-		</a>
+		  <a href="#" title="Play All">
+			  <img height="28px" width="28px" alt="Play All" name ='playback' 
+			    id="playback" border=no src="img/playback.png" onClick="togglePlay();">
+		  </a>
 
-		<a href="#" title="Toggle DOM Explorer">
-			<img height="28px" width="28px" alt="Toggle DOM Explorer" name ='explorer' 
-			id="explorer" border=no src="img/xon.png" onClick="toggleExplore();">
-		</a>
+	  	<a href="#" title="Toggle DOM Explorer">
+  			<img height="28px" width="28px" alt="Toggle DOM Explorer" name ='explorer' 
+  			id="explorer" border=no src="img/xon.png" onClick="toggleExplore();">
+  		</a>
 
-		<a href="#" title="Toggle Assert Explorer">
-			<img height="28px" width="28px" alt="Toggle Assert Explorer" name ='assertx' 
-			id="assertx" border=no src="img/axon.png" onClick="toggleAExplore();">
-		</a>
-	</div>
+  		<a href="#" title="Toggle Assert Explorer">
+  			<img height="28px" width="28px" alt="Toggle Assert Explorer" name ='assertx' 
+  			id="assertx" border=no src="img/axon.png" onClick="toggleAExplore();">
+  		</a>
+  	</div>
 	
-	<div id="domExp"></div>
-	<div id="ide" onscroll="scroll();">
-		<form id="ideForm" name="ideForm" onsubmit="return false;"></form>
-	</div>
-	<div id="navigation" style="font-weight:bold">
-	   <span style="font-weight: bold;"> 
-	    <a href="#" onclick="javascript:openDialog('shell')">Shell</a>&nbsp
-			<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
-			<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
-		</span>
-		<span>| &nbsp
-		  Actions: <select id="actionDD">
-		    <option selected>--</option>
-		    <option id="addSuite">Add Suite</option>
-		    <option id="addAction">Add Action</option>
-		    <option id="addActionJSON">Action from JSON</option>
-  			<option id="clearIDE">Clear IDE</option>
-		  </select>
-		</span>
-	</div>	
-</div>
-<div id="gray"></div>
-<div id="output" class="dialog">
-		<div align="right">
-			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
-				<tr>
-					<td align="left" style="width:92%;color:#456068;">
-						<strong style="font-size:16px;">Output</strong>
-					</td>
-					<td style="font: 9pt arial;font-weight:bold;padding:5px;">
-					  <a href="#" onclick="javascript:closeDialog('output');">Close</a>
-				  </td>
-				</tr>
-			</table>
-		</div>
-		<br>
-			<strong>General Output</strong>
-		<br>
-		<div id="resOut" class="tab"></div>
-		<br>
-	    <strong>Performance Output</strong>
-		<br>
-		<div id="perfOut" class="tab"></div>
-</div>
-<div id="shell" class="dialog">
-	<div align="right">
-			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
-				<tr>
-					<td align="left" style="width:92%;color:#456068;">
-						<strong style="font-size:16px;">Windmill Shell</strong>
-					</td>
-					<td style="font: 9pt arial;font-weight:bold;padding:5px;";>
-						<a href="#" onclick="javascript:closeDialog('shell');">Close</a>
-					</td>
-				</tr>
-			</table>
-	</div>
-	<br>
-	 <div id="container">
-      <form id="shellForm" onsubmit="return false;">
-        <div id="shellOutput"></div>
-        <input id="shellInput" name="shellInput" type="text" />
-      </form>
-    </div>
-</div>
+  	<div id="domExp"></div>
+  	<div id="ide" onscroll="scroll();">
+  		<form id="ideForm" name="ideForm" onsubmit="return false;"></form>
+  	</div>
+  	<div id="navigation" style="font-weight:bold">
+  	   <span style="font-weight: bold;"> 
+  	    <a href="#" onclick="javascript:openDialog('shell')">Shell</a>&nbsp
+  			<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
+  			<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
+  		</span>
+  		<span>| &nbsp
+  		  Actions: <select id="actionDD">
+  		    <option selected>--</option>
+  		    <option id="addSuite">Add Suite</option>
+  		    <option id="addAction">Add Action</option>
+  		    <option id="addActionJSON">Action from JSON</option>
+    			<option id="clearIDE">Clear IDE</option>
+  		  </select>
+  		</span>
+  	</div>	
+  </div>
+  <div id="gray"></div>
+  <div id="output" class="dialog">
+  		<div align="right">
+  			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
+  				<tr>
+  					<td align="left" style="width:92%;color:#456068;">
+  						<strong style="font-size:16px;">Output</strong>
+  					</td>
+  					<td style="font: 9pt arial;font-weight:bold;padding:5px;">
+  					  <a href="#" onclick="javascript:closeDialog('output');">Close</a>
+  				  </td>
+  				</tr>
+  			</table>
+  		</div>
+  		<br>
+  			<strong>General Output</strong>
+  		<br>
+  		<div id="resOut" class="tab"></div>
+  		<br>
+  	    <strong>Performance Output</strong>
+  		<br>
+  		<div id="perfOut" class="tab"></div>
+  </div>
+  <div id="shell" class="dialog">
+  	<div align="right">
+  			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
+  				<tr>
+  					<td align="left" style="width:92%;color:#456068;">
+  						<strong style="font-size:16px;">Windmill Shell</strong>
+  					</td>
+  					<td style="font: 9pt arial;font-weight:bold;padding:5px;";>
+  						<a href="#" onclick="javascript:closeDialog('shell');">Close</a>
+  					</td>
+  				</tr>
+  			</table>
+  	</div>
+  	<br>
+  	 <div id="container">
+        <form id="shellForm" onsubmit="return false;">
+          <div id="shellOutput"></div>
+          <input id="shellInput" name="shellInput" type="text" />
+        </form>
+      </div>
+  </div>
 
-<div id="settings" class="dialog">
-		<form id='settingsForm' name='settingsForm'>
-		<div align="right">
-			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
-				<tr>
-					<td align="left" style="width:92%;color:#456068;">
-						<strong style="font-size:16px;">Windmill Settings</strong>
-					</td>
-					<td style="font: 9pt arial;font-weight:bold;padding:5px;">
-						<a href="#" onclick="javascript:closeDialog('settings');">Close</a>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<br>
-		<h3>System</h3>
-		<a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Resume Loop</a>: Pause/Resume the Windmill IDE from polling the server.<br><br>
+  <div id="settings" class="dialog">
+  		<form id='settingsForm' name='settingsForm'>
+  		<div align="right">
+  			<table border="0" cellspacing="0" cellpadding="2" style="width:100%;">
+  				<tr>
+  					<td align="left" style="width:92%;color:#456068;">
+  						<strong style="font-size:16px;">Windmill Settings</strong>
+  					</td>
+  					<td style="font: 9pt arial;font-weight:bold;padding:5px;">
+  						<a href="#" onclick="javascript:closeDialog('settings');">Close</a>
+  					</td>
+  				</tr>
+  			</table>
+  		</div>
+  		<br>
+  		<h3>System</h3>
+  		<a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Resume Loop</a>: Pause/Resume the Windmill IDE from polling the server.<br><br>
       	
-		<table style="font:14px arial;">
-			<tr>
-				<td>Throw JavaScript errors, full debug:</td>
-				<td> <INPUT TYPE=checkbox UNCHECKED ID='throwDebug'></td>
-			</tr>
-			<tr>
-				<td>Break on failure:</td>
-				<td> <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="windmill.ui.toggleBreak();"></td>
-			</tr>
-			<tr>
-				<td>Suppress Javascript Alerts:</td><td> <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts'></td>
-			</tr>
-		  <tr>
-				<td>Suite Save Formatting:</td>
-				<td> 
-					<SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
-						<OPTION value="python" selected>python</option>
-						<OPTION value="json">json</option>
-					</SELECT>
-				</td>
-			</tr>
-		</table>
+  		<table style="font:14px arial;">
+  			<tr>
+  				<td>Throw JavaScript errors, full debug:</td>
+  				<td> <INPUT TYPE=checkbox UNCHECKED ID='throwDebug'></td>
+  			</tr>
+  			<tr>
+  				<td>Break on failure:</td>
+  				<td> <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="windmill.ui.toggleBreak();"></td>
+  			</tr>
+  			<tr>
+  				<td>Suppress Javascript Alerts:</td><td> <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts'></td>
+  			</tr>
+  		  <tr>
+  				<td>Suite Save Formatting:</td>
+  				<td> 
+  					<SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
+  						<OPTION value="python" selected>python</option>
+  						<OPTION value="json">json</option>
+  					</SELECT>
+  				</td>
+  			</tr>
+  		</table>
 		
-		<h3>IDE/Recorder</h3>
-		<table style="font:14px arial;">
-			<tr>
-				<td>Auto Scroll IDE to bottom:</td>
-				<td> <INPUT TYPE=checkbox CHECKED ID='autoScroll'></td>
-			</tr>
-			<tr>
-				<td>Absolute click sensitivity when recording:</td>
-				<td><INPUT TYPE=checkbox CHECKED ID='clickOn'></td>
-			</tr>
-			<tr>
-				<td>Action play button cascades:</td>
-				<td> <INPUT TYPE=checkbox UNCHECKED ID='playCascade'></td>
-			</tr>
-			<tr>
-				<td>Use XPath only for explorer/recorder:</td>
-				<td> <INPUT TYPE=checkbox ID='useXpath'></td>
-			</tr>
-			<tr>
-				<td>Record detailed XPath's (vs absolute):</td>
-				<td> <INPUT TYPE=checkbox ID='absXpaths'></td>
-			</tr>
-					<tr>
-    				<td>Play action by hitting 'return/enter':</td>
-    				<td> <INPUT TYPE=checkbox CHECKED ID='playOnReturn'></td>
-    			</tr>
-		</table>
-		<br><br>
-		<a href='#' onclick="windmill.testWindow.document.location.reload()">
-		  Reload Testing Application
-		</a>: This reloads your page, without resetting Windmill.<br><br><br><br>
-	</form>
-</div>
+  		<h3>IDE/Recorder</h3>
+  		<table style="font:14px arial;">
+  			<tr>
+  				<td>Auto Scroll IDE to bottom:</td>
+  				<td> <INPUT TYPE=checkbox CHECKED ID='autoScroll'></td>
+  			</tr>
+  			<tr>
+  				<td>Absolute click sensitivity when recording:</td>
+  				<td><INPUT TYPE=checkbox CHECKED ID='clickOn'></td>
+  			</tr>
+  			<tr>
+  				<td>Action play button cascades:</td>
+  				<td> <INPUT TYPE=checkbox UNCHECKED ID='playCascade'></td>
+  			</tr>
+  			<tr>
+  				<td>Use XPath only for explorer/recorder:</td>
+  				<td> <INPUT TYPE=checkbox ID='useXpath'></td>
+  			</tr>
+  			<tr>
+  				<td>Record detailed XPath's (vs absolute):</td>
+  				<td> <INPUT TYPE=checkbox ID='absXpaths'></td>
+  			</tr>
+  					<tr>
+      				<td>Play action by hitting 'return/enter':</td>
+      				<td> <INPUT TYPE=checkbox CHECKED ID='playOnReturn'></td>
+      			</tr>
+  		</table>
+  		<br><br>
+  		<a href='#' onclick="windmill.testWindow.document.location.reload()">
+  		  Reload Testing Application
+  		</a>: This reloads your page, without resetting Windmill.<br><br><br><br>
+  	</form>
+  </div>
+  
+  <!--> Preload the images <-->
+  <img src="img/text_elem_gradient.gif" style="width:1px;height:1px;"> 
+  <img src="img/play.png" style="width:1px;height:1px;"> 
+  <img src="img/trash.png" style="width:1px;height:1px;"> 
+  <img src="img/addup.png" style="width:1px;height:1px;">
+  <img src="img/adddown.png" style="width:1px;height:1px;"> 
 </body>
+
+<script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/hash.js"></script>
+<script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/shell.js"></script>
+<script type="text/javascript" src="js/lib/xpath.js"></script>
+<script type="text/javascript" src="js/wm/windmill.js"></script>
+<script type="text/javascript" src="js/wm/registry.js"></script>
+<script type="text/javascript" src="js/wm/utils.js"></script>
+<script type="text/javascript" src="js/wm/ide/ui.js"></script>
+<script type="text/javascript" src="js/wm/ide/remote.js"></script>
+<script type="text/javascript" src="js/wm/ide/dx.js"></script>
+<script type="text/javascript" src="js/wm/ide/ax.js"></script>
+<script type="text/javascript" src="js/wm/ide/results.js"></script>
+<script type="text/javascript" src="js/wm/xhr.js"></script>
+<script type="text/javascript" src="js/controller/controller.js"></script>
+<script type="text/javascript">
+	var url = 'js/controller/mozController.js';
+
+	if (browser.isIE){
+		url = 'js/controller/ieController.js';
+	}
+	else if(browser.isSafari){
+		url = 'js/controller/safController.js';
+	}
+	else if (browser.isOpera){
+		url = 'js/controller/opController.js';
+	}
+	document.write('<script src="', url, '" type="text/javascript"><\/script>');
+</script>
+<script type="text/javascript" src="js/controller/commands.js"></script>
+<script type="text/javascript" src="js/controller/asserts.js"></script>
+<script type="text/javascript" src="js/controller/waits.js"></script>
+<script type="text/javascript" src="js/wm/metrics.js"></script>
+<script type="text/javascript" src="js/wm/events.js"></script>
+
+<script type="text/javascript" src="js/wm/global.js"></script>
+<script type="text/javascript" src="js/wm/jstest.js"></script>
+<script type="text/javascript" src="js/extensions/extensions.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+  fleegix.event.listen(window, 'onload', windmill, 'start');
+</script>
 </html>

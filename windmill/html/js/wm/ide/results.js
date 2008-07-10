@@ -16,14 +16,12 @@ Copyright 2006-2007, Open Source Applications Foundation
 
 //Functions for writing status to the UI
 /***************************************/
-windmill.ui.results = new
-function() {
+windmill.ui.results = new function() {
 
     //Writing to the performance tab
     this.writePerformance = function(str) {
         var resultsDiv = $("perfOut");
         resultsDiv.innerHTML = str + "<br>" + resultsDiv.innerHTML
-
     }
 
     this.writeStatus = function(str) {
@@ -33,17 +31,13 @@ function() {
         if (windmill.remoteLoaded == true) {
             var status = $("runningStatus");
             status.innerHTML = '<b>Status:</b> ' + str;
-
         }
-
     }
 
     //Writing to the results tab
     this.writeResult = function(str) {
         var resultsDiv = $("resOut");
         resultsDiv.innerHTML = str + "<br>" + resultsDiv.innerHTML;
-
     }
-
 
 };
