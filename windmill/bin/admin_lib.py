@@ -186,8 +186,10 @@ def teardown(shell_objects):
                 shutil.rmtree(directory)
 
         while shell_objects['httpd_thread'].isAlive():
-            shell_objects['httpd'].stop()
-
+            try:
+                shell_objects['httpd'].stop()
+            except:
+                pass
 
 def runserver_action(shell_objects):
     """Run the server in the foreground with the options given to the command line"""
