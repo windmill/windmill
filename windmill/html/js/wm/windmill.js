@@ -177,7 +177,11 @@ var windmill = new function() {
         //We need to define the windmill object in the
         //test window to allow the JS test framework
         //to access different functionality
-        windmill.testWindow.windmill = windmill;
+        try { windmill.testWindow.windmill = windmill; }
+        catch(err){ 
+          try { this.loaded(); }
+          catch(err){}
+        }
 
         //Reset the explorer and recorder to what
         //they were before the new page load

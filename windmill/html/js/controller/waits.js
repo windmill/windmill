@@ -144,8 +144,6 @@ windmill.controller.waits.forNotElement = function (paramObj,obj) {
     return windmill.controller.waits.forJSTrue(p, obj);
 };
 
-
-
 //This is more of an internal function used by wait and click events
 //To know when to try and reattach the listeners
 //But if users wanted this manually they could use it
@@ -154,7 +152,7 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
   var sl = function(){
     var f = function () {
       try {
-        var v = opener.document.domain;
+        var v = windmill.testWindow.document.domain;
       }
       catch(err){
         document.domain = windmill.docDomain;
