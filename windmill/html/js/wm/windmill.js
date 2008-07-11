@@ -100,7 +100,7 @@ var windmill = new function() {
 
         //If the doc domain has changed
         //and we can't get to it, try updating it
-        try{ var v = opener.document.domain; }
+        try{ var v = windmill.testWindow.document.domain; }
         catch(err){
           try { document.domain = windmill.docDomain; }
           catch(err){
@@ -139,12 +139,12 @@ var windmill = new function() {
         //Set a variable so that windmill knows that the remote has fully loaded
         windmill.testWindow.windmill = windmill;
         this.remoteLoaded = true;
-        $('loadRemote').style.display = "none";
-        $('cover').style.display = "none";
+        busyOff();
     };
 
     //When the page is unloaded turn off the loop until it loads the new one
     this.unloaded = function() {
+        busyOn();
         this.controller.stopLoop();
         checkPage = function() {
             windmill.controller.waits.forPageLoad({});
@@ -155,6 +155,7 @@ var windmill = new function() {
     //On load setup all the listener stuff
     //Set the listener on the testingApp on unload
     this.loaded = function() {
+        busyOff();
         //When the waits happen I set a timeout
         //to ensure that if it takes longer than the
         //windmill default timeout to load

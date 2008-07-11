@@ -237,12 +237,11 @@ windmill.ui.recorder = new function() {
     this.setRecState = function() {
         if (this.recordState == true) {
             this.recordOn();
-
         }
-
     }
     //write json to the remote from the click events
     this.writeJsonClicks = function(e) {
+        console.log(e);
         if (this.recordState == false) {
             return;
         }
@@ -253,26 +252,21 @@ windmill.ui.recorder = new function() {
             if (e.target.id != "") {
                 locator = 'id';
                 locValue = e.target.id;
-
             }
             else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")) {
                 locator = 'name';
                 locValue = e.target.name;
-
             }
             else if (e.target.tagName.toUpperCase() == "A") {
                 locator = 'link';
                 locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig, "");
                 locValue = locValue.replace(/^s*(.*?)s*$/, "$1");
-
             }
             else {
                 var stringXpath = getXSPath(e.target);
                 locator = 'xpath';
                 locValue = stringXpath;
-
             }
-
         }
         else {
             var stringXpath = getXSPath(e.target);
@@ -296,9 +290,7 @@ windmill.ui.recorder = new function() {
                 }
                 else if ((e.target.onclick != null) || (locator == 'link') || (e.target.tagName.toUpperCase() == 'IMG')) {
                     windmill.ui.remote.addAction(windmill.ui.remote.buildAction('click', params));
-
                 }
-
             }
 
         }
@@ -318,7 +310,6 @@ windmill.ui.recorder = new function() {
             if (e.target.id != "") {
                 locator = 'id';
                 locValue = e.target.id;
-
             }
             else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")) {
                 locator = 'name';
@@ -334,7 +325,6 @@ windmill.ui.recorder = new function() {
             var stringXpath = getXSPath(e.target);
             locator = 'xpath';
             locValue = stringXpath;
-
         }
 
         var params = {};
@@ -424,7 +414,12 @@ windmill.ui.recorder = new function() {
     this.recRecursiveBind = function(frame) {
         //Make sure we haven't already bound anything to this frame yet
         this.recRecursiveUnBind(frame);
-
+        //turns out there are cases where people are canceling click on purpose
+        //so I am manually going to attach click listeners to all links
+        /*var links = frame.document.getElementsByTagName('a');
+        for (var i = 0; i < links.length; i++) {
+            fleegix.event.listen(links[i], 'onclick', this, 'writeJsonClicks');
+        }*/
         //IE's onChange support doesn't bubble so we have to manually
         //Attach a listener to every select and input in the app
         if (windmill.browser.isIE) {
@@ -436,9 +431,7 @@ windmill.ui.recorder = new function() {
             var se = frame.document.getElementsByTagName('select');
             for (var i = 0; i < se.length; i++) {
                 fleegix.event.listen(se[i], 'onchange', this, 'writeJsonChange');
-
             }
-
         }
 
         fleegix.event.listen(frame, 'onunload', windmill, 'unloaded');
@@ -472,20 +465,22 @@ windmill.ui.recorder = new function() {
 
     //Recursively bind to all the iframes and frames within
     this.recRecursiveUnBind = function(frame) {
+      
+        var links = frame.document.getElementsByTagName('a');
+        for (var i = 0; i < links.length; i++) {
+            fleegix.event.unlisten(links[i], 'onclick', this, 'writeJsonClicks');
+        }
         //IE's onChange support doesn't bubble so we have to manually
         //Attach a listener to every select and input in the app
         if (windmill.browser.isIE) {
             var inp = frame.document.getElementsByTagName('input');
             for (var i = 0; i < inp.length; i++) {
                 fleegix.event.unlisten(inp[i], 'onchange', this, 'writeJsonChange');
-
             }
             var se = frame.document.getElementsByTagName('select');
             for (var i = 0; i < se.length; i++) {
                 fleegix.event.unlisten(se[i], 'onchange', this, 'writeJsonChange');
-
             }
-
         }
         fleegix.event.unlisten(frame, 'onunload', windmill, 'unloaded');
         fleegix.event.unlisten(frame.document, 'ondblclick', this, 'writeJsonClicks');

@@ -126,6 +126,15 @@ var toggleAExplore = function() {
 
 }
 
+var busyOn = function(){
+  $('loadRemote').style.display = "block";
+  $('cover').style.display = "block";
+}
+var busyOff = function(){
+  $('loadRemote').style.display = "none";
+  $('cover').style.display = "none";
+}
+
 //Scrolling rules when using the IDE
 //This is a pretty insane hack, description inline
 var scroll = function() {
