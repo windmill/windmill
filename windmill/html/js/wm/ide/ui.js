@@ -233,7 +233,9 @@ windmill.ui.playback = new function() {
 //*********************************/
 windmill.ui.recorder = new function() {
     var recordState = false;
-
+    var lastLocValue = null;
+    var lastLocator = null;
+    
     this.setRecState = function() {
         if (this.recordState == true) {
             this.recordOn();
@@ -241,10 +243,8 @@ windmill.ui.recorder = new function() {
     }
     //write json to the remote from the click events
     this.writeJsonClicks = function(e) {
-        console.log(e);
-        if (this.recordState == false) {
-            return;
-        }
+        if (this.recordState == false) { return; }
+        
         var locator = '';
         var locValue = '';
 
@@ -260,7 +260,7 @@ windmill.ui.recorder = new function() {
             else if (e.target.tagName.toUpperCase() == "A") {
                 locator = 'link';
                 locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig, "");
-                locValue = locValue.replace(/^s*(.*?)s*$/, "$1");
+                //locValue = locValue.replace(/^s*(.*?)s*$/, "$1");
             }
             else {
                 var stringXpath = getXSPath(e.target);
@@ -272,27 +272,36 @@ windmill.ui.recorder = new function() {
             var stringXpath = getXSPath(e.target);
             locator = 'xpath';
             locValue = stringXpath;
-
         }
-
+        
+        //to keep from generating multiple actions for the same click
+        if ((this.lastLocValue == locValue) && (this.lastLocator == locator) && (e.type != 'dblclick')){ return; }
+        this.lastLocValue = locValue;
+        this.lastLocator = locator;
+        
+        //allowing the user to click the same link again after 1 second
+        //should emulate expected behavior
+        windmill.ui.recorder.resetLoc = function(){
+          windmill.ui.recorder.lastLocValue = null;
+          windmill.ui.recorder.lastLocator = null;
+        }
+        setTimeout('windmill.ui.recorder.resetLoc()', 1000);
+        
         if (locValue != "") {
             var params = {};
             params[locator] = locValue;
 
             if (e.type == 'dblclick') {
                 windmill.ui.remote.addAction(windmill.ui.remote.buildAction('doubleClick', params));
-
             }
             else {
                 if ($("clickOn").checked == true) {
                     windmill.ui.remote.addAction(windmill.ui.remote.buildAction('click', params));
-
                 }
                 else if ((e.target.onclick != null) || (locator == 'link') || (e.target.tagName.toUpperCase() == 'IMG')) {
                     windmill.ui.remote.addAction(windmill.ui.remote.buildAction('click', params));
                 }
             }
-
         }
         windmill.ui.remote.scrollRecorderTextArea();
 
@@ -384,9 +393,7 @@ windmill.ui.recorder = new function() {
         fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
 	
         windmill.ui.remote.getSuite();
-        try {
-            this.recRecursiveBind(windmill.testWindow);
-        }
+        try { this.recRecursiveBind(windmill.testWindow); }
         catch(error) {
             windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
             $('record').src = 'img/record.png';
@@ -416,10 +423,13 @@ windmill.ui.recorder = new function() {
         this.recRecursiveUnBind(frame);
         //turns out there are cases where people are canceling click on purpose
         //so I am manually going to attach click listeners to all links
-        /*var links = frame.document.getElementsByTagName('a');
+        var links = frame.document.getElementsByTagName('a');
         for (var i = 0; i < links.length; i++) {
             fleegix.event.listen(links[i], 'onclick', this, 'writeJsonClicks');
-        }*/
+            for (var z=0; z < links[i].childNodes.length; z++){
+              fleegix.event.listen(links[i].childNodes[z], 'onclick', this, 'writeJsonClicks');
+            }
+        }
         //IE's onChange support doesn't bubble so we have to manually
         //Attach a listener to every select and input in the app
         if (windmill.browser.isIE) {
@@ -466,10 +476,13 @@ windmill.ui.recorder = new function() {
     //Recursively bind to all the iframes and frames within
     this.recRecursiveUnBind = function(frame) {
       
-        var links = frame.document.getElementsByTagName('a');
-        for (var i = 0; i < links.length; i++) {
-            fleegix.event.unlisten(links[i], 'onclick', this, 'writeJsonClicks');
-        }
+      var links = frame.document.getElementsByTagName('a');
+       for (var i = 0; i < links.length; i++) {
+           fleegix.event.unlisten(links[i], 'onclick', this, 'writeJsonClicks');
+           for (var z=0; z < links[i].childNodes.length; z++){
+             fleegix.event.unlisten(links[i].childNodes[z], 'onclick', this, 'writeJsonClicks');
+           }
+       }
         //IE's onChange support doesn't bubble so we have to manually
         //Attach a listener to every select and input in the app
         if (windmill.browser.isIE) {

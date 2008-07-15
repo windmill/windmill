@@ -26,6 +26,15 @@ var json_call = function(version, method, params) {
     this.params = params || [];
 };
 
+var busyOn = function(){
+  $('loadRemote').style.display = "block";
+  $('cover').style.display = "block";
+}
+var busyOff = function(){
+  $('loadRemote').style.display = "none";
+  $('cover').style.display = "none";
+}
+
 var closeDialog = function(id) {
     $(id).style.display = 'none';
     $('gray').style.visibility = 'hidden';
@@ -124,15 +133,6 @@ var toggleAExplore = function() {
         $('domExp').innerHTML = '';
     }
 
-}
-
-var busyOn = function(){
-  $('loadRemote').style.display = "block";
-  $('cover').style.display = "block";
-}
-var busyOff = function(){
-  $('loadRemote').style.display = "none";
-  $('cover').style.display = "none";
 }
 
 //Scrolling rules when using the IDE
