@@ -74,13 +74,15 @@ var elementslib = new function(){
     //inline function to recursively find the element in the DOM, cross frame.
     var recurse = function(w, func, s){
      //do the lookup in the current window
-     element = func.call(w, s);   
-     if (!element){
-       var fc = w.frames.length;
-       var fa = w.frames;   
-       for (var i=0;i<fc;i++){ 
-         recurse(fa[i], func, s); 
-       }
+     try{ element = func.call(w, s); }
+     catch(err){ element = null; }
+     
+      if (!element){
+        var fc = w.frames.length;
+        var fa = w.frames;   
+        for (var i=0;i<fc;i++){ 
+          recurse(fa[i], func, s); 
+        }
      }
      else { e = element; }
     };   

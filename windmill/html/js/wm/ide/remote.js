@@ -456,7 +456,9 @@ windmill.ui.remote = new function() {
             if (params['xpath']) {
                 locator = 'xpath';
             }
-
+            if (params['classname']) {
+                locator = 'classname';
+            }
             //Setup second select
             var s1 = document.createElement('select');
             s1.className = 'smalloption';

@@ -261,6 +261,7 @@ windmill.ui.recorder = new function() {
                 locator = 'link';
                 locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig, "");
                 //locValue = locValue.replace(/^s*(.*?)s*$/, "$1");
+                locValue = locValue.replace(/^[\s(&nbsp;)]+/g,'').replace(/[\s(&nbsp;)]+$/g,'');
             }
             else {
                 var stringXpath = getXSPath(e.target);
