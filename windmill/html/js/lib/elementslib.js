@@ -46,6 +46,11 @@ var elementslib = new function(){
     domNode = nodeSearch(nodeByClassname, s);
     return returnOrThrow(s);
   };
+  this.Element.TAGNAME = function(s){
+    locators.tagname = s;
+    domNode = nodeSearch(nodeByTagname, s);
+    return returnOrThrow(s);
+  };
   this.Element.XPATH = function(s){
     locators.xpath = s;
     domNode = nodeSearch(nodeByXPath, s);
@@ -145,7 +150,22 @@ var elementslib = new function(){
     }
     return null;
   };
-
+  
+  //DOM element lookup functions, private to elementslib
+  var nodeByTagname = function (s) { //search nodes by name
+    //sometimes the win object won't have this object
+    if (s.indexOf(',') != -1){
+      var cn = s.split(',');
+      var idx = cn[1];
+      var cn = cn[0];
+    }
+    else{
+      var cn = s;
+      var idx = 0;
+    }
+    return this.document.getElementsByTagName(cn)[idx];
+  };
+  
   //DOM element lookup functions, private to elementslib
   var nodeByClassname = function (s) { //search nodes by name
     //sometimes the win object won't have this object

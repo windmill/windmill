@@ -99,6 +99,11 @@ windmill.controller = new function () {
       s = 'Looking up classname '+ param_object.classname;
       element = elementslib.Element.CLASSNAME(param_object.classname);
     }
+    //if name was passed
+    if(typeof param_object.tagname != "undefined") {
+      s = 'Looking up tagname '+ param_object.tagname;
+      element = elementslib.Element.TAGNAME(param_object.tagname);
+    }
     
     windmill.ui.results.writeResult(s);
     return element;

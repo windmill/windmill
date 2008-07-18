@@ -61,7 +61,7 @@ var windmill = new function() {
     
     this.init = function(b) { this.browser = b;}
     this.start = function() {
-        shell = new fleegix.shell.Shell($('shellForm').shellInput, $('shellOutput'));
+        var shell = new fleegix.shell.Shell($('shellForm').shellInput, $('shellOutput'));
         //make the action drop down work in a browser compatible way
         var dispatchDD = function(e){
           var sel = e.target.options[e.target.options.selectedIndex].id;
@@ -128,16 +128,18 @@ var windmill = new function() {
           browser.current_ua + ".</b><br>");
         }
         catch(err) {
-          alert('This application loads and immediately redirects to the www. version of itself, trying to correct the domain.');
 			    //if the initial lode url was blah.com and redirected to www.blah.com
 			    if (window.location.href.indexOf('www.') == -1){
+			      alert('This application loads and immediately redirects to the www. version of itself, trying to correct the domain.');
 			      window.location.href = 'http://www.'+window.location.hostname+"/windmill-serv/remote.html";
 			      return;
 		      }
+		      windmill.controller.continueLoop();
 		    }
         //setTimeout("windmill.controller.continueLoop()", 2000);  
         //Set a variable so that windmill knows that the remote has fully loaded
-        windmill.testWindow.windmill = windmill;
+        try { windmill.testWindow.windmill = windmill; }
+        catch(err){}
         this.remoteLoaded = true;
         busyOff();
     };

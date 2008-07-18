@@ -373,8 +373,6 @@ windmill.ui.recorder = new function() {
     }
   */
         windmill.ui.remote.scrollRecorderTextArea();
-
-
     }
 
     //Turn on the recorder
@@ -408,7 +406,6 @@ windmill.ui.recorder = new function() {
 
         try {
             this.recRecursiveUnBind(windmill.testWindow);
-
         }
         catch(error) {
             windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill,' + 
@@ -422,15 +419,7 @@ windmill.ui.recorder = new function() {
     this.recRecursiveBind = function(frame) {
         //Make sure we haven't already bound anything to this frame yet
         this.recRecursiveUnBind(frame);
-        //turns out there are cases where people are canceling click on purpose
-        //so I am manually going to attach click listeners to all links
-        var links = frame.document.getElementsByTagName('a');
-        for (var i = 0; i < links.length; i++) {
-            fleegix.event.listen(links[i], 'onclick', this, 'writeJsonClicks');
-            for (var z=0; z < links[i].childNodes.length; z++){
-              fleegix.event.listen(links[i].childNodes[z], 'onclick', this, 'writeJsonClicks');
-            }
-        }
+      
         //IE's onChange support doesn't bubble so we have to manually
         //Attach a listener to every select and input in the app
         if (windmill.browser.isIE) {
@@ -442,6 +431,17 @@ windmill.ui.recorder = new function() {
             var se = frame.document.getElementsByTagName('select');
             for (var i = 0; i < se.length; i++) {
                 fleegix.event.listen(se[i], 'onchange', this, 'writeJsonChange');
+            }
+        }
+        else{
+            //turns out there are cases where people are canceling click on purpose
+            //so I am manually going to attach click listeners to all links
+            var links = frame.document.getElementsByTagName('a');
+            for (var i = 0; i < links.length; i++) {
+                fleegix.event.listen(links[i], 'onclick', this, 'writeJsonClicks');
+                for (var z=0; z < links[i].childNodes.length; z++){
+                  fleegix.event.listen(links[i].childNodes[z], 'onclick', this, 'writeJsonClicks');
+                }
             }
         }
 
