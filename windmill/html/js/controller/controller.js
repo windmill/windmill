@@ -201,7 +201,6 @@ windmill.controller = new function () {
   this.open = function (param_object) {
     //clear the domain forwarding cache
     if (param_object.reset == undefined){
-      windmill.controller.waits.sleep({milliseconds:3000});
       windmill.service.setTestURL(param_object.url); 
     }
     //We need to tell the service where we are before we
