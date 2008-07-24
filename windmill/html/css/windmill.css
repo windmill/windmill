@@ -38,7 +38,7 @@ a:hover {
   position:absolute;
   background-color:white;
   left:10%;
-  width:80%;
+  width:85%;
   height:80%;
   top:8%;
   display:none;
@@ -169,7 +169,7 @@ a:hover {
 
 .tab {
  height:40%;
- width:99%;
+ width:95%;
  overflow:auto;
  border:1px dashed black; 
 }

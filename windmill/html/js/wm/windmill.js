@@ -98,28 +98,15 @@ var windmill = new function() {
         else { windmill.docDomain = window.location.hostname; }
         //windmill.docDomain = window.location.hostname.replace('www.','');
 
-        //If the doc domain has changed
-        //and we can't get to it, try updating it
-        try{ var v = windmill.testWindow.document.domain; }
-        catch(err){
-          try { document.domain = windmill.docDomain; }
-          catch(err){
-            if (arr.length > 2){
-              arr.shift();
-              document.domain = arr.join('.');
-            }
-            else { document.domain = windmill.docDomain; }
-          }
-        }
-
         try {
           var wdwTitle = windmill.testWindow.document.title;
           if (wdwTitle == "Windmill Testing Framework") {
               windmill.controller.waits._forNotTitleAttach({
-                  "title": "Windmill Testing Framework"
+                  title: "Windmill Testing Framework"
               });
           }
           else { windmill.controller.continueLoop(); }
+          
           //rewrite the open function to keep track of windows popping up
           //windmill.controller.reWriteOpen();
           windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
@@ -136,6 +123,19 @@ var windmill = new function() {
 		      }
 		      windmill.controller.continueLoop();
 		    }
+		    //If the doc domain has changed
+        //and we can't get to it, try updating it
+        try{ var v = windmill.testWindow.document.domain; }
+        catch(err){
+          try { document.domain = windmill.docDomain; }
+          catch(err){
+            if (arr.length > 2){
+              arr.shift();
+              document.domain = arr.join('.');
+            }
+            else { document.domain = windmill.docDomain; }
+          }
+        }
         //setTimeout("windmill.controller.continueLoop()", 2000);  
         //Set a variable so that windmill knows that the remote has fully loaded
         try { windmill.testWindow.windmill = windmill; }

@@ -144,7 +144,8 @@ var elementslib = new function(){
     catch(err){}
     for (var i = 0; i < links.length; i++) {
       var el = links[i];
-      if (getText(el).indexOf(s) != -1) {
+      var linkText = getText(el);
+      if (linkText.indexOf(s) != -1) {
         return el;
       }
     }

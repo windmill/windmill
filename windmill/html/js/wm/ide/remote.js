@@ -45,6 +45,10 @@ windmill.ui.remote = new function() {
         var selected = $(id + 'method').selectedIndex;
         var methodObj = $(id + 'method');
         var method = methodObj[selected].value;
+        if (method.indexOf('--') != -1){
+          $(id + 'method').selectedIndex = 0;
+          return;
+        }
         //Preserve the value that was in there
         try {
           var oldLocator = $(id + "locator").value;

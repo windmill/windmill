@@ -97,8 +97,8 @@ class MozillaProfile(object):
         
         self.user_pref('"network.http.max-connections", 10')
         self.user_pref('"network.http.max-connections-per-server", 8')
-        self.user_pref('"network.http.max-persistent-connections-per-proxy", 2')
-        self.user_pref('"network.http.max-persistent-connections-per-server", 2')
+#        self.user_pref('"network.http.max-persistent-connections-per-proxy", 2')
+#        self.user_pref('"network.http.max-persistent-connections-per-server", 2')
         self.user_pref('"network.http.pipelining.maxrequests", 6')
         
         # Turn off favicon requests, no need for even more requests

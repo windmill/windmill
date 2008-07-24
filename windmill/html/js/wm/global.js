@@ -27,15 +27,18 @@ var json_call = function(version, method, params) {
 };
 
 var busyOn = function(){
+  $('actionDD').style.visibility = "hidden";
   $('loadRemote').style.display = "block";
   $('cover').style.display = "block";
 }
 var busyOff = function(){
+  $('actionDD').style.visibility = "visible";
   $('loadRemote').style.display = "none";
   $('cover').style.display = "none";
 }
 
 var closeDialog = function(id) {
+    $('actionDD').style.visibility = "visible";
     $(id).style.display = 'none';
     $('gray').style.visibility = 'hidden';
     $('ide').style.display = 'block';
@@ -49,7 +52,7 @@ var openDialog = function(id) {
     $(id).style.display = 'block';
     $('gray').style.visibility = 'visible';
     $('ide').style.display = 'none';
-
+    $('actionDD').style.visibility = "hidden";
 };
 
 var resetDD = function(){

@@ -53,11 +53,14 @@ windmill.service = new function() {
     };
 
     //Set the URL we are testing in the python service
-    this.setTestURL = function() {
+    this.setTestURL = function(url) {
         try {
             var json_object = new json_call('1.1', 'set_test_url');
             var params_obj = {};
-            var loc = windmill.testWindow.location;
+            
+            if (url){ var loc = url; }
+            else{ var loc = windmill.testWindow.location; }
+            
             params_obj.url = windmill.service.getParsedLocation(loc);
             json_object.params = params_obj;
             var json_string = fleegix.json.serialize(json_object)

@@ -51,8 +51,8 @@ def get_firefox_controller():
         "network.proxy.type": 1,
         "network.http.max-connections": 10,
         "network.http.max-connections-per-server": 8,
-        "network.http.max-persistent-connections-per-proxy": 2,
-        "network.http.max-persistent-connections-per-server": 2,
+#        "network.http.max-persistent-connections-per-proxy": 2,
+#        "network.http.max-persistent-connections-per-server": 2,
         "network.http.pipelining.maxrequests": 6,
         
         # Turn off favicon requests, no need for even more requests
