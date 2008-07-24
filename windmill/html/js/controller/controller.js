@@ -200,8 +200,10 @@ windmill.controller = new function () {
   //open an url in the webapp iframe
   this.open = function (param_object) {
     //clear the domain forwarding cache
-    windmill.controller.waits.sleep({milliseconds:3000});
-    windmill.service.setTestURL(param_object.url);
+    if (param_object.reset == undefined){
+      windmill.controller.waits.sleep({milliseconds:3000});
+      windmill.service.setTestURL(param_object.url); 
+    }
     //We need to tell the service where we are before we
     //head to a new page
     try{ windmill.testWindow.location = param_object.url; }
