@@ -47,7 +47,8 @@ var windmill = new function() {
     this.testWindow = opener;
 
     this.openWindow;
-
+    
+    this.locationObj = null;
     //Keep track of windows the page opened with pointers
     this.windowReg = new fleegix.hash.Hash();    
     

@@ -40,6 +40,7 @@ windmill.service = new function() {
 
     //Set the URL we are starting out testing
     this.setStartURL = function() {
+        windmill.locationObj = windmill.testWindow.location;
         var json_object = new json_call('1.1', 'set_test_url');
         var params_obj = {};
         var loc = window.location;
@@ -58,10 +59,7 @@ windmill.service = new function() {
             var json_object = new json_call('1.1', 'set_test_url');
             var params_obj = {};
             
-            if (url){ var loc = url; }
-            else{ var loc = windmill.testWindow.location; }
-            
-            params_obj.url = windmill.service.getParsedLocation(loc);
+            params_obj.url = url;
             json_object.params = params_obj;
             var json_string = fleegix.json.serialize(json_object)
 
