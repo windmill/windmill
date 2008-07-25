@@ -338,7 +338,7 @@ windmill.controller = new function () {
   }
   
   //Allow the user to update the document.domain for the IDE
-  this.setDomain = function(param_object){
+  this.setDocDomain = function(param_object){
     document.domain = param_object.domain;
     return true;
   }
