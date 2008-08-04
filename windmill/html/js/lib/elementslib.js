@@ -193,22 +193,24 @@ var elementslib = new function(){
         throw new Error("Unknown namespace: " + prefix + ".");
       }
     }
-    if (browser.isIE) {
+ /*   if (browser.isIE) {
       xpath = xpath.replace(/x:/g, '')
     }
-
+*/
     // Use document.evaluate() if it's available
     if (this.document.evaluate) {
       return this.document.evaluate(xpath, this.document, nsResolver, 0, null).iterateNext();
     }
-
-    // If not, fall back to slower JavaScript implementation
-    var context = new ExprContext(this.document);
-    var xpathObj = xpathParse(xpath);
-    var xpathResult = xpathObj.evaluate(context);
+    var expr = xpathParse(xpath.toUpperCase());
+    var xpathResult = expr.evaluate(new ExprContext(this.document));
     if (xpathResult && xpathResult.value) {
       return xpathResult.value[0];
-    }
+     }
+    // // If not, fall back to slower JavaScript implementation
+    //   var context = new ExprContext(this.document);
+    //   var xpathObj = xpathParse(xpath);
+    //   var xpathResult = xpathObj.evaluate(context);
+    //   
     return null;
   };
   
