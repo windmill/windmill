@@ -112,7 +112,11 @@ windmill/html/js/controller/waits.js
 windmill/html/js/extensions/extensions.js
 windmill/html/js/lib/browserdetect.js
 windmill/html/js/lib/elementslib.js
-windmill/html/js/lib/xpath.js
+windmill/html/js/lib/getXPath.js
+windmill/html/js/lib/ajaxslt/dom.js
+windmill/html/js/lib/ajaxslt/util.js
+windmill/html/js/lib/ajaxslt/xmltoken.js
+windmill/html/js/lib/ajaxslt/xpath.js
 windmill/html/js/lib/fleegix_js/trunk/fleegix.js
 windmill/html/js/lib/fleegix_js/trunk/fleegix.js.uncompressed.js
 windmill/html/js/lib/fleegix_js/trunk/plugins/hash.js
