@@ -129,7 +129,7 @@ class WindmillTestClient(object):
         """Assign all available attributes to instance so they are easily introspected"""
         
         if method_proxy is None:
-            method_proxy = windmill.tools.make_xmlrpc_client()
+            method_proxy = windmill.tools.make_jsonrpc_client()
         
         self._method_proxy = method_proxy
         
@@ -156,7 +156,7 @@ class WindmillTestClient(object):
                 self.name = name
 
         for action in self._method_proxy.execute_command(
-                                   {'method':'commands.getControllerMethods','params':{}})['result']:
+                                   {'method':'commands.getControllerMethods','params':{}})['result']['result']:
             parent = self
             if action.find('.') is not -1:
                 for name in [a for a in action.split('.') if not action.endswith(a) ]:
