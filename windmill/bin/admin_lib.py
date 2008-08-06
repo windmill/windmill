@@ -190,6 +190,12 @@ def teardown(shell_objects):
                 shell_objects['httpd'].stop()
             except:
                 pass
+                
+            # Hacking workaround for port locking up on linux.
+            try: 
+                shell_objects['httpd'].socket.shutdown()
+            except:
+                pass
 
 def runserver_action(shell_objects):
     """Run the server in the foreground with the options given to the command line"""
