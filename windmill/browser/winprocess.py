@@ -37,23 +37,23 @@ def ErrCheckBool(result, func, args):
         raise WinError()
     return args
 
-# CloseHandle()
-
-CloseHandleProto = WINFUNCTYPE(BOOL, HANDLE)
-CloseHandle = CloseHandleProto(("CloseHandle", windll.kernel32))
-CloseHandle.errcheck = ErrCheckBool
-
 # AutoHANDLE
 
 class AutoHANDLE(HANDLE):
     """Subclass of HANDLE which will call CloseHandle() on deletion."""
+    
+    CloseHandleProto = WINFUNCTYPE(BOOL, HANDLE)
+    CloseHandle = CloseHandleProto(("CloseHandle", windll.kernel32))
+    CloseHandle.errcheck = ErrCheckBool
+    
     def Close(self):
         if self.value:
-            CloseHandle(self)
+            self.CloseHandle(self)
             self.value = 0
     
     def __del__(self):
-        self.Close()
+        if self.Close:
+            self.Close()
 
     def __int__(self):
         return self.value

@@ -76,8 +76,8 @@ class InternetExplorer(object):
         except exceptions.OSError:
             return False
             
-    def __del__(self):
-        self.stop()
+    # def __del__(self):
+    #     self.stop()
         
             
             
