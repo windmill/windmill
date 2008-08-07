@@ -193,10 +193,12 @@ var elementslib = new function(){
         throw new Error("Unknown namespace: " + prefix + ".");
       }
     }
- /*   if (browser.isIE) {
-      xpath = xpath.replace(/x:/g, '')
+    if (browser.isIE) {
+      //xpath = xpath.replace(/x:/g, '')
+      //making very specific xpath compatible with IE and FF
+      xpath = xpath.replace(/\[@.*?\]/g, '');
     }
-*/
+
     // Use document.evaluate() if it's available
     if (this.document.evaluate) {
       return this.document.evaluate(xpath, this.document, nsResolver, 0, null).iterateNext();
