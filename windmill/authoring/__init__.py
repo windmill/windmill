@@ -184,9 +184,9 @@ class WindmillTestClient(object):
         if not self.browser_debugging:
             result = self._method_proxy.execute_command({'method':command_name, 'params':kwargs})
             if not result and self.assertions:
-                assert result
+                assert result['result']
             else:
-                return result
+                return result['result']
         else:
             return self._method_proxy.add_command({'method':command_name, 'params':kwargs})
             
@@ -196,10 +196,10 @@ class WindmillTestClient(object):
         test = {'method':test_name, 'params':kwargs}
         if not self.browser_debugging:
             result = self._method_proxy.execute_test({'method':test_name, 'params':kwargs})
-            if not result['result'] and self.assertions:
-                assert result['result']
+            if not result['result']['result'] and self.assertions:
+                assert result['result']['result']
             else:
-                return result
+                return result['result']
         else:
             return self._method_proxy.add_test({'method':test_name, 'params':kwargs})     
             
