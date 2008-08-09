@@ -181,7 +181,11 @@ var windmill = new function() {
         //We need to define the windmill object in the
         //test window to allow the JS test framework
         //to access different functionality
-        try { windmill.testWindow.windmill = windmill; }
+        try { 
+          windmill.testWindow.windmill = windmill; 
+          fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
+          fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
+        }
         catch(err){ 
           try { this.loaded(); }
           catch(err){}
@@ -191,11 +195,6 @@ var windmill = new function() {
         //they were before the new page load
         windmill.ui.domexplorer.setExploreState();
         windmill.ui.recorder.setRecState();
-        
-        if (windmill.testWindow && windmill.testWindow.onunload){
-          fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
-          fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
-        }
 		
         delayed = function() {
           if (windmill.waiting == false) {

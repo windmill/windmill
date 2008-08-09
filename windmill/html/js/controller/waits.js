@@ -148,6 +148,7 @@ windmill.controller.waits.forNotElement = function (paramObj,obj) {
 //To know when to try and reattach the listeners
 //But if users wanted this manually they could use it
 windmill.controller.waits.forPageLoad = function (paramObj,obj) {
+
   var p = paramObj || {};
   var sl = function(){
     var f = function () {
@@ -167,9 +168,24 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
       return false;
     };
     p.test = f;
+    
+   //Wait until the page has started loading
+   // var checks = 0;
+   // while (checks < 5){
+   //   try{
+   //     var d = windmill.testWindow.document.body;
+   //   }
+   //   catch(err){
+   //     checks = 5;
+   //   }
+   //   checks++;
+   // }
+     
     return windmill.controller.waits.forJSTrue(p, obj, true);
   }
   setTimeout(sl, 3000);
+  //we can't access the body, so now wait for the loading
+  //setTimeout(sl, 0);
 }
   
 //wait for an element to show up on the page
@@ -179,11 +195,12 @@ windmill.controller.waits._forNotTitleAttach = function (paramObj,obj) {
     var f = function () {
       try{
         if (windmill.testWindow.document.title != param_object.title){
+          var d = windmill.testWindow.document.body;
           return true;
         }
         return false;
       }
-      catch(err){}
+      catch(err){ return false; }
     };
     p.test = f;
     p.timeout = 60000;
