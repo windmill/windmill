@@ -363,74 +363,92 @@ windmill.controller = new function () {
     return true;
   };
   
-  //Drag Drop functionality allowing functions passed to calculate cursor offsets
-  this.mouseMove = function (param_object){
-    windmill.controller.stopLoop();
-    windmill.controller.moveCount = 0;
-    var p = param_object;
-    var webApp = windmill.testWindow;
-    //takes a coordinates param (x,y),(x,y) start, end
-    var coords = p.coords.split('),(');
+  // this.mouseMove = function (param_object){
+  //    var p = param_object;
+  //    var webApp = windmill.testWindow;
+  //    var coords = p.coords.split('),(');
+  //          
+  //    var start = coords[0].split(',');
+  //    start[0] = start[0].replace('(','');
+  //           
+  //    var end = coords[1].split(',');
+  //    end[1] = end[1].replace(')','');
+  //    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
+  //    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, end[0], end[1]);
+  //    alert('mooch??');
+  //      
+  //   return true;
+  // };
+
+    //Drag Drop functionality allowing functions passed to calculate cursor offsets
+    this.mouseMove = function (param_object){
+       windmill.controller.stopLoop();
+       windmill.controller.moveCount = 0;
+       var p = param_object;
+       var webApp = windmill.testWindow;
+       //takes a coordinates param (x,y),(x,y) start, end
+       var coords = p.coords.split('),(');
+       
+       var start = coords[0].split(',');
+       start[0] = start[0].replace('(','');
+       
+       var end = coords[1].split(',');
+       end[1] = end[1].replace(')','');
     
-    var start = coords[0].split(',');
-    start[0] = start[0].replace('(','');
-    
-    var end = coords[1].split(',');
-    end[1] = end[1].replace(')','');
- 
-    //get to the starting point
-     var i = document.createElement('img');
-     i.id = "mc";
-     i.style.border = "0px";
-     i.style.left = start[0]+'px';
-     i.style.top = start[1]+'px';
-     i.style.position = "absolute";
-     i.zIndex = "100000000000";
-     windmill.testWindow.document.body.appendChild(i);
-     i.src = "/windmill-serv/img/mousecursor.png";
-    
-    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
-    var startx = start[0];
-    var starty = start[1];
-    
-    windmill.controller.remMouse = function(){
-      windmill.testWindow.document.body.removeChild(i);
-      windmill.controller.continueLoop();
-    }
-    
-    windmill.controller.doMove = function(attrib, startx, starty){
-      var w = windmill.testWindow.document;
-      if (attrib == "left"){ w.getElementById('mc').style['left'] = startx+'px'; }
-      else{ w.getElementById('mc').style['top'] = starty+'px'; }
-      windmill.events.triggerMouseEvent(w.body, 'mousemove', true, startx, starty); 
-      
-      windmill.controller.moveCount--;
-      if (windmill.controller.moveCount == 0){
-        w.getElementById('mc').src = "/windmill-serv/img/mousecursorred.png";
-        setTimeout('windmill.controller.remMouse()', 1000);
-      }
-    }
-    
-    //move the x
-    var delay = 0;
-    while (startx != end[0]){
-      if (startx < end[0]){ startx++; }
-      else{ startx--; }
-      setTimeout("windmill.controller.doMove('left',"+startx+","+starty+")", delay)
-      windmill.controller.moveCount++;
-      delay = delay + 5;      
-    }
-    //move the y
-    var delay = 0;
-    while (starty != end[1]){
-       if (starty < end[1]){ starty++; }
-       else{ starty--; }
-       setTimeout("windmill.controller.doMove('top',"+startx+","+starty+")", delay);
-       windmill.controller.moveCount++;
-       delay = delay + 5;      
-     }
-    return true;
-  };
+       //get to the starting point
+        var i = windmill.testWindow.document.createElement('img');
+        i.id = "mc";
+        i.style.border = "0px";
+        i.style.left = start[0]+'px';
+        i.style.top = start[1]+'px';
+        i.style.position = "absolute";
+        i.zIndex = "100000000000";
+        windmill.testWindow.document.body.appendChild(i);
+        i.src = "/windmill-serv/img/mousecursor.png";
+       
+       windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
+       var startx = start[0];
+       var starty = start[1];
+     
+       windmill.controller.remMouse = function(){
+         var c = windmill.testWindow.document.getElementById('mc');
+         windmill.testWindow.document.body.removeChild(c);
+         windmill.controller.continueLoop();
+       }
+     
+       windmill.controller.doMove = function(attrib, startx, starty){
+         var w = windmill.testWindow.document;
+         if (attrib == "left"){ w.getElementById('mc').style['left'] = startx+'px'; }
+         else{ w.getElementById('mc').style['top'] = starty+'px'; }
+         windmill.events.triggerMouseEvent(w.body, 'mousemove', true, startx, starty); 
+       
+         windmill.controller.moveCount--;
+         if (windmill.controller.moveCount == 0){
+           w.getElementById('mc').src = "/windmill-serv/img/mousecursorred.png";
+           setTimeout('windmill.controller.remMouse()', 1000);
+         }
+       }
+     
+       //move the x
+       var delay = 0;
+       while (startx != end[0]){
+         if (startx < end[0]){ startx++; }
+         else{ startx--; }
+         setTimeout("windmill.controller.doMove('left',"+startx+","+starty+")", delay)
+         windmill.controller.moveCount++;
+         delay = delay + 5;      
+       }
+       //move the y
+       var delay = 0;
+       while (starty != end[1]){
+          if (starty < end[1]){ starty++; }
+          else{ starty--; }
+          setTimeout("windmill.controller.doMove('top',"+startx+","+starty+")", delay);
+          windmill.controller.moveCount++;
+          delay = delay + 5;      
+        }
+       return true;
+     };
   
   this.mouseUp = function (param_object){
     var mdnElement = this._lookupDispatch(param_object);
