@@ -58,7 +58,7 @@ setup(name=PACKAGE_NAME,
                           'wsgi-xmlrpc',
                           'wsgi-fileserver',
                           'functest >= 0.7.1',
-                          'mozrunner',
+                          'mozrunner >= 0.4',
                           ],
       entry_points="""
         [console_scripts]
