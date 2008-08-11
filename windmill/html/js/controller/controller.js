@@ -201,7 +201,7 @@ windmill.controller = new function () {
   this.open = function (param_object) {
     //clear the domain forwarding cache
     if (param_object.reset == undefined){
-      windmill.service.setTestURL(param_object.url); 
+      windmill.service.setTestURL(windmill.initialHost); 
     }
     //We need to tell the service where we are before we
     //head to a new page

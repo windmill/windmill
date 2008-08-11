@@ -206,10 +206,8 @@ windmill.ui.playback = new function() {
           //cascading, so I check if thats the state and set change the image accordingly
           if ($('playCascade').checked) {
               $('playback').src = "img/playbackstop.png";
-
           }
           return true;
-
       }
 
       var json_object = new json_call('1.1', 'restart_test_run');
@@ -220,11 +218,9 @@ windmill.ui.playback = new function() {
 
       doCall = function() {
           var z = fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
-
       }
 
       setTimeout('doCall()', 100);
-
   }
 
 };

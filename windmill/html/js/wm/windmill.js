@@ -45,7 +45,8 @@ var windmill = new function() {
     //The app your testing
     this.testWindowStr = 'windmill.testWindow';
     this.testWindow = opener;
-
+    this.initialHost = '';
+    
     this.openWindow;
     
     this.locationObj = null;
@@ -142,6 +143,8 @@ var windmill = new function() {
         try { windmill.testWindow.windmill = windmill; }
         catch(err){}
         this.remoteLoaded = true;
+        windmill.initialHost = windmill.testWindow.location.href;
+        
         busyOff();
     };
 
