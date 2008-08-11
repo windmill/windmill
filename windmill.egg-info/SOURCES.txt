@@ -90,6 +90,8 @@ windmill/html/img/axoff.png
 windmill/html/img/axon.png
 windmill/html/img/loading.gif
 windmill/html/img/logo.jpg
+windmill/html/img/mousecursor.png
+windmill/html/img/mousecursorred.png
 windmill/html/img/play.png
 windmill/html/img/playback.png
 windmill/html/img/playbackstop.png
