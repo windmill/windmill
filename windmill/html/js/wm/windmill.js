@@ -152,6 +152,13 @@ var windmill = new function() {
     this.unloaded = function() {
         busyOn();
         this.controller.stopLoop();
+        
+        //if we are recording, we just detected a new page load
+        if (windmill.ui.recorder.recordState){
+          var wfpl = windmill.ui.remote.buildAction("waits.forPageLoad", {timeout:20000});
+          windmill.ui.remote.addAction(wfpl);
+        }
+        
         checkPage = function() {
             windmill.controller.waits.forPageLoad({});
         }

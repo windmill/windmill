@@ -147,7 +147,8 @@ windmill.ui.remote = new function() {
             $(action.id).innerHTML = action.innerHTML;
         }
         else {
-            $(action.id + "locator").focus();
+            try { $(action.id + "locator").focus(); }
+            catch(err){}
         }
         return action.id;
 
@@ -319,9 +320,8 @@ windmill.ui.remote = new function() {
             var date = new Date();
             action.id = date.getTime();
         }
-        else {
-            action.id = params.uuid;
-        }
+        else { action.id = params.uuid; }
+        
         action.style.position = 'relative';
         action.style.border = '1px dashed #aaa';
         action.style.background = 'lightyellow';
