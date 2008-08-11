@@ -28,11 +28,11 @@ windmill.registry.option.push('text','url','option','validator','destination','s
 windmill.registry.methods['-- Mouse --']        = {'locator': false, 'option': false, 'section': true};
 windmill.registry.methods['click']               = {'locator': true, 'option': false };
 windmill.registry.methods['doubleClick']         = {'locator': true, 'option': false};
-windmill.registry.methods['mousedown']           = {'locator': true, 'option': false};
-windmill.registry.methods['mousemove']           = {'locator': false, 'option': 'coords'};
-windmill.registry.methods['mouseup']             = {'locator': true, 'option': false};
-windmill.registry.methods['mouseout']            = {'locator': true,'option': false};
-windmill.registry.methods['mouseover']           = {'locator': true,'option': false};
+windmill.registry.methods['mouseDown']           = {'locator': true, 'option': false};
+windmill.registry.methods['mouseMove']           = {'locator': false, 'option': 'coords'};
+windmill.registry.methods['mouseUp']             = {'locator': true, 'option': false};
+windmill.registry.methods['mouseOut']            = {'locator': true,'option': false};
+windmill.registry.methods['mouseOver']           = {'locator': true,'option': false};
 windmill.registry.methods['radio']               = {'locator': true, 'option': false };
 windmill.registry.methods['check']               = {'locator': true, 'option': false };
 windmill.registry.methods['select']              = {'locator': true, 'option': 'option,value'};
