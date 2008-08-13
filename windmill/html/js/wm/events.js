@@ -185,16 +185,9 @@ windmill.events = new function() {
             evt.relatedTarget = null;
             if (!screenX && !screenY && !clientX && !clientY) {
                 //element.click();
-                if (eventType == "click") {
-                    element.click();
-
-                }
-                else {
-                    element.fireEvent('on' + eventType);
-                }
-
+                if (eventType == "click") { element.click(); }
+                else { element.fireEvent('on' + eventType); }
                 //eval("element." + eventType + "();");
-
             }
             else {
                 evt.screenX = screenX;
@@ -206,16 +199,13 @@ windmill.events = new function() {
                 // ideally we could just slide it in as follows in the try-block below, but this normally
                 // doesn't work.  This is why I try to avoid this code path, which is only required if we need to
                 // set attributes on the event (e.g., clientX).
-                try {
-                    window.event = evt;
-
-                }
+                try { _w.event = evt; }
                 catch(e) {
                     // getting an "Object does not support this action or property" error.  Save the event away
                     // for future reference.
                     // TODO: is there a way to update window.event?
                     // work around for http://jira.openqa.org/browse/SEL-280 -- make the event available somewhere:
-                    }
+                }
                 element.fireEvent('on' + eventType, evt);
 
             }

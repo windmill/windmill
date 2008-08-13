@@ -22,7 +22,7 @@ windmill.registry = new function () {
 
 //Setup all the current methods supported
 windmill.registry.locator.push('id','link','xpath','jsid', 'name','classname', 'tagname');
-windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js', 'status','domain', 'coords');
+windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js', 'status','domain', 'coords', 'pixels');
 
 //Setup method registry
 windmill.registry.methods['-- Mouse --']        = {'locator': false, 'option': false, 'section': true};
@@ -33,6 +33,8 @@ windmill.registry.methods['mouseMove']           = {'locator': false, 'option': 
 windmill.registry.methods['mouseUp']             = {'locator': true, 'option': false};
 windmill.registry.methods['mouseOut']            = {'locator': true,'option': false};
 windmill.registry.methods['mouseOver']           = {'locator': true,'option': false};
+windmill.registry.methods['dragDropElem']           = {'locator': true,'option': 'pixels'};
+windmill.registry.methods['dragDropAbs']           = {'locator': true,'option': 'coords'};
 windmill.registry.methods['radio']               = {'locator': true, 'option': false };
 windmill.registry.methods['check']               = {'locator': true, 'option': false };
 windmill.registry.methods['select']              = {'locator': true, 'option': 'option,value'};

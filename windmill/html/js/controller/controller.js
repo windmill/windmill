@@ -260,6 +260,142 @@ windmill.controller = new function () {
     }
     return true;
   };
+   
+  this.dragDropElem = function(param_object){
+        windmill.controller.stopLoop();
+        windmill.controller.moveCount = 0;
+  
+        var p = param_object;
+        var el = this._lookupDispatch(p);
+        windmill.controller.dragElem = el;
+        
+        var i = windmill.testWindow.document.createElement('img');
+            i.id = "mc";
+            i.style.border = "0px";
+            i.style.left = '0px';
+            i.style.top = '0px';
+            i.style.position = "absolute";
+            i.zIndex = "100000000000";
+            el.appendChild(i);
+            i.src = "/windmill-serv/img/mousecursor.png"; 
+         
+         //takes a coordinates param (x,y),(x,y) start, end
+         var dist = p.pixels.split(',');
+         dist[0] = dist[0].replace('(','');
+         dist[1] = dist[1].replace(')','');
+         
+         windmill.events.triggerMouseEvent(el, 'mousedown', true);
+         windmill.controller.doRem = function(){
+            windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true);
+            windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'click', true);
+            windmill.controller.dragElem.removeChild(_w.document.getElementById('mc'));
+            windmill.controller.continueLoop();
+         }
+         windmill.controller.doMove = function(x,y){
+           windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, x, y);
+           windmill.controller.moveCount--;
+           if (windmill.controller.moveCount == 0){
+             setTimeout('windmill.controller.doRem()', 1000);
+           }
+         }
+         
+         var delay = 0;
+         var i = 0;
+         while(i != dist[0]){
+           setTimeout("windmill.controller.doMove("+i+", 0)", delay)
+           if (i < dist[0]){ i++; }
+           else{ i--; }
+           windmill.controller.moveCount++;
+           delay = delay + 5;
+         }
+         
+         var delay = 0;
+         var i = 0;
+         while(i != dist[1]){
+           setTimeout("windmill.controller.doMove(0, "+i+")", delay)
+           if (i < dist[1]){ i++; }
+           else{ i--; }
+           windmill.controller.moveCount++;
+           delay = delay + 5;
+         }
+         return true;
+    }
+  
+  //Drag Drop functionality allowing functions passed to calculate cursor offsets
+  this.dragDropAbs = function (param_object){
+     windmill.controller.stopLoop();
+     windmill.controller.moveCount = 0;
+     windmill.controller.ddeParamObj = param_object;
+     
+     var p = param_object;
+     var webApp = windmill.testWindow;
+     //takes a coordinates param (x,y),(x,y) start, end
+     var coords = p.coords.split('),(');
+     
+     var start = coords[0].split(',');
+     start[0] = start[0].replace('(','');
+     
+     var end = coords[1].split(',');
+     end[1] = end[1].replace(')','');
+     
+     //get to the starting point
+      var i = windmill.testWindow.document.createElement('img');
+      i.id = "mc";
+      i.style.border = "0px";
+      i.style.left = start[0]+'px';
+      i.style.top = start[1]+'px';
+      i.style.position = "absolute";
+      i.zIndex = "100000000000";
+      windmill.testWindow.document.body.appendChild(i);
+      i.src = "/windmill-serv/img/mousecursor.png";
+     
+     windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
+     windmill.events.triggerMouseEvent(this._lookupDispatch(p), 'mousedown', true);
+     var startx = start[0];
+     var starty = start[1];
+   
+     windmill.controller.remMouse = function(){
+       windmill.events.triggerMouseEvent(windmill.controller._lookupDispatch(p), 'mousedown', true);
+       windmill.events.triggerMouseEvent(windmill.controller._lookupDispatch(p), 'click', true);
+       var c = windmill.testWindow.document.getElementById('mc');
+       windmill.testWindow.document.body.removeChild(c);
+       windmill.controller.continueLoop();
+     }
+   
+     windmill.controller.doMove = function(attrib, startx, starty){
+       var w = windmill.testWindow.document;
+       if (attrib == "left"){ w.getElementById('mc').style['left'] = startx+'px'; }
+       else{ w.getElementById('mc').style['top'] = starty+'px'; }
+       windmill.events.triggerMouseEvent(w.body, 'mousemove', true, startx, starty); 
+     
+       windmill.controller.moveCount--;
+       if (windmill.controller.moveCount == 0){
+         w.getElementById('mc').src = "/windmill-serv/img/mousecursorred.png";
+         setTimeout('windmill.controller.remMouse()', 1500);
+       }
+     }
+   
+     //move the x
+     var delay = 0;
+     while (startx != end[0]){
+       if (startx < end[0]){ startx++; }
+       else{ startx--; }
+       setTimeout("windmill.controller.doMove('left',"+startx+","+starty+")", delay)
+       windmill.controller.moveCount++;
+       delay = delay + 5;      
+     }
+     //move the y
+     var delay = 0;
+     while (starty != end[1]){
+        if (starty < end[1]){ starty++; }
+        else{ starty--; }
+        setTimeout("windmill.controller.doMove('top',"+startx+","+starty+")", delay);
+        windmill.controller.moveCount++;
+        delay = delay + 5;      
+      }
+     return true;
+   };
+
 
   //Drag Drop functionality allowing functions passed to calculate cursor offsets
   this.dragDrop = function (param_object){   
@@ -379,7 +515,7 @@ windmill.controller = new function () {
   //      
   //   return true;
   // };
-
+    
     //Drag Drop functionality allowing functions passed to calculate cursor offsets
     this.mouseMove = function (param_object){
        windmill.controller.stopLoop();

@@ -22,6 +22,7 @@ windmill.ui.domexplorer = new function() {
   }
   //Reset the border to what it was before the mouse over
   this.resetBorder = function(e) { e.target.style.border = ''; }
+  
   //Display the id in the remote
   this.setIdInRemote = function(e) {
     if (windmill.ui.remote.selectedElement != null) {
@@ -78,11 +79,17 @@ windmill.ui.domexplorer = new function() {
         }
     }
   };
-
+  
+  this.showMouseCoords = function(e){
+    $('mouseExp').innerHTML = '('+e.clientX + ',' + e.clientY+')';
+  }
+  
   this.explorerClick = function(e) { window.focus(); };
-
   //Set the listeners for the dom explorer
   this.domExplorerOn = function() {
+    //Display the mouse coords in the IDE
+    fleegix.event.listen(windmill.testWindow, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
+    
     this.exploreState = true;
     try {
       $('explorer').src = 'img/xoff.png';
@@ -99,6 +106,9 @@ windmill.ui.domexplorer = new function() {
 
   //Remove the listeners for the dom explorer
   this.domExplorerOff = function() {
+    //Mouse coords display off
+    fleegix.event.unlisten(windmill.testWindow, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
+    $('mouseExp').innerHTML = "";
     this.exploreState = false;
 
     try {
