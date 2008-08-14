@@ -45,6 +45,7 @@ windmill.registry.methods['open']                = {'locator': false, 'option': 
 windmill.registry.methods['goBack']             = {'locator': false, 'option': false };
 windmill.registry.methods['goForward']          = {'locator': false, 'option': false };
 windmill.registry.methods['refresh']            = {'locator': false, 'option': false };
+windmill.registry.methods['scroll']            = {'locator': false, 'option': 'coords' };
 windmill.registry.methods['-- Waits --']        = {'locator': false, 'option': false, 'section': true};
 windmill.registry.methods['waits.sleep']         = {'locator': false, 'option': 'milliseconds' };
 windmill.registry.methods['waits.forElement']     = {'locator': true, 'option': 'timeout' };

@@ -262,11 +262,11 @@ windmill.controller = new function () {
   };
    
   this.dragDropElem = function(param_object){
-        windmill.controller.stopLoop();
-        windmill.controller.moveCount = 0;
-  
         var p = param_object;
         var el = this._lookupDispatch(p);
+        if (!el){ return false; }
+        windmill.controller.stopLoop();
+        windmill.controller.moveCount = 0;
         windmill.controller.dragElem = el;
         
         var i = windmill.testWindow.document.createElement('img');
@@ -286,9 +286,12 @@ windmill.controller = new function () {
          
          windmill.events.triggerMouseEvent(el, 'mousedown', true);
          windmill.controller.doRem = function(){
-            windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true);
-            windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'click', true);
-            windmill.controller.dragElem.removeChild(_w.document.getElementById('mc'));
+            try{
+              windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true);
+              windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'click', true);
+              windmill.controller.dragElem.removeChild(_w.document.getElementById('mc'));
+            }
+            catch(err){}
             windmill.controller.continueLoop();
          }
          windmill.controller.doMove = function(x,y){
@@ -323,11 +326,14 @@ windmill.controller = new function () {
   
   //Drag Drop functionality allowing functions passed to calculate cursor offsets
   this.dragDropAbs = function (param_object){
+     var p = param_object;
+     var el = this._lookupDispatch(p)
+     if (!el){ return false; }
+    
      windmill.controller.stopLoop();
      windmill.controller.moveCount = 0;
      windmill.controller.ddeParamObj = param_object;
      
-     var p = param_object;
      var webApp = windmill.testWindow;
      //takes a coordinates param (x,y),(x,y) start, end
      var coords = p.coords.split('),(');
@@ -621,6 +627,15 @@ windmill.controller = new function () {
   }
   this.refresh = function(param_object){
     windmill.testWindow.location.reload(true);
+    return true;
+  }
+  
+  this.scroll = function(param_object){
+    var d = param_object.coords;
+    d = d.replace('(','');
+    d = d.replace(')','');
+    var cArr = d.split(',');
+    _w.scrollTo(cArr[0],cArr[1]);
     return true;
   }
   
