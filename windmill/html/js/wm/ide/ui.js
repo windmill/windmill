@@ -398,7 +398,7 @@ windmill.ui.recorder = new function() {
 
     this.recordOff = function() {      
         this.recordState = false;
-        $('record').src = 'img/record.png';´
+        $('record').src = 'img/record.png';
         fleegix.event.unlisten(_w.document.body, 'onunload', windmill, 'unloaded');
 
         try {
