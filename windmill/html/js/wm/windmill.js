@@ -153,10 +153,18 @@ var windmill = new function() {
         busyOn();
         this.controller.stopLoop();
         
-        //if we are recording, we just detected a new page load
+        //if we are recording, we just detected a new page load, but only add one.
+        //Opera and IE appear to be calling unload multiple times
         if (windmill.ui.recorder.recordState){
-          var wfpl = windmill.ui.remote.buildAction("waits.forPageLoad", {timeout:20000});
-          windmill.ui.remote.addAction(wfpl);
+          var suiteActions = windmill.ui.remote.getSuite().childNodes;
+          var lastNode = suiteActions[suiteActions.length-1];
+          var method = null;
+          try{ method = $(lastNode.id+'method').value;}
+          catch(err){}
+          if (method != "waits.forPageLoad"){
+            var wfpl = windmill.ui.remote.buildAction("waits.forPageLoad", {timeout:20000});
+            windmill.ui.remote.addAction(wfpl);
+          }
         }
         
         checkPage = function() {

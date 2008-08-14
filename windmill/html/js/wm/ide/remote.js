@@ -143,7 +143,6 @@ windmill.ui.remote = new function() {
         var suite = this.getSuite();
         if (typeof(action) == 'undefined') {
             var action = this.buildAction(null, {});
-
         }
         //A hack to make it draw the UI correctly in IE
         suite.appendChild(action);
