@@ -30,6 +30,7 @@ windmill.registry.methods['click']               = {'locator': true, 'option': f
 windmill.registry.methods['doubleClick']         = {'locator': true, 'option': false};
 windmill.registry.methods['mouseDown']           = {'locator': true, 'option': false};
 windmill.registry.methods['mouseMove']           = {'locator': false, 'option': 'coords'};
+windmill.registry.methods['mouseMoveTo']           = {'locator': false, 'option': 'coords'};
 windmill.registry.methods['mouseUp']             = {'locator': true, 'option': false};
 windmill.registry.methods['mouseOut']            = {'locator': true,'option': false};
 windmill.registry.methods['mouseOver']           = {'locator': true,'option': false};

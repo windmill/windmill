@@ -260,69 +260,206 @@ windmill.controller = new function () {
     }
     return true;
   };
-   
+  
+  // this.dragDropElem = function(param_object){
+  //        var p = param_object;
+  //        var el = this._lookupDispatch(p);
+  //        if (!el){ return false; }
+  //        
+  //        windmill.controller.stopLoop();
+  //        windmill.controller.moveCount = 0;
+  //        windmill.controller.dragElem = el;
+  //        
+  //        var dist = p.pixels.split(',');
+  //        dist[0] = dist[0].replace('(','');
+  //        dist[1] = dist[1].replace(')','');
+  //         
+  //        var box = el.getBoundingClientRect(); 
+  //        var left = box.left;
+  //        var top = box.top + 2;
+  //        
+  //        windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, left, top);
+  //        windmill.events.triggerMouseEvent(el, 'mousedown', true, left, top);
+  //        // windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, left+100, top);
+  //        //        windmill.events.triggerMouseEvent(el, 'mouseup', true, left, top);
+  //        
+  //        windmill.controller.doRem = function(){
+  //            try{
+  //              windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true);
+  //            }
+  //            catch(err){}
+  //            windmill.controller.continueLoop();
+  //         }
+  //         windmill.controller.doMove = function(x,y){
+  //           windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, x, y);
+  //           windmill.controller.moveCount--;
+  //           if (windmill.controller.moveCount == 0){
+  //             setTimeout('windmill.controller.doRem()', 1000);
+  //           }
+  //         }
+  //         
+  //         var delay = 0;
+  //         var i = 0;
+  //         var newX = left;
+  //         
+  //         while(i != dist[0]){
+  //           if (i < dist[0]){ newX++; }
+  //           else{ newX--; }
+  //           
+  //           setTimeout("windmill.controller.doMove("+newX+","+top+")", delay)
+  //           if (i < dist[0]){ i++; }
+  //           else{ i--; }
+  //           windmill.controller.moveCount++;
+  //           delay = delay + 5;
+  //         }
+  //         
+  //         var delay = 0;
+  //         var i = 0;
+  //         var newBox = el.getBoundingClientRect(); 
+  //         var newY = top;
+  //         
+  //         while(i != dist[1]){
+  //           if (i < dist[0]){ newY++; }
+  //           else{ newY--; }
+  //           
+  //           setTimeout("windmill.controller.doMove("+newBox.left+", "+newY+")", delay)
+  //           if (i < dist[1]){ i++; }
+  //           else{ i--; }
+  //           windmill.controller.moveCount++;
+  //           delay = delay + 5;
+  //         }
+  //        
+  //        return true;
+  //    }
+     
   this.dragDropElem = function(param_object){
-        var p = param_object;
-        var el = this._lookupDispatch(p);
-        if (!el){ return false; }
-        windmill.controller.stopLoop();
-        windmill.controller.moveCount = 0;
-        windmill.controller.dragElem = el;
-        
-        var i = windmill.testWindow.document.createElement('img');
-            i.id = "mc";
-            i.style.border = "0px";
-            i.style.left = '0px';
-            i.style.top = '0px';
-            i.style.position = "absolute";
-            i.zIndex = "100000000000";
-            el.appendChild(i);
-            i.src = "/windmill-serv/img/mousecursor.png"; 
+         var p = param_object;
+         var el = this._lookupDispatch(p);
+         if (!el){ return false; }
+         windmill.controller.stopLoop();
+         windmill.controller.moveCount = 0;
+         windmill.controller.dragElem = el;
          
-         //takes a coordinates param (x,y),(x,y) start, end
-         var dist = p.pixels.split(',');
-         dist[0] = dist[0].replace('(','');
-         dist[1] = dist[1].replace(')','');
-         
-         windmill.events.triggerMouseEvent(el, 'mousedown', true);
-         windmill.controller.doRem = function(){
-            try{
-              windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true);
-              windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'click', true);
-              windmill.controller.dragElem.removeChild(_w.document.getElementById('mc'));
-            }
-            catch(err){}
-            windmill.controller.continueLoop();
+         //ie specific drag and drop simulation
+         if (windmill.browser.isIE){
+             var dist = p.pixels.split(',');
+              dist[0] = dist[0].replace('(','');
+              dist[1] = dist[1].replace(')','');
+
+              var box = el.getBoundingClientRect(); 
+              var left = box.left;
+              var top = box.top + 2;
+
+              windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, left, top);
+              windmill.events.triggerMouseEvent(el, 'mousedown', true, left, top);
+              // windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, left+100, top);
+              //        windmill.events.triggerMouseEvent(el, 'mouseup', true, left, top);
+
+              windmill.controller.doRem = function(){
+                  try{
+                    windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true);
+                  }
+                  catch(err){}
+                  windmill.controller.continueLoop();
+               }
+               windmill.controller.doMove = function(x,y){
+                 windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, x, y);
+                 windmill.controller.moveCount--;
+                 if (windmill.controller.moveCount == 0){
+                   setTimeout('windmill.controller.doRem()', 1000);
+                 }
+               }
+
+               var delay = 0;
+               var i = 0;
+               var newX = left;
+
+               while(i != dist[0]){
+                 if (i < dist[0]){ newX++; }
+                 else{ newX--; }
+
+                 setTimeout("windmill.controller.doMove("+newX+","+top+")", delay)
+                 if (i < dist[0]){ i++; }
+                 else{ i--; }
+                 windmill.controller.moveCount++;
+                 delay = delay + 5;
+               }
+
+               var delay = 0;
+               var i = 0;
+               var newBox = el.getBoundingClientRect(); 
+               var newY = top;
+
+               while(i != dist[1]){
+                 if (i < dist[0]){ newY++; }
+                 else{ newY--; }
+
+                 setTimeout("windmill.controller.doMove("+newBox.left+", "+newY+")", delay)
+                 if (i < dist[1]){ i++; }
+                 else{ i--; }
+                 windmill.controller.moveCount++;
+                 delay = delay + 5;
+               }
          }
-         windmill.controller.doMove = function(x,y){
-           windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, x, y);
-           windmill.controller.moveCount--;
-           if (windmill.controller.moveCount == 0){
-             setTimeout('windmill.controller.doRem()', 1000);
-           }
-         }
-         
-         var delay = 0;
-         var i = 0;
-         while(i != dist[0]){
-           setTimeout("windmill.controller.doMove("+i+", 0)", delay)
-           if (i < dist[0]){ i++; }
-           else{ i--; }
-           windmill.controller.moveCount++;
-           delay = delay + 5;
-         }
-         
-         var delay = 0;
-         var i = 0;
-         while(i != dist[1]){
-           setTimeout("windmill.controller.doMove(0, "+i+")", delay)
-           if (i < dist[1]){ i++; }
-           else{ i--; }
-           windmill.controller.moveCount++;
-           delay = delay + 5;
-         }
-         return true;
-    }
+         //all other browsers with sane event models
+         else{
+             var i = windmill.testWindow.document.createElement('img');
+                 i.id = "mc";
+                 i.style.border = "0px";
+                 i.style.left = '0px';
+                 i.style.top = '0px';
+                 i.style.position = "absolute";
+                 i.zIndex = "100000000000";
+                 el.appendChild(i);
+                 i.src = "/windmill-serv/img/mousecursor.png"; 
+      
+              //takes a coordinates param (x,y),(x,y) start, end
+              var dist = p.pixels.split(',');
+              dist[0] = dist[0].replace('(','');
+              dist[1] = dist[1].replace(')','');
+      
+              windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, el.offsetLeft, el.offsetTop);
+              windmill.events.triggerMouseEvent(el, 'mousedown', true);
+              windmill.controller.doRem = function(){
+                 try{
+                   windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true);
+                   windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'click', true);
+                   windmill.controller.dragElem.removeChild(_w.document.getElementById('mc'));
+                 }
+                 catch(err){}
+                 windmill.controller.continueLoop();
+              }
+              windmill.controller.doMove = function(x,y){
+                windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, x, y);
+                windmill.controller.moveCount--;
+                if (windmill.controller.moveCount == 0){
+                  setTimeout('windmill.controller.doRem()', 1000);
+                }
+              }
+      
+              var delay = 0;
+              var i = 0;
+              while(i != dist[0]){
+                setTimeout("windmill.controller.doMove("+i+", 0)", delay)
+                if (i < dist[0]){ i++; }
+                else{ i--; }
+                windmill.controller.moveCount++;
+                delay = delay + 5;
+              }
+      
+              var delay = 0;
+              var i = 0;
+              while(i != dist[1]){
+                setTimeout("windmill.controller.doMove(0, "+i+")", delay)
+                if (i < dist[1]){ i++; }
+                else{ i--; }
+                windmill.controller.moveCount++;
+                delay = delay + 5;
+              }
+          }
+          
+          return true;
+     }
   
   //Drag Drop functionality allowing functions passed to calculate cursor offsets
   this.dragDropAbs = function (param_object){
@@ -356,7 +493,7 @@ windmill.controller = new function () {
       i.src = "/windmill-serv/img/mousecursor.png";
      
      windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
-     windmill.events.triggerMouseEvent(this._lookupDispatch(p), 'mousedown', true);
+     windmill.events.triggerMouseEvent(this._lookupDispatch(p), 'mousedown', true, start[0], start[1]);
      var startx = start[0];
      var starty = start[1];
    
@@ -492,7 +629,13 @@ windmill.controller = new function () {
       if (mupElement == null){
         mupElement = windmill.testWindow.document.body;
       }
-      windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  
+      if (windmill.browser.isIE){
+          var box = mupElement.getBoundingClientRect(); 
+          var left = box.left;
+          var top = box.top + 2;
+          windmill.events.triggerMouseEvent(mupElement, 'mousedown', true, left, top);  
+      }
+      else { windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  }
     
       return true;
   };
@@ -501,6 +644,9 @@ windmill.controller = new function () {
     var p = param_object;
     var webApp = windmill.testWindow;
     var coords = p.coords.split(',');
+    coords[0] = coords[0].replace('(','');
+    coords[1] = coords[1].replace(')','');
+    
     windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, coords[0], coords[1]);
     return true;
   };
@@ -597,7 +743,15 @@ windmill.controller = new function () {
     if (mdnElement == null){
       mdnElement = windmill.testWindow.document.body;
     }
-    windmill.events.triggerMouseEvent(mdnElement, 'mouseup', true);
+    if(windmill.browser.isIE){
+      var box = mdnElement.getBoundingClientRect(); 
+      var left = box.left;
+      var top = box.top + 2;
+      windmill.events.triggerMouseEvent(mdnElement, 'mouseup', true, left, top);
+    }
+    else{
+      windmill.events.triggerMouseEvent(mdnElement, 'mouseup', true);
+    }
     
     return true;
   };
