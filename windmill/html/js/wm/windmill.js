@@ -191,10 +191,10 @@ var windmill = new function() {
         //We need to define the windmill object in the
         //test window to allow the JS test framework
         //to access different functionality
-        try { 
+        try {
           windmill.testWindow.windmill = windmill; 
-          fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
-          fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
+          fleegix.event.unlisten(_w.document.body, 'onunload', windmill, 'unloaded');
+          fleegix.event.listen(_w.document.body, 'onunload', windmill, 'unloaded');
         }
         catch(err){ 
           try { this.loaded(); }

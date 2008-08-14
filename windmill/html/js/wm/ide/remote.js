@@ -18,11 +18,11 @@ Copyright 2006-2007, Open Source Applications Foundation
 /***************************************/
 windmill.ui.remote = new function() {
     this.selectedElement = null;
+    this.selectedElementOption = null;
 
     this.scrollRecorderTextArea = function() {
         var obj = $("ide");
         obj.scrollTop = obj.scrollHeight;
-
     };
 
     this.clearIDE = function() {
@@ -87,6 +87,10 @@ windmill.ui.remote = new function() {
     this.setRemoteElem = function(id) {
       this.selectedElement = id;
     };
+    this.setRemoteElemOption = function(id) {
+      this.selectedElementOption = id;
+    };
+    
 
     this.addActionAbove = function(uuid) {
         var newAction = this.buildAction(null, {});
@@ -583,14 +587,12 @@ windmill.ui.remote = new function() {
             i1.size = '40';
             if (typeof(params[windmill.registry.methods[method].option]) != 'undefined') {
                 i1.setAttribute("value", params[windmill.registry.methods[method].option]);
-
             }
             i1.id = action.id + 'option';
-       /*     if (!windmill.browser.isIE) {
-                i1.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElem(\'' + i1.id + '\')');
+            if (!windmill.browser.isIE) {
+                i1.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElemOption(\'' + i1.id + '\')');
                 i1.setAttribute('onClick', '$(\'' + i1.id + '\').focus();');                
             }
-        */
             c.appendChild(i1);
             r.appendChild(c);
             t.appendChild(r);

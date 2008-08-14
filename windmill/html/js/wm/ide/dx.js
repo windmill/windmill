@@ -84,11 +84,23 @@ windmill.ui.domexplorer = new function() {
     $('mouseExp').innerHTML = '('+e.clientX + ',' + e.clientY+')';
   }
   
-  this.explorerClick = function(e) { window.focus(); };
+  this.explorerClick = function(e) { 
+    var optId = windmill.ui.remote.selectedElementOption;
+    //if an option section is selected and the altKey is down append the mouse coords
+    if ((optId != null) && (e.altKey)){
+      if ($(optId).value == ""){
+        $(optId).value += '('+e.clientX+','+e.clientY+'),';
+      }
+      else{
+        $(optId).value += '('+e.clientX+','+e.clientY+')';
+      }
+    }
+    else{ window.focus();}
+  };
   //Set the listeners for the dom explorer
   this.domExplorerOn = function() {
     //Display the mouse coords in the IDE
-    fleegix.event.listen(windmill.testWindow, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
+    fleegix.event.listen(windmill.testWindow.document.body, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
     
     this.exploreState = true;
     try {

@@ -355,9 +355,9 @@ windmill.controller = new function () {
               // windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, left+100, top);
               //        windmill.events.triggerMouseEvent(el, 'mouseup', true, left, top);
 
-              windmill.controller.doRem = function(){
+              windmill.controller.doRem = function(x,y){
                   try{
-                    windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true);
+                    windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true, x, y);
                   }
                   catch(err){}
                   windmill.controller.continueLoop();
@@ -366,7 +366,7 @@ windmill.controller = new function () {
                  windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, x, y);
                  windmill.controller.moveCount--;
                  if (windmill.controller.moveCount == 0){
-                   setTimeout('windmill.controller.doRem()', 1000);
+                   setTimeout('windmill.controller.doRem('+x+','+y+')', 1000);
                  }
                }
 
@@ -391,8 +391,8 @@ windmill.controller = new function () {
                var newY = top;
 
                while(i != dist[1]){
-                 if (i < dist[0]){ newY++; }
-                 else{ newY--; }
+                 if (i < dist[0]){ newY--; }
+                 else{ newY++; }
 
                  setTimeout("windmill.controller.doMove("+newBox.left+", "+newY+")", delay)
                  if (i < dist[1]){ i++; }
@@ -497,8 +497,8 @@ windmill.controller = new function () {
      var startx = start[0];
      var starty = start[1];
    
-     windmill.controller.remMouse = function(){
-       windmill.events.triggerMouseEvent(windmill.controller._lookupDispatch(p), 'mousedown', true);
+     windmill.controller.remMouse = function(x,y){
+       windmill.events.triggerMouseEvent(windmill.controller._lookupDispatch(p), 'mouseup', true, x, y);
        windmill.events.triggerMouseEvent(windmill.controller._lookupDispatch(p), 'click', true);
        var c = windmill.testWindow.document.getElementById('mc');
        windmill.testWindow.document.body.removeChild(c);
@@ -514,7 +514,7 @@ windmill.controller = new function () {
        windmill.controller.moveCount--;
        if (windmill.controller.moveCount == 0){
          w.getElementById('mc').src = "/windmill-serv/img/mousecursorred.png";
-         setTimeout('windmill.controller.remMouse()', 1500);
+         setTimeout('windmill.controller.remMouse('+startx+','+starty+')', 1500);
        }
      }
    

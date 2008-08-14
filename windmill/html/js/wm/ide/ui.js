@@ -384,8 +384,8 @@ windmill.ui.recorder = new function() {
         //if when loading the listener didn't get attached
         //we attach it if they are recording because we need to know
         //when the new page is loading so we can re-attach
-        fleegix.event.unlisten(windmill.testWindow, 'onunload', windmill, 'unloaded');
-        fleegix.event.listen(windmill.testWindow, 'onunload', windmill, 'unloaded');
+        fleegix.event.unlisten(_w.document.body, 'onunload', windmill, 'unloaded');
+        fleegix.event.listen(_w.document.body, 'onunload', windmill, 'unloaded');
 	
         windmill.ui.remote.getSuite();
         try { this.recRecursiveBind(windmill.testWindow); }
@@ -396,7 +396,7 @@ windmill.ui.recorder = new function() {
         }
     }
 
-    this.recordOff = function() {
+    this.recordOff = function() {      
         this.recordState = false;
         $('record').src = 'img/record.png';
 
