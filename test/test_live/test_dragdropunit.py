@@ -20,8 +20,11 @@ def test_dragdropunit():
     #assert client.asserts.assertProperty(validator=u'style.left|409px', id=u'draggable-dragPrevention')
     #test the droppable widgets
     assert client.click(link=u'Droppable')
+    assert client.click(link=u'Droppable')
+    assert client.waits.sleep(milliseconds=u'500')
     #assert client.waits.forPageLoad(timeout=u'20000')
     assert client.dragDropElem(xpath=u'/html/body/div/div[2]/div/div[2]/form/div[2]/table/tbody/tr/td[2]/div/div/div[3]/div/ul/li[2]/img', pixels=u'(310,0)')
+    assert client.waits.sleep(milliseconds=u'500')
     assert client.asserts.assertProperty(xpath=u'/html/body/div/div[2]/div/div[2]/form/div[2]/table/tbody/tr/td[2]/div/div/div[3]/div/div/img', validator=u'src|templates/images/P1010039.JPG')
     assert client.scroll(coords=u'(0,550)')
     assert client.dragDropElem(xpath=u'/html/body/div/div[2]/div/div[2]/form/div[2]/table/tbody/tr/td[2]/div/div[2]/div[3]/div', pixels=u'(0,250)')
@@ -32,6 +35,8 @@ def test_dragdropunit():
     assert client.asserts.assertText(xpath=u'/html/body/div/div[2]/div/div[2]/form/div[2]/table/tbody/tr/td[2]/div/div[2]/div[3]/div[4]', validator=u'Dropped! Dropped!')
     #test the sortable widgets
     assert client.click(link=u'Sortable')
+    assert client.click(link=u'Sortable')
+    assert client.waits.sleep(milliseconds=u'500')
     #assert client.waits.forPageLoad(timeout=u'20000')
     assert client.asserts.assertJS(js=u"_w.document.getElementById('user_Susan').parentNode.childNodes.length == 11;")
     assert client.dragDropElem(pixels=u'(160,0)', id=u'user_Susan')
@@ -44,6 +49,8 @@ def test_dragdropunit():
     #assert client.asserts.assertProperty(xpath=u'/html/body/div[3]', validator=u'style.left|455px')
     #test the slider widgets
     assert client.click(link=u'Slider')
+    assert client.click(link=u'Slider')
+    assert client.waits.sleep(milliseconds=u'500')
     #assert client.waits.forPageLoad(timeout=u'20000')
     assert client.dragDropElem(xpath=u'/html/body/div/div[2]/div/div[2]/form/div[2]/table/tbody/tr/td[2]/div/div/div[3]/div/a/div', pixels=u'(80,0)')
     #Assert client.asserts.assertProperty(xpath=u'/html/body/div/div[2]/div/div[2]/form/div[2]/table/tbody/tr/td[2]/div/div/div[3]/div/a/div', validator=u'style.left|79px')
