@@ -36,9 +36,7 @@ windmill.ui.remote = new function() {
 
             };
             setTimeout("d()", 800);
-
         }
-
     };
 
     this.methodChange = function(id) {

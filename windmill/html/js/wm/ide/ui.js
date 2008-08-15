@@ -292,16 +292,35 @@ windmill.ui.recorder = new function() {
                 windmill.ui.remote.addAction(windmill.ui.remote.buildAction('doubleClick', params));
             }
             else {
+                //if sensative click is on, pick up every click that gets to the window listener
                 if ($("clickOn").checked == true) {
+                    //If the previous action is waits for page load
+                    //we know that they don't want to access this click
+                    //until the element is on the page and ready
+                    //so we add a waits.forElement for the element they are clicking
+                    //I find myself doing this manually constantly
+                    var suiteActions = windmill.ui.remote.getSuite().childNodes;
+                    var lastNode = suiteActions[suiteActions.length-1];
+                    var method = null;
+                    try{ method = $(lastNode.id+'method').value;}
+                    catch(err){}
+                    if (method == "waits.forPageLoad"){
+                      var newParams = {timeout:8000};
+                      newParams[locator] = locValue;
+                      var wfe = windmill.ui.remote.buildAction("waits.forElement", newParams);
+                      windmill.ui.remote.addAction(wfe);
+                    }
+                    //Add the click action
                     windmill.ui.remote.addAction(windmill.ui.remote.buildAction('click', params));
                 }
+                //if the sensative click is off, you can click all over but we only pick up things we know are clickable
                 else if ((e.target.onclick != null) || (locator == 'link') || (e.target.tagName.toUpperCase() == 'IMG')) {
                     windmill.ui.remote.addAction(windmill.ui.remote.buildAction('click', params));
                 }
             }
         }
+        //scroll the actions in the ide to the bottom for user convenience
         windmill.ui.remote.scrollRecorderTextArea();
-
     }
 
     //Writing json to the remote for the change events
