@@ -83,12 +83,13 @@ windmill.ui.remote = new function() {
     };
 
     this.setRemoteElem = function(id) {
+      this.selectedElementOption = null;
       this.selectedElement = id;
     };
     this.setRemoteElemOption = function(id) {
+      this.selectedElement = null;
       this.selectedElementOption = id;
     };
-    
 
     this.addActionAbove = function(uuid) {
         var newAction = this.buildAction(null, {});
@@ -514,13 +515,10 @@ windmill.ui.remote = new function() {
             c.appendChild(i0);
             r.appendChild(c);
             t.appendChild(r);
-
         }
         //if its an action that takes no params at all set a min height
-        else {
-            t.style.height = '40px';
-        }
-
+        else { t.style.height = '40px'; }
+        
         //If this method has a option
         if (windmill.registry.methods[method].option != false) {
             var r = document.createElement("tr");
@@ -539,8 +537,20 @@ windmill.ui.remote = new function() {
             s2.className = 'smalloption';
             s2.id = action.id + 'optionType';
             
+            if (windmill.registry.methods[method].optionIsLocator){
+              for (loc in windmill.registry.locator){
+                newOpt = document.createElement('option');
+                newOpt.value = 'opt'+windmill.registry.locator[loc];
+                newOpt.innerHTML =  windmill.registry.locator[loc];
+                if (params[newOpt.value]){
+                  newOpt.selected = 'selected';
+                  windmill.ui.remote.optionValue = params[newOpt.value];
+                }
+                s2.appendChild(newOpt);
+              }
+            }
             //if the options are a comma delimited list, build the drop down
-            if (windmill.registry.methods[method].option.indexOf(',') != -1){
+            else if (windmill.registry.methods[method].option.indexOf(',') != -1){
               optArr = windmill.registry.methods[method].option.split(',');
               for (opt in optArr){
                 newOpt = document.createElement('option');
@@ -577,13 +587,17 @@ windmill.ui.remote = new function() {
             c.appendChild(s2);
             r.appendChild(c);
 
-            //Add the text box
+            //Add the text box for the option
             var i1 = document.createElement('input');
             i1.name = 'optValue';
             i1.className = 'texta';
             i1.size = '40';
             if (typeof(params[windmill.registry.methods[method].option]) != 'undefined') {
                 i1.setAttribute("value", params[windmill.registry.methods[method].option]);
+            }
+            if (windmill.ui.remote.optionValue){
+              i1.setAttribute("value", windmill.ui.remote.optionValue);
+              delete windmill.ui.remote.optionValue;
             }
             i1.id = action.id + 'option';
             if (!windmill.browser.isIE) {
@@ -593,7 +607,6 @@ windmill.ui.remote = new function() {
             c.appendChild(i1);
             r.appendChild(c);
             t.appendChild(r);
-
         }
 
         action.appendChild(t);

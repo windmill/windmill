@@ -28,6 +28,10 @@ windmill.ui.domexplorer = new function() {
     if (windmill.ui.remote.selectedElement != null) {
       $("domExp").style.display = 'none';
     }
+    if (windmill.ui.remote.selectedElementOption != null) {
+        $("domExp").style.display = 'none';
+    }
+    
     //if absolute xpath is not wanted try our best to get a better locater
     if ($('useXpath').checked == false) {
         if (e.target.id != "") {
@@ -60,6 +64,25 @@ windmill.ui.domexplorer = new function() {
         e.stopPropagation();
         e.preventDefault();
     }
+    if (windmill.ui.remote.selectedElementOption != null && e.altKey == false) {
+        var id = windmill.ui.remote.selectedElementOption.replace('option', '');
+        //Incase if that node has been removed somehow
+        try {
+          var a = $("domExp").innerHTML.split(': ');
+          //If the element is a link, get rid of the all the garbage
+          if (a[0] == 'link') {
+              a[1] = a[1].replace(/(<([^>]+)>)/ig, "");
+              a[1] = a[1].replace(/\n/g, "");
+          }
+          $(id + 'optionType').value = 'opt'+a[0].toLowerCase();
+          $(id + 'option').value = a[1];
+          $(id + 'option').focus();
+        }
+        catch(error) {
+          windmill.ui.results.writeResult('Error in dom explorer');
+        }
+    }
+    
     if (windmill.ui.remote.selectedElement != null) {
         var id = windmill.ui.remote.selectedElement.replace('locator', '');
         //Incase if that node has been removed somehow
@@ -78,6 +101,7 @@ windmill.ui.domexplorer = new function() {
           windmill.ui.results.writeResult('Error in dom explorer');
         }
     }
+    
   };
   
   this.showMouseCoords = function(e){
@@ -126,6 +150,8 @@ windmill.ui.domexplorer = new function() {
     try {
       //Reset the selected element
       windmill.ui.remote.selectedElement = null;
+      windmill.ui.remote.selectedElementOption = null;
+      
       $('explorer').src = 'img/xon.png';
       $('domExp').style.display = 'none';
       $('domExp').innerHTML = '';

@@ -230,7 +230,7 @@ windmill.controller = new function () {
     
     var optionToSelect = null;
     for (opt in element.options){
-      var el = element.options[opt]
+      var el = element.options[opt];
       
       if (param_object.option != undefined){
         if(el.innerHTML.indexOf(param_object.option) != -1){
@@ -260,6 +260,104 @@ windmill.controller = new function () {
     }
     return true;
   };
+  
+  this.dragDropElemToElem = function(p){
+    windmill.controller.stopLoop();
+    //Get the drag and dest
+    var drag = this._lookupDispatch(p);
+    //create the params for the destination
+    var destParams = {};
+    for (attrib in p){
+      if (attrib.indexOf('opt') != -1){
+        destParams[attrib.replace('opt', '')] = p[attrib];
+        break;
+      }
+    }
+    var dest = this._lookupDispatch(destParams);
+    
+    //if one of these elements couldn't be looked up
+    if (!drag || !dest){
+      return false;
+    }
+    windmill.controller.dragElem = drag;
+    windmill.controller.destElem = dest;
+    
+    function getCoords(obj) {
+    	var curleft = curtop = 0;
+    	if (obj.offsetParent) {
+        do {
+        	curleft += obj.offsetLeft;
+        	curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+      }  
+      return {left:curleft,top:curtop};
+    }
+    
+    var dragCoords = null;
+    var destCoords = null;
+    
+    //in IE and Mozilla we can use the getBoundingClientRect()
+    if ( windmill.browser.isIE || windmill.browser.isGecko) {
+      dragCoords = drag.getBoundingClientRect();
+      destCoords = dest.getBoundingClientRect();
+    }
+    else {
+      dragCoords = getCoords(drag);
+      destCoords = getCoords(dest);
+    }
+    
+    //Do the initial move to the drag element position
+    windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, dragCoords.left, dragCoords.top);
+    windmill.events.triggerMouseEvent(drag, 'mousedown', true, dragCoords.left, dragCoords.top); //do the mousedown
+    //windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, destCoords.left, destCoords.top); //do the move
+    //windmill.events.triggerMouseEvent(dest, 'mouseup', true, destCoords.left, destCoords.top);
+    //IE doesn't appear to expect a click to complete the simulation
+    // if (!windmill.browser.isIE){
+    //   windmill.events.triggerMouseEvent(dest, 'click', true, destCoords.left, destCoords.top);
+    // }
+
+     windmill.controller.doRem = function(){
+         windmill.controller.continueLoop();
+     }
+     windmill.controller.doMove = function(attrib, startx, starty){
+       windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, startx, starty); 
+   
+       windmill.controller.moveCount--;
+       if (windmill.controller.moveCount == 0){
+         windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true, startx, starty);
+         if (!windmill.browser.isIE){
+           windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'click', true, startx, starty);
+         }
+         setTimeout('windmill.controller.doRem()', 1000);
+       }
+     }
+
+     windmill.controller.moveCount = 0;
+     var startx = dragCoords.left;
+     var starty = dragCoords.top;
+     var endx = destCoords.left;
+     var endy = destCoords.top;
+     
+     var delay = 0;
+     while (startx != endx){
+       if (startx < endx){ startx++; }
+       else{ startx--; }
+       setTimeout("windmill.controller.doMove('left',"+startx+","+starty+")", delay)
+       windmill.controller.moveCount++;
+       delay = delay + 5;      
+     }
+       //move the y
+      //var delay = 0;
+     while (starty != endy){
+       if (starty < endy){ starty++; }
+       else{ starty--; }
+       setTimeout("windmill.controller.doMove('top',"+startx+","+starty+")", delay);
+       windmill.controller.moveCount++;
+       delay = delay + 5;      
+     }
+  
+    return true;
+  }
   
   // this.dragDropElem = function(param_object){
   //        var p = param_object;
@@ -385,16 +483,16 @@ windmill.controller = new function () {
                  delay = delay + 5;
                }
 
-               var delay = 0;
+               //var delay = 0;
                var i = 0;
                var newBox = el.getBoundingClientRect(); 
                var newY = top;
 
                while(i != dist[1]){
-                 if (i < dist[0]){ newY--; }
-                 else{ newY++; }
+                 if (i < dist[0]){ newY++; }
+                 else{ newY--; }
 
-                 setTimeout("windmill.controller.doMove("+newBox.left+", "+newY+")", delay)
+                 setTimeout("windmill.controller.doMove("+newX+", "+newY+")", delay)
                  if (i < dist[1]){ i++; }
                  else{ i--; }
                  windmill.controller.moveCount++;
@@ -403,15 +501,15 @@ windmill.controller = new function () {
          }
          //all other browsers with sane event models
          else{
-             var i = windmill.testWindow.document.createElement('img');
-                 i.id = "mc";
-                 i.style.border = "0px";
-                 i.style.left = '0px';
-                 i.style.top = '0px';
-                 i.style.position = "absolute";
-                 i.zIndex = "100000000000";
-                 el.appendChild(i);
-                 i.src = "/windmill-serv/img/mousecursor.png"; 
+             // var i = windmill.testWindow.document.createElement('img');
+             //     i.id = "mc";
+             //     i.style.border = "0px";
+             //     i.style.left = '0px';
+             //     i.style.top = '0px';
+             //     i.style.position = "absolute";
+             //     i.zIndex = "100000000000";
+             //     el.appendChild(i);
+             //     i.src = "/windmill-serv/img/mousecursor.png"; 
       
               //takes a coordinates param (x,y),(x,y) start, end
               var dist = p.pixels.split(',');
@@ -420,13 +518,10 @@ windmill.controller = new function () {
       
               windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, el.offsetLeft, el.offsetTop);
               windmill.events.triggerMouseEvent(el, 'mousedown', true);
+              
               windmill.controller.doRem = function(){
-                 try{
-                   windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true);
-                   windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'click', true);
-                   windmill.controller.dragElem.removeChild(_w.document.getElementById('mc'));
-                 }
-                 catch(err){}
+                 windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true);
+                 windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'click', true);
                  windmill.controller.continueLoop();
               }
               windmill.controller.doMove = function(x,y){
@@ -446,11 +541,12 @@ windmill.controller = new function () {
                 windmill.controller.moveCount++;
                 delay = delay + 5;
               }
-      
-              var delay = 0;
+              
+              var newX = i;
+              //var delay = 0;
               var i = 0;
               while(i != dist[1]){
-                setTimeout("windmill.controller.doMove(0, "+i+")", delay)
+                setTimeout("windmill.controller.doMove("+newX+", "+i+")", delay)
                 if (i < dist[1]){ i++; }
                 else{ i--; }
                 windmill.controller.moveCount++;
@@ -528,7 +624,7 @@ windmill.controller = new function () {
        delay = delay + 5;      
      }
      //move the y
-     var delay = 0;
+     //var delay = 0;
      while (starty != end[1]){
         if (starty < end[1]){ starty++; }
         else{ starty--; }
@@ -727,7 +823,7 @@ windmill.controller = new function () {
          delay = delay + 5;      
        }
        //move the y
-       var delay = 0;
+       //var delay = 0;
        while (starty != end[1]){
           if (starty < end[1]){ starty++; }
           else{ starty--; }

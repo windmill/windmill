@@ -101,9 +101,7 @@ windmill.xhr = new function() {
                             }
                         }
                         //Every other action that isn't namespaced
-                        else {
-                            var result = windmill.controller[resp.result.method](resp.result.params);
-                        }
+                        else { var result = windmill.controller[resp.result.method](resp.result.params); }
                     }
                     catch(error) {
                         windmill.ui.results.writeResult("<font color=\"#FF0000\">There was an error in the " + 

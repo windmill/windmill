@@ -21,7 +21,13 @@ windmill.registry = new function () {
 };
 
 //Setup all the current methods supported
-windmill.registry.locator.push('id','link','xpath','jsid', 'name','classname', 'tagname');
+windmill.registry.locator = ['id','link','xpath','jsid', 'name','classname', 'tagname'];
+//windmill.registry.locator.push('id','link','xpath','jsid', 'name','classname', 'tagname');
+
+for( loc in windmill.registry.locator ){
+  windmill.registry.option.push('opt'+loc);
+}
+
 windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js', 'status','domain', 'coords', 'pixels');
 
 //Setup method registry
@@ -30,24 +36,25 @@ windmill.registry.methods['click']               = {'locator': true, 'option': f
 windmill.registry.methods['doubleClick']         = {'locator': true, 'option': false};
 windmill.registry.methods['mouseDown']           = {'locator': true, 'option': false};
 windmill.registry.methods['mouseMove']           = {'locator': false, 'option': 'coords'};
-windmill.registry.methods['mouseMoveTo']           = {'locator': false, 'option': 'coords'};
+windmill.registry.methods['mouseMoveTo']         = {'locator': false, 'option': 'coords'};
 windmill.registry.methods['mouseUp']             = {'locator': true, 'option': false};
 windmill.registry.methods['mouseOut']            = {'locator': true,'option': false};
 windmill.registry.methods['mouseOver']           = {'locator': true,'option': false};
-windmill.registry.methods['dragDropElem']           = {'locator': true,'option': 'pixels'};
-windmill.registry.methods['dragDropAbs']           = {'locator': true,'option': 'coords'};
+windmill.registry.methods['dragDropElem']        = {'locator': true,'option': 'pixels'};
+windmill.registry.methods['dragDropAbs']         = {'locator': true,'option': 'coords'};
+windmill.registry.methods['dragDropElemToElem']  = {'locator': true,'option': true, 'optionIsLocator': true};
 windmill.registry.methods['radio']               = {'locator': true, 'option': false };
 windmill.registry.methods['check']               = {'locator': true, 'option': false };
 windmill.registry.methods['select']              = {'locator': true, 'option': 'option,value'};
-windmill.registry.methods['-- Keyboard --']        = {'locator': false, 'option': false, 'section': true};
+windmill.registry.methods['-- Keyboard --']      = {'locator': false, 'option': false, 'section': true};
 windmill.registry.methods['type']                = {'locator': true, 'option': 'text'};
-windmill.registry.methods['-- Browser --']        = {'locator': false, 'option': false, 'section': true};
+windmill.registry.methods['-- Browser --']       = {'locator': false, 'option': false, 'section': true};
 windmill.registry.methods['open']                = {'locator': false, 'option': 'url' };
-windmill.registry.methods['goBack']             = {'locator': false, 'option': false };
-windmill.registry.methods['goForward']          = {'locator': false, 'option': false };
-windmill.registry.methods['refresh']            = {'locator': false, 'option': false };
-windmill.registry.methods['scroll']            = {'locator': false, 'option': 'coords' };
-windmill.registry.methods['-- Waits --']        = {'locator': false, 'option': false, 'section': true};
+windmill.registry.methods['goBack']              = {'locator': false, 'option': false };
+windmill.registry.methods['goForward']           = {'locator': false, 'option': false };
+windmill.registry.methods['refresh']             = {'locator': false, 'option': false };
+windmill.registry.methods['scroll']              = {'locator': false, 'option': 'coords' };
+windmill.registry.methods['-- Waits --']         = {'locator': false, 'option': false, 'section': true};
 windmill.registry.methods['waits.sleep']         = {'locator': false, 'option': 'milliseconds' };
 windmill.registry.methods['waits.forElement']     = {'locator': true, 'option': 'timeout' };
 windmill.registry.methods['waits.forNotElement']  = {'locator': true, 'option': 'timeout' };
