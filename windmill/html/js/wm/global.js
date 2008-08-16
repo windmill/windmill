@@ -416,3 +416,11 @@ var parseString = function(str, s){
   };
   return parseRecurse();
 };
+
+function removeHTMLTags(str){
+ 	 	str = str.replace(/&(lt|gt);/g, function (strMatch, p1){
+ 		 	return (p1 == "lt")? "<" : ">";
+ 		});
+ 		var strTagStrippedText = str.replace(/<\/?[^>]+(>|$)/g, "");
+	return strTagStrippedText;
+}
