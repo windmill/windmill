@@ -502,7 +502,6 @@ windmill.ui.remote = new function() {
             //Dont know why I have to do this.. but it wont work if its not setattrib
             if (params[locator]) {
                 i0.setAttribute('value', params[locator]);
-
             }
             i0.id = action.id + 'locator';
             //in firefox there was a bug moving the focus to the element we clicked, not sure why
@@ -592,13 +591,30 @@ windmill.ui.remote = new function() {
             i1.name = 'optValue';
             i1.className = 'texta';
             i1.size = '40';
-            if (typeof(params[windmill.registry.methods[method].option]) != 'undefined') {
-                i1.setAttribute("value", params[windmill.registry.methods[method].option]);
-            }
-            if (windmill.ui.remote.optionValue){
+            
+            //if the action had a special flag, dragDropElemToElem
+            if (windmill.ui.remote.optionValue != undefined){
               i1.setAttribute("value", windmill.ui.remote.optionValue);
               delete windmill.ui.remote.optionValue;
             }
+            //for the commad delimited list of options case
+            try{ //this was breaking when option is a bool instead of a string
+              if (windmill.registry.methods[method].option.indexOf(',') != -1) {
+                  var opts = windmill.registry.methods[method].option.split(',');
+                  for (i = 0; i < opts.length; i++){
+                    if (params[opts[i]]){
+                      i1.setAttribute("value", params[opts[i]]);
+                    }
+                  }
+              }
+            }
+            catch(err){}
+            //for the single option case
+            if (typeof(params[windmill.registry.methods[method].option]) != 'undefined') {
+                i1.setAttribute("value", params[windmill.registry.methods[method].option]);
+            }
+            
+            //give the value input an id
             i1.id = action.id + 'option';
             if (!windmill.browser.isIE) {
                 i1.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElemOption(\'' + i1.id + '\')');

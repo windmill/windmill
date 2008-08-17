@@ -227,23 +227,21 @@ windmill.controller = new function () {
 
     var optionToSelect = locator.findOption(element);*/
     
+    //if it's already selected
+    if (element.options[element.options.selectedIndex].text == param_object['option']){
+      return true;
+    }
+    if (element.options[element.options.selectedIndex].value == param_object['value']){
+      return true;
+    }
+    
     windmill.events.triggerEvent(element, 'focus', false);
     var optionToSelect = null;
     for (opt = 0; opt < element.options.length; opt++){
-      var el = element.options[opt];
-      if (param_object.option != undefined){
-        if(el.innerHTML.indexOf(param_object.option) != -1){
-          if (el.selected && el.options[opt] == optionToSelect){
-            continue;
-          }
-          optionToSelect = el;
-          optionToSelect.selected = true;
-          windmill.events.triggerEvent(element, 'change', true);
-          break;
-        }
-      }
-      else{
-         if(el.value.indexOf(param_object.value) != -1){
+      try{
+        var el = element.options[opt];
+        if (param_object.option != undefined){
+          if(el.innerHTML.indexOf(param_object.option) != -1){
             if (el.selected && el.options[opt] == optionToSelect){
               continue;
             }
@@ -252,7 +250,20 @@ windmill.controller = new function () {
             windmill.events.triggerEvent(element, 'change', true);
             break;
           }
+        }
+        else{
+           if(el.value.indexOf(param_object.value) != -1){
+              if (el.selected && el.options[opt] == optionToSelect){
+                continue;
+              }
+              optionToSelect = el;
+              optionToSelect.selected = true;
+              windmill.events.triggerEvent(element, 'change', true);
+              break;
+            }
+        }
       }
+      catch(err){}
     }
     if (optionToSelect == null){
       return false;
@@ -260,6 +271,7 @@ windmill.controller = new function () {
     return true;
   };
   
+  //Drag one eleent to the top x,y coords of another specified element
   this.dragDropElemToElem = function(p){
     windmill.controller.stopLoop();
     //Get the drag and dest

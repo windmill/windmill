@@ -79,8 +79,9 @@ windmill.ui.assertexplorer = new function() {
       }
       else if (e.target.tagName == "A") {
         locator = 'link';
-        locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig, "");
-        locValue = locValue.replace(/^\s*(.*?)\s*$/, "$1");
+        // locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig, "");
+        // locValue = locValue.replace(/^\s*(.*?)\s*$/, "$1");
+        locValue = removeHTMLTags(e.target.innerHTML);
       }
       else {
         var stringXpath = getXSPath(e.target);
@@ -107,7 +108,7 @@ windmill.ui.assertexplorer = new function() {
       else if (e.target.tagName == "DIV" || e.target.tagName == "SPAN") {
         //Assert text
         windmill.ui.remote.addAction(windmill.ui.remote.buildAction('asserts.assertNode', params));
-        params['validator'] = e.target.innerHTML;
+        params['validator'] = removeHTMLTags(e.target.innerHTML);
         windmill.ui.remote.addAction(windmill.ui.remote.buildAction('asserts.assertText', params));
       }
       else if (e.target.tagName == "IMG") {
