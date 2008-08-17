@@ -207,7 +207,7 @@ var elementslib = new function(){
     var xpathResult = expr.evaluate(new ExprContext(this.document));
     if (xpathResult && xpathResult.value) {
       return xpathResult.value[0];
-     }
+    }
     // // If not, fall back to slower JavaScript implementation
     //   var context = new ExprContext(this.document);
     //   var xpathObj = xpathParse(xpath);

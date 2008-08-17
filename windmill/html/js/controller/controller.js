@@ -226,12 +226,11 @@ windmill.controller = new function () {
   							    locatorType.toLowerCase() + '=' + param_object.option);
 
     var optionToSelect = locator.findOption(element);*/
-    windmill.events.triggerEvent(element, 'focus', false);
     
+    windmill.events.triggerEvent(element, 'focus', false);
     var optionToSelect = null;
-    for (opt in element.options){
+    for (opt = 0; opt < element.options.length; opt++){
       var el = element.options[opt];
-      
       if (param_object.option != undefined){
         if(el.innerHTML.indexOf(param_object.option) != -1){
           if (el.selected && el.options[opt] == optionToSelect){
@@ -277,6 +276,7 @@ windmill.controller = new function () {
     
     //if one of these elements couldn't be looked up
     if (!drag || !dest){
+      windmill.controller.continueLoop();
       return false;
     }
     windmill.controller.dragElem = drag;
