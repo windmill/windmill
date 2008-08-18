@@ -360,8 +360,6 @@ windmill.ui.recorder = new function() {
         if (e.target.type == 'textarea') {
             params['text'] = e.target.value;
             windmill.ui.remote.addAction(windmill.ui.remote.buildAction('type', params));
-
-
         }
         else if (e.target.type == 'text') {
             params['text'] = e.target.value;

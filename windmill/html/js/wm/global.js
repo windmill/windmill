@@ -422,5 +422,6 @@ function removeHTMLTags(str){
  		 	return (p1 == "lt")? "<" : ">";
  		});
  		var strTagStrippedText = str.replace(/<\/?[^>]+(>|$)/g, "");
+ 		strTagStrippedText = strTagStrippedText.replace(/&nbsp;/g,"");
 	return strTagStrippedText;
 }

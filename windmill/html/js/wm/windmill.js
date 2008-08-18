@@ -204,9 +204,11 @@ var windmill = new function() {
           fleegix.event.unlisten(_w.document.body, 'onunload', windmill, 'unloaded');
           fleegix.event.listen(_w.document.body, 'onunload', windmill, 'unloaded');
         }
-        catch(err){ 
-          try { this.loaded(); }
-          catch(err){}
+        catch(err){
+          try { setTimeout('windmill.loaded()', 500); return;}
+          catch(err){         
+            windmill.ui.results.writeResult("Loaded method was unable to bind listeners, <br>Error: " + err);
+          }
         }
 
         //Reset the explorer and recorder to what
