@@ -40,7 +40,7 @@ windmill.ui.domexplorer = new function() {
         else if ((e.target.name != "") && (typeof(e.target.name) != "undefined")) {
           $("domExp").innerHTML = "Name: " + e.target.name;
         }
-        else if (e.target.nodeName == "A") {
+        else if ((e.target.nodeName.toUpperCase() == "A")|| (e.target.parentNode.nodeName.toUpperCase() == "A")) {
           $("domExp").innerHTML = "Link: " + e.target.innerHTML;
         }
         //if not just use the xpath

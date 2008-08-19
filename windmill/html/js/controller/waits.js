@@ -43,7 +43,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
   delete paramObj.aid;
   var count = 0;
   var p = paramObj || {};
-  var timeout = 10000;
+  var timeout = 8000;
   var isJsTest = (p.orig == 'js');
   var testCondition = p.test;
   
@@ -104,7 +104,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
            //set the result in the ide
             windmill.xhr.setWaitBgAndReport(aid,true,obj);
         }
-      setTimeout(c, 3000);
+      setTimeout(c, 1000);
     }
   }
     
@@ -183,7 +183,7 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
      
     return windmill.controller.waits.forJSTrue(p, obj, true);
   }
-  setTimeout(sl, 3000);
+  setTimeout(sl, 2500);
   //we can't access the body, so now wait for the loading
   //setTimeout(sl, 0);
 }

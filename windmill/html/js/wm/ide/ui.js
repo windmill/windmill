@@ -253,7 +253,7 @@ windmill.ui.recorder = new function() {
                 locator = 'name';
                 locValue = e.target.name;
             }
-            else if (e.target.tagName.toUpperCase() == "A") {
+            else if ((e.target.tagName.toUpperCase() == "A") || (e.target.parentNode.tagName.toUpperCase() == "A")) {
                 locator = 'link';
                 locValue = removeHTMLTags(e.target.innerHTML);
                 
