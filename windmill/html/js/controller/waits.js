@@ -183,7 +183,7 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
      
     return windmill.controller.waits.forJSTrue(p, obj, true);
   }
-  setTimeout(sl, 2500);
+  setTimeout(sl, 3000);
   //we can't access the body, so now wait for the loading
   //setTimeout(sl, 0);
 }

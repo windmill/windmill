@@ -140,11 +140,13 @@ var windmill = new function() {
         }
         //setTimeout("windmill.controller.continueLoop()", 2000);  
         //Set a variable so that windmill knows that the remote has fully loaded
-        try { windmill.testWindow.windmill = windmill; }
+        try { 
+          windmill.testWindow.windmill = windmill; 
+          windmill.initialHost = windmill.testWindow.location.href;
+        }
         catch(err){}
         this.remoteLoaded = true;
-        windmill.initialHost = windmill.testWindow.location.href;
-        
+                
         busyOff();
     };
 
