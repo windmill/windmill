@@ -153,13 +153,13 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
   var sl = function(){
     var f = function () {
       try {
-        var v = windmill.testWindow.document.domain;
+        var v = opener.document.domain;
       }
       catch(err){
         document.domain = windmill.docDomain;
       }
       try {
-        var d = windmill.testWindow.document.body;
+        var d = opener.document.body;
       }catch(err){ d = null;}
     
       if (d != null){
@@ -194,8 +194,8 @@ windmill.controller.waits._forNotTitleAttach = function (paramObj,obj) {
     var p = paramObj || {};
     var f = function () {
       try{
-        if (windmill.testWindow.document.title != param_object.title){
-          var d = windmill.testWindow.document.body;
+        if (opener.document.title != param_object.title){
+          var d = opener.document.body;
           return true;
         }
         return false;

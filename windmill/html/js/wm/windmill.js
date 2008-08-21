@@ -101,7 +101,7 @@ var windmill = new function() {
         //windmill.docDomain = window.location.hostname.replace('www.','');
 
         try {
-          var wdwTitle = windmill.testWindow.document.title;
+          var wdwTitle = opener.document.title;
           if (wdwTitle == "Windmill Testing Framework") {
               windmill.controller.waits._forNotTitleAttach({
                   title: "Windmill Testing Framework"
@@ -127,7 +127,7 @@ var windmill = new function() {
 		    }
 		    //If the doc domain has changed
         //and we can't get to it, try updating it
-        try{ var v = windmill.testWindow.document.domain; }
+        try{ var v = opener.document.domain; }
         catch(err){
           try { document.domain = windmill.docDomain; }
           catch(err){
@@ -141,8 +141,8 @@ var windmill = new function() {
         //setTimeout("windmill.controller.continueLoop()", 2000);  
         //Set a variable so that windmill knows that the remote has fully loaded
         try { 
-          windmill.testWindow.windmill = windmill; 
-          windmill.initialHost = windmill.testWindow.location.href;
+          opener.windmill = windmill; 
+          windmill.initialHost = opener.location.href;
         }
         catch(err){}
         this.remoteLoaded = true;
@@ -202,7 +202,7 @@ var windmill = new function() {
         //test window to allow the JS test framework
         //to access different functionality
         try {
-          windmill.testWindow.windmill = windmill; 
+          opener.windmill = windmill; 
           fleegix.event.unlisten(opener.document.body, 'onunload', windmill, 'unloaded');
           fleegix.event.listen(opener.document.body, 'onunload', windmill, 'unloaded');
         }
@@ -235,6 +235,6 @@ var windmill = new function() {
 //Set the browser
 windmill.init(browser);
 //Setup a convenience variable
-var _w = windmill.testWindow;
+var _w = opener;
 fleegix.xhr.defaultTimeoutSeconds = windmill.xhrTimeout;
 fleegix.event.compatibilityMode = true;
