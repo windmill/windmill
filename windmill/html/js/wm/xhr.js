@@ -45,12 +45,12 @@ windmill.xhr = new function() {
         }
         else {
             if (resp.result.method != 'defer') {
-                windmill.serviceDelay = 400;
+                windmill.serviceDelay = 100;
                 windmill.ui.results.writeStatus("Running " + resp.result.method + "...");
                 windmill.ui.playback.setPlaying();
             }
             else {
-                windmill.serviceDelay = 3000;
+                windmill.serviceDelay = 2000;
                 windmill.ui.playback.resetPlayBack();
                 windmill.ui.results.writeStatus("Ready, Waiting for tests...");
             }

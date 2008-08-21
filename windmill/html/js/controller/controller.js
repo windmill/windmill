@@ -158,7 +158,7 @@ windmill.controller = new function () {
       }
     }
     //Just making sure the page is fully loaded
-    setTimeout("cont()", 1000);
+    setTimeout("cont()", 500);
   };
 
   this.stopLoop = function () {
@@ -205,7 +205,7 @@ windmill.controller = new function () {
     }
     //We need to tell the service where we are before we
     //head to a new page
-    try{ windmill.testWindow.location = param_object.url; }
+    try{ opener.location = param_object.url; }
     catch(err){ return false; }
     
     return true;

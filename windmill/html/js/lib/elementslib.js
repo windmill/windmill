@@ -1,6 +1,6 @@
 var elementslib = new function(){
   //base vars
-  var win = windmill.testWindow;
+  var win = opener;
   var domNode = null;
   //keep track of the locators we cant get via the domNode
   var locators = {};
@@ -78,8 +78,9 @@ var elementslib = new function(){
 
     //inline function to recursively find the element in the DOM, cross frame.
     var recurse = function(w, func, s){
+      
      //do the lookup in the current window
-     try{ element = func.call(w, s); }
+     try{ element = func.call(w, s);}
      catch(err){ element = null; }
      
       if (!element){
@@ -91,7 +92,15 @@ var elementslib = new function(){
      }
      else { e = element; }
     };   
-
+    
+    //IE cross window problems require you to talk directly to opener
+    try{ element = func.call(opener, s);}
+    catch(err){ element = null; }
+    
+    if (element){
+      return element;
+    }
+    
     recurse(win, func, s);
     return e;
   }

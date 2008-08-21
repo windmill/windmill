@@ -124,14 +124,14 @@ windmill.ui.domexplorer = new function() {
   //Set the listeners for the dom explorer
   this.domExplorerOn = function() {
     //Display the mouse coords in the IDE
-    fleegix.event.listen(windmill.testWindow.document.body, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
+    fleegix.event.listen(opener.document.body, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
     
     this.exploreState = true;
     try {
       $('explorer').src = 'img/xoff.png';
       $('domExp').style.display = 'block';
       $('domExp').innerHTML = '';
-      this.dxRecursiveBind(windmill.testWindow);
+      this.dxRecursiveBind(opener);
     }
     catch(error) {
       windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
@@ -143,7 +143,7 @@ windmill.ui.domexplorer = new function() {
   //Remove the listeners for the dom explorer
   this.domExplorerOff = function() {
     //Mouse coords display off
-    fleegix.event.unlisten(windmill.testWindow, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
+    fleegix.event.unlisten(opener.document.body, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
     $('mouseExp').innerHTML = "";
     this.exploreState = false;
 
@@ -155,7 +155,7 @@ windmill.ui.domexplorer = new function() {
       $('explorer').src = 'img/xon.png';
       $('domExp').style.display = 'none';
       $('domExp').innerHTML = '';
-      this.dxRecursiveUnBind(windmill.testWindow);
+      this.dxRecursiveUnBind(opener);
     }
     catch(error) {
       windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');

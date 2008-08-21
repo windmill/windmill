@@ -24,7 +24,7 @@ def test_dragdropunit():
     assert client.waits.sleep(milliseconds=u'500')
     #assert client.waits.forPageLoad(timeout=u'20000')
     assert client.dragDropElem(xpath=u'/html/body/div/div[2]/div/div[2]/form/div[2]/table/tbody/tr/td[2]/div/div/div[3]/div/ul/li[2]/img', pixels=u'(310,0)')
-    assert client.waits.sleep(milliseconds=u'500')
+    assert client.waits.sleep(milliseconds=u'800')
     assert client.asserts.assertProperty(xpath=u'/html/body/div/div[2]/div/div[2]/form/div[2]/table/tbody/tr/td[2]/div/div/div[3]/div/div/img', validator=u'src|templates/images/P1010039.JPG')
     assert client.dragDropElemToElem(xpath=u'/html/body/div/div/div/div[2]/form/div[2]/table/tbody/tr[1]/td[2]/div/div/div[3]/div/ul/li/img', optxpath=u'/html/body/div/div/div/div[2]/form/div[2]/table/tbody/tr[1]/td[2]/div/div/div[3]/div/div')    
     assert client.waits.sleep(milliseconds=u'500')

@@ -130,7 +130,7 @@ windmill.ui.assertexplorer = new function() {
         $('assertx').src = 'img/axoff.png';
         $('domExp').style.display = 'block';
         $('domExp').innerHTML = '';
-        this.axRecursiveBind(windmill.testWindow);
+        this.axRecursiveBind(opener);
       }
       catch(error) {
         windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, ' + 
@@ -150,7 +150,7 @@ windmill.ui.assertexplorer = new function() {
         $('assertx').src = 'img/axon.png';
         $('domExp').style.visibility = 'hidden';
         $('domExp').innerHTML = '';
-        this.axRecursiveUnBind(windmill.testWindow);
+        this.axRecursiveUnBind(opener);
       }
       catch(error) {
         windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, ' + 

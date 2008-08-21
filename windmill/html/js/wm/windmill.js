@@ -27,7 +27,7 @@ var windmill = new function() {
     //How long xhr waits in seconds before calling the timout function
     this.xhrTimeout = 180;
 
-    this.serviceDelay = 400;
+    this.serviceDelay = 100;
 
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*
@@ -203,8 +203,8 @@ var windmill = new function() {
         //to access different functionality
         try {
           windmill.testWindow.windmill = windmill; 
-          fleegix.event.unlisten(_w.document.body, 'onunload', windmill, 'unloaded');
-          fleegix.event.listen(_w.document.body, 'onunload', windmill, 'unloaded');
+          fleegix.event.unlisten(opener.document.body, 'onunload', windmill, 'unloaded');
+          fleegix.event.listen(opener.document.body, 'onunload', windmill, 'unloaded');
         }
         catch(err){
           try { setTimeout('windmill.loaded()', 500); return;}

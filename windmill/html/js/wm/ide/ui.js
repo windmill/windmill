@@ -403,11 +403,11 @@ windmill.ui.recorder = new function() {
         //if when loading the listener didn't get attached
         //we attach it if they are recording because we need to know
         //when the new page is loading so we can re-attach
-        fleegix.event.unlisten(_w.document.body, 'onunload', windmill, 'unloaded');
-        fleegix.event.listen(_w.document.body, 'onunload', windmill, 'unloaded');
+        fleegix.event.unlisten(opener.document.body, 'onunload', windmill, 'unloaded');
+        fleegix.event.listen(opener.document.body, 'onunload', windmill, 'unloaded');
 	
         windmill.ui.remote.getSuite();
-        try { this.recRecursiveBind(windmill.testWindow); }
+        try { this.recRecursiveBind(opener); }
         catch(error) {
             windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
             $('record').src = 'img/record.png';
@@ -418,10 +418,10 @@ windmill.ui.recorder = new function() {
     this.recordOff = function() {      
         this.recordState = false;
         $('record').src = 'img/record.png';
-        fleegix.event.unlisten(_w.document.body, 'onunload', windmill, 'unloaded');
 
         try {
-            this.recRecursiveUnBind(windmill.testWindow);
+            fleegix.event.unlisten(opener.document.body, 'onunload', windmill, 'unloaded');
+            this.recRecursiveUnBind(opener);
         }
         catch(error) {
             windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill,' + 
