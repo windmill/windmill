@@ -104,7 +104,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
            //set the result in the ide
             windmill.xhr.setWaitBgAndReport(aid,true,obj);
         }
-      setTimeout(c, 500);
+      setTimeout(c, 1000);
     }
   }
     
