@@ -8,6 +8,7 @@
 	<link rel="stylesheet" type="text/css" href="css/windmill.css"/>
 	<script type="text/javascript" src="js/lib/browserdetect.js"></script>
 	<script type="text/javascript" src="js/lib/fleegix_js/trunk/fleegix.js"></script>
+	<script type='text/javascript' src='js/lib/firebug-lite-compressed.js'></script>
 </head>
 		
 <body>
@@ -22,6 +23,7 @@
       document.body.appendChild(load);
       fleegix.dom.center(load);
   </script>
+  
   <div id="cover">
     <div style="top:55%;left:30%;position:absolute;">
       <center><b>Please don't interact with the DOM<br>(Re)Attaching listeners...</b></center>
@@ -61,8 +63,8 @@
   		<form id="ideForm" name="ideForm" onsubmit="return false;"></form>
   	</div>
   	<div id="navigation" style="font-weight:bold">
-  	   <span style="font-weight: bold;"> 
-  	    <a href="#" onclick="javascript:openDialog('shell')">Shell</a>&nbsp
+  	   <span style="font-weight: bold;">
+  	    <a href="#" onclick="javascript:openFirebug()">Firebug</a>&nbsp
   			<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
   			<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
   		</span>

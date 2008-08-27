@@ -146,8 +146,10 @@ var windmill = new function() {
         }
         catch(err){}
         this.remoteLoaded = true;
-                
+        
         busyOff();
+        //if I don't wait a second in IE I get an undefined 'el' error
+        setTimeout('firebug.win.close();', 1000);
     };
 
     //When the page is unloaded turn off the loop until it loads the new one

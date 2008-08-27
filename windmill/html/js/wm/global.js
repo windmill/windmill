@@ -55,6 +55,10 @@ var openDialog = function(id) {
     $('actionDD').style.visibility = "hidden";
 };
 
+var openFirebug = function(){
+  firebug.init();
+}
+
 var resetDD = function(){
   $('actionDD').selectedIndex = 0;
 }
