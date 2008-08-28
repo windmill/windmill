@@ -420,10 +420,12 @@ class App(wx.App):
 
 	return True
 
-if __name__ == "__main__":
-    from windmill.bin import shell_objects
-    shell_objects['start_firefox']()
-    #bin.shell_objects["start_firefox"]()
-    app = App()
+def main():
+    import windmill
+    windmill.stdout, windmill.stdin = sys.stdout, sys.stdin
+    from windmill.bin.admin_lib import configure_global_settings, setup
+    configure_global_settings()
+    shell_objects = setup()
+    app = App(shell_objects=shell_objects)
     #shell_objects['wxwindmill_app'] = app
     app.MainLoop()
