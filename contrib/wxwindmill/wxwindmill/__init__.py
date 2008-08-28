@@ -420,3 +420,13 @@ class App(wx.App):
 	MySplash.Show()
 
 	return True
+	
+def main():
+    import windmill
+    windmill.stdout, windmill.stdin = sys.stdout, sys.stdin
+    from windmill.bin.admin_lib import configure_global_settings, setup
+    configure_global_settings()
+    shell_objects = setup()
+    app = App(shell_objects=shell_objects)
+    #shell_objects['wxwindmill_app'] = app
+    app.MainLoop()
