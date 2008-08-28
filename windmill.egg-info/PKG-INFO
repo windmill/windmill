@@ -2,9 +2,9 @@ Metadata-Version: 1.0
 Name: windmill
 Version: 0.8.1pre
 Summary: Web testing framework intended for complete automation of user interface testing, with strong test debugging and recording capabilities.
-Home-page: http://windmill.osafoundation.org/
-Author: Open Source Applications Foundation
-Author-email: windmill-dev@osafoundation.org
+Home-page: http://www.getwindmill.com/
+Author: OSAF, Mikeal Rogers, Adam Christian
+Author-email: windmill-dev@googlegroups.com
 License: http://www.apache.org/licenses/LICENSE-2.0
 Description: Windmill is an Open Source AJAX Web UI Testing framework that was originally built to automate testing for the Chandler Server Project at OSAF. After spending time with Selenium we realized we had a variety of needs that weren't being fulfilled and built Windmill from the ground up.
         

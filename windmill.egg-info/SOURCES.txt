@@ -9,6 +9,18 @@ wmicon.icns
 contrib/pyselenium/src/__init__.py
 contrib/pyselenium/src/seleniumservercontrol.py
 contrib/pyselenium/src/seleniumunittest.py
+contrib/wxwindmill/__init__.py
+contrib/wxwindmill/gridcontrol.py
+contrib/wxwindmill/preferencesDialog.py
+contrib/wxwindmill/wxwindmill.py
+contrib/wxwindmill/Images/firefox.png
+contrib/wxwindmill/Images/ie.png
+contrib/wxwindmill/Images/opera.png
+contrib/wxwindmill/Images/safari.png
+contrib/wxwindmill/Images/wico.gif
+contrib/wxwindmill/Images/windmill.png
+contrib/wxwindmill/Images/wlogo.png
+contrib/wxwindmill/Images/wmsplash.png
 scripts/build_and_release.py
 scripts/mikeals_b_and_r.py
 splash-page/fleegix.js
@@ -464,6 +476,7 @@ windmill/html/js/controller/waits.js
 windmill/html/js/extensions/extensions.js
 windmill/html/js/lib/browserdetect.js
 windmill/html/js/lib/elementslib.js
+windmill/html/js/lib/firebug-lite-compressed.js
 windmill/html/js/lib/getXPath.js
 windmill/html/js/lib/ajaxslt/dom.js
 windmill/html/js/lib/ajaxslt/util.js
