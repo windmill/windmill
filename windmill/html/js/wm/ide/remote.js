@@ -537,7 +537,8 @@ windmill.ui.remote = new function() {
             s2.id = action.id + 'optionType';
             
             if (windmill.registry.methods[method].optionIsLocator){
-              for (loc in windmill.registry.locator){
+              //for (loc in windmill.registry.locator){
+              for (var loc = 0; loc < windmill.registry.locator.length;loc++){
                 newOpt = document.createElement('option');
                 newOpt.value = 'opt'+windmill.registry.locator[loc];
                 newOpt.innerHTML =  windmill.registry.locator[loc];

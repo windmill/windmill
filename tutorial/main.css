@@ -10,7 +10,7 @@ html,body {
   padding: 0px;
 }
 body {
-  background-image: url(../images/windmill_bg.png);
+  background-image: url(images/windmill_bg.png);
   background-repeat: repeat-x;
   background-color: #90bfcb;
 }
@@ -85,7 +85,7 @@ table {
   text-align: center;
 }
 #wSideImg {
-  background-image: url(../images/windmill_w_side.png);
+  background-image: url(images/windmill_w_side.png);
   margin: auto;
   width: 804px;
   height: 291px;
@@ -93,7 +93,7 @@ table {
 #header {
   width: 632px;
   height: 267px;
-  background: url(../images/windmill_header.png);
+  background: url(images/windmill_header.png);
   margin: auto;
   text-align: left;
 }
@@ -133,7 +133,7 @@ table {
   border-right: 9px solid #25444e;
   width: 614px;
   overflow: auto;
-  background-image: url(../images/windmill_section_bg.png);
+  background-image: url(images/windmill_section_bg.png);
   background-repeat: repeat-x;
   background-color: #e4f0f3;
 }
@@ -175,7 +175,7 @@ table {
   font-weight: bold;
   color: #222;
   height: 36px;
-  background-image: url..(/images/windmill_heading_bg.png);
+  background-image: url(images/windmill_heading_bg.png);
   background-repeat: repeat-x;
   line-height: 36px;
   text-align: center;

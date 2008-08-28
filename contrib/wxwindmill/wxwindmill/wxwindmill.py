@@ -224,7 +224,7 @@ class Frame(wx.Frame):
         self.aboutInfo = wx.AboutDialogInfo()
 
         self.aboutInfo.SetName("Windmill")
-        self.aboutInfo.SetWebSite("http://windmill.osafoundation.org/trac")
+        self.aboutInfo.SetWebSite("http://trac.getwindmill.com/")
         self.aboutInfo.SetDescription("Windmill is a web testing framework intended for complete automation\n"+
                                  "of user interface testing, with strong test debugging capabilities.")
         self.aboutInfo.SetCopyright("Copyright 2006-2007 Open Source Applications Foundation")
@@ -351,7 +351,7 @@ class Frame(wx.Frame):
     def OnWebsiteLink(self, event):
 	"""Bring up a link to the windmill homepage"""
 	import webbrowser
-	webbrowser.open_new("http://windmill.osafoundation.org")
+	webbrowser.open_new("http://www.getwindmill.com")
 		
     def OnPreferences(self, event):
 	

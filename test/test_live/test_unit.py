@@ -20,7 +20,7 @@ from windmill.authoring import WindmillTestClient
 def test_wmunti1():
     client = WindmillTestClient(__name__, assertions=False)
 
-    assert client.open(url=u'http://windmill.osafoundation.org/windmill-unittests/unit_tester.html')['result']
+    assert client.open(url=u'http://tutorial.getwindmill.com/windmill-unittests/unit_tester.html')['result']
     assert client.click(id=u'subBtn')['result']
     
     # Tests that sleeps actually wait for long enough

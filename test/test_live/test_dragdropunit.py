@@ -4,7 +4,7 @@ from windmill.authoring import WindmillTestClient
 def test_dragdropunit():
     client = WindmillTestClient(__name__)
 
-    assert client.open(url=u'http://windmill.osafoundation.org/windmill-unittests/jqueryui152/demos/functional/index.html')
+    assert client.open(url=u'http://tutorial.getwindmill.com/windmill-unittests/jqueryui152/demos/functional/index.html')
     assert client.waits.forPageLoad(timeout=u'40000')
     #test the draggable widgets
     assert client.click(link=u'Draggable')

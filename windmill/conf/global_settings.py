@@ -38,7 +38,7 @@ JS_PATH          = os.path.join(WINDMILL_PATH, 'html')
 SAVES_PATH       = None
 EXTENSIONS_DIR   = None
 
-TEST_URL  = 'http://windmill.osafoundation.org/tutorial'
+TEST_URL  = 'http://tutorial.getwindmill.com/'
 
 FORWARDING_TEST_URL = None
 
