@@ -126,7 +126,7 @@ class Frame(wx.Frame):
 		
 		try:
 		    #create an img object for use in the button
-		    img = wx.Bitmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/'+browser.lower() +'.png'), wx.BITMAP_TYPE_PNG)
+		    img = wx.Bitmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Images/'+browser.lower() +'.png'), wx.BITMAP_TYPE_PNG)
 		    
 		    #determine if the img was created successfully
 		    if img:
@@ -237,7 +237,7 @@ class Frame(wx.Frame):
                               "See the License for the specific language governing permissions and",
                               "limitations under the License."]))
 	
-	icon = wx.Icon( name = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/wico.gif'), 
+	icon = wx.Icon( name = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Images/wico.gif'), 
 			type =wx.BITMAP_TYPE_GIF, 
 			desiredWidth = -1, 
 			desiredHeight = -1)
@@ -375,7 +375,7 @@ class MySplashScreen(wx.SplashScreen):
 	#self.shell_objects = shell_objects
         # This is a recipe to a the screen.
         # Modify the following variables as necessary.
-        aBitmap = wx.Image(name = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/wmsplash.png')).ConvertToBitmap()
+        aBitmap = wx.Image(name = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Images/wmsplash.png')).ConvertToBitmap()
         splashStyle = wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT
         splashDuration = 5000 # milliseconds
 
