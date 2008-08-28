@@ -15,8 +15,8 @@
 import wx
 import wx.lib.flatnotebook as fnb
 import logging
-import os
-from sys import platform
+import os, sys
+#from sys import platform
 from gridcontrol import CustTableGrid
 from wx.py.crust import CrustFrame
 from threading import Thread
@@ -27,9 +27,6 @@ class Frame(wx.Frame):
 
     def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='Windmill Service', shell_objects = None, **kwargs):
         
-	#if shell_objects == None:
-	#self.shell_objects = windmill.bin.shell_objects
-	#else:
 	self.shell_objects = shell_objects
 	
         ##initialize the frame
@@ -58,7 +55,7 @@ class Frame(wx.Frame):
         ##setup the file menu and associated events
         fileMenu = wx.Menu()
 	
-	self.Bind(wx.EVT_MENU, self.OnCloseWindow, fileMenu.Append(wx.ID_EXIT, "E&xit", "Exit Windmill"))
+	self.Bind(wx.EVT_MENU, self.OnCloseWindow, fileMenu.Append(wx.ID_EXIT, "E&xit", "Exit wxWindmill"))
 
 	##setup the test menu and associated events
 	testMenu = wx.Menu()
@@ -92,11 +89,11 @@ class Frame(wx.Frame):
         ##setup the Help menu
         helpMenu = wx.Menu()
 	self.Bind(wx.EVT_MENU, self.OnWebsiteLink, helpMenu.Append(wx.NewId(), "Windmill Home Page", "Link to website"))
-        self.Bind(wx.EVT_MENU, self.OnAbout, helpMenu.Append(wx.ID_ABOUT, "About", "About windmill"))            
+        self.Bind(wx.EVT_MENU, self.OnAbout, helpMenu.Append(wx.ID_ABOUT, "About", "About wxWindmill"))            
 
         ##Add menu items to the menu bar
-        menuBar.Append(fileMenu, "&File")
-	menuBar.Append(testMenu, "T&ests")
+        menuBar.Append(testMenu, "&File")
+	#menuBar.Append(testMenu, "T&ests")
 	#menuBar.Append(toolsMenu, "&Tools")
 	menuBar.Append(helpMenu, "&Help")
 
@@ -129,7 +126,7 @@ class Frame(wx.Frame):
 		
 		try:
 		    #create an img object for use in the button
-		    img = wx.Bitmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), browser.lower() +'.png'), wx.BITMAP_TYPE_PNG)
+		    img = wx.Bitmap(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/'+browser.lower() +'.png'), wx.BITMAP_TYPE_PNG)
 		    
 		    #determine if the img was created successfully
 		    if img:
@@ -152,11 +149,12 @@ class Frame(wx.Frame):
 		self.Bind(wx.EVT_BUTTON, lambda event, bwser=browser : self.OnBrowserButtonClick(event, bwser), self.browserButtons[browser])
 
 	    #disable the buttons that won't work on specific platforms
-	    import sys
-	    if sys.platform != "win32":
+	    if sys.platform == "win32":
+                self.browserButtons['Safari'].Disable()
+	    else:
 		self.browserButtons['IE'].Disable()
-		
-		
+
+              
 	    self.book.AddPage(launcherPanel, 'Launcher', select=True)	    
 	    
 	    #########################
@@ -223,8 +221,8 @@ class Frame(wx.Frame):
     def setupAboutInfo(self):
         self.aboutInfo = wx.AboutDialogInfo()
 
-        self.aboutInfo.SetName("Windmill")
-        self.aboutInfo.SetWebSite("http://windmill.osafoundation.org/trac")
+        self.aboutInfo.SetName("wxWindmill")
+        self.aboutInfo.SetWebSite("http://www.getwindmill.com")
         self.aboutInfo.SetDescription("Windmill is a web testing framework intended for complete automation\n"+
                                  "of user interface testing, with strong test debugging capabilities.")
         self.aboutInfo.SetCopyright("Copyright 2006-2007 Open Source Applications Foundation")
@@ -239,7 +237,7 @@ class Frame(wx.Frame):
                               "See the License for the specific language governing permissions and",
                               "limitations under the License."]))
 	
-	icon = wx.Icon( name = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wico.gif'), 
+	icon = wx.Icon( name = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/wico.gif'), 
 			type =wx.BITMAP_TYPE_GIF, 
 			desiredWidth = -1, 
 			desiredHeight = -1)
@@ -262,20 +260,18 @@ class Frame(wx.Frame):
         #popup a dialog here to run it
         dialog = wx.FileDialog (None,
                                 message = u"Choose Test(s)",
-                                defaultFile = u"",	
-				wildcard = u"|Json files (*.json)|*.json|Python files (*.py)|*.py", #|*.js|Python files (*.py)|*.py
+                                defaultFile = u"",
+                                wildcard =u"Python Files (*.py)|*.py|JSON Files (*.json)|*.json",	
                                 style = wx.OPEN|wx.CHANGE_DIR | wx.MULTIPLE)        
 
 	if dialog.ShowModal() == wx.ID_OK:
 	    filename = dialog.GetPaths()
-	    
 #	    if filename.find(".js") is not -1:
 #		print "Running the python version of run test"
 #		x = Thread(target=self.shell_objects['run_js_test'], args=[filename])
 		
 #	    else:
-	    x = Thread(target=self.shell_objects['run_test'], args=[filename])
-				
+	    x = Thread(target=self.shell_objects['run_test'], args=[filename[0]])		
 	    x.start()
 
     def OnRunJSDir(self, event):
@@ -308,7 +304,7 @@ class Frame(wx.Frame):
         dialog = wx.FileDialog (None,
                                 message = u"Choose a Test",
                                 defaultFile = u"",
-                                wildcard = u"Json files (*.json)|*.json|Python files (*.py)|*.py", #|*.js|Python files (*.py)|*.py
+                                wildcard =u"Python Files (*.py)|*.py|JSON Files (*.json)|*.json",	
                                 style = wx.OPEN|wx.CHANGE_DIR|wx.MULTIPLE)        
 
 	if dialog.ShowModal() == wx.ID_OK:
@@ -317,7 +313,7 @@ class Frame(wx.Frame):
 #	    if filename.find(".js") is not -1:
 #           x = Thread(target=self.shell_objects['load_js_test'], args=[filename]) 
 #	    else:
-	    x = Thread(target=self.shell_objects['load_test'], args=[filename])
+	    x = Thread(target=self.shell_objects['load_test'], args=[filename[0]])
 	    x.start()
 
     def OnLoadDir(self, event):
@@ -351,7 +347,7 @@ class Frame(wx.Frame):
     def OnWebsiteLink(self, event):
 	"""Bring up a link to the windmill homepage"""
 	import webbrowser
-	webbrowser.open_new("http://windmill.osafoundation.org")
+	webbrowser.open_new("http://www.getwindmill.com")
 		
     def OnPreferences(self, event):
 	
@@ -379,7 +375,7 @@ class MySplashScreen(wx.SplashScreen):
 	#self.shell_objects = shell_objects
         # This is a recipe to a the screen.
         # Modify the following variables as necessary.
-        aBitmap = wx.Image(name = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wmsplash.png')).ConvertToBitmap()
+        aBitmap = wx.Image(name = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images/wmsplash.png')).ConvertToBitmap()
         splashStyle = wx.SPLASH_CENTRE_ON_SCREEN | wx.SPLASH_TIMEOUT
         splashDuration = 5000 # milliseconds
 
@@ -406,7 +402,7 @@ class MySplashScreen(wx.SplashScreen):
 
 class App(wx.App):
     """Application class."""
-    def __init__(self, shell_objects = windmill.bin.shell_objects, redirect=False, *args, **kwargs):
+    def __init__(self, shell_objects = None, redirect=False, *args, **kwargs):
 	#shell_objects = 
         self.shell_objects = shell_objects
 	
