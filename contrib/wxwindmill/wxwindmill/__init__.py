@@ -28,6 +28,7 @@ class Frame(wx.Frame):
     def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='Windmill Service', shell_objects = None, **kwargs):
         
 	self.shell_objects = shell_objects
+	self.open_browser = []
 	
         ##initialize the frame
         wx.Frame.__init__(self, parent, id, title, pos, **kwargs)
@@ -53,49 +54,56 @@ class Frame(wx.Frame):
         menuBar = wx.MenuBar()
 
         ##setup the file menu and associated events
-        fileMenu = wx.Menu()
+        #fileMenu = wx.Menu()
 	
-	self.Bind(wx.EVT_MENU, self.OnCloseWindow, fileMenu.Append(wx.ID_EXIT, "E&xit", "Exit wxWindmill"))
+    	#self.Bind(wx.EVT_MENU, self.OnCloseWindow, fileMenu.Append(wx.ID_EXIT, "E&xit", "Exit wxWindmill"))
 
-	##setup the test menu and associated events
-	testMenu = wx.Menu()
+    	##setup the test menu and associated events
+    	testMenu = wx.Menu()
+    
+    	###setup run
+    	runMenu = wx.Menu()
+    	self.Bind(wx.EVT_MENU, self.OnRunTest, runMenu.Append(wx.NewId(), "&Test File(s)", "Select a test to run."))
 	
-	###setup run
-	runMenu = wx.Menu()
-	self.Bind(wx.EVT_MENU, self.OnRunTest, runMenu.Append(wx.NewId(), "&Test File(s)", "Select a test to run."))
+    	#self.Bind(wx.EVT_MENU, self.OnRunJSDir, runMenu.Append(wx.NewId(), "Test JS &Directory", "Select a javascript directory to run."))	
 	
-	#self.Bind(wx.EVT_MENU, self.OnRunJSDir, runMenu.Append(wx.NewId(), "Test JS &Directory", "Select a javascript directory to run."))	
+    	self.Bind(wx.EVT_MENU, self.OnRunDir, runMenu.Append(wx.NewId(), "Test &Directory", "Select a directory to run."))
 	
-	self.Bind(wx.EVT_MENU, self.OnRunDir, runMenu.Append(wx.NewId(), "Test &Directory", "Select a directory to run."))
+    	testMenu.AppendMenu(wx.NewId(), "Run", runMenu)
 	
-	testMenu.AppendMenu(wx.NewId(), "Run", runMenu)
-	
-	testMenu.AppendSeparator()
+    	testMenu.AppendSeparator()
 
-	###setup load
-	loadMenu = wx.Menu()
+    	###setup load
+    	loadMenu = wx.Menu()
 
-	self.Bind(wx.EVT_MENU, self.OnLoadTest, loadMenu.Append(wx.NewId(), "&Test File(s)", "Loads a single test"))
-	#self.Bind(wx.EVT_MENU, self.OnLoadJSDir, runMenu.Append(wx.NewId(), "Load JS &Directory", "Select a javascript directory to load."))
-	self.Bind(wx.EVT_MENU, self.OnLoadDir, loadMenu.Append(wx.NewId(), "Test &Directory", "Load a directory full of tests"))
+    	self.Bind(wx.EVT_MENU, self.OnLoadTest, loadMenu.Append(wx.NewId(), "&Test File(s)", "Load selected tests"))
+    	#self.Bind(wx.EVT_MENU, self.OnLoadJSDir, runMenu.Append(wx.NewId(), "Load JS &Directory", "Select a javascript directory to load."))
+    	self.Bind(wx.EVT_MENU, self.OnLoadDir, loadMenu.Append(wx.NewId(), "Test &Directory", "Load a directory of tests"))
 
-	testMenu.AppendMenu(wx.NewId(), "Load", loadMenu)
-	
+    	testMenu.AppendMenu(wx.NewId(), "Load", loadMenu)
+    	testMenu.AppendSeparator()
+        self.Bind(wx.EVT_MENU, self.OnCloseWindow, testMenu.Append(wx.ID_EXIT, "E&xit", "Exit wxWindmill"))
+    	
+        
+        
         ##setup the tools menu
-	#toolsMenu = wx.Menu()
-	#self.Bind(wx.EVT_MENU, self.OnClearQueue, toolsMenu.Append(wx.NewId(), "Clear Queue", "Clear the Queue"))	
-	#self.Bind(wx.EVT_MENU, self.OnPreferences, toolsMenu.Append(wx.ID_PREFERENCES, "Preferences", "Prefences Dialog"))
+    	toolsMenu = wx.Menu()
+    	self.Bind(wx.EVT_MENU, self.OnClearQueue, toolsMenu.Append(wx.NewId(), "Clear Test Queue", "Clear the Queue"))	
+    	self.Bind(wx.EVT_MENU, self.OnCloseBrowser, toolsMenu.Append(wx.NewId(), "Close Browsers", "Close the currently open browser"))	
+        
+    	#self.Bind(wx.EVT_MENU, self.OnPreferences, toolsMenu.Append(wx.ID_PREFERENCES, "Preferences", "Prefences Dialog"))
 	
         ##setup the Help menu
         helpMenu = wx.Menu()
-	self.Bind(wx.EVT_MENU, self.OnWebsiteLink, helpMenu.Append(wx.NewId(), "Windmill Home Page", "Link to website"))
+    	self.Bind(wx.EVT_MENU, self.OnWebsiteLink, helpMenu.Append(wx.NewId(), "Windmill Home Page", "Link to website"))
         self.Bind(wx.EVT_MENU, self.OnAbout, helpMenu.Append(wx.ID_ABOUT, "About", "About wxWindmill"))            
+
 
         ##Add menu items to the menu bar
         menuBar.Append(testMenu, "&File")
-	#menuBar.Append(testMenu, "T&ests")
-	#menuBar.Append(toolsMenu, "&Tools")
-	menuBar.Append(helpMenu, "&Help")
+    	#menuBar.Append(testMenu, "T&ests")
+    	menuBar.Append(toolsMenu, "&Tools")
+    	menuBar.Append(helpMenu, "&Help")
 
         self.SetMenuBar(menuBar)        
 	
@@ -111,11 +119,15 @@ class Frame(wx.Frame):
 	    ##  Launchers tab      ##
 	    #########################
 	    self.appSizer = wx.BoxSizer(wx.VERTICAL)
-	    launcherPanel = wx.Panel(self.book, -1, style=wx.MAXIMIZE_BOX)
-    
+            #main panel
+	    mainPanel = wx.Panel(self.book, -1, style=wx.MAXIMIZE_BOX)
+	    mainSizer = wx.BoxSizer(wx.VERTICAL)
+            mainPanel.SetSizer(mainSizer)
+            
+	    launcherPanel = wx.Panel(mainPanel, -1, style=wx.MAXIMIZE_BOX)       
 	    launcherSizer = wx.BoxSizer(wx.HORIZONTAL)
 	    launcherPanel.SetSizer(launcherSizer)
-	    
+
 	    #add this stretch to keep buttons centered
 	    launcherSizer.AddStretchSpacer(1)
 	    
@@ -149,14 +161,38 @@ class Frame(wx.Frame):
 		self.Bind(wx.EVT_BUTTON, lambda event, bwser=browser : self.OnBrowserButtonClick(event, bwser), self.browserButtons[browser])
 
 	    #disable the buttons that won't work on specific platforms
-	    if sys.platform == "win32":
+            if sys.platform == "win32":
                 self.browserButtons['Safari'].Disable()
-	    else:
-		self.browserButtons['IE'].Disable()
+            else:
+                self.browserButtons['IE'].Disable()
 
-              
-	    self.book.AddPage(launcherPanel, 'Launcher', select=True)	    
-	    
+            morePanel = wx.Panel(mainPanel, -1,  style=wx.MAXIMIZE_BOX)
+            moreSizer = wx.BoxSizer(wx.HORIZONTAL)
+            morePanel.SetSizer(moreSizer)
+
+            #setup input and textbox
+            self.url_label = wx.StaticBox(morePanel, -1, 'Test URL', (5, 5), size=(70, 15))
+            self.url_input = wx.TextCtrl(morePanel, -1, size = wx.Size(250, -1), value="http://www.getwindmill.com") 
+            moreSizer.Add(self.url_label)
+            moreSizer.Add(self.url_input)
+
+            #setup close button
+            closeBPanel = wx.Panel(mainPanel, -1, style=wx.MAXIMIZE_BOX)
+            closeBSizer = wx.BoxSizer(wx.HORIZONTAL)
+            closeBPanel.SetSizer(closeBSizer)
+            closeBrowser = wx.Button(closeBPanel, label="Close Open Windmill Browsers")
+            closeBrowser.Bind(wx.EVT_BUTTON, self.OnCloseBrowser)
+            closeBSizer.Add(closeBrowser, 0, wx.ALL|wx.CENTER|wx.EXPAND, 20)
+
+            
+            mainSizer.Add(morePanel, 1, wx.ALIGN_CENTER)
+            mainSizer.Add(launcherPanel,1, wx.ALIGN_CENTER)
+            mainSizer.Add(closeBPanel, 1, wx.ALIGN_CENTER)
+
+            #we want the launcher tab to be selected when the app comes up
+	    self.book.AddPage(mainPanel, 'Browser Launcher', select=True)
+	    #self.book.AddPage(morePanel, 'More', select=True)	 
+              	    
 	    #########################
 	    ##  Windmill shell tab ##
 	    #########################
@@ -185,7 +221,7 @@ class Frame(wx.Frame):
 	    shellTabSizer.Add(shellFrame, 2, wx.EXPAND)        
     
 	    #add the tab setup to the book
-	    self.book.AddPage(shellTab, "Windmill Shell")
+	    self.book.AddPage(shellTab, "Windmill Shell", select=False)
 	    	    
 	    #########################
 	    ##  Python shell tab   ##
@@ -210,7 +246,9 @@ class Frame(wx.Frame):
 	    pyShellTabSizer.Add(pyShellFrame, 1, wx.EXPAND)        
     
 	    #add the tab setup to the book
-	    self.book.AddPage(pyShellTab, "Python Shell")
+	    self.book.AddPage(pyShellTab, "Python Shell", select=False)
+   
+
 
 	finally:
 	    self.Thaw()	        
@@ -265,13 +303,14 @@ class Frame(wx.Frame):
                                 style = wx.OPEN|wx.CHANGE_DIR | wx.MULTIPLE)        
 
 	if dialog.ShowModal() == wx.ID_OK:
-	    filename = dialog.GetPaths()
+	    fileArr = dialog.GetPaths()
+	    files = ','.join(fileArr)
 #	    if filename.find(".js") is not -1:
 #		print "Running the python version of run test"
 #		x = Thread(target=self.shell_objects['run_js_test'], args=[filename])
 		
 #	    else:
-	    x = Thread(target=self.shell_objects['run_test'], args=[filename[0]])		
+	    x = Thread(target=self.shell_objects['run_test'], args=[files])		
 	    x.start()
 
     def OnRunJSDir(self, event):
@@ -308,12 +347,14 @@ class Frame(wx.Frame):
                                 style = wx.OPEN|wx.CHANGE_DIR|wx.MULTIPLE)        
 
 	if dialog.ShowModal() == wx.ID_OK:
-	    filename = dialog.GetPaths()
+	    fileArr = dialog.GetPaths()
+	    files = ','.join(fileArr)
+
 
 #	    if filename.find(".js") is not -1:
 #           x = Thread(target=self.shell_objects['load_js_test'], args=[filename]) 
 #	    else:
-	    x = Thread(target=self.shell_objects['load_test'], args=[filename[0]])
+	    x = Thread(target=self.shell_objects['load_test'], args=[files])
 	    x.start()
 
     def OnLoadDir(self, event):
@@ -334,37 +375,50 @@ class Frame(wx.Frame):
 	self.programOutput.SearchValues(searchVal)
 
     def OnBrowserButtonClick(self, event, browser):
-	print "Launching the " + browser + " browser \n with the event:\n"
-	print event
-	self.shell_objects['start_' + browser.lower()]()
+        print "Launching the " + browser + " browser \n with the event:\n"
+        print event
+        if self.url_input.Value == "":
+            windmill.settings['TEST_URL'] = "http://tutorial.getwindmill.com"
+        else:
+            windmill.settings['TEST_URL'] = self.url_input.Value
+        
+        b = self.shell_objects['start_' + browser.lower()]()
+        self.open_browser.append(b)
 
     def OnCloseWindow(self, event):
         #should probably manually stop logging to prevent output errors
         #self.theLogger.removeHandler(self.programOutput)
-	
 	self.Destroy()
 	
     def OnWebsiteLink(self, event):
-	"""Bring up a link to the windmill homepage"""
-	import webbrowser
-	webbrowser.open_new("http://www.getwindmill.com")
-		
-    def OnPreferences(self, event):
+        """Bring up a link to the windmill homepage"""
+        import webbrowser
+        webbrowser.open_new("http://www.getwindmill.com")
 	
-	from windmill import settings
-	from preferencesDialog import PrefDialog
+    def OnPreferences(self, event):
 
-	prefsMenu = PrefDialog(self, preferences=settings)
+        from windmill import settings
+        from preferencesDialog import PrefDialog
 
-	if prefsMenu.ShowModal() == wx.ID_OK:
-	    settings.update(prefsMenu.preferences)
+        prefsMenu = PrefDialog(self, preferences=settings)
+
+        if prefsMenu.ShowModal() == wx.ID_OK:
+            settings.update(prefsMenu.preferences)
 
     def OnClearQueue(self, event):
-	try:
-	    self.shell_objects['httpd'].xmlrpc_methods_instance.clear_queue()
-	except Exception:
-	    print "Clear Queue Failed"
+        try:
+            self.shell_objects['httpd'].xmlrpc_methods_instance.clear_queue()
+        except Exception:
+            print "Clear Queue Failed"
 
+    def OnCloseBrowser(self, event):
+        if len(self.open_browser) != 0:
+            for browser in self.open_browser:
+                browser.stop()
+            self.open_browser = []
+            
+        #reset forwarding url
+        windmill.settings['FORWARDING_TEST_URL'] = None
 	
 class MySplashScreen(wx.SplashScreen):
     """
