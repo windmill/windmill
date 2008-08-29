@@ -17,3 +17,4 @@ wxwindmill/Images/wico.gif
 wxwindmill/Images/windmill.png
 wxwindmill/Images/wlogo.png
 wxwindmill/Images/wmsplash.png
+wxwindmill/bin/wxwindmill_bin.py

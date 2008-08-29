@@ -1,0 +1,2 @@
+import wxwindmill
+wxwindmill.main()

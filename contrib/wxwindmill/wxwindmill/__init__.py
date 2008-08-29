@@ -17,8 +17,9 @@ import wx.lib.flatnotebook as fnb
 import logging
 import os, sys
 #from sys import platform
-from gridcontrol import CustTableGrid
-from wx.py.crust import CrustFrame
+#from gridcontrol import CustTableGrid
+#from wx.py.crust import CrustFrame
+from wx import py
 from threading import Thread
 import windmill
 
