@@ -1,8 +1,5 @@
 setup.py
 wxwindmill/__init__.py
-wxwindmill/gridcontrol.py
-wxwindmill/preferencesDialog.py
-wxwindmill/wxwindmill.py
 wxwindmill.egg-info/PKG-INFO
 wxwindmill.egg-info/SOURCES.txt
 wxwindmill.egg-info/dependency_links.txt
