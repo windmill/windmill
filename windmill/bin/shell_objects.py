@@ -31,7 +31,10 @@ test_stream_object = StringIO()
 
 def clear_queue():
     """Clear the Service's current queue of tests/actions."""
-    jsonrpc_client.clear_queue()
+    try:
+        xmlrpc_client.clear_queue()
+    except Exception, e:
+        logger.debug(type(e).__class__+':'+e.message)
         
 windmill.settings['controllers'] = []
         
