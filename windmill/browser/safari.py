@@ -4,7 +4,7 @@ import logging
 import signal
 import killableprocess
 import sys, os
-from urlparse import urlparse
+import urlparse
 
 import windmill	
 
@@ -96,8 +96,7 @@ class Safari(object):
 	    
 	    redirection_page = tempfile.mktemp(suffix='.html')
 	    f = open(redirection_page, 'w') 
-	    url = urlparse(windmill.settings['TEST_URL'])
-	    test_url = url.geturl().replace(url.path, url.path+'/windmill-serv/start.html')
+	    test_url = windmill.get_test_url(windmill.settings['TEST_URL']) 
 	    f.write( html_redirection.replace('{replace}', test_url) )
 	    f.flush() ; f.close()
 	    kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}

@@ -13,6 +13,7 @@
 #   limitations under the License.
 
 import authoring, bin, browser, server, conf, tools
+from urlparse import urlparse
 
 # This is for some event driven framework code latched on to windmill
 TESTS_COMPLETED = False
@@ -25,3 +26,18 @@ in_shell = False
 block_exit = False
 
 runserver_running = False
+
+def get_test_url(url):
+    url = urlparse(url)
+    if url.path:
+        if url.path != '/':
+            test_url = url.geturl().replace(url.path, url.path+'/windmill-serv/start.html')
+        elif url.query:
+            test_url = url.geturl().replace('?'+url.query, '/windmill-serv/start.html'+'?'+url.query)
+        else:
+            test_url = url.geturl() + 'windmill-serv/start.html'
+    elif url.query:
+        test_url = url.geturl().replace('?'+url.query, '/windmill-serv/start.html'+'?'+url.query)
+    else:
+        test_url = url.geturl().replace(url.netloc, url.netloc+'/windmill-serv/start.html')
+    return test_url

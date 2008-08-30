@@ -30,8 +30,7 @@ def get_firefox_controller():
         if not windmill.settings.has_key(key):
             windmill.settings[key] = value
     
-    url = urlparse(windmill.settings['TEST_URL'])
-    test_url = url.geturl().replace(url.path, url.path+'/windmill-serv/start.html')
+    test_url = windmill.get_test_url(windmill.settings['TEST_URL'])  
             
     windmill.settings['MOZILLA_PREFERENCES'].update( {
         'extensions.chromebug.openalways' : True,

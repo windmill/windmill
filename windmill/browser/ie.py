@@ -3,7 +3,6 @@ import exceptions
 import os, sys, shutil, time, signal
 import killableprocess
 import logging
-from urlparse import urlparse
 
 if sys.platform == "win32" or sys.platform == "cygwin":
     import _winreg as wreg
@@ -21,8 +20,7 @@ class InternetExplorer(object):
     def __init__(self):
         
         self.proxy_port = windmill.settings['SERVER_HTTP_PORT']
-        url = urlparse(windmill.settings['TEST_URL'])
-        self.test_url = url.geturl().replace(url.path, url.path+'/windmill-serv/start.html')
+        self.test_url = windmill.get_test_url(windmill.settings['TEST_URL']) 
         self.registry_modifications['ProxyServer']['new_value'] = "http=localhost:%s" % self.proxy_port
         self.reg = wreg.OpenKey(wreg.HKEY_CURRENT_USER, 
                                 "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", 0, wreg.KEY_ALL_ACCESS)
