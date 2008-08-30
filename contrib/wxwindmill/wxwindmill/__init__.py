@@ -161,7 +161,7 @@ class Frame(wx.Frame):
 	    #disable the buttons that won't work on specific platforms
             if sys.platform == "win32":
                 self.browserButtons['Safari'].Disable()
-            else if sys.plaftorm == "linux" or "linux2":
+            elif sys.plaftorm == "linux" or "linux2":
                 self.browserButtons['Safari'].Disable()
                 self.browserButtons['IE'].Disable()
             else:
