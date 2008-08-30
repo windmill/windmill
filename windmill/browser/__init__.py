@@ -13,7 +13,7 @@
 #   limitations under the License.
 
 import windmill
-import urlparse
+from urlparse import urlparse
 
 windmill.browser_registry = {}
 

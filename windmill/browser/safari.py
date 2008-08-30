@@ -4,7 +4,7 @@ import logging
 import signal
 import killableprocess
 import sys, os
-import urlparse
+from urlparse import urlparse
 
 import windmill	
 
