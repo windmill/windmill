@@ -146,7 +146,7 @@ var windmill = new function() {
         }
         catch(err){}
         this.remoteLoaded = true;
-        document.getElementById('runningStatus').innerHTML = 'Waiting...';
+        document.getElementById('runningStatus').innerHTML = 'Ready...';
         
         busyOff();
     };
