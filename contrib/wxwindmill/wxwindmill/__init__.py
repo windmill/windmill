@@ -161,10 +161,10 @@ class Frame(wx.Frame):
 	    #disable the buttons that won't work on specific platforms
             if sys.platform == "win32":
                 self.browserButtons['Safari'].Disable()
-            elif sys.plaftorm == "linux" or "linux2":
+            if sys.platform == "linux2":
                 self.browserButtons['Safari'].Disable()
                 self.browserButtons['IE'].Disable()
-            else:
+            if sys.platform == "darwin":
                 self.browserButtons['IE'].Disable()
 
             morePanel = wx.Panel(mainPanel, -1,  style=wx.MAXIMIZE_BOX)
