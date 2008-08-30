@@ -207,8 +207,6 @@ Available Actions:
     shell         Enter the windmilll shell environment (modified python shell). 
                   Uses ipython if installed. Exit using ^d
     run_service   Run the windmill service in foreground. Kill using ^c.
-    wx            Run the wxPython based graphical interface for the 
-                  windmill service. Still experimental.
     
 Available Options:""" % ( bin_name,
                          ''.join([ o[0] for o in all_option_names if o[0] is not None ]) 

@@ -35,7 +35,7 @@ html_redirection = """
   <head>
     <script type="text/javascript">	
     var i = function(){
-    	window.location = "http://{replace}/windmill-serv/start.html";
+    	window.location = "{replace}";
     }
     </script>
  </head>
@@ -96,7 +96,9 @@ class Safari(object):
 	    
 	    redirection_page = tempfile.mktemp(suffix='.html')
 	    f = open(redirection_page, 'w') 
-	    f.write(html_redirection.replace('{replace}', uri.netloc+uri.path))
+	    url = urlparse(windmill.settings['TEST_URL'])
+	    test_url = url.geturl().replace(url.path, url.path+'/windmill-serv/start.html')
+	    f.write( html_redirection.replace('{replace}', test_url) )
 	    f.flush() ; f.close()
 	    kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
 	    self.p_handle = killableprocess.runCommand([self.safari_binary, redirection_page], **kwargs)

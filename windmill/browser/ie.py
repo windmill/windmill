@@ -21,7 +21,8 @@ class InternetExplorer(object):
     def __init__(self):
         
         self.proxy_port = windmill.settings['SERVER_HTTP_PORT']
-        self.test_url = windmill.settings['TEST_URL']+'/windmill-serv/start.html'
+        url = urlparse(windmill.settings['TEST_URL'])
+        self.test_url = url.geturl().replace(url.path, url.path+'/windmill-serv/start.html')
         self.registry_modifications['ProxyServer']['new_value'] = "http=localhost:%s" % self.proxy_port
         self.reg = wreg.OpenKey(wreg.HKEY_CURRENT_USER, 
                                 "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", 0, wreg.KEY_ALL_ACCESS)
@@ -75,11 +76,3 @@ class InternetExplorer(object):
             return True
         except exceptions.OSError:
             return False
-            
-    # def __del__(self):
-    #     self.stop()
-        
-            
-            
-            
-        

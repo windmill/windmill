@@ -239,17 +239,17 @@ def shell_action(shell_objects):
     teardown(shell_objects)
     
     
-def wxui_action(shell_objects):
-    """Start the wxPython based service GUI"""
-    try:
-        import wxui
-        app = wxui.App(shell_objects)
-        shell_objects['wxui_app'] = app
-        app.MainLoop()
-        teardown(shell_objects)
-    except ImportError:
-        print 'Failed to import wx, defaulting to the shell'
-        shell_action(shell_objects)    
+# def wxui_action(shell_objects):
+#     """Start the wxPython based service GUI"""
+#     try:
+#         import wxui
+#         app = wxui.App(shell_objects)
+#         shell_objects['wxui_app'] = app
+#         app.MainLoop()
+#         teardown(shell_objects)
+#     except ImportError:
+#         print 'Failed to import wx, defaulting to the shell'
+#         shell_action(shell_objects)    
     
 # def tinderbox_action(shell_objects):
 #     """Tinderbox action for continuous integration"""
@@ -333,5 +333,5 @@ def command_line_startup():
             
 
 action_mapping = {'shell':shell_action, 'runserver':runserver_action, 
-                  'wx':wxui_action, 'run_service':runserver_action}
+                  'run_service':runserver_action}
 

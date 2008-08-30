@@ -13,6 +13,7 @@
 #   limitations under the License.
 
 import windmill
+import urlparse
 
 windmill.browser_registry = {}
 
@@ -28,6 +29,9 @@ def get_firefox_controller():
     for key, value in mozrunner.settings.items():
         if not windmill.settings.has_key(key):
             windmill.settings[key] = value
+    
+    url = urlparse(windmill.settings['TEST_URL'])
+    test_url = url.geturl().replace(url.path, url.path+'/windmill-serv/start.html')
             
     windmill.settings['MOZILLA_PREFERENCES'].update( {
         'extensions.chromebug.openalways' : True,
@@ -58,8 +62,8 @@ def get_firefox_controller():
         # Turn off favicon requests, no need for even more requests
         "browser.chrome.favicons": False,
         
-        "startup.homepage_override_url": windmill.settings['TEST_URL']+'/windmill-serv/start.html',
-        "browser.startup.homepage": windmill.settings['TEST_URL']+'/windmill-serv/start.html',
+        "startup.homepage_override_url": test_url,
+        "browser.startup.homepage": test_url,
         "startup.homepage_welcome_url": "",
         # Disable security warnings
         "security.warn_submit_insecure": False,
@@ -81,7 +85,7 @@ def get_firefox_controller():
         "dom.max_script_run_time": 20,
         } )
         
-    windmill.settings['MOZILLA_CMD_ARGS'] = [windmill.settings['TEST_URL']+'/windmill-serv/start.html']
+    windmill.settings['MOZILLA_CMD_ARGS'] = [test_url]
     
     controller = mozrunner.get_moz_from_settings(windmill.settings)
     
