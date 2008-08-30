@@ -34,7 +34,7 @@ def clear_queue():
     try:
         xmlrpc_client.clear_queue()
     except Exception, e:
-        logger.debug(type(e).__class__+':'+e.message)
+        logger.debug(type(e).__name__+':'+e.message)
         
 windmill.settings['controllers'] = []
         
