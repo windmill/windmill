@@ -149,6 +149,7 @@ var windmill = new function() {
         //document.getElementById('runningStatus').innerHTML = 'Ready...';
         
         busyOff();
+        windmill.controller.continueLoop();
     };
 
     //When the page is unloaded turn off the loop until it loads the new one

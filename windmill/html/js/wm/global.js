@@ -57,6 +57,21 @@ var openDialog = function(id) {
 
 var openFirebug = function(){
   firebug.init();
+  firebug.win.minimize();
+  //if firebug has already been injected into the app
+  if (!opener.firebug){
+    var piScript = opener.document.createElement('script');
+    piScript.src = "windmill-serv/js/lib/pi.js"
+    var fbScript = opener.document.createElement('script');
+    fbScript.src = "windmill-serv/js/lib/firebug-lite.js";
+    opener.document.body.insertBefore(piScript, opener.document.body.childNodes[0]);
+    opener.document.body.insertBefore(fbScript, opener.document.body.childNodes[0]);
+    setTimeout('opener.firebug.init();opener.firebug.win.maximize()', 1000);
+  }
+  else{
+    opener.firebug.init();
+    opener.firebug.win.maximize();
+  }
 }
 
 var resetDD = function(){

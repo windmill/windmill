@@ -105,7 +105,11 @@ windmill.controller = new function () {
       element = elementslib.Element.TAGNAME(param_object.tagname);
     }
     
+    //write out the results to the ide
     windmill.ui.results.writeResult(s);
+    //scroll so that the element is in view
+    element.scrollIntoView();
+    //return the element to be manipulated
     return element;
   };
 

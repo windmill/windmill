@@ -412,10 +412,7 @@ windmill.ui.remote = new function() {
             o.innerHTML += m;
             var mObj = windmill.registry.methods[m];
             
-            if (mObj.section != undefined){
-              o.disabled = true;
-            }
-
+            if (mObj.section != undefined){ o.disabled = true; }
             s.appendChild(o);
         }
         s.setAttribute("onchange", "windmill.ui.remote.methodChange('" + action.id + "');");
@@ -500,9 +497,7 @@ windmill.ui.remote = new function() {
             i0.className = 'texta';
             i0.width = '105';
             //Dont know why I have to do this.. but it wont work if its not setattrib
-            if (params[locator]) {
-                i0.setAttribute('value', params[locator]);
-            }
+            if (params[locator]) { i0.setAttribute('value', params[locator]); }
             i0.id = action.id + 'locator';
             //in firefox there was a bug moving the focus to the element we clicked, not sure why
             //but this seems to fix it. 
@@ -526,9 +521,7 @@ windmill.ui.remote = new function() {
             if (windmill.browser.isIE) {
                 c.innerHTML += '<br>Option: ';
             }
-            else {
-                c.innerHTML += 'Option: ';
-            }
+            else { c.innerHTML += 'Option: '; }
             r.appendChild(c);
 
             //Setup third select
@@ -552,7 +545,8 @@ windmill.ui.remote = new function() {
             //if the options are a comma delimited list, build the drop down
             else if (windmill.registry.methods[method].option.indexOf(',') != -1){
               optArr = windmill.registry.methods[method].option.split(',');
-              for (opt in optArr){
+              //for (opt in optArr){
+              for (var opt = 0; opt < optArr.length; opt++){
                 newOpt = document.createElement('option');
                 newOpt.value = optArr[opt];
                 newOpt.innerHTML = optArr[opt];
