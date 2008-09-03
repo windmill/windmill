@@ -51,7 +51,7 @@ def test_install():
     
 def upload_new_version():
     assert not subprocess.call(['cd', SETUP_DIR, '&&', 'rm', '-rf', 'dist', 'build'])
-    outs = commands.getoutput('cd %s && python setup.py bdist_egg upload' % SETUP_DIR)
+    outs = commands.getoutput('cd %s && python setup.py bdist_egg sdist upload' % SETUP_DIR)
     print outs
     assert outs.find('Server response (200): OK') is not -1
     

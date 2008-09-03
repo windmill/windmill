@@ -20,11 +20,11 @@ PACKAGE_VERSION = "0.8.3pre"
 
 SUMMARY = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging and recording capabilities.'
 
-DESCRIPTION = """Windmill is an Open Source AJAX Web UI Testing framework that was originally built to automate testing for the Chandler Server Project at OSAF. After spending time with Selenium we realized we had a variety of needs that weren't being fulfilled and built Windmill from the ground up. 
+DESCRIPTION = """Windmill is an Open Source AJAX Web UI Testing framework.  
 
 Windmill implements cross browser testing, in-browser recording and playback, and functionality for fast accurate debugging and test environment integration.
 
-We are a relatively young project, but as far as we know we already implement a larger set of a browser testability than Selenium. We welcome any and all interest and contribution, as we work diligently at adding new features and keeping up with your bugs.
+We welcome any and all interest and contribution, as we work diligently at adding new features and keeping up with your bugs.
 
 Thanks for your interest and participation!
 """
