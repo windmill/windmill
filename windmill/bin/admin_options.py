@@ -151,7 +151,7 @@ class UseCode(GeneralBoolSettingToTrue):
     setting = 'USECODE'
     
 class Port(object):
-    """Set port for windmill to run. Defaut is 4444"""
+    """Set port for windmill to run. Default is 4444."""
     option_names = (None, 'port')
     def __call__(self, value):
         windmill.settings['SERVER_HTTP_PORT'] = value
