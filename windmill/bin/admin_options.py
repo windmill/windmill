@@ -149,6 +149,12 @@ class UseCode(GeneralBoolSettingToTrue):
     """Use the code module rather than ipython."""
     option_names = (None, 'usecode')
     setting = 'USECODE'
+    
+class Port(object):
+    """Set port for windmill to run. Defaut is 4444"""
+    option_names = (None, 'port')
+    def __call__(self, value):
+        windmill.settings['SERVER_HTTP_PORT'] = value
         
 def process_module(module):
     """Process this modules option list"""
