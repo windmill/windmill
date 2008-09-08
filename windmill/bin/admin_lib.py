@@ -168,7 +168,6 @@ def setup():
     shell_objects_dict['setup_has_run'] = True
                 
     return shell_objects_dict
-        
 
 def teardown(shell_objects):
     """Teardown the server, threads, and open browsers."""

@@ -72,7 +72,7 @@ def show_queue():
     """Return the current queue of tests and commands in windmill"""
     return windmill.settings['shell_objects']['httpd'].controller_queue.queue
 
-def do_test(filename, load=False):
+def do_test(filename, load=False, threaded=True):
     """Run or load the test file or directory passed to this function"""
     windmill.block_exit = True
     if ',' in filename:
@@ -107,11 +107,19 @@ def do_test(filename, load=False):
             xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
         windmill.block_exit = False
     
-    if module_name is not None:    
+    if module_name is not None and threaded:    
         run_thread = Thread(target=run_functest)
         getattr(run_thread, 'setDaemon', lambda x: x)(True)
         from windmill.bin import admin_lib
         admin_lib.on_ide_awake.append(run_thread.start)
+        return run_thread
+    elif module_name:
+        x = []
+        from windmill.bin import admin_lib
+        admin_lib.on_ide_awake.append(lambda : x.append(True))
+        while len(x) is 0:
+            sleep(1)
+        run_functest()
 
 run_test = lambda filename : do_test(filename, load=False)
 run_test.__name__ = 'run_test'
