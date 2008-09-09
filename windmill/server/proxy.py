@@ -76,7 +76,8 @@ class WindmillProxyApplication(object):
         # to error.
         if windmill.settings['FORWARDING_TEST_URL'] is not None and (
            not url.netloc.startswith('localhost') ) and (
-           not url.netloc.startswith('127.0.0.1') ):
+           not url.netloc.startswith('127.0.0.1') ) and (
+           reduce(lambda x, y: x == y, windmill.server.forwarding_conditions, True)):
             # Do our domain change magic
             
             test_netloc = urlparse(windmill.settings['FORWARDING_TEST_URL']).netloc

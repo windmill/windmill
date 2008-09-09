@@ -13,3 +13,9 @@
 #   limitations under the License.
 
 import wsgi, convergence
+
+forwarding_conditions = []
+
+def add_forward_condition(condition):
+    forwarding_conditions.append(condition)
+
