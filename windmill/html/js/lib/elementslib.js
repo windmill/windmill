@@ -78,7 +78,6 @@ var elementslib = new function(){
 
     //inline function to recursively find the element in the DOM, cross frame.
     var recurse = function(w, func, s){
-      
      //do the lookup in the current window
      try{ element = func.call(w, s);}
      catch(err){ element = null; }
@@ -86,7 +85,7 @@ var elementslib = new function(){
       if (!element){
         var fc = w.frames.length;
         var fa = w.frames;   
-        for (var i=0;i<fc;i++){ 
+        for (var i=0;i<fc;i++){
           recurse(fa[i], func, s); 
         }
      }
@@ -96,10 +95,15 @@ var elementslib = new function(){
     //IE cross window problems require you to talk directly to opener
     try{ element = func.call(opener, s);}
     catch(err){ element = null; }
-    
-    if (element){
-      return element;
+    for (var i=0;i<opener.frames.length;i++){
+      try { element = func.call(opener.frames[i], s); }
+      catch(err){}
+      if (element){
+        break;
+      }
     }
+    
+    if (element){ return element; }
     
     recurse(win, func, s);
     return e;
