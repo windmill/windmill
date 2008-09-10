@@ -90,22 +90,21 @@ var elementslib = new function(){
         }
      }
      else { e = element; }
-    };   
+    };
     
     //IE cross window problems require you to talk directly to opener
-    try{ element = func.call(opener, s);}
-    catch(err){ element = null; }
-    for (var i=0;i<opener.frames.length;i++){
-      try { element = func.call(opener.frames[i], s); }
-      catch(err){}
-      if (element){
-        break;
-      }
-    }
-    
+     try{ element = func.call(opener, s);}
+     catch(err){ element = null; }
+     if (!element){
+       for (var i=0;i<opener.frames.length;i++){
+         try { element = func.call(opener.frames[i], s); }
+         catch(err){ element = null; }
+       }
+     }
+     
     if (element){ return element; }
-    
     recurse(win, func, s);
+    
     return e;
   }
   
