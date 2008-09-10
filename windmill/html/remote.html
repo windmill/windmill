@@ -24,6 +24,11 @@
 		  jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
        ui.panel.style.height = "95%";
       });
+      
+      //The tabs cover up the links in IE6, fixing this issue
+      if (windmill.browser.isIE6x){
+        document.getElementById('tabs').style.height = '92%';
+      }
 		});
 	</script>
 </head>
@@ -76,7 +81,7 @@
 	
   	<div id="domExp"></div>
   	
-    <div id="tabs" style="height:92%;">
+    <div id="tabs" style="height:98%;">
       <ul>
           <li class="ui-tabs-nav-item"><a href="#actionsTab">Actions</a></li>
           <li class="ui-tabs-nav-item"><a href="#outputTab">Output</a></li>
