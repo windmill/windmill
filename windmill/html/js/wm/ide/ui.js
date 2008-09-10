@@ -243,36 +243,37 @@ windmill.ui.recorder = new function() {
         
         var locator = '';
         var locValue = '';
-
-        if ($('useXpath').checked == false) {
-            if (e.target.id != "") {
-                locator = 'id';
-                locValue = e.target.id;
-            }
-            else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")) {
-                locator = 'name';
-                locValue = e.target.name;
-            }
-            else if ((e.target.tagName.toUpperCase() == "A") || (e.target.parentNode.tagName.toUpperCase() == "A")) {
-                locator = 'link';
-                locValue = removeHTMLTags(e.target.innerHTML);
+        try {
+          if ($('useXpath').checked == false) {
+              if (e.target.id != "") {
+                  locator = 'id';
+                  locValue = e.target.id;
+              }
+              else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")) {
+                  locator = 'name';
+                  locValue = e.target.name;
+              }
+              else if ((e.target.tagName.toUpperCase() == "A") || (e.target.parentNode.tagName.toUpperCase() == "A")) {
+                  locator = 'link';
+                  locValue = removeHTMLTags(e.target.innerHTML);
                 
-                //locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig, "");
-                //locValue = locValue.replace(/^s*(.*?)s*$/, "$1");
-                //locValue = locValue.replace(/^[\s(&nbsp;)]+/g,'').replace(/[\s(&nbsp;)]+$/g,'');
-            }
-            else {
-                var stringXpath = getXSPath(e.target);
-                locator = 'xpath';
-                locValue = stringXpath;
-            }
+                  //locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig, "");
+                  //locValue = locValue.replace(/^s*(.*?)s*$/, "$1");
+                  //locValue = locValue.replace(/^[\s(&nbsp;)]+/g,'').replace(/[\s(&nbsp;)]+$/g,'');
+              }
+              else {
+                  var stringXpath = getXSPath(e.target);
+                  locator = 'xpath';
+                  locValue = stringXpath;
+              }
+          }
+          else {
+              var stringXpath = getXSPath(e.target);
+              locator = 'xpath';
+              locValue = stringXpath;
+          }
         }
-        else {
-            var stringXpath = getXSPath(e.target);
-            locator = 'xpath';
-            locValue = stringXpath;
-        }
-        
+        catch(err){}
         //to keep from generating multiple actions for the same click
         if ((this.lastLocValue == locValue) && (this.lastLocator == locator) && (e.type != 'dblclick')){ return; }
         this.lastLocValue = locValue;

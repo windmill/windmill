@@ -108,7 +108,8 @@ windmill.controller = new function () {
     //write out the results to the ide
     windmill.ui.results.writeResult(s);
     //scroll so that the element is in view
-    element.scrollIntoView();
+    if (element) { element.scrollIntoView(); }
+    
     //return the element to be manipulated
     return element;
   };
@@ -155,7 +156,7 @@ windmill.controller = new function () {
           document.domain = windmill.docDomain;
         }
       
-      $('loopLink').innerHTML = 'Pause Loop';
+      $('loopLink').innerHTML = 'Pause Service Loop';
       if (windmill.xhr.loopState == false){
         windmill.xhr.loopState = true;
         windmill.xhr.getNext();

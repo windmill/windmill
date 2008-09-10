@@ -6,10 +6,26 @@
 	<title>Windmill IDE</title>
 	
 	<link rel="stylesheet" type="text/css" href="css/windmill.css"/>
+	<link rel="stylesheet" type="text/css" href="css/jquery.css"/>
 	<script type="text/javascript" src="js/lib/browserdetect.js"></script>
 	<script type="text/javascript" src="js/lib/fleegix_js/trunk/fleegix.js"></script>
 	<script type='text/javascript' src='js/lib/pi.js'></script>
 	<script type='text/javascript' src='js/lib/firebug-lite.js'></script>
+	<script type='text/javascript' src='js/lib/jquery-1.2.6.min.js'></script>
+	<script type="text/javascript" charset="utf-8">
+	  jQuery.noConflict();
+	</script>
+	<script type='text/javascript' src='js/lib/jquery-ui-wm-1.6b.min.js'></script>
+		<script type="text/javascript">	
+		jQuery(function(){
+			//tabs
+			jQuery('#tabs ul').tabs();
+      jQuery("#dialog").dialog({ autoOpen: false });
+		  jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
+       ui.panel.style.height = "95%";
+      });
+		});
+	</script>
 </head>
 		
 <body>
@@ -60,17 +76,108 @@
 	
   	<div id="domExp"></div>
   	
-  	<div id="ide" onscroll="scroll();">
-  		<form id="ideForm" name="ideForm" onsubmit="return false;"></form>
-  	</div>
+    <div id="tabs" style="height:92%;">
+      <ul>
+          <li class="ui-tabs-nav-item"><a href="#actionsTab">Actions</a></li>
+          <li class="ui-tabs-nav-item"><a href="#outputTab">Output</a></li>
+          <li class="ui-tabs-nav-item"><a href="#performanceTab">Performance</a></li>
+      </ul>
+      
+      <div id="actionsTab" style="height:95%;padding:0px;margin:0px;">
+        <div id="ide" onscroll="scroll();">
+        		<form id="ideForm" name="ideForm" onsubmit="return false;"></form>
+        	</div>
+      </div>
+      
+      <div id="outputTab" style="height:95%;padding:0px;margin:0px;padding-left:5px;">
+        <div class="tab">
+          <div id="resOut"></div>
+        </div>
+      </div>
+      
+      <div id="performanceTab" style="height:95%;padding:0px;margin:0px;padding-left:5px;">
+        <div class="tab">
+          <div id="perfOut"></div>
+        </div>
+      </div>
+
+    </div>
+        
+    <div id="dialog" style="padding-top:0px;margin-top:0px;">
+      <div id="settings" style="font-size:12px arial;">
+       		<form id='settingsForm' name='settingsForm'>
+       			<h3 style="color:#25444e">Windmill Settings</h3>
+       		  <strong>System</strong><br>
+       		<table>
+       			<tr>
+       				<td>Throw JavaScript errors, full debug:</td>
+       				<td> <INPUT TYPE=checkbox UNCHECKED ID='throwDebug'></td>
+       			</tr>
+       			<tr>
+       				<td>Break on failure:</td>
+       				<td> <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="windmill.ui.toggleBreak();"></td>
+       			</tr>
+       			<tr>
+       				<td>Suppress Javascript Alerts:</td><td> <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts'></td>
+       			</tr>
+       		  <tr>
+       				<td>Suite Save Formatting:</td>
+       				<td> 
+       					<SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
+       						<OPTION value="python" selected>python</option>
+       						<OPTION value="json">json</option>
+       					</SELECT>
+       				</td>
+       			</tr>
+       		</table><br>
+
+       		<strong>IDE/Recorder</strong>
+       		<table>
+       			<tr>
+       				<td>Auto Scroll IDE to bottom:</td>
+       				<td> <INPUT TYPE=checkbox CHECKED ID='autoScroll'></td>
+       			</tr>
+       			<tr>
+       				<td>Absolute click sensitivity when recording:</td>
+       				<td><INPUT TYPE=checkbox CHECKED ID='clickOn'></td>
+       			</tr>
+       			<tr>
+       				<td>Action play button cascades:</td>
+       				<td> <INPUT TYPE=checkbox UNCHECKED ID='playCascade'></td>
+       			</tr>
+       			<tr>
+       				<td>Use XPath only for explorer/recorder:</td>
+       				<td> <INPUT TYPE=checkbox UNCHECKED ID='useXpath'></td>
+       			</tr>
+       			<tr>
+       				<td>Record detailed XPath's (vs absolute):</td>
+       				<td> <INPUT TYPE=checkbox CHECKED ID='absXpaths'></td>
+       			</tr>
+     				<tr>
+       				<td>Play action by hitting 'return/enter':</td>
+       				<td> <INPUT TYPE=checkbox CHECKED ID='playOnReturn'></td>
+       			</tr>
+       		</table>
+       		<br>
+       		<center> <a id="loopLink" href = "#" onclick="javascript:toggleLoop();">
+       		    Toggle Service Loop
+       		  </a> &nbsp | &nbsp
+       		<a href='#' onclick="windmill.testWindow.document.location.reload()">
+       		  Reload Testing Application
+       		</a>
+       		</center>
+       	</form>
+       </div>
+      
+    </div>
+ 
   	<div id="navigation" style="font-weight:bold">
   	   <span style="font-weight: bold;">
-  	    <a href="#" onclick="javascript:openFirebug()">Firebug</a>&nbsp
-  			<a href="#" onclick="javascript:openDialog('output')">Output</a>&nbsp 
-  			<a href="#" onclick="javascript:openDialog('settings')">Settings</a>&nbsp
+  	    <a href="#" onclick="javascript:openFirebug()">Firebug</a>&nbsp | &nbsp 
+  			<a href="#" onclick='javascript:openSettings()'>Settings</a>&nbsp
   		</span>
   		<span>| &nbsp
-  		  Actions: <select id="actionDD" style="visibility:hidden;">
+  		  Actions: &nbsp <select id="actionDD" style="visibility:hidden;">
   		    <option selected>--</option>
   		    <option id="addSuite">Add Suite</option>
   		    <option id="addAction">Add Action</option>
@@ -85,125 +192,6 @@
       </span>
   	</div>	
   </div>
-  <div id="gray"></div>
-  <div id="output" class="dialog">
-  		<div align="right">
-  			<table border="0" cellspacing="0" cellpadding="2" style="width:95%;">
-  				<tr>
-  					<td align="left" style="width:92%;color:#456068;">
-  						<strong style="font-size:16px;">Output</strong>
-  					</td>
-  					<td style="font: 9pt arial;font-weight:bold;padding:5px;">
-  					  <a href="#" onclick="javascript:closeDialog('output');">Close</a>
-  				  </td>
-  				</tr>
-  			</table>
-  		</div>
-  		<br>
-  			<strong>General Output</strong>
-  		<br>
-  		<div id="resOut" class="tab"></div>
-  		<br>
-  	    <strong>Performance Output</strong>
-  		<br>
-  		<div id="perfOut" class="tab"></div>
-  </div>
-  <div id="shell" class="dialog">
-  	<div align="right">
-  			<table border="0" cellspacing="0" cellpadding="2" style="width:95%;">
-  				<tr>
-  					<td align="left" style="width:92%;color:#456068;">
-  						<strong style="font-size:16px;">Windmill Shell</strong>
-  					</td>
-  					<td style="font: 9pt arial;font-weight:bold;padding:5px;";>
-  						<a href="#" onclick="javascript:closeDialog('shell');">Close</a>
-  					</td>
-  				</tr>
-  			</table>
-  	</div>
-  	<br>
-  	 <div id="container">
-        <form id="shellForm" onsubmit="return false;">
-          <div id="shellOutput"></div>
-          <input id="shellInput" name="shellInput" type="text" />
-        </form>
-      </div>
-  </div>
-
-  <div id="settings" class="dialog">
-  		<form id='settingsForm' name='settingsForm'>
-  		<div align="right">
-  			<table border="0" cellspacing="0" cellpadding="2" style="width:95%;">
-  				<tr>
-  					<td align="left" style="width:92%;color:#456068;">
-  						<strong style="font-size:16px;">Windmill Settings</strong>
-  					</td>
-  					<td style="font: 9pt arial;font-weight:bold;padding:5px;">
-  						<a href="#" onclick="javascript:closeDialog('settings');">Close</a>
-  					</td>
-  				</tr>
-  			</table>
-  		</div>
-  		<br>
-  		<h3>System</h3>
-  		<a id="loopLink" href = "#" onclick="javascript:toggleLoop();">Resume Loop</a>: Pause/Resume the Windmill IDE from polling the server.<br><br>
-      	
-  		<table style="font:14px arial;">
-  			<tr>
-  				<td>Throw JavaScript errors, full debug:</td>
-  				<td> <INPUT TYPE=checkbox UNCHECKED ID='throwDebug'></td>
-  			</tr>
-  			<tr>
-  				<td>Break on failure:</td>
-  				<td> <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="windmill.ui.toggleBreak();"></td>
-  			</tr>
-  			<tr>
-  				<td>Suppress Javascript Alerts:</td><td> <INPUT TYPE=checkbox UNCHECKED ID='jsAlerts'></td>
-  			</tr>
-  		  <tr>
-  				<td>Suite Save Formatting:</td>
-  				<td> 
-  					<SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
-  						<OPTION value="python" selected>python</option>
-  						<OPTION value="json">json</option>
-  					</SELECT>
-  				</td>
-  			</tr>
-  		</table>
-		
-  		<h3>IDE/Recorder</h3>
-  		<table style="font:14px arial;">
-  			<tr>
-  				<td>Auto Scroll IDE to bottom:</td>
-  				<td> <INPUT TYPE=checkbox CHECKED ID='autoScroll'></td>
-  			</tr>
-  			<tr>
-  				<td>Absolute click sensitivity when recording:</td>
-  				<td><INPUT TYPE=checkbox CHECKED ID='clickOn'></td>
-  			</tr>
-  			<tr>
-  				<td>Action play button cascades:</td>
-  				<td> <INPUT TYPE=checkbox UNCHECKED ID='playCascade'></td>
-  			</tr>
-  			<tr>
-  				<td>Use XPath only for explorer/recorder:</td>
-  				<td> <INPUT TYPE=checkbox UNCHECKED ID='useXpath'></td>
-  			</tr>
-  			<tr>
-  				<td>Record detailed XPath's (vs absolute):</td>
-  				<td> <INPUT TYPE=checkbox CHECKED ID='absXpaths'></td>
-  			</tr>
-				<tr>
-  				<td>Play action by hitting 'return/enter':</td>
-  				<td> <INPUT TYPE=checkbox CHECKED ID='playOnReturn'></td>
-  			</tr>
-  		</table>
-  		<br><br>
-  		<a href='#' onclick="windmill.testWindow.document.location.reload()">
-  		  Reload Testing Application
-  		</a>: This reloads your page, without resetting Windmill.<br><br><br><br>
-  	</form>
-  </div>
   
   <!-- Preload the images -->
   <img src="img/text_elem_gradient.gif" style="width:1px;height:1px;"> 
@@ -212,6 +200,7 @@
   <img src="img/addup.png" style="width:1px;height:1px;">
   <img src="img/adddown.png" style="width:1px;height:1px;"> 
 </body>
+
 <script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/hash.js"></script>
 <script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/shell.js"></script>
 <script type="text/javascript" src="js/lib/getXPath.js"></script>

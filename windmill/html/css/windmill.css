@@ -34,19 +34,6 @@ a:hover {
 	overflow: auto;
 }
 
-.dialog {
-  position:absolute;
-  background-color:white;
-  left:10%;
-  width:85%;
-  height:80%;
-  top:8%;
-  display:none;
-  border:1px solid black;
-  z-index:10;
-  overflow:auto;
-}
-
 .texta {
   font: 10px arial;
 	margin:0px;
@@ -139,7 +126,6 @@ a:hover {
  position: relative;
  width:100%;
  height: 85%;
- border:1px solid #aaa;
  overflow: auto; overflow-y: auto; overflow-x: hidden;
 }
 
@@ -168,8 +154,8 @@ a:hover {
 }
 
 .tab {
- height:40%;
- width:95%;
- overflow:auto;
- border:1px dashed black; 
+position: relative;
+width:100%;
+height: 85%;
+overflow: auto; overflow-y: auto; overflow-x: hidden;
 }

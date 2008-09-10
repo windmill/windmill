@@ -37,22 +37,36 @@ var busyOff = function(){
   $('cover').style.display = "none";
 }
 
-var closeDialog = function(id) {
-    $('actionDD').style.visibility = "visible";
-    $(id).style.display = 'none';
-    $('gray').style.visibility = 'hidden';
-    $('ide').style.display = 'block';
-};
-var openDialog = function(id) {
+// var closeDialog = function(id) {
+//     $('actionDD').style.visibility = "visible";
+//     $(id).style.display = 'none';
+//     $('gray').style.visibility = 'hidden';
+//     $('ide').style.display = 'block';
+// };
+
+var openSettings = function() {
     //Turn off explorers and recorder
     windmill.ui.recorder.recordOff();
     windmill.ui.domexplorer.domExplorerOff();
     windmill.ui.assertexplorer.assertExplorerOff();
 
-    $(id).style.display = 'block';
-    $('gray').style.visibility = 'visible';
-    $('ide').style.display = 'none';
-    $('actionDD').style.visibility = "hidden";
+    //$(id).style.display = 'block';
+    jQuery("#dialog").dialog({
+      height: 450,
+      width: 400,
+      modal:true,
+      overlay: { 
+          opacity: 0.5, 
+          background: "black" 
+      },
+      buttons: { 
+       "Ok": function() { 
+           jQuery(this).dialog("close"); 
+       } 
+      }
+    });
+    // $('ide').style.display = 'none';
+    // $('actionDD').style.visibility = "hidden";
 };
 
 var openFirebug = function(){
@@ -109,11 +123,11 @@ var togglePlay = function() {
 }
 var toggleLoop = function() {
     if ($('loopLink').innerHTML.indexOf('Pause') != -1) {
-        $('loopLink').innerHTML = 'Resume Loop';
+        $('loopLink').innerHTML = 'Resume Service Loop';
         windmill.controller.stopLoop();
     }
     else {
-        $('loopLink').innerHTML = 'Pause Loop';
+        $('loopLink').innerHTML = 'Pause Service Loop';
         windmill.controller.continueLoop();
     }
 

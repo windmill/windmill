@@ -63,7 +63,7 @@ var windmill = new function() {
     
     this.init = function(b) { this.browser = b;}
     this.start = function() {
-        var shell = new fleegix.shell.Shell($('shellForm').shellInput, $('shellOutput'));
+//        var shell = new fleegix.shell.Shell($('shellForm').shellInput, $('shellOutput'));
         //make the action drop down work in a browser compatible way
         var dispatchDD = function(e){
           var sel = e.target.options[e.target.options.selectedIndex].id;
