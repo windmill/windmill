@@ -35,6 +35,7 @@ def is_hop_by_hop(header):
 
 initial_forwarding_registry = {}
 forwarding_registry = {}
+exclude_from_retry = []
 # 
 # class IterativeResponse(object):
 #     def __init__(self, response_instance):
@@ -86,7 +87,7 @@ class WindmillProxyApplication(object):
             if ( url.netloc != test_netloc ):
                 # if the url's network address is not the test URL that has been set we need to return
                 # a forward
-                initial_forwarding_registry[url.geturl().replace(url.netloc, test_netloc)] = url.netloc
+                initial_forwarding_registry[url.geturl().replace(url.netloc, test_netloc, 1)] = url.netloc
                 start_response("302 Found", [('Content-Type', 'text/plain'), 
                                              ('Location', url.geturl().replace(url.netloc, test_netloc) )])
                 logger.debug('New domain request, forwarded to '+url.geturl().replace(url.netloc, test_netloc))
@@ -164,7 +165,7 @@ class WindmillProxyApplication(object):
             hosts = [];
             # Can't use set() here because it needs to keep it's original ordering.
             for h in nhosts:
-                if h not in hosts: hosts.append(h)
+                if h not in hosts and h not in exclude_from_retry: hosts.append(h)
             current_host = url.netloc
             for host in hosts:
                 connection = make_remote_connection(urlparse(url.geturl().replace(current_host, host)), 
