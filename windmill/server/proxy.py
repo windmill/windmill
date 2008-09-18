@@ -155,7 +155,6 @@ class WindmillProxyApplication(object):
                 return connection
             except:
                 # We need extra exception handling in the case the server fails in mid connection, it's an edge case but I've seen it
-                logger.info('Could not fullfill proxy request to '+url.geturl()+'. '+str(set(initial_forwarding_registry.values())))
                 return [("501 Gateway error", [('Content-Type', 'text/html')],), '<H1>Could not connect</H1>']
                 
         def retry_known_hosts(url, environ):
@@ -200,7 +199,8 @@ class WindmillProxyApplication(object):
 
         # Remove hop by hop headers
         headers = self.parse_headers(response)
-        
+        if response.status == 404:
+            logger.info('Could not fullfill proxy request to '+url.geturl()+'. '+str(set(initial_forwarding_registry.values())))
         start_response(response.status.__str__()+' '+response.reason, headers)
         return [response.read()]
 
