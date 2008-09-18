@@ -159,8 +159,12 @@ class WindmillProxyApplication(object):
                 
         def retry_known_hosts(url, environ):
             # retry the given request against all the hosts the current session has run against
-            hosts = copy.copy(initial_forwarding_registry.values())
-            hosts.reverse()
+            nhosts = copy.copy(initial_forwarding_registry.values())
+            nhosts.reverse()
+            hosts = [];
+            # Can't use set() here because it needs to keep it's original ordering.
+            for h in nhosts:
+                if h not in hosts: hosts.append(h)
             current_host = url.netloc
             for host in hosts:
                 connection = make_remote_connection(urlparse(url.geturl().replace(current_host, host)), 
@@ -168,7 +172,7 @@ class WindmillProxyApplication(object):
                 if isinstance(connection, HTTPConnection):
                     new_response = connection.getresponse()
                     if new_response.status > 199 and new_response.status < 399:
-                        logger.debug('retry success, '+url.geturl()+' to '+host)
+                        logger.info('Retry success, '+url.geturl()+' to '+host)
                         return new_response
             return None
                 
