@@ -45,7 +45,7 @@ windmill.xhr = new function() {
         }
         else {
             if (resp.result.method != 'defer') {
-                windmill.serviceDelay = 400;
+                windmill.serviceDelay = 200;
                 windmill.ui.results.writeStatus("Running " + resp.result.method + "...");
                 windmill.ui.playback.setPlaying();
             }
