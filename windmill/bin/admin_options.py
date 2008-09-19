@@ -154,7 +154,7 @@ class Port(object):
     """Set port for windmill to run. Default is 4444."""
     option_names = (None, 'port')
     def __call__(self, value):
-        windmill.settings['SERVER_HTTP_PORT'] = value
+        windmill.settings['SERVER_HTTP_PORT'] = int(value)
         
 def process_module(module):
     """Process this modules option list"""
