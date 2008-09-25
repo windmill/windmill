@@ -14,7 +14,7 @@
 
 import wsgi, convergence
 
-forwarding_conditions = [lambda e : not e['PATH_INFO'].startswith('/safebrowsing/downloads')]
+forwarding_conditions = [lambda e : 'google.com/safebrowsing/downloads' not in e['reconstructed_url']]
 
 def add_forward_condition(condition):
     forwarding_conditions.append(condition)
