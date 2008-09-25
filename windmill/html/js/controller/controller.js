@@ -169,6 +169,29 @@ windmill.controller = new function () {
   this.stopLoop = function () {
     windmill.xhr.loopState = false;
   };
+  
+  //Store an attribute of a DOM element in the variable registry
+  this.storeVarFromLocAttrib = function (param_object) {
+    var element = this._lookupDispatch(param_object);
+    if (!element){ return false; }
+
+    var arr = param_object.options.split('|');
+    var varName = arr[0];
+    var attrib = arr[1];
+    
+    var attribValue = element[attrib];
+    
+    if (windmill.varRegistry.hasKey('{$'+varName+'}')){
+      windmill.varRegistry.removeItem('{$'+varName +'}');
+      windmill.varRegistry.addItem('{$'+varName +'}', attribValue);
+    }
+    else{
+      windmill.varRegistry.addItem('{$'+varName +'}', attribValue);
+    }
+    return true;
+
+  }
+  
   //expects a name and js param
   this.storeVarFromJS = function (param_object) {
     //extract the options

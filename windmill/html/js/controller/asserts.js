@@ -155,6 +155,15 @@ windmill.controller.asserts.assertJS = function (param_object) {
   return result;
 };
 
+//Asserting javascript with an element object available
+windmill.controller.asserts.assertElemJS = function (param_object) {
+  var element = windmill.controller._lookupDispatch(param_object);
+  if (!element){ return false; }
+  var js = param_object.js;
+  var result = eval(js);
+  return result;
+};
+
 //Assert that a provided value is selected in a select element
 windmill.controller.asserts.assertSelected = function (param_object) {
   var n = windmill.controller._lookupDispatch(param_object);
