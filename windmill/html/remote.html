@@ -17,18 +17,18 @@
 	</script>
 	<script type='text/javascript' src='js/lib/jquery-ui-wm-1.6b.min.js'></script>
 		<script type="text/javascript">	
-		jQuery(function(){
+			jQuery(function(){
 			//tabs
 			jQuery('#tabs ul').tabs();
-      jQuery("#dialog").dialog({ autoOpen: false });
-		  jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
-       ui.panel.style.height = "95%";
-      });
+      		jQuery("#dialog").dialog({ autoOpen: false });
+		  	jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
+       			ui.panel.style.height = "95%";
+      		});
       
-      //The tabs cover up the links in IE6, fixing this issue
-      if (windmill.browser.isIE6x){
-        document.getElementById('tabs').style.height = '92%';
-      }
+      		//The tabs cover up the links in IE6, fixing this issue
+      		if (windmill.browser.isIE6x){
+        		document.getElementById('tabs').style.height = '92%';
+      		}
 		});
 	</script>
 </head>
@@ -207,8 +207,8 @@
 </body>
 
 <script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/hash.js"></script>
-<script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/shell.js"></script>
 <script type="text/javascript" src="js/lib/getXPath.js"></script>
+<script type="text/javascript" src="js/lib/json2.js"></script>
 <script type="text/javascript" src="js/wm/windmill.js"></script>
 <script type="text/javascript" src="js/lib/elementslib.js"></script>
 <script type="text/javascript" src="js/wm/registry.js"></script>

@@ -44,46 +44,28 @@ windmill.controller.radio = function(param_object){
     return true;
 }
 
+
 //Safari Click function
 windmill.controller.click = function(param_object){
     var element = this._lookupDispatch(param_object);
     if (!element){ return false; }
-    
-    //Hoping we no longer need to use the element['click] hack in saf 3
-    //as I think it is causing a bug that takes safari to a blank page
-    
     windmill.events.triggerEvent(element, 'focus', false);
-    //if you do the mouse actions it actually halts at the OS layer and freezes your test
-    //waiting for user interaction
-    if (element.nodeName != 'SELECT'){
-      windmill.events.triggerMouseEvent(element, 'mousedown', true);
-      windmill.events.triggerMouseEvent(element, 'mouseup', true);
-    }
-    windmill.events.triggerMouseEvent(element, 'click', true);
-    return true;
+      
+      // For form element it is simple.
+      if (element['click']) {
+          element['click']();
+      }
+      else{
+        // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
+        if (element.nodeName != 'SELECT'){
+          windmill.events.triggerMouseEvent(element, 'mousedown', true);
+          windmill.events.triggerMouseEvent(element, 'mouseup', true);
+        }
+        windmill.events.triggerMouseEvent(element, 'click', true);
+      }
+    
+   return true;
 };
-
-
-// //Safari Click function
-// windmill.controller.click = function(param_object){
-//     var element = this._lookupDispatch(param_object);
-//     if (!element){ return false; }
-//     windmill.events.triggerEvent(element, 'focus', false);
-//       
-//       // For form element it is simple.
-//       if (element['click']) {
-//           element['click']();
-//       }
-//       else{
-//         // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-//         if (element.nodeName != 'SELECT'){
-//           windmill.events.triggerMouseEvent(element, 'mousedown', true);
-//           windmill.events.triggerMouseEvent(element, 'mouseup', true);
-//         }
-//         windmill.events.triggerMouseEvent(element, 'click', true);
-//       }
-//    return true;
-// };
 
 //Double click for Safari
 windmill.controller.doubleClick = function(param_object) {

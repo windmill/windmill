@@ -283,7 +283,8 @@ windmill.ui.remote = new function() {
             params_obj.tests = testArray;
             json_object.params = params_obj;
 
-            var json_string = fleegix.json.serialize(json_object)
+            //var json_string = fleegix.json.serialize(json_object)
+            var json_string = JSON.stringify(json_object);
             fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
 
         }
