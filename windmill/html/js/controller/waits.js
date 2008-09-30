@@ -124,6 +124,14 @@ windmill.controller.waits.forElement = function (paramObj,obj) {
     var f = function () {
       try { return windmill.controller._lookupDispatch(p); }
       catch(err){}
+      
+      //Fix for strange safari issue where a blank page is loaded
+      //window object exists but document is null
+      if (windmill.browser.isSafari){
+        if ((typeof _w == "object") && (_w.document == null)){
+          windmill.controller.refresh();
+        }
+      }
     };
     p.test = f;
     return windmill.controller.waits.forJSTrue(p, obj);
@@ -154,33 +162,29 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
     var f = function () {
       try {
         var v = opener.document.domain;
-      }
-      catch(err){
+      }catch(err){
         document.domain = windmill.docDomain;
       }
       try {
         var d = opener.document.body;
       }catch(err){ d = null;}
-    
+      
       if (d != null){
         return true;
       }
+      
+      //Fix for strange safari issue where a blank page is loaded
+      //window object exists but document is null
+      if (windmill.browser.isSafari){
+        if ((typeof _w == "object") && (_w.document == null)){
+          windmill.controller.refresh();
+        }
+      }
+      
       return false;
     };
     p.test = f;
     
-   //Wait until the page has started loading
-   // var checks = 0;
-   // while (checks < 5){
-   //   try{
-   //     var d = windmill.testWindow.document.body;
-   //   }
-   //   catch(err){
-   //     checks = 5;
-   //   }
-   //   checks++;
-   // }
-     
     return windmill.controller.waits.forJSTrue(p, obj, true);
   }
   setTimeout(sl, 3000);

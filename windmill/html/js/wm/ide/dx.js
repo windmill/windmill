@@ -21,7 +21,9 @@ windmill.ui.domexplorer = new function() {
     if (this.exploreState == true) { this.domExplorerOn(); }
   }
   //Reset the border to what it was before the mouse over
-  this.resetBorder = function(e) { e.target.style.border = ''; }
+  this.resetBorder = function(e) { 
+    e.target.style.border = '';
+  }
   
   //Display the id in the remote
   this.setIdInRemote = function(e) {
@@ -58,7 +60,7 @@ windmill.ui.domexplorer = new function() {
             $("domExp").innerHTML = 'XPath: ' + stringXpath;
           }
           else{
-            $("domExp").innerHTML = "The generated XPath does not validate, report this bug.";
+            $("domExp").innerHTML = "XPath: The generated XPath does not validate, report this bug.";
           }
         }
       }
@@ -69,11 +71,17 @@ windmill.ui.domexplorer = new function() {
             $("domExp").innerHTML = 'XPath: ' + stringXpath;
           }
           else{
-            $("domExp").innerHTML = "The generated XPath does not validate, report this bug.";
+            $("domExp").innerHTML = "XPath: The generated XPath does not validate, report this bug.";
           }
       }
-
-      e.target.style.border = "1px solid yellow";
+      
+      //trying to keep old borders from getting left all over the page
+      if (windmill.ui.domexplorer.currElem){
+          windmill.ui.domexplorer.currElem.style.border = "";
+      }
+      e.target.style.border = windmill.ui.borderHilight;
+      windmill.ui.domexplorer.currElem = e.target;
+      
       this.explorerUpdate(e);
   };
 

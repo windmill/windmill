@@ -25,10 +25,12 @@ Copyright 2006-2007, Open Source Applications Foundation
 
 windmill.ui = new function() {
     var _this = this;
-    //Needed to keep track of the old border for the dom explorer
+    //global settings for highlight color for explorers
+    this.borderHilight = '1px solid #003366';
+    
     //keeping track of the recorder state when a new page is loaded and wipes the document
     this.recordSuiteNum = 0;
-
+    
     //Setter, incremeneting the recordSuiteNum
     this.incRecSuite = function() {
         this.recordSuiteNum++;

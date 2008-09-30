@@ -28,6 +28,8 @@ windmill.ui.assertexplorer = new function() {
     //Display the id in the remote
     this.setIdInRemote = function(e) {
       var v = null;
+      $("domExp").innerHTML = "";
+      
       if ($('useXpath').checked == false) {
         if (e.target.nodeName == "INPUT") {
           v = e.target.value;
@@ -42,18 +44,42 @@ windmill.ui.assertexplorer = new function() {
             $("domExp").innerHTML = "Name: " + e.target.name + "<br> Content: " + v;
         }
         else if (e.target.nodeName == "A") {
-            $("domExp").innerHTML = "Link: " + e.target.innerHTML + "<br> Content: " + v;
+            var element = elementslib.Element.LINK(e.target.innerHTML);
+            if (element == e.target){
+              $("domExp").innerHTML = "Link: " + e.target.innerHTML + "<br> Content: " + v;
+            }
         }
-        else {
+        if ($("domExp").innerHTML == ""){
             var stringXpath = getXSPath(e.target);
-            $("domExp").innerHTML = 'XPath: ' + stringXpath + "<br> Content: " + v;
+             //test to make sure it actually works
+             var element = elementslib.Element.XPATH(stringXpath);
+             if (element == e.target){
+               $("domExp").innerHTML = 'XPath: ' + stringXpath + "<br> Content: " + v;
+             }
+             else{
+               $("domExp").innerHTML = "XPath: The generated XPath does not validate, report this bug.";
+             }
         }
       }
-      else {
-          var stringXpath = getXSPath(e.target);
-          $("domExp").innerHTML = 'XPath: ' + stringXpath + "<br> Content: " + v;
+      //if not just use the xpath
+      else{
+        var stringXpath = getXSPath(e.target);
+         //test to make sure it actually works
+         var element = elementslib.Element.XPATH(stringXpath);
+         if (element == e.target){
+           $("domExp").innerHTML = 'XPath: ' + stringXpath + "<br> Content: " + v;
+         }
+         else{
+           $("domExp").innerHTML = "XPath: The generated XPath does not validate, report this bug.";
+         }
       }
-      e.target.style.border = "1px solid yellow";
+      
+       //trying to keep old borders from getting left all over the page
+       if (windmill.ui.assertexplorer.currElem){
+         windmill.ui.assertexplorer.currElem.style.border = "";
+       }
+       e.target.style.border = windmill.ui.borderHilight;
+       windmill.ui.assertexplorer.currElem = e.target;
     }
 
     this.aexplorerClick = function(e) {
