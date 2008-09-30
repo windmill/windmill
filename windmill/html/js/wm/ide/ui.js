@@ -294,6 +294,9 @@ windmill.ui.recorder = new function() {
             if (e.type == 'dblclick') {
                 windmill.ui.remote.addAction(windmill.ui.remote.buildAction('doubleClick', params));
             }
+            else if (e.target.type == "checkbox"){
+              windmill.ui.remote.addAction(windmill.ui.remote.buildAction('check', params));
+            }
             else {
                 //if sensative click is on, pick up every click that gets to the window listener
                 if ($("clickOn").checked == true) {
@@ -425,9 +428,7 @@ windmill.ui.recorder = new function() {
             this.recRecursiveUnBind(opener);
         }
         catch(error) {
-            windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill,' + 
-            'we are getting cross domain exceptions.' + error);
-
+          windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
         }
 
     }
@@ -482,9 +483,7 @@ windmill.ui.recorder = new function() {
 
             }
             catch(error) {
-                windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain?' + 
-                'Binding to all others.' + error);
-
+              windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
             }
 
         }
@@ -533,9 +532,7 @@ windmill.ui.recorder = new function() {
 
             }
             catch(error) {
-                windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain?' + 
-                'Binding to all others.' + error);
-
+              windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
             }
 
         }

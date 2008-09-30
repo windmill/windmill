@@ -948,8 +948,7 @@ windmill.controller = new function () {
   	        rwaRecurse(iframeArray[i]);
           }
           catch(error){             
-           	windmill.ui.results.writeResult('There was a problem rewriting alert on one of your iframes, is it cross domain?' +
-  					  'Binding to all others.' + error);     
+           	windmill.ui.results.writeResult('Could not bind to iframe number '+ iframeCount +' '+error);     
           }
         }
     }

@@ -35,7 +35,8 @@ windmill.xhr = new function() {
             str = windmill.controller.handleVariable(str);
         }
 
-        windmill.xhr.xhrResponse = eval('(' + str + ')');
+        //windmill.xhr.xhrResponse = eval('(' + str + ')');
+        windmill.xhr.xhrResponse = JSON.parse(str);
         var resp = windmill.xhr.xhrResponse;
         
         //If there was a legit json response
@@ -201,7 +202,6 @@ windmill.xhr = new function() {
                 handleTimeout: handleTimeout,
                 preventCache: true,
                 dataPayload: jsonString
-
             });
 
         }

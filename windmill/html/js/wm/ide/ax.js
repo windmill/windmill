@@ -133,8 +133,7 @@ windmill.ui.assertexplorer = new function() {
         this.axRecursiveBind(opener);
       }
       catch(error) {
-        windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, ' + 
-        'we are getting cross domain exceptions.');
+        windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
         $('assertx').src = 'img/axon.png';
         this.exploreState = false;
       }
@@ -153,8 +152,7 @@ windmill.ui.assertexplorer = new function() {
         this.axRecursiveUnBind(opener);
       }
       catch(error) {
-        windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, ' + 
-        'we are getting cross domain exceptions.');
+        windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
       }
     }
 
@@ -177,8 +175,7 @@ windmill.ui.assertexplorer = new function() {
           this.axRecursiveBind(iframeArray[i]);
         }
         catch(error) {
-          windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain? ' + 
-            'Binding to all others.' + error);
+          windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
         }
       }
     }
@@ -200,8 +197,7 @@ windmill.ui.assertexplorer = new function() {
 
         }
         catch(error) {
-          windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain? ' + 
-            'Binding to all others.' + error);
+          windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
         }
       }
     }

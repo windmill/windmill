@@ -34,6 +34,8 @@ windmill.ui.domexplorer = new function() {
     
     //if absolute xpath is not wanted try our best to get a better locater
     if ($('useXpath').checked == false) {
+        $("domExp").innerHTML = "";
+        
         if (e.target.id != "") {
           $("domExp").innerHTML = "ID: " + e.target.id;
         }
@@ -41,17 +43,34 @@ windmill.ui.domexplorer = new function() {
           $("domExp").innerHTML = "Name: " + e.target.name;
         }
         else if ((e.target.nodeName.toUpperCase() == "A")|| (e.target.parentNode.nodeName.toUpperCase() == "A")) {
-          $("domExp").innerHTML = "Link: " + e.target.innerHTML;
+          //Validation
+          var element = elementslib.Element.LINK(e.target.innerHTML);
+          if (element == e.target){
+            $("domExp").innerHTML = "Link: " + e.target.innerHTML;
+          }
         }
         //if not just use the xpath
-        else {
+        if ($("domExp").innerHTML == ""){
           var stringXpath = getXSPath(e.target);
-          $("domExp").innerHTML = 'XPath: ' + stringXpath;
+          //test to make sure it actually works
+          var element = elementslib.Element.XPATH(stringXpath);
+          if (element == e.target){
+            $("domExp").innerHTML = 'XPath: ' + stringXpath;
+          }
+          else{
+            $("domExp").innerHTML = "The generated XPath does not validate, report this bug.";
+          }
         }
       }
       else {
         var stringXpath = getXSPath(e.target);
-        $("domExp").innerHTML = 'XPath: ' + stringXpath;
+         var element = elementslib.Element.XPATH(stringXpath);
+          if (element == e.target){
+            $("domExp").innerHTML = 'XPath: ' + stringXpath;
+          }
+          else{
+            $("domExp").innerHTML = "The generated XPath does not validate, report this bug.";
+          }
       }
 
       e.target.style.border = "1px solid yellow";
@@ -134,7 +153,7 @@ windmill.ui.domexplorer = new function() {
       this.dxRecursiveBind(opener);
     }
     catch(error) {
-      windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
+      windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
       $('explorer').src = 'img/xon.png';
       this.exploreState = false;
     }
@@ -158,7 +177,7 @@ windmill.ui.domexplorer = new function() {
       this.dxRecursiveUnBind(opener);
     }
     catch(error) {
-      windmill.ui.results.writeResult('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
+      windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
       $('explorer').src = 'img/xon.png';
       this.exploreState = false;
     }
@@ -183,7 +202,7 @@ windmill.ui.domexplorer = new function() {
         this.dxRecursiveBind(iframeArray[i]);
       }
       catch(error) {
-        windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);
+        windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
       }
     }
   };
@@ -204,7 +223,7 @@ windmill.ui.domexplorer = new function() {
         this.dxRecursiveUnBind(iframeArray[i]);
       }
       catch(error) {
-        windmill.ui.results.writeResult('There was a problem binding to one of your iframes, is it cross domain? Binding to all others.' + error);
+        windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
       }
     }
   };

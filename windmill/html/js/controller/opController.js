@@ -28,7 +28,7 @@ windmill.controller.locateElementByIdentifer = function(identifier, inDocument, 
 };
   
 windmill.controller.click = function(param_object){        
-   var element = this._lookupDispatch(param_object);
+    var element = this._lookupDispatch(param_object);
     if (!element){ return false; }
     windmill.events.triggerEvent(element, 'focus', false);
 
@@ -40,9 +40,31 @@ windmill.controller.click = function(param_object){
    return true;
 };
   
-//there is a problem with checking via click in safari
+//Sometimes opera requires that you manually toggle it
 windmill.controller.check = function(param_object){
-  return windmill.controller.click(param_object);
+  //return windmill.controller.click(param_object);
+   var element = this._lookupDispatch(param_object);
+    if (!element){ return false; }
+    windmill.events.triggerEvent(element, 'focus', false);
+
+
+    var state = element.checked;
+    // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
+    try {windmill.events.triggerMouseEvent(element, 'mousedown', true); } catch(err){}
+    try {windmill.events.triggerMouseEvent(element, 'mouseup', true); } catch(err){}
+    try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}
+
+    //if the event firing didn't toggle the checkbox, do it directly
+    if (element.checked == state){
+      if (element.checked){
+        element.checked = false;
+      }
+      else {
+        element.checked = true;
+      }
+    }
+
+    return true;
 }
 
 //Radio buttons are even WIERDER in safari, not breaking in FF
