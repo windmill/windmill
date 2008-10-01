@@ -124,14 +124,6 @@ windmill.controller.waits.forElement = function (paramObj,obj) {
     var f = function () {
       try { return windmill.controller._lookupDispatch(p); }
       catch(err){}
-      
-      //Fix for strange safari issue where a blank page is loaded
-      //window object exists but document is null
-      if (windmill.browser.isSafari){
-        if ((typeof _w == "object") && (_w.document == null)){
-          windmill.controller.refresh();
-        }
-      }
     };
     p.test = f;
     return windmill.controller.waits.forJSTrue(p, obj);
@@ -171,14 +163,6 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
       
       if (d != null){
         return true;
-      }
-      
-      //Fix for strange safari issue where a blank page is loaded
-      //window object exists but document is null
-      if (windmill.browser.isSafari){
-        if ((typeof _w == "object") && (_w.document == null)){
-          windmill.controller.refresh();
-        }
       }
       
       return false;
