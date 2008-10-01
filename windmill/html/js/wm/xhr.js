@@ -27,14 +27,18 @@ windmill.xhr = new function() {
     //Keep track of the loop state, running or paused
     this.loopState = false;
     this.timeoutId = null;
-
+    this.actionString = null;
+    
     //action callback
     this.actionHandler = function(str) {
         //If the are variables passed we need to do our lex and replace
         if ((str.indexOf('{$') != -1) && (windmill.runTests == true)) {
-            str = windmill.controller.handleVariable(str);
+          str = windmill.controller.handleVariable(str);
         }
-
+        
+        //store the last action for the safari failover
+        windmill.xhr.lastActionString = windmill.xhr.ActionString;
+        windmill.xhr.ActionString = str;
         //windmill.xhr.xhrResponse = eval('(' + str + ')');
         windmill.xhr.xhrResponse = JSON.parse(str);
         var resp = windmill.xhr.xhrResponse;

@@ -168,10 +168,13 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
       //Fix for strange safari issue where a blank page is loaded
       //window object exists but document is null
       if (windmill.browser.isSafari){
-        windmill.ui.results.writeResult('Writing debugging info for the safari blank page state<br>');
-        windmill.ui.results.writeResult(typeof _w);
-        windmill.ui.results.writeResult(typeof _w.document);
-        windmill.ui.results.writeResult(_w.location.href);
+        if ((typeof _w == "object") && (typeof _w.document == "undefined")){
+          windmill.ui.results.writeResult("Safari blank page error occured, going back and trying the action again.");
+          windmill.controller.stopLoop();
+          _w.history.back();
+          windmill.xhr.actionHandler(windmill.xhr.lastActionString);
+          windmill.controller.continueLoop();
+        }
       }
       
       return false;
