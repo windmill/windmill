@@ -137,6 +137,14 @@ var windmill = new function() {
             }
             else { document.domain = windmill.docDomain; }
           }
+          try{ var v = opener.document.domain; }
+          catch(err){
+             if (arr.length > 2){
+                arr.shift();
+                document.domain = arr.join('.');
+              }
+              else { alert('Our failover logic cant sync up with your apps document.domain.'); }
+          }
         }
         //setTimeout("windmill.controller.continueLoop()", 2000);  
         //Set a variable so that windmill knows that the remote has fully loaded
