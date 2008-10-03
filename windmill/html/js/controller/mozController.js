@@ -132,6 +132,10 @@ windmill.controller.doubleClick = function(param_object) {
      }
      windmill.events.triggerKeyEvent(element, 'keyup', s.charAt(c), true, false,false, false,false);
    }
+   //if for some reason the key events don't do the typing
+   if (element.value == ""){
+     element.value = s;
+   }
     
    // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
    //Another wierd chrome thing?
