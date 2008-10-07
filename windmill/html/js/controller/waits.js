@@ -55,7 +55,14 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
       timeout = p.timeout;
     }
   }
-
+  
+  //implement windmill safe waits
+  //most browser javascript interpreters time out when the wait is greater than 60 seconds
+  if ((windmill.safeWaits) && (timeout > 600000)){
+    timeout = 60000;
+  }
+  
+  //lookup method
   var lookup = function () {
     if (count >= timeout) {
       if (isJsTest) {
@@ -158,7 +165,7 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
         document.domain = windmill.docDomain;
       }
       try {
-        var d = opener.document.body;
+        var d = opener.document.body.style;
       }catch(err){ d = null;}
       
       if (d != null){

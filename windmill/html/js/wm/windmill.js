@@ -29,10 +29,12 @@ var windmill = new function() {
 
     this.serviceDelay = 200;
 
+    this.safeWaits = true;
+
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*
     this.waiting = false;
-
+    
     //The timeout ID of whatever is keeping
     //us from continuing the tests runs, if it reaches
     //windmill.timeout we stop the timeout and continue on
