@@ -39,16 +39,22 @@ windmill.ui.domexplorer = new function() {
         $("domExp").innerHTML = "";
         
         if (e.target.id != "") {
-          $("domExp").innerHTML = "ID: " + e.target.id;
+          var element = elementslib.Element.ID(e.target.id);
+          if (element == e.target){
+            $("domExp").innerHTML = "ID: " + e.target.id;
+          }
         }
         else if ((e.target.name != "") && (typeof(e.target.name) != "undefined")) {
-          $("domExp").innerHTML = "Name: " + e.target.name;
-        }
-        else if ((e.target.nodeName.toUpperCase() == "A")|| (e.target.parentNode.nodeName.toUpperCase() == "A")) {
-          //Validation
-          var element = elementslib.Element.LINK(e.target.innerHTML);
+          var element = elementslib.Element.NAME(e.target.name);
           if (element == e.target){
-            $("domExp").innerHTML = "Link: " + e.target.innerHTML;
+            $("domExp").innerHTML = "Name: " + e.target.name;
+          }
+        }
+        else if ((e.target.nodeName.toUpperCase() == "A") || (e.target.parentNode.nodeName.toUpperCase() == "A")) {
+          //Validation
+          var element = elementslib.Element.LINK(removeHTMLTags(e.target.innerHTML));
+          if (element == e.target){
+            $("domExp").innerHTML = "Link: " + removeHTMLTags(e.target.innerHTML);
           }
         }
         //if not just use the xpath
@@ -56,30 +62,38 @@ windmill.ui.domexplorer = new function() {
           var stringXpath = getXSPath(e.target);
           //test to make sure it actually works
           var element = elementslib.Element.XPATH(stringXpath);
-          if (element == e.target){
+          var elementXB = elementslib.Element.XPATH(stringXpath, true);
+
+          if ((element == e.target) && (elementXB == e.target)){
             $("domExp").innerHTML = 'XPath: ' + stringXpath;
           }
           else{
-            $("domExp").innerHTML = "XPath: The generated XPath does not validate, report this bug.";
+            $("domExp").innerHTML = "XPath: Error - Could not find a reliable locator for this node.";
           }
         }
       }
       else {
         var stringXpath = getXSPath(e.target);
          var element = elementslib.Element.XPATH(stringXpath);
-          if (element == e.target){
+         var elementXB = elementslib.Element.XPATH(stringXpath, true);
+         
+         if ((element == e.target) && (elementXB == e.target)){
             $("domExp").innerHTML = 'XPath: ' + stringXpath;
           }
           else{
-            $("domExp").innerHTML = "XPath: The generated XPath does not validate, report this bug.";
+            $("domExp").innerHTML = "XPath: Error - Could not find a reliable locator for this node.";
           }
       }
       
       //trying to keep old borders from getting left all over the page
       if (windmill.ui.domexplorer.currElem){
-          windmill.ui.domexplorer.currElem.style.border = "";
+          //sometimes IE doesn't like this
+          try{
+            windmill.ui.domexplorer.currElem.style.border = "";
+          }
+          catch(err){}
       }
-      e.target.style.border = windmill.ui.borderHilight;
+       e.target.style.border = windmill.ui.borderHilight;
       windmill.ui.domexplorer.currElem = e.target;
       
       this.explorerUpdate(e);

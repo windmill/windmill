@@ -248,31 +248,54 @@ windmill.ui.recorder = new function() {
         try {
           if ($('useXpath').checked == false) {
               if (e.target.id != "") {
-                  locator = 'id';
-                  locValue = e.target.id;
+                  var element = elementslib.Element.ID(e.target.id);
+                  if (element == e.target){
+                    locator = 'id';
+                    locValue = e.target.id;
+                  }
               }
               else if ((typeof(e.target.name) != "undefined") && (e.target.name != "")) {
-                  locator = 'name';
-                  locValue = e.target.name;
+                  var element = elementslib.Element.NAME(e.target.name);
+                  if (element == e.target){
+                    locator = 'name';
+                    locValue = e.target.name;
+                  }
               }
               else if ((e.target.tagName.toUpperCase() == "A") || (e.target.parentNode.tagName.toUpperCase() == "A")) {
-                  locator = 'link';
-                  locValue = removeHTMLTags(e.target.innerHTML);
-                
-                  //locValue = e.target.innerHTML.replace(/(<([^>]+)>)/ig, "");
-                  //locValue = locValue.replace(/^s*(.*?)s*$/, "$1");
-                  //locValue = locValue.replace(/^[\s(&nbsp;)]+/g,'').replace(/[\s(&nbsp;)]+$/g,'');
+                  var element = elementslib.Element.LINK(removeHTMLTags(e.target.innerHTML));
+                  if (element == e.target){
+                    locator = 'link';
+                    locValue = removeHTMLTags(e.target.innerHTML);
+                  }
               }
-              else {
+              if (locator == ''){
                   var stringXpath = getXSPath(e.target);
-                  locator = 'xpath';
-                  locValue = stringXpath;
+                  var element = elementslib.Element.XPATH(stringXpath);
+                  var elementXB = elementslib.Element.XPATH(stringXpath, true);
+                  
+                  if ((element == e.target) && (elementXB == e.target)){
+                    locator = 'xpath';
+                    locValue = stringXpath;
+                  }
+                  else{
+                    locator = 'xpath';
+                    locValue = "Error - Could not find a reliable locator for this node.";    
+                  }
               }
           }
           else {
-              var stringXpath = getXSPath(e.target);
+            var stringXpath = getXSPath(e.target);
+            var element = elementslib.Element.XPATH(stringXpath);
+            var elementXB = elementslib.Element.XPATH(stringXpath, true);
+
+            if ((element == e.target) && (elementXB == e.target)){
               locator = 'xpath';
               locValue = stringXpath;
+            }
+            else{
+              locator = 'xpath';
+              locValue = 'Error - Could not find a reliable locator for this node.';      
+            }
           }
         }
         catch(err){}

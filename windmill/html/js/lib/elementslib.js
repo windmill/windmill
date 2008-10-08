@@ -51,9 +51,9 @@ var elementslib = new function(){
     domNode = nodeSearch(nodeByTagname, s);
     return returnOrThrow(s);
   };
-  this.Element.XPATH = function(s){
+  this.Element.XPATH = function(s, xb){
     locators.xpath = s;
-    domNode = nodeSearch(nodeByXPath, s);
+    domNode = nodeSearch(nodeByXPath, s, xb);
     //do the lookup, then set the domNode to the result
     return returnOrThrow(s);
   };
@@ -195,7 +195,7 @@ var elementslib = new function(){
   };
   
   //Lookup with xpath
-  var nodeByXPath = function (xpath) {
+  var nodeByXPath = function (xpath, xb) {
     var nsResolver = function (prefix) {
       if (prefix == 'html' || prefix == 'xhtml' || prefix == 'x') {
         return 'http://www.w3.org/1999/xhtml';
@@ -205,26 +205,19 @@ var elementslib = new function(){
         throw new Error("Unknown namespace: " + prefix + ".");
       }
     }
-    if (browser.isIE) {
-      //xpath = xpath.replace(/x:/g, '')
-      //making very specific xpath compatible with IE and FF
-      xpath = xpath.replace(/\[@.*?\]/g, '');
-    }
-
     // Use document.evaluate() if it's available
-    if (this.document.evaluate) {
+    if (this.document.evaluate && !xb) {
       return this.document.evaluate(xpath, this.document, nsResolver, 0, null).iterateNext();
     }
+    
+    xpath = xpath.replace(/\[@.*?\]/g, '');
     var expr = xpathParse(xpath.toUpperCase());
     var xpathResult = expr.evaluate(new ExprContext(this.document));
+    
     if (xpathResult && xpathResult.value) {
       return xpathResult.value[0];
-    }
-    // // If not, fall back to slower JavaScript implementation
-    //   var context = new ExprContext(this.document);
-    //   var xpathObj = xpathParse(xpath);
-    //   var xpathResult = xpathObj.evaluate(context);
-    //   
+    } 
+    
     return null;
   };
   

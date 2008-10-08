@@ -145,7 +145,7 @@ var windmill = new function() {
                 arr.shift();
                 document.domain = arr.join('.');
               }
-              else { alert('Our failover logic cant sync up with your apps document.domain.'); }
+              else { windmill.ui.results.writeResult('Our failover logic cant sync up with your apps document.domain.'); }
           }
         }
         //setTimeout("windmill.controller.continueLoop()", 2000);  

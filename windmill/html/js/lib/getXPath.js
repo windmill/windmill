@@ -43,5 +43,9 @@ function getXPath(node, path) {
     var stringXpath = xpArray.join('/');
     stringXpath = '/'+stringXpath;
     stringXpath = stringXpath.replace('//','/');
-    return stringXpath;
+    if ($('xbrowsercompat').checked){
+      stringXpath = stringXpath.replace(/\[@.*?\]/g, '');
+    }
+    
+  return stringXpath;
 }

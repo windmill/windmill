@@ -176,10 +176,6 @@ windmill.xhr = new function() {
         fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', json_string);
     };
 
-    this.handleErr = function(){
-      setTimeout("windmill.xhr.getNext()", windmill.serviceDelay);
-    }
-
     //Get the next action from the server
     this.getNext = function() {
         
@@ -187,7 +183,8 @@ windmill.xhr = new function() {
         var handleTimeout = function() {
             windmill.ui.results.writeResult('One of the XHR requests to the server timed out.');
         }
-
+        //var handleErr = function(){ setTimeout("windmill.xhr.getNext()", windmill.serviceDelay); }
+        
         if (windmill.xhr.loopState) {
             var jsonObject = new json_call('1.1', 'next_action');
             var jsonString = fleegix.json.serialize(jsonObject);
@@ -199,7 +196,7 @@ windmill.xhr = new function() {
             fleegix.xhr.doReq({
                 method: 'POST',
                 handleSuccess: this.actionHandler,
-                handleErr: this.handleErr,
+                handleErr: function(){ setTimeout("windmill.xhr.getNext()", windmill.serviceDelay); },
                 responseFormat: 'text',
                 url: '/windmill-jsonrpc/',
                 timeoutSeconds: windmill.xhrTimeout,

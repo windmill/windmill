@@ -38,15 +38,18 @@ windmill.ui.assertexplorer = new function() {
             v = e.target.innerHTML;
         }
         if (e.target.id != "") {
-            $("domExp").innerHTML = "ID: " + e.target.id + "<br> Content: " + v;
+            var element = elementslib.Element.ID(e.target.id);
+            if (element == e.target.id){
+              $("domExp").innerHTML = "ID: " + e.target.id + "<br> Content: " + v;
+            }
         }
         else if ((e.target.name != "") && (typeof(e.target.name) != "undefined")) {
             $("domExp").innerHTML = "Name: " + e.target.name + "<br> Content: " + v;
         }
-        else if (e.target.nodeName == "A") {
-            var element = elementslib.Element.LINK(e.target.innerHTML);
+        else if ((e.target.nodeName.toUpperCase() == "A") || (e.target.parentNode.nodeName.toUpperCase() == "A")){
+            var element = elementslib.Element.LINK(removeHTMLTags(e.target.innerHTML));
             if (element == e.target){
-              $("domExp").innerHTML = "Link: " + e.target.innerHTML + "<br> Content: " + v;
+              $("domExp").innerHTML = "Link: " + removeHTMLTags(e.target.innerHTML) + "<br> Content: " + v;
             }
         }
         if ($("domExp").innerHTML == ""){
@@ -57,7 +60,7 @@ windmill.ui.assertexplorer = new function() {
                $("domExp").innerHTML = 'XPath: ' + stringXpath + "<br> Content: " + v;
              }
              else{
-               $("domExp").innerHTML = "XPath: The generated XPath does not validate, report this bug.";
+               $("domExp").innerHTML = "XPath: Error - Could not find a reliable locator for this node.";
              }
         }
       }
@@ -70,7 +73,7 @@ windmill.ui.assertexplorer = new function() {
            $("domExp").innerHTML = 'XPath: ' + stringXpath + "<br> Content: " + v;
          }
          else{
-           $("domExp").innerHTML = "XPath: The generated XPath does not validate, report this bug.";
+           $("domExp").innerHTML = "XPath: Error - Could not find a reliable locator for this node.";
          }
       }
       
