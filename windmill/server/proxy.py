@@ -80,6 +80,7 @@ class WindmillProxyApplication(object):
            not url.netloc.startswith('127.0.0.1') ) and (
            reduce(lambda x, y: x == y(environ), windmill.server.forwarding_conditions, True)):
             # Do our domain change magic
+            url = urlparse(environ['reconstructed_url'])
             
             test_netloc = urlparse(windmill.settings['FORWARDING_TEST_URL']).netloc
             referer = environ.get('HTTP_REFERER', None)
@@ -88,10 +89,13 @@ class WindmillProxyApplication(object):
                 # if the url's network address is not the test URL that has been set we need to return
                 # a forward
                 initial_forwarding_registry[url.geturl().replace(url.netloc, test_netloc, 1)] = url.netloc
-                start_response("302 Found", [('Content-Type', 'text/plain'), 
-                                             ('Location', url.geturl().replace(url.netloc, test_netloc) )])
+                response = 'Windmill is forwarding you to a new url at the proper test domain'
+                start_response("302 Found", [('Content-Type', 'text/plain',), 
+                                             ('Content-Length', str(len(response)),),
+                                             ('Location', url.geturl().replace(url.netloc, test_netloc,), 
+                                             )])
                 logger.debug('New domain request, forwarded to '+url.geturl().replace(url.netloc, test_netloc))
-                return ['Windmill is forwarding you to a new url at the proper test domain']
+                return [response]
         
             elif ( url.geturl() in initial_forwarding_registry.keys() ):
                 # This handles the first case where a forward is returned to the browser
@@ -183,7 +187,9 @@ class WindmillProxyApplication(object):
             if new_response is not None: 
                 response = new_response
             else:
-                
+                if not dict(connection[0]).has_key('content-length'):
+                    print 'Proxy request did not return content-length.'
+                    connection[0] += ('content-length', str(len(connection[1])),)
                 start_response(*connection.pop(0))
                 return [connection.pop(0)]
         else:
@@ -201,8 +207,12 @@ class WindmillProxyApplication(object):
         headers = self.parse_headers(response)
         if response.status == 404:
             logger.info('Could not fullfill proxy request to '+url.geturl()+'. '+str(set(initial_forwarding_registry.values())))
+        result = response.read()
+        if not dict(headers).has_key('content-length'):
+            print 'Proxy request did not return content-length.'
+            headers += ('content-length', str(len(result)),)
         start_response(response.status.__str__()+' '+response.reason, headers)
-        return [response.read()]
+        return [result]
 
     def parse_headers(self, response):
         headers = [ (x.lower(), y,) for x, y in [ z.split(':', 1) for z in str(response.msg).splitlines() if ':' in z]]
