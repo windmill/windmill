@@ -187,9 +187,6 @@ class WindmillProxyApplication(object):
             if new_response is not None: 
                 response = new_response
             else:
-                if not dict(connection[0]).has_key('content-length'):
-                    print 'Proxy request did not return content-length.'
-                    connection[0] += ('content-length', str(len(connection[1])),)
                 start_response(*connection.pop(0))
                 return [connection.pop(0)]
         else:
@@ -208,9 +205,6 @@ class WindmillProxyApplication(object):
         if response.status == 404:
             logger.info('Could not fullfill proxy request to '+url.geturl()+'. '+str(set(initial_forwarding_registry.values())))
         result = response.read()
-        if not dict(headers).has_key('content-length'):
-            print 'Proxy request did not return content-length.'
-            headers += ('content-length', str(len(result)),)
         start_response(response.status.__str__()+' '+response.reason, headers)
         return [result]
 
