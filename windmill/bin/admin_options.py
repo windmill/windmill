@@ -149,6 +149,11 @@ class UseCode(GeneralBoolSettingToTrue):
     """Use the code module rather than ipython."""
     option_names = (None, 'usecode')
     setting = 'USECODE'
+
+class Firebug(GeneralBoolSettingToTrue):
+    """Install Full Firebug. Firefox only!"""
+    option_names = (None, 'firebug')    
+    setting = "INSTALL_FIREBUG"
     
 class Port(object):
     """Set port for windmill to run. Default is 4444."""

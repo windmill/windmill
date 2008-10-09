@@ -15,6 +15,8 @@
 import windmill
 from urlparse import urlparse
 
+import os
+
 windmill.browser_registry = {}
 
 def get_firefox_controller():
@@ -31,6 +33,9 @@ def get_firefox_controller():
             windmill.settings[key] = value
     
     test_url = windmill.get_test_url(windmill.settings['TEST_URL'])  
+    
+    if windmill.settings['INSTALL_FIREBUG']:
+        windmill.settings['MOZILLA_PLUGINS'] = [os.path.join(os.path.dirname(__file__), os.path.pardir, 'xpi', 'firebug-1.2.1-fx.xpi')]
             
     windmill.settings['MOZILLA_PREFERENCES'].update( {
         'extensions.chromebug.openalways' : True,
@@ -52,11 +57,12 @@ def get_firefox_controller():
         "network.proxy.http_port": windmill.settings['SERVER_HTTP_PORT'],
         "network.proxy.no_proxies_on": "",
         "network.proxy.type": 1,
+        #"network.http.proxy.pipelining" : True,
         "network.http.max-connections": 10,
         "network.http.max-connections-per-server": 8,
 #        "network.http.max-persistent-connections-per-proxy": 2,
 #        "network.http.max-persistent-connections-per-server": 2,
-        "network.http.pipelining.maxrequests": 6,
+        "network.http.pipelining.maxrequests": 10,
         
         # Turn off favicon requests, no need for even more requests
         "browser.chrome.favicons": False,
