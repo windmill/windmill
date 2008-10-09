@@ -58,7 +58,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
   
   //implement windmill safe waits
   //most browser javascript interpreters time out when the wait is greater than 60 seconds
-  if ((windmill.safeWaits) && (timeout > 600000)){
+  if ((windmill.safeWaits) && (timeout > 60000)){
     timeout = 60000;
   }
   
