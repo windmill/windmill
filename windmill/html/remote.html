@@ -189,7 +189,7 @@
   //use document.write to include all the non cooked files
   var noFile = function(s){
       //Double check to make sure we aren't loading windmill src twice
-      if (windmill){ return; }
+      if (typeof windmill != "undefined"){ return; }
       //Define all the files to be loaded
       var scriptsArr = [];
 	    scriptsArr.push('js/lib/fleegix.js')
