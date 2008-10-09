@@ -187,13 +187,15 @@ windmill.ui.remote = new function() {
 
             }
             else {
-                suite.style.width = "99%";
+                suite.style.width = "100%";
             }
-            suite.style.background = "lightblue";
+            // suite.style.background = "#33CC99";
             suite.style.overflow = 'hidden';
             //suite.style.height='40px';
-            suite.style.border = '1px solid black';
-            suite.innerHTML = "<table id='"+suiteName+"Header' style='width:100%;font:12px arial;'><tr><td><strong>Suite </strong>" + suiteName + 
+            //suite.style.borderTop = '1px solid black';
+            suite.style.borderBottom = '1px solid black';
+
+            suite.innerHTML = "<table id='"+suiteName+"Header' style='padding:2px;width:100%;font-size:12px;'><tr><td><strong>Suite </strong>" + suiteName + 
             "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
             "\')\">[play]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'" + suiteName + 
             "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'" + suiteName + 
@@ -309,6 +311,8 @@ windmill.ui.remote = new function() {
 
         //var action = this.constructAction(method,'','',windmill.registry.methods[method].option,parms[windmill.registry.methods[method].option]);
         var action = document.createElement('div');
+        action.className = "action";
+        
         //if the user turns on the option to run actions by hitting enter
         var catchEnter = function(e){
           if (e.keyCode == 13){
@@ -325,11 +329,6 @@ windmill.ui.remote = new function() {
         }
         else { action.id = params.uuid; }
         
-        action.style.position = 'relative';
-        action.style.border = '1px dashed #aaa';
-        action.style.background = 'lightyellow';
-        action.style.width = '100%';
-        //action.style.height = '50px';
         //in the case that the method we are passsing in isn't in the registry, we can still display it
         //just without all the interactive UI elements
         if ((windmill.registry.methods[method] == null) || (method == 'complex')) {
@@ -386,7 +385,7 @@ windmill.ui.remote = new function() {
         t.cellspacing = "1";
         t.cellpadding = "0";
         t.width = '100%';
-        t.style.font = "10px arial";
+        t.style.fontSize = "10px";
 
 
         var r = document.createElement("tr");
@@ -430,7 +429,6 @@ windmill.ui.remote = new function() {
         '\')" href="#"><img border=0  src="img/adddown.png"></a>';
         if (windmill.browser.isIE) {
             c.innerHTML += '<br>';
-
         }
         r.appendChild(c);
         t.appendChild(r);

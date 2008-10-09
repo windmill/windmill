@@ -18,7 +18,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 function Load() {
     var load = document.createElement('div');
     load.id = 'loading';
-    load.style.font = '14pt georgia';
+    load.style.font = '14pt "Lucida Grande","Verdana",sans-serif';
     load.style.position = 'absolute';
     load.style.zIndex = '99999';
     load.style.display = 'block';

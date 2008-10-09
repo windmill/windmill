@@ -37,11 +37,11 @@ windmill.ui = new function() {
     }
 
     this.toggleCollapse = function(id) {
-        if ($(id).style.height == '18px') {
+        if ($(id).style.height == '22px') {
             $(id).style.height = '';
         }
         else {
-            $(id).style.height = '18px';
+            $(id).style.height = '22px';
         }
     };
 
@@ -129,7 +129,9 @@ windmill.ui.playback = new function() {
         var suites = new Array();
         suites.push('\n   ');
         suites.push($(suiteOnly));
-        $(suiteOnly).style.border = "1px solid black";
+        $(suiteOnly).style.border = "0px";
+        $(suiteOnly).style.borderBottom = '1px solid black';
+        
       }
 
       //else play every suite in the IDE

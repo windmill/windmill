@@ -250,7 +250,8 @@ windmill.xhr = new function() {
         if (result != true) {
             if (typeof(action) != 'undefined') {
                 action.style.background = '#FF9692';
-                action.parentNode.style.border = "1px solid red";
+                action.parentNode.style.border.borderTop = "1px solid red";
+                action.parentNode.style.border.borderBottom = "1px solid red";
             }
             windmill.ui.results.writeResult("<br>Action: <b>" + obj.method + 
             "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
@@ -270,8 +271,9 @@ windmill.xhr = new function() {
             
             if ((typeof(action) != 'undefined') && (windmill.runTests == true)) {
                 action.style.background = '#C7FFCC';
-                if (action.parentNode.style.border.indexOf("red") != -1){
-                  action.parentNode.style.border = "1px solid green";
+                if (action.parentNode.style.borderTop.indexOf("red") != -1){
+                  action.parentNode.style.borderTop = "1px solid green";
+                  action.parentNode.style.borderBottom = "1px solid green";
                 }
             }
         }

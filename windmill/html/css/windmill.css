@@ -4,7 +4,7 @@ body, html
 	margin: 0px;
 	padding: 0px;
 	text-align: left;
-	font-family:  "Verdana", "Arial", sans-serif; 
+	font-family:  "Lucida Grande","Verdana",sans-serif;
   width: 100%;	/* make the body expand to fill the visible window */
   height: 100%;
   overflow: hidden;	/* erase window level scrollbars */
@@ -34,6 +34,14 @@ a:hover {
 	overflow: auto;
 }
 
+.action {
+  position:relative;
+  border-top: 1px solid #aaa;
+  background: lightyellow;
+  width:100%;
+  padding:1px;
+}
+
 .texta {
   font: 10px arial;
 	margin:0px;
@@ -48,25 +56,6 @@ a:hover {
   height:19px;
   border:solid 0 #fff;
   background: transparent url("../img/text_elem_gradient.gif"); 
-}
-
-#shellOutput{
- position:relative;
- overflow: auto; 
- font-size: 10px; 
- height: 300px; 
- width: 98%; 
- border: 1px solid #aaa; 
- border-bottom: 0px; 
- font-family:'Courier New', 'Courier', monospace; 
-}
-
-#shellInput{
- width: 98%; 
- font-size: 14px; 
- height: 20px; 
- line-height: 20px; 
- border: 1px solid #aaa; 
 }
 
 #main {
@@ -85,10 +74,10 @@ a:hover {
 }
 
 #icon {
-    position:relative;
-    left:3px;height:41px;
-    width:40px;
-    border:0px;
+  position:relative;
+  left:3px;height:41px;
+  width:40px;
+  border:0px;
 }
 
 #runningStatus {
