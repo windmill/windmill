@@ -7,13 +7,8 @@
 	
 	<link rel="stylesheet" type="text/css" href="css/windmill.css"/>
 	<link rel="stylesheet" type="text/css" href="css/jquery.css"/>
-	<script type="text/javascript" src="js/lib/fleegix_js/trunk/fleegix.js"></script>
-	<script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/hash.js"></script>
-	<script type='text/javascript' src='js/lib/pi.js'></script>
-	<script type='text/javascript' src='js/lib/firebug-lite.js'></script>
-	<script type='text/javascript' src='js/lib/jquery-1.2.6.min.js'></script>
-	<script type="text/javascript" src="js/lib/json2.js"></script>
 	
+	<script type='text/javascript' src='js/lib/jquery-1.2.6.min.js'></script>	
 	<script type="text/javascript" charset="utf-8">
 	  jQuery.noConflict();
 	</script>
@@ -31,21 +26,11 @@
 </head>
 		
 <body>
-  <script type="text/javascript" charset="utf-8">
-     var load = document.createElement('div');
-      load.id = 'loadRemote';
-      load.style.fontSize = '14pt';
-      load.style.position = 'absolute';
-      load.style.zIndex = '99999';
-      load.style.display = 'block';
-      load.innerHTML = '<center><img src="img/loading.gif"></center>';
-      document.body.appendChild(load);
-      fleegix.dom.center(load);
-  </script>
   
   <div id="cover">
     <div style="top:55%;left:30%;position:absolute;">
-      <center><b>Please don't interact with the DOM<br>(Re)Attaching listeners...</b></center>
+      <center><b>Please don't interact with the DOM<br>(Re)Attaching listeners...</b></center><br>
+      <center><img src="img/loading.gif"></center>
     </div>
   </div>
   <div id="main">
@@ -211,6 +196,11 @@
   //use document.write to include all the non cooked files
   var noFile = function(s){
      var scriptsArr = [];
+	    scriptsArr.push('js/lib/fleegix.js')
+	    scriptsArr.push('js/lib/hash.js')
+ 	    scriptsArr.push('js/lib/pi.js')
+  	  scriptsArr.push('js/lib/firebug-lite.js')
+    	scriptsArr.push('js/lib/json2.js')
       scriptsArr.push('js/lib/browserdetect.js')
       scriptsArr.push('js/wm/windmill.js')
       scriptsArr.push('js/lib/getXPath.js')
@@ -246,19 +236,12 @@
         document.body.appendChild(scriptTag);
       }      
   }
-  var receivedFile = function(str){
-    //Download windmill JS source
-    var scriptTag = document.createElement('script');
-    scriptTag.src = "/windmill-compressor/windmill.js";
-    document.body.appendChild(scriptTag);    
-  }
   
-  fleegix.xhr.doReq({
-      method: 'GET',
-      handleSuccess: receivedFile,
-      handleErr: noFile,
-      responseFormat: 'text',
-      url: path
+  jQuery.ajax({
+    type: "GET",
+    url: path,
+    dataType: "script",
+    error: noFile
   });
 
 </script>

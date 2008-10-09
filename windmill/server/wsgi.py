@@ -101,6 +101,11 @@ class WindmillChooserApplication(object):
 class WindmillCompressor(object):
     """Full JavaScript Compression Library"""
     js_file_list = [
+        ('lib', 'fleegix.js',),
+        ('lib', 'hash.js',),
+        ('lib', 'pi.js',),
+        ('lib', 'firebug-lite.js',),
+        ('lib', 'json2.js',),
         ('lib', 'browserdetect.js',),
         ('wm', 'windmill.js',),
         ('lib', 'getXPath.js',),

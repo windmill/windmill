@@ -28,12 +28,10 @@ var json_call = function(version, method, params) {
 
 var busyOn = function(){
   $('actionDD').style.visibility = "hidden";
-  $('loadRemote').style.display = "block";
   $('cover').style.display = "block";
 }
 var busyOff = function(){
   $('actionDD').style.visibility = "visible";
-  $('loadRemote').style.display = "none";
   $('cover').style.display = "none";
 }
 
