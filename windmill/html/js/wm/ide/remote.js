@@ -427,14 +427,15 @@ windmill.ui.remote = new function() {
         'src="img/trash.png"></a><a onclick="windmill.ui.remote.addActionAbove(\'' + action.id + 
         '\')" href="#"><img border=0  src="img/addup.png"></a><a onclick="windmill.ui.remote.addActionBelow(\'' + action.id + 
         '\')" href="#"><img border=0  src="img/adddown.png"></a>';
-        if (windmill.browser.isIE) {
-            c.innerHTML += '<br>';
-        }
+
         r.appendChild(c);
         t.appendChild(r);
 
         //If this method needs a locator
         if (windmill.registry.methods[method].locator) {
+            if (windmill.browser.isIE) {
+                c.innerHTML += '<br>';
+            }
             var r = document.createElement("tr");
             r.id = action.id + 'locatorRow';
             var c = document.createElement("td");

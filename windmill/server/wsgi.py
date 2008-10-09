@@ -101,10 +101,23 @@ class WindmillChooserApplication(object):
 class WindmillCompressor(object):
     """Full JavaScript Compression Library"""
     js_file_list = [
+        ('lib', 'browserdetect.js',),
         ('wm', 'windmill.js',),
+        ('lib', 'getXPath.js',),
+        ('lib', 'elementslib.js',),
+        ('lib', 'ajaxslt', 'xmltoken.js',),
+        ('lib', 'ajaxslt', 'dom.js',),
+        ('lib', 'ajaxslt', 'util.js',),
+        ('lib', 'ajaxslt', 'xpath.js',),
+        ('controller', 'controller.js',),
+        ('controller', 'commands.js',),
+        ('controller', 'asserts.js',),
+        ('controller', 'waits.js',),
+        ('extensions', 'extensions.js',),
         ('wm', 'registry.js',),
         ('wm', 'utils.js',),
         ('wm', 'ide', 'ui.js',),
+        ('wm', 'ide', 'recorder.js',),
         ('wm', 'ide', 'remote.js',),
         ('wm', 'ide', 'dx.js',),
         ('wm', 'ide', 'ax.js',),
@@ -114,18 +127,7 @@ class WindmillCompressor(object):
         ('wm', 'events.js',),
         ('wm', 'global.js',),
         ('wm', 'jstest.js',),
-        ('lib', 'browserdetect.js',),
-        ('lib', 'getXPath.js',),
-        ('lib', 'elementslib.js',),
-        ('lib', 'ajaxslt', 'xmltoken.js',),
-        ('lib', 'ajaxslt', 'dom.js',),
-        ('lib', 'ajaxslt', 'util.js',),
-        ('lib', 'ajaxslt', 'xpath.js',),
-        ('extensions', 'extensions.js',),
-        ('controller', 'controller.js',),
-        ('controller', 'commands.js',),
-        ('controller', 'asserts.js',),
-        ('controller', 'waits.js',),
+        ('wm', 'load.js',),
     ]
     
     def __init__(self, js_path, enabled=True):

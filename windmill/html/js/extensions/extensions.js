@@ -17,5 +17,4 @@ Copyright 2006-2007, Open Source Applications Foundation
 /*For information on how to build your own extensions, visit:
   http://trac.getwindmill.com/wiki/BookChapter-7-Extensions
 */
-windmill.controller.extensions = new function(){ 
-}
+windmill.controller.extensions = new function(){ };

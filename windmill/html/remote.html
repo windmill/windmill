@@ -7,11 +7,13 @@
 	
 	<link rel="stylesheet" type="text/css" href="css/windmill.css"/>
 	<link rel="stylesheet" type="text/css" href="css/jquery.css"/>
-	<script type="text/javascript" src="js/lib/browserdetect.js"></script>
 	<script type="text/javascript" src="js/lib/fleegix_js/trunk/fleegix.js"></script>
+	<script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/hash.js"></script>
 	<script type='text/javascript' src='js/lib/pi.js'></script>
 	<script type='text/javascript' src='js/lib/firebug-lite.js'></script>
 	<script type='text/javascript' src='js/lib/jquery-1.2.6.min.js'></script>
+	<script type="text/javascript" src="js/lib/json2.js"></script>
+	
 	<script type="text/javascript" charset="utf-8">
 	  jQuery.noConflict();
 	</script>
@@ -24,11 +26,6 @@
 		  	jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
        			ui.panel.style.height = "95%";
       		});
-      
-      		//The tabs cover up the links in IE6, fixing this issue
-      		if (windmill.browser.isIE6x){
-        		document.getElementById('tabs').style.height = '92%';
-      		}
 		});
 	</script>
 </head>
@@ -208,50 +205,62 @@
   <img src="img/addup.png" style="width:1px;height:1px;">
   <img src="img/adddown.png" style="width:1px;height:1px;"> 
 </body>
-
-<script type="text/javascript" src="js/lib/fleegix_js/trunk/plugins/hash.js"></script>
-<script type="text/javascript" src="js/lib/getXPath.js"></script>
-<script type="text/javascript" src="js/lib/json2.js"></script>
-<script type="text/javascript" src="js/wm/windmill.js"></script>
-<script type="text/javascript" src="js/lib/elementslib.js"></script>
-<script type="text/javascript" src="js/wm/registry.js"></script>
-<script type="text/javascript" src="js/wm/utils.js"></script>
-<script type="text/javascript" src="js/wm/ide/ui.js"></script>
-<script type="text/javascript" src="js/wm/ide/recorder.js"></script>
-<script type="text/javascript" src="js/wm/ide/remote.js"></script>
-<script type="text/javascript" src="js/wm/ide/dx.js"></script>
-<script type="text/javascript" src="js/wm/ide/ax.js"></script>
-<script type="text/javascript" src="js/wm/ide/results.js"></script>
-<script type="text/javascript" src="js/wm/xhr.js"></script>
-<script type="text/javascript" src="js/controller/controller.js"></script>
 <script type="text/javascript">
-	var url = 'js/controller/mozController.js';
+  var path = "/windmill-compressor/windmill.js";
+  
+  //use document.write to include all the non cooked files
+  var noFile = function(s){
+     var scriptsArr = [];
+      scriptsArr.push('js/lib/browserdetect.js')
+      scriptsArr.push('js/wm/windmill.js')
+      scriptsArr.push('js/lib/getXPath.js')
+      scriptsArr.push('js/lib/elementslib.js')
+      scriptsArr.push('js/lib/ajaxslt/xmltoken.js')
+      scriptsArr.push('js/lib/ajaxslt/dom.js')
+      scriptsArr.push('js/lib/ajaxslt/util.js')
+      scriptsArr.push('js/lib/ajaxslt/xpath.js')
+      scriptsArr.push('js/controller/controller.js')
+      scriptsArr.push('js/controller/commands.js')
+      scriptsArr.push('js/controller/asserts.js')
+      scriptsArr.push('js/controller/waits.js')
+      scriptsArr.push('js/extensions/extensions.js')
+      scriptsArr.push('js/wm/registry.js')
+      scriptsArr.push('js/wm/utils.js')
+      scriptsArr.push('js/wm/ide/ui.js')
+      scriptsArr.push('js/wm/ide/recorder.js')
+      scriptsArr.push('js/wm/ide/remote.js')
+      scriptsArr.push('js/wm/ide/dx.js')
+      scriptsArr.push('js/wm/ide/ax.js')
+      scriptsArr.push('js/wm/ide/results.js')
+      scriptsArr.push('js/wm/xhr.js')
+      scriptsArr.push('js/wm/metrics.js')
+      scriptsArr.push('js/wm/events.js')
+      scriptsArr.push('js/wm/global.js')
+      scriptsArr.push('js/wm/jstest.js')
+      scriptsArr.push('js/wm/load.js')
+      
+      //pull down each script file
+      for (var i = 0; i < scriptsArr.length; i++){
+        var scriptTag = document.createElement('script');
+        scriptTag.src = scriptsArr[i];
+        document.body.appendChild(scriptTag);
+      }      
+  }
+  var receivedFile = function(str){
+    //Download windmill JS source
+    var scriptTag = document.createElement('script');
+    scriptTag.src = "/windmill-compressor/windmill.js";
+    document.body.appendChild(scriptTag);    
+  }
+  
+  fleegix.xhr.doReq({
+      method: 'GET',
+      handleSuccess: receivedFile,
+      handleErr: noFile,
+      responseFormat: 'text',
+      url: path
+  });
 
-	if (browser.isIE){
-		url = 'js/controller/ieController.js';
-	}
-	else if(browser.isSafari){
-		url = 'js/controller/safController.js';
-	}
-	else if (browser.isOpera){
-		url = 'js/controller/opController.js';
-	}
-	document.write('<script src="', url, '" type="text/javascript"><\/script>');
 </script>
-<script type="text/javascript" src="js/controller/commands.js"></script>
-<script type="text/javascript" src="js/controller/asserts.js"></script>
-<script type="text/javascript" src="js/controller/waits.js"></script>
-<script type="text/javascript" src="js/wm/metrics.js"></script>
-<script type="text/javascript" src="js/wm/events.js"></script>
-<script type="text/javascript" src="js/wm/global.js"></script>
-<script type="text/javascript" src="js/wm/jstest.js"></script>
-<script type="text/javascript" src="js/lib/ajaxslt/xmltoken.js"></script>
-<script type="text/javascript" src="js/lib/ajaxslt/dom.js"></script>
-<script type="text/javascript" src="js/lib/ajaxslt/util.js"></script>
-<script type="text/javascript" src="js/lib/ajaxslt/xpath.js"></script>
-<script type="text/javascript" src="js/extensions/extensions.js"></script>
 
-<script type="text/javascript" charset="utf-8">
-  fleegix.event.listen(window, 'onload', windmill, 'start');
-</script>
 </html>

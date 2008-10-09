@@ -563,4 +563,4 @@ XDocument.prototype.createComment = function(data) {
 
 XDocument.prototype.createCDATASection = function(data) {
   return XNode.create(DOM_CDATA_SECTION_NODE, '#cdata-section', data, this);
-}
+};

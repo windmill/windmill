@@ -111,7 +111,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
            //set the result in the ide
             windmill.xhr.setWaitBgAndReport(aid,true,obj);
         }
-      setTimeout(c, 100);
+      setTimeout(c, 500);
     }
   }
     
@@ -188,14 +188,13 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
 windmill.controller.waits._forNotTitleAttach = function (paramObj,obj) { 
     var p = paramObj || {};
     var f = function () {
-      try{
+      try {
         if (opener.document.title != param_object.title){
           var d = opener.document.body;
           return true;
         }
         return false;
-      }
-      catch(err){ return false; }
+      } catch(err){ return false; }
     };
     p.test = f;
     p.timeout = 60000;
