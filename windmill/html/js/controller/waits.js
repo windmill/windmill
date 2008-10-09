@@ -80,7 +80,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
       windmill.xhr.setWaitBgAndReport(aid,false,obj);
       return false;
     }
-    count += 2500;
+    count += 100;
     
     // Get a result
     var result;
@@ -95,7 +95,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
     }
     result = !!result; // Make sure we've got a Boolean
     
-    if (!result){ var x = setTimeout(lookup, 1500); }
+    if (!result){ var x = setTimeout(lookup, 100); }
     else {
         c = function () {
           //If this method is being called by the js test framework
@@ -111,7 +111,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
            //set the result in the ide
             windmill.xhr.setWaitBgAndReport(aid,true,obj);
         }
-      setTimeout(c, 1000);
+      setTimeout(c, 100);
     }
   }
     
@@ -178,7 +178,7 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
     
     return windmill.controller.waits.forJSTrue(p, obj, true);
   }
-  setTimeout(sl, 3000);
+  setTimeout(sl, 500);
   //we can't access the body, so now wait for the loading
   //setTimeout(sl, 0);
 }
@@ -201,70 +201,3 @@ windmill.controller.waits._forNotTitleAttach = function (paramObj,obj) {
     p.timeout = 60000;
     return windmill.controller.waits.forJSTrue(p, obj, true);
 };
-
-// //Turn the loop back on when the page in the testingApp window is loaded
-// //this is an internal wait used only for the first load of the page
-// //a more generic one will be added if there is a need
-// windmill.controller.waits._forNotTitleAttach = function (param_object) { 
-//   _this = this;
-// 
-//   var timeout = 80000;
-//   var count = 0;
-//   var p = param_object;
-//     
-//   if (p.timeout){
-//     timeout = p.timeout;
-//   }
-//   this.lookup = function(){
-//     if (count >= timeout){
-//       windmill.controller.continueLoop();
-//       return false;
-//     }
-//     try {
-//       if (windmill.testWindow.document.title == p.title){
-//        var n = false;
-//       }
-//       else { var n = true };
-//     }
-//     catch(err){
-//       n = false;
-//     }
-//     count += 2500;
-//       
-//     this.check(n);
-//   }
-//     
-//   this.check = function(n){   
-// 
-//     if (!n){
-//       var x = setTimeout(function () { _this.lookup(); }, 1000);
-//     }
-//     else{
-//       
-//       try {  
-//         if (typeof(windmill.testWindow.onload.listenReg) == 'undefined'){
-//           windmill.loaded();
-//         }
-//       }
-//       catch(err){ this.lookup() }
-//         fleegix.event.suppressHandlerErrors(windmill.testWindow, 'onload');
-//         fleegix.event.unlisten(windmill.testWindow, 'onload', windmill, 'loaded');
-//         fleegix.event.listen(windmill.testWindow, 'onload', windmill, 'loaded');
-//         _this.lookup();
-// 
-//       return true;
-//     }
-//   }
-// 
-//   this.lookup();
-//   
-//   //if windmill.timeout goes by and the tests haven't been started
-//   //We go ahead and start them, longer waits can happen by changing windmill.timeout
-//   ct = function(){ 
-//    //windmill.controller.continueLoop();
-//    windmill.controller.waits.forPageLoad({timeout:"50000"});
-//  }       
-//    windmill.loadTimeoutId = setTimeout('ct()', windmill.timeout); 
-//   
-//   return true;
-// }

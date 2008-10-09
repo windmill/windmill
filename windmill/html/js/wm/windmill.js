@@ -27,7 +27,9 @@ var windmill = new function() {
     //How long xhr waits in seconds before calling the timout function
     this.xhrTimeout = 180;
 
-    this.serviceDelay = 200;
+    this.serviceDelay = 0;
+    this.serviceDelayRunning = 0;
+    this.serviceDelayDefer = 800;
 
     this.safeWaits = true;
 

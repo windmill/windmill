@@ -163,7 +163,7 @@ windmill.controller = new function () {
       }
     }
     //Just making sure the page is fully loaded
-    setTimeout("cont()", 500);
+    setTimeout("cont()", 1);
   };
 
   this.stopLoop = function () {
