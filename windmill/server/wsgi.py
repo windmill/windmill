@@ -19,6 +19,7 @@ import httplib
 import copy
 import socket 
 import random
+import os
 from urlparse import urlparse
 import logging
 from time import sleep
@@ -29,6 +30,8 @@ from windmill.server import proxy
 import wsgi_jsonrpc
 import wsgi_xmlrpc
 import wsgi_fileserver
+
+import jsmin
 
 START_DST_PORT = 32000
 CURRENT_DST_PORT = [random.randint(32000, 34000)]
@@ -94,9 +97,56 @@ class WindmillChooserApplication(object):
         response = self.handler(environ, start_response)
         for x in response:
             yield x
-        
-def make_windmill_server(http_port=None, js_path=None):
+
+class WindmillCompressor(object):
+    """Full JavaScript Compression Library"""
+    js_file_list = [
+        ('wm', 'windmill.js',),
+        ('wm', 'registry.js',),
+        ('wm', 'utils.js',),
+        ('wm', 'ide', 'ui.js',),
+        ('wm', 'ide', 'remote.js',),
+        ('wm', 'ide', 'dx.js',),
+        ('wm', 'ide', 'ax.js',),
+        ('wm', 'ide', 'results.js',),
+        ('wm', 'xhr.js',),
+        ('wm', 'metrics.js',),
+        ('wm', 'events.js',),
+        ('wm', 'global.js',),
+        ('wm', 'jstest.js',),
+        ('lib', 'browserdetect.js',),
+        ('lib', 'getXPath.js',),
+        ('lib', 'elementslib.js',),
+        ('lib', 'ajaxslt', 'xmltoken.js',),
+        ('lib', 'ajaxslt', 'dom.js',),
+        ('lib', 'ajaxslt', 'util.js',),
+        ('lib', 'ajaxslt', 'xpath.js',),
+        ('extensions', 'extensions.js',),
+        ('controller', 'controller.js',),
+        ('controller', 'commands.js',),
+        ('controller', 'asserts.js',),
+        ('controller', 'waits.js',),
+    ]
     
+    def __init__(self, js_path, enabled=True):
+        self.enabled = enabled
+        self.js_path = js_path
+        self.compressed_windmill = None
+    def __call__(self, environ, start_response):
+        if not self.enabled:
+            start_response('404 Not Found', [('Content-Type', 'text/plain',), ('Content-Length', '0',)])
+            return ['']
+        if self.compressed_windmill is not None:            
+            self.compressed_windmill = ''
+            for filename in self.js_file_list:
+                self.compressed_windmill += jsmin.jsmin(open(os.path.join(self.js_path, *filename), 'r').read())
+            
+        start_response('200 Ok', [('Content-Type', 'text/javascript',), 
+                                  ('Content-Length', str(len(self.compressed_windmill)),)])
+        return [self.compressed_windmill]
+        
+        
+def make_windmill_server(http_port=None, js_path=None, compression_enabled=True):
     if http_port is None:
         http_port = windmill.settings['SERVER_HTTP_PORT']
     if js_path is None:
@@ -115,11 +165,14 @@ def make_windmill_server(http_port=None, js_path=None):
     windmill_proxy_app = WindmillProxyApplication()
     windmill_xmlrpc_app =  wsgi_xmlrpc.WSGIXMLRPCApplication(instance=xmlrpc_methods_instance)
     windmill_jsonrpc_app = wsgi_jsonrpc.WSGIJSONRPCApplication(instance=jsonrpc_methods_instance)
+    windmill_compressor_app = WindmillCompressor(js_path, compression_enabled)
     windmill_serv_app.ns = 'windmill-serv'
     windmill_xmlrpc_app.ns = 'windmill-xmlrpc'
     windmill_jsonrpc_app.ns = 'windmill-jsonrpc'
+    windmill_compressor_app.ns = 'windmill-compressor'
     windmill_chooser_app = WindmillChooserApplication(apps=[windmill_serv_app, windmill_jsonrpc_app,
-                                                      windmill_xmlrpc_app], proxy=windmill_proxy_app)
+                                                            windmill_xmlrpc_app, windmill_compressor_app],
+                                                      proxy=windmill_proxy_app)
     
     # Make add_namespace available at the module level
     global add_namespace
