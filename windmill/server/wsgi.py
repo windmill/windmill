@@ -136,12 +136,12 @@ class WindmillCompressor(object):
         if not self.enabled:
             start_response('404 Not Found', [('Content-Type', 'text/plain',), ('Content-Length', '0',)])
             return ['']
-        if self.compressed_windmill is not None:            
+        if self.compressed_windmill is None:            
             self.compressed_windmill = ''
             for filename in self.js_file_list:
                 self.compressed_windmill += jsmin.jsmin(open(os.path.join(self.js_path, *filename), 'r').read())
             
-        start_response('200 Ok', [('Content-Type', 'text/javascript',), 
+        start_response('200 Ok', [('Content-Type', 'application/x-javascript',), 
                                   ('Content-Length', str(len(self.compressed_windmill)),)])
         return [self.compressed_windmill]
         
@@ -165,7 +165,7 @@ def make_windmill_server(http_port=None, js_path=None, compression_enabled=True)
     windmill_proxy_app = WindmillProxyApplication()
     windmill_xmlrpc_app =  wsgi_xmlrpc.WSGIXMLRPCApplication(instance=xmlrpc_methods_instance)
     windmill_jsonrpc_app = wsgi_jsonrpc.WSGIJSONRPCApplication(instance=jsonrpc_methods_instance)
-    windmill_compressor_app = WindmillCompressor(js_path, compression_enabled)
+    windmill_compressor_app = WindmillCompressor(os.path.join(js_path, 'js'), compression_enabled)
     windmill_serv_app.ns = 'windmill-serv'
     windmill_xmlrpc_app.ns = 'windmill-xmlrpc'
     windmill_jsonrpc_app.ns = 'windmill-jsonrpc'
