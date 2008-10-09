@@ -888,7 +888,9 @@ var firebug = {
 		},
 		refreshSize:function(){
 			with(firebug){
-				el.main.environment.addStyle({ "width":pi.util.GetWindowSize().width+"px"});
+				try { el.main.environment.addStyle({ "width":pi.util.GetWindowSize().width+"px"}); }
+				catch(err){}
+				
 				if(pi.env.ie6)
 					el.main.environment.addStyle({ "top":pi.util.GetWindowSize().height-el.main.environment.getSize().offsetHeight+"px" });
 			}

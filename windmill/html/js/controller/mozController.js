@@ -143,4 +143,3 @@ windmill.controller.doubleClick = function(param_object) {
     
    return true;
  };
- 
