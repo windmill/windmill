@@ -22,6 +22,7 @@ import random
 import os
 from urlparse import urlparse
 import logging
+import threading
 from time import sleep
 logger = logging.getLogger(__name__)
 
@@ -139,14 +140,26 @@ class WindmillCompressor(object):
         self.enabled = enabled
         self.js_path = js_path
         self.compressed_windmill = None
+        self._thread = threading.Thread(target=self.compress_file)
+        self._thread.start()
+            
+    def compress_file(self):
+        compressed_windmill = ''
+        for filename in self.js_file_list:
+            compressed_windmill += jsmin.jsmin(open(os.path.join(self.js_path, *filename), 'r').read())
+        self.compressed_windmill = compressed_windmill
+        
     def __call__(self, environ, start_response):
         if not self.enabled:
             start_response('404 Not Found', [('Content-Type', 'text/plain',), ('Content-Length', '0',)])
             return ['']
-        if self.compressed_windmill is None:            
-            self.compressed_windmill = ''
-            for filename in self.js_file_list:
-                self.compressed_windmill += jsmin.jsmin(open(os.path.join(self.js_path, *filename), 'r').read())
+        # if self.compressed_windmill is None:            
+        #     self.compressed_windmill = ''
+        #     for filename in self.js_file_list:
+        #         self.compressed_windmill += jsmin.jsmin(open(os.path.join(self.js_path, *filename), 'r').read())
+        
+        while not self.compressed_windmill:
+            sleep(.15)
             
         start_response('200 Ok', [('Content-Type', 'application/x-javascript',), 
                                   ('Content-Length', str(len(self.compressed_windmill)),)])
