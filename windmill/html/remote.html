@@ -190,7 +190,7 @@
   //use document.write to include all the non cooked files
   var noFile = function(s){
     //Double check to make sure we aren't loading windmill src twice
-    if (windmill != undefined){ return; }
+    if (typeof(windmill) != "undefined"){ return; }
     jQuery("#loadMessage").html("Defaulting to JavaScript includes..");
     
     //Define all the files to be loaded
@@ -237,12 +237,19 @@
   }
   
   jQuery("#loadMessage").html("Downloading JavaScript Source...");
-  jQuery.ajax({
-    type: "GET",
-    url: path,
-    dataType: "script",
-    error: noFile
-  });
+  
+  if (/Opera[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
+    noFile();
+  }
+  else {
+    jQuery.ajax({
+      type: "GET",
+      url: path,
+      dataType: "script",
+      error: noFile
+    });
+  }
+
 
 </script>
 
