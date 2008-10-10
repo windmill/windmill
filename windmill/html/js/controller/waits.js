@@ -185,16 +185,20 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
   
 //wait for an element to show up on the page
 //if it doesn't after a provided timeout, defaults to 20 seconds
-windmill.controller.waits._forNotTitleAttach = function (paramObj,obj) { 
+windmill.controller.waits._forNotTitleAttach = function (paramObj, obj) { 
     var p = paramObj || {};
     var f = function () {
       try {
-        if (opener.document.title != param_object.title){
-          var d = opener.document.body;
+        windmill.setEnv();
+        if (opener.document.title != p.title){
+          var d = opener.document.body.style;
+          windmill.start();
           return true;
         }
         return false;
-      } catch(err){ return false; }
+      } catch(err){
+        return false; 
+      }
     };
     p.test = f;
     p.timeout = 60000;

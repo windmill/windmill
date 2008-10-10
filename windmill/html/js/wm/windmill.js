@@ -66,102 +66,88 @@ var windmill = new function() {
     this.browser = null;
     
     this.init = function(b) { this.browser = b;}
-    this.start = function() {
-//        var shell = new fleegix.shell.Shell($('shellForm').shellInput, $('shellOutput'));
-        //make the action drop down work in a browser compatible way
-        var dispatchDD = function(e){
-          var sel = e.target.options[e.target.options.selectedIndex].id;
-          switch(sel){
-            case 'addSuite':
-              windmill.ui.incRecSuite();
-              windmill.ui.remote.getSuite();
-            break;
-            case 'addAction':
-              windmill.ui.remote.addAction();
-            break;
-            case 'addActionJSON':
-              windmill.ui.remote.actionFromJSON();
-            break;
-            case 'clearIDE':
-              windmill.ui.remote.clearIDE();
-            break;
-            default:
-              resetDD();
-            break;
-          }
-          resetDD();
+    
+    this.setupMenu = function(){
+      var dispatchDD = function(e){
+        var sel = e.target.options[e.target.options.selectedIndex].id;
+        switch(sel){
+          case 'addSuite':
+            windmill.ui.incRecSuite();
+            windmill.ui.remote.getSuite();
+          break;
+          case 'addAction':
+            windmill.ui.remote.addAction();
+          break;
+          case 'addActionJSON':
+            windmill.ui.remote.actionFromJSON();
+          break;
+          case 'clearIDE':
+            windmill.ui.remote.clearIDE();
+          break;
+          default:
+            resetDD();
+          break;
         }
-        fleegix.event.listen($('actionDD'), 'onchange', dispatchDD);
-        
-        windmill.service.setStartURL();
-        windmill.service.buildNotAsserts();
-        
-        var arr = window.location.hostname.split('.');
-        if (arr.length > 2){
-          arr.shift();
-          windmill.docDomain = arr.join('.');
-        }
-        else { windmill.docDomain = window.location.hostname; }
-        //windmill.docDomain = window.location.hostname.replace('www.','');
-
-        try {
-          var wdwTitle = opener.document.title;
-          if (wdwTitle == "Windmill Testing Framework") {
-              windmill.controller.waits._forNotTitleAttach({
-                  title: "Windmill Testing Framework"
-              });
-          }
-          else { windmill.controller.continueLoop(); }
-          
-          //rewrite the open function to keep track of windows popping up
-          //windmill.controller.reWriteOpen();
-          windmill.ui.results.writeResult("<br>Start UI output session.<br> <b>User Environment: " + 
-          browser.current_ua + ".</b><br>");
-          windmill.ui.results.writePerformance("<br>Starting UI performance session.<br> <b>User Environment: " + 
-          browser.current_ua + ".</b><br>");
-        }
-        catch(err) {
-			    //if the initial lode url was blah.com and redirected to www.blah.com
-			    if (window.location.href.indexOf('www.') == -1){
-			      alert('This application loads and immediately redirects to the www. version of itself, trying to correct the domain.');
-			      window.location.href = 'http://www.'+window.location.hostname+"/windmill-serv/remote.html";
-			      return;
-		      }
-		      windmill.controller.continueLoop();
-		    }
-		    //If the doc domain has changed
-        //and we can't get to it, try updating it
-        try{ var v = opener.document.domain; }
-        catch(err){
-          try { document.domain = windmill.docDomain; }
+        resetDD();
+      }
+      fleegix.event.listen($('actionDD'), 'onchange', dispatchDD);    
+    };
+    
+    this.setEnv = function(){
+      jQuery("#loadMessage").html("Setting document.domain environment...");
+      
+      var arr = window.location.hostname.split('.');
+       if (arr.length > 2){
+         arr.shift();
+         windmill.docDomain = arr.join('.');
+       }
+       else { windmill.docDomain = window.location.hostname; }
+       
+       try { var wdwTitle = opener.document.title; }
+       catch(err){
+         if (window.location.href.indexOf('www.') == -1){
+      	   windmill.ui.results.writeResult('This application loads and immediately redirects to the www. version of itself, trying to correct the domain.');
+      		 window.location.href = 'http://www.'+window.location.hostname+"/windmill-serv/remote.html";
+      	 }
+       }
+       try{ var v = opener.document.domain; }
           catch(err){
-            if (arr.length > 2){
-              arr.shift();
-              document.domain = arr.join('.');
-            }
-            else { document.domain = windmill.docDomain; }
-          }
-          try{ var v = opener.document.domain; }
-          catch(err){
-             if (arr.length > 2){
+            try { document.domain = windmill.docDomain; }
+            catch(err){
+              if (arr.length > 2){
                 arr.shift();
                 document.domain = arr.join('.');
               }
-              else { windmill.ui.results.writeResult('Our failover logic cant sync up with your apps document.domain.'); }
+              else { document.domain = windmill.docDomain; }
+            }
+            try{ var v = opener.document.domain; }
+            catch(err){
+               if (arr.length > 2){
+                  arr.shift();
+                  document.domain = arr.join('.');
+                }
+                else { windmill.ui.results.writeResult('Our failover logic cant sync up with your apps document.domain.'); }
+            }
           }
-        }
-        //setTimeout("windmill.controller.continueLoop()", 2000);  
-        //Set a variable so that windmill knows that the remote has fully loaded
-        try { 
-          opener.windmill = windmill; 
-          windmill.initialHost = opener.location.href;
-        }
-        catch(err){}
-        this.remoteLoaded = true;
-        //document.getElementById('runningStatus').innerHTML = 'Ready...';
+          try { 
+            opener.windmill = windmill; 
+            windmill.initialHost = opener.location.href;
+          } catch(err){}
+    };
+    
+    this.start = function() {
+        jQuery("#loadMessage").html("Setting URL and Building Asserts..");
+      
+        windmill.service.setStartURL();
+        windmill.service.buildNotAsserts();
+        jQuery("#loadMessage").html("Building UI..");
         
-        busyOff();
+        this.setupMenu();
+        //this.setEnv();
+        this.remoteLoaded = true;
+        jQuery("#loadMessage").html("Starting Windmill Communication Loop...");        
         windmill.controller.continueLoop();
+        busyOff();
     };
 
     //When the page is unloaded turn off the loop until it loads the new one

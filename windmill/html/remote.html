@@ -13,22 +13,23 @@
 	  jQuery.noConflict();
 	</script>
 	<script type='text/javascript' src='js/lib/jquery-ui-wm-1.6b.min.js'></script>
-		<script type="text/javascript">	
+		<script type="text/javascript">
+		  
 			jQuery(function(){
-			//tabs
-			jQuery('#tabs ul').tabs();
-      		jQuery("#dialog").dialog({ autoOpen: false });
-		  	jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
-       			ui.panel.style.height = "95%";
-      		});
-		});
+			  //tabs
+        jQuery('#tabs ul').tabs();
+        jQuery("#dialog").dialog({ autoOpen: false });
+        jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
+        ui.panel.style.height = "95%";
+      });
+    });
 	</script>
 </head>
 		
 <body>
   <div id="cover">
-    <div style="top:55%;left:30%;position:absolute;">
-      <center><b>Please don't interact with the DOM<br>(Re)Attaching listeners...</b></center><br>
+    <div style="top:35%;left:20%;position:absolute;">
+      <center><div style="font-weight:bold;font-size:14px;" id="loadMessage">Starting Up..</div></center><br>
       <center><img src="img/loading.gif"></center>
     </div>
   </div>
@@ -188,51 +189,54 @@
   
   //use document.write to include all the non cooked files
   var noFile = function(s){
-      //Double check to make sure we aren't loading windmill src twice
-      if (windmill != undefined){ return; }
-      //Define all the files to be loaded
-      var scriptsArr = [];
-	  scriptsArr.push('js/lib/fleegix.js')
-	  scriptsArr.push('js/lib/hash.js')
- 	  scriptsArr.push('js/lib/pi.js')
-  	  scriptsArr.push('js/lib/firebug-lite.js')
-      scriptsArr.push('js/lib/json2.js')
-      scriptsArr.push('js/lib/browserdetect.js')
-      scriptsArr.push('js/wm/windmill.js')
-      scriptsArr.push('js/lib/getXPath.js')
-      scriptsArr.push('js/lib/elementslib.js')
-      scriptsArr.push('js/lib/ajaxslt/xmltoken.js')
-      scriptsArr.push('js/lib/ajaxslt/dom.js')
-      scriptsArr.push('js/lib/ajaxslt/util.js')
-      scriptsArr.push('js/lib/ajaxslt/xpath.js')
-      scriptsArr.push('js/controller/controller.js')
-      scriptsArr.push('js/controller/commands.js')
-      scriptsArr.push('js/controller/asserts.js')
-      scriptsArr.push('js/controller/waits.js')
-      scriptsArr.push('js/extensions/extensions.js')
-      scriptsArr.push('js/wm/registry.js')
-      scriptsArr.push('js/wm/utils.js')
-      scriptsArr.push('js/wm/ide/ui.js')
-      scriptsArr.push('js/wm/ide/recorder.js')
-      scriptsArr.push('js/wm/ide/remote.js')
-      scriptsArr.push('js/wm/ide/dx.js')
-      scriptsArr.push('js/wm/ide/ax.js')
-      scriptsArr.push('js/wm/ide/results.js')
-      scriptsArr.push('js/wm/xhr.js')
-      scriptsArr.push('js/wm/metrics.js')
-      scriptsArr.push('js/wm/events.js')
-      scriptsArr.push('js/wm/global.js')
-      scriptsArr.push('js/wm/jstest.js')
-      scriptsArr.push('js/wm/load.js')
+    //Double check to make sure we aren't loading windmill src twice
+    if (windmill != undefined){ return; }
+    jQuery("#loadMessage").html("Defaulting to JavaScript includes..");
+    
+    //Define all the files to be loaded
+    var scriptsArr = [];
+    scriptsArr.push('js/lib/fleegix.js')
+    scriptsArr.push('js/lib/hash.js')
+    scriptsArr.push('js/lib/pi.js')
+    scriptsArr.push('js/lib/firebug-lite.js')
+    scriptsArr.push('js/lib/json2.js')
+    scriptsArr.push('js/lib/browserdetect.js')
+    scriptsArr.push('js/wm/windmill.js')
+    scriptsArr.push('js/lib/getXPath.js')
+    scriptsArr.push('js/lib/elementslib.js')
+    scriptsArr.push('js/lib/ajaxslt/xmltoken.js')
+    scriptsArr.push('js/lib/ajaxslt/dom.js')
+    scriptsArr.push('js/lib/ajaxslt/util.js')
+    scriptsArr.push('js/lib/ajaxslt/xpath.js')
+    scriptsArr.push('js/controller/controller.js')
+    scriptsArr.push('js/controller/commands.js')
+    scriptsArr.push('js/controller/asserts.js')
+    scriptsArr.push('js/controller/waits.js')
+    scriptsArr.push('js/extensions/extensions.js')
+    scriptsArr.push('js/wm/registry.js')
+    scriptsArr.push('js/wm/utils.js')
+    scriptsArr.push('js/wm/ide/ui.js')
+    scriptsArr.push('js/wm/ide/recorder.js')
+    scriptsArr.push('js/wm/ide/remote.js')
+    scriptsArr.push('js/wm/ide/dx.js')
+    scriptsArr.push('js/wm/ide/ax.js')
+    scriptsArr.push('js/wm/ide/results.js')
+    scriptsArr.push('js/wm/xhr.js')
+    scriptsArr.push('js/wm/metrics.js')
+    scriptsArr.push('js/wm/events.js')
+    scriptsArr.push('js/wm/global.js')
+    scriptsArr.push('js/wm/jstest.js')
+    scriptsArr.push('js/wm/load.js')
       
-      //pull down each script file
-      for (var i = 0; i < scriptsArr.length; i++){
-        var scriptTag = document.createElement('script');
-        scriptTag.src = scriptsArr[i];
-        document.body.appendChild(scriptTag);
-      }      
+    //pull down each script file
+    for (var i = 0; i < scriptsArr.length; i++){
+      var scriptTag = document.createElement('script');
+      scriptTag.src = scriptsArr[i];
+      document.body.appendChild(scriptTag);
+    }      
   }
   
+  jQuery("#loadMessage").html("Downloading JavaScript Source...");
   jQuery.ajax({
     type: "GET",
     url: path,
