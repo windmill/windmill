@@ -189,14 +189,14 @@
   //use document.write to include all the non cooked files
   var noFile = function(s){
       //Double check to make sure we aren't loading windmill src twice
-      if (typeof windmill != "undefined"){ return; }
+      if (windmill != undefined){ return; }
       //Define all the files to be loaded
       var scriptsArr = [];
-	    scriptsArr.push('js/lib/fleegix.js')
-	    scriptsArr.push('js/lib/hash.js')
- 	    scriptsArr.push('js/lib/pi.js')
+	  scriptsArr.push('js/lib/fleegix.js')
+	  scriptsArr.push('js/lib/hash.js')
+ 	  scriptsArr.push('js/lib/pi.js')
   	  scriptsArr.push('js/lib/firebug-lite.js')
-    	scriptsArr.push('js/lib/json2.js')
+      scriptsArr.push('js/lib/json2.js')
       scriptsArr.push('js/lib/browserdetect.js')
       scriptsArr.push('js/wm/windmill.js')
       scriptsArr.push('js/lib/getXPath.js')
