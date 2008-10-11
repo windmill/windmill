@@ -95,6 +95,12 @@ windmill.controller = new function () {
       element = elementslib.Element.NAME(param_object.name);
     }
     //if name was passed
+    if(typeof param_object.value != "undefined") {
+      s = 'Looking up value '+ param_object.value;
+      //element = this.findElement("name=" + param_object.name)
+      element = elementslib.Element.VALUE(param_object.value);
+    }
+    //if name was passed
     if(typeof param_object.classname != "undefined") {
       s = 'Looking up classname '+ param_object.classname;
       element = elementslib.Element.CLASSNAME(param_object.classname);

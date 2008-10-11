@@ -51,6 +51,11 @@ var elementslib = new function(){
     domNode = nodeSearch(nodeByTagname, s);
     return returnOrThrow(s);
   };
+  this.Element.VALUE = function(s){
+    locators.value = s;
+    domNode = nodeSearch(nodeByValue, s);
+    return returnOrThrow(s);
+  };
   this.Element.XPATH = function(s, xb){
     locators.xpath = s;
     domNode = nodeSearch(nodeByXPath, s, xb);
@@ -192,6 +197,32 @@ var elementslib = new function(){
       var idx = 0;
     }
     return this.document.getElementsByClassName(cn)[idx];
+  };
+  
+  //Lookup DOM node by value attribute
+  var nodeByValue = function (s) {
+    var getElementsByAttribute = function(oElm, strTagName, strAttributeName, strAttributeValue){
+        var arrElements = (strTagName == "*" && oElm.all)? oElm.all : oElm.getElementsByTagName(strTagName);
+        var arrReturnElements = new Array();
+        var oAttributeValue = (typeof strAttributeValue != "undefined")? new RegExp("(^|\\s)" + strAttributeValue + "(\\s|$)", "i") : null;
+        var oCurrent;
+        var oAttribute;
+        for(var i=0; i<arrElements.length; i++){
+            oCurrent = arrElements[i];
+            oAttribute = oCurrent.getAttribute && oCurrent.getAttribute(strAttributeName);
+            if(typeof oAttribute == "string" && oAttribute.length > 0){
+                if(typeof strAttributeValue == "undefined" || (oAttributeValue && oAttributeValue.test(oAttribute))){
+                    arrReturnElements.push(oCurrent);
+                }
+            }
+        }
+        return arrReturnElements;
+    }
+    var node = getElementsByAttribute(this.document, "*", "value", s);
+    if (node.length == 0){
+      return null;
+    }
+    return node[0];
   };
   
   //Lookup with xpath

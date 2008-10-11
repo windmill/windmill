@@ -57,6 +57,12 @@ windmill.ui.domexplorer = new function() {
             $("domExp").innerHTML = "Link: " + removeHTMLTags(e.target.innerHTML);
           }
         }
+        else if ((e.target.value != "") && (typeof(e.target.value) != "undefined")) {
+          var element = elementslib.Element.VALUE(e.target.value);
+          if (element == e.target){
+            $("domExp").innerHTML = "Value: " + e.target.value;
+          }
+        }
         //if not just use the xpath
         if ($("domExp").innerHTML == ""){
           var stringXpath = getXSPath(e.target);

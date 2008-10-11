@@ -443,28 +443,14 @@ windmill.ui.remote = new function() {
             r.appendChild(c);
 
             var locator = null;
-
-            if (params['id']) {
-                locator = 'id';
+            
+            //Get the locator from all available
+            for (var loc = 0; loc < windmill.registry.locator.length; loc++){
+              if (params[windmill.registry.locator[loc]]){
+                locator = windmill.registry.locator[loc];
+              }
             }
-            if (params['jsid']) {
-                locator = 'jsid';
-            }
-            if (params['name']) {
-                locator = 'name';
-            }
-            if (params['link']) {
-                locator = 'link';
-            }
-            if (params['xpath']) {
-                locator = 'xpath';
-            }
-            if (params['classname']) {
-                locator = 'classname';
-            }
-            if (params['tagname']) {
-                locator = 'tagname';
-            }
+            
             //Setup second select
             var s1 = document.createElement('select');
             s1.className = 'smalloption';

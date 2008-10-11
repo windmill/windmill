@@ -43,7 +43,7 @@ windmill.ui.recorder = new function() {
         var locValue = '';
         try {
           if ($('useXpath').checked == false) {
-              if (e.target.id != "") {
+              if (e.target.id != "") {                
                   var element = elementslib.Element.ID(e.target.id);
                   if (element == e.target){
                     locator = 'id';
@@ -55,6 +55,13 @@ windmill.ui.recorder = new function() {
                   if (element == e.target){
                     locator = 'name';
                     locValue = e.target.name;
+                  }
+              }
+              else if ((typeof(e.target.value) != "undefined") && (e.target.value != "")) {
+                  var element = elementslib.Element.VALUE(e.target.value);
+                  if (element == e.target){
+                    locator = 'value';
+                    locValue = e.target.value;
                   }
               }
               else if ((e.target.tagName.toUpperCase() == "A") || (e.target.parentNode.tagName.toUpperCase() == "A")) {
