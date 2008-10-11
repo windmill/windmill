@@ -326,6 +326,14 @@ class JSONRPCMethods(RPCMethods):
                 test['params'].pop('uuid')
         return windmill.authoring.transforms.registry[transformer](suite_name, tests)
         
+    def teardown(self):
+        """teardown_module function for functest based python tests"""
+        import windmill
+        windmill.runserver_running = False
+        from windmill.bin import admin_lib    
+        admin_lib.teardown(module.windmill_dict)
+        sleep(.25)
+        
 class XMLRPCMethods(RPCMethods):
     def stop_runserver(self):
         import windmill
