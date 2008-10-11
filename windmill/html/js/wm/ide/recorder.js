@@ -218,9 +218,7 @@ windmill.ui.recorder = new function() {
     //Turn on the recorder
     //Since the click event does things like firing twice when a double click goes also
     //and can be obnoxious im enabling it to be turned off and on with a toggle check box
-    this.recordOn = function() {
-        jQuery("#loadMessage").html("Please wait, (Doing Stuff)...");        
-    	
+    this.recordOn = function() {    	
         //Turn off the listeners so that we don't have multiple attached listeners for the same event
         this.recordOff();
         //keep track of the recorder state, for page refreshes
