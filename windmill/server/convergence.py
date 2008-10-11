@@ -331,7 +331,7 @@ class JSONRPCMethods(RPCMethods):
         import windmill
         windmill.runserver_running = False
         from windmill.bin import admin_lib    
-        admin_lib.teardown(module.windmill_dict)
+        admin_lib.teardown(admin_lib.shell_objects_dict)
         sleep(.25)
         
 class XMLRPCMethods(RPCMethods):
