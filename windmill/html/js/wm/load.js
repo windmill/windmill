@@ -28,7 +28,5 @@
   //The tabs cover up the links in IE6, fixing this issue
 	if (windmill.browser.isIE6x){
 	   document.getElementById('tabs').style.height = '92%';
-	}
-	jQuery("#loadMessage").html("Please wait, (Doing Stuff)...");        
-  
+	}  
 })()
