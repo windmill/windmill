@@ -39,8 +39,8 @@ windmill.xhr = new function() {
         //store the last action for the safari failover
         windmill.xhr.lastActionString = windmill.xhr.ActionString;
         windmill.xhr.ActionString = str;
-        //windmill.xhr.xhrResponse = eval('(' + str + ')');
-        windmill.xhr.xhrResponse = JSON.parse(str);
+        windmill.xhr.xhrResponse = eval('(' + str + ')');
+        //windmill.xhr.xhrResponse = JSON.parse(str);
         var resp = windmill.xhr.xhrResponse;
         
         //If there was a legit json response

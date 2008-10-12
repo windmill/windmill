@@ -786,19 +786,24 @@ windmill.jsTest.actions.loadActions = function () {
        if (name){ action.method = name+'.'+meth; }
        else { action.method = meth; }
        action.params = eval(args[0]);
+       
        //var a = windmill.xhr.createActionFromSuite('jsTests', action);
-       var buildUI = function(meth, params){
+       var buildUI = function(actionObj){
          var suite = windmill.ui.remote.getSuite("jsTests");
-         var action = document.createElement('div');
-         action.className = "action";
-         var date = new Date();
-         action.id = date.getTime();
-         action.innerHTML = "<b>"+meth+"</b>";
-         action.innerHTML += "<br>"+params;
+         var action = windmill.ui.remote.buildAction(actionObj.method, actionObj.params);
          suite.appendChild(action);
+         $(action.id+"method").disabled = true;
+         try {
+           $(action.id+"locatorType").disabled = true;
+           $(action.id+"locator").disabled = true;
+         } catch(err){}
+         try {
+           $(action.id+"optionType").disabled = true;
+           $(action.id+"option").disabled = true;
+         } catch(err){}
          return action;
        }
-       var a = buildUI(action.method, fleegix.json.serialize(action.params));
+       var a = buildUI(action);
        
        //Set the id in the IDE so we can manipulate it
        action.params.aid = a.id;
