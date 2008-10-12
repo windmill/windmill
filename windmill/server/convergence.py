@@ -330,9 +330,9 @@ class JSONRPCMethods(RPCMethods):
         """teardown_module function for functest based python tests"""
         import windmill
         if windmill.settings['EXIT_ON_DONE']:
-            windmill.runserver_running = False
             from windmill.bin import admin_lib    
             admin_lib.teardown(admin_lib.shell_objects_dict)
+            windmill.runserver_running = False
             sleep(.25)
         
 class XMLRPCMethods(RPCMethods):
