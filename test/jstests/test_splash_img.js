@@ -1,15 +1,15 @@
 
 windmillHomeTest.test_splashPageImg = new function () {
   this.test_beginImageLoaded = function () {
-    var img = $('mottoImgBegin');
+    var img = $('firefoxImg');
     jum.assertImageLoaded(img);
     var alt = img.alt;
-    jum.assertEquals(alt, 'Web UI testing ...');
+    jum.assertEquals(alt, 'Firefox');
   };
   this.test_endImageLoaded = function () {
-    var img = $('mottoImgEnd');
+    var img = $('safariImg');
     jum.assertImageLoaded(img);
     var alt = img.alt;
-    jum.assertEquals(alt, 'The way it should be.');
+    jum.assertEquals(alt, 'Safari');
   };
 }

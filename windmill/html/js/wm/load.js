@@ -2,7 +2,7 @@
     jQuery("#loadMessage").html("Waiting for Testing App...");
   
     windmill.controller.waits._forNotTitleAttach({
-      title: "Windmill Testing Framework"
+      title: "Loading Windmill Testing Framework"
     });
   
   var url = 'js/controller/mozController.js';

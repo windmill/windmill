@@ -155,6 +155,12 @@ windmill.jsTest = new function () {
     this.testCount = this.testList.length;
     this.testFailureCount = this.testFailures.length;
     windmill.controller.commands.jsTestResults();
+    //call the teardown
+    var json_object = new json_call('1.1', 'teardown');
+    var params_obj = [];
+    json_object.params = params_obj;
+    var json_string = fleegix.json.serialize(json_object);
+    fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
   };
   this.doSetup = function (paramObj) {
     var testFiles = paramObj.files;
