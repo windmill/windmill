@@ -67,6 +67,9 @@ windmill.jsTest = new function () {
     }
     // Pass along syntax errors
     catch (e) {
+      windmill.jsTest.sendJSReport('Evaling', false, null, new windmill.TimeObj());
+      windmill.jsTest.teardown();
+      
       var err = new Error("Error eval'ing code in file '" +
         path + "' (" + e.message + ")");
       err.name = e.name;
@@ -155,13 +158,16 @@ windmill.jsTest = new function () {
     this.testCount = this.testList.length;
     this.testFailureCount = this.testFailures.length;
     windmill.controller.commands.jsTestResults();
+    this.teardown();
+  };
+  this.teardown = function(){
     //call the teardown
     var json_object = new json_call('1.1', 'teardown');
     var params_obj = [];
     json_object.params = params_obj;
     var json_string = fleegix.json.serialize(json_object);
     fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-  };
+  }
   this.doSetup = function (paramObj) {
     var testFiles = paramObj.files;
     var regIndex = null;
@@ -188,6 +194,8 @@ windmill.jsTest = new function () {
     // Remove any directories or non-js files returned
     for (var i = 0; i < testFiles.length; i++) {
       if (t.indexOf('\.js') == -1) {
+        windmill.jsTest.sendJSReport('Evaling', false, null, new windmill.TimeObj());
+        windmill.jsTest.teardown();
         throw new Error('Non-js file in list of JavaScript test files.');
       }
     }
@@ -774,13 +782,26 @@ windmill.jsTest.actions.loadActions = function () {
       cwTimer.startTime();
 
       //Build some UI
-      var action = {};
-      if (name){ action.method = name+'.'+meth; }
-      else { action.method = meth; }
-      action.params = eval(args[0]);
-      var a = windmill.xhr.createActionFromSuite('jsTests', action);
-      //Set the id in the IDE so we can manipulate it
-      action.params.aid = a.id;
+       var action = {};
+       if (name){ action.method = name+'.'+meth; }
+       else { action.method = meth; }
+       action.params = eval(args[0]);
+       //var a = windmill.xhr.createActionFromSuite('jsTests', action);
+       var buildUI = function(meth, params){
+         var suite = windmill.ui.remote.getSuite("jsTests");
+         var action = document.createElement('div');
+         action.className = "action";
+         var date = new Date();
+         action.id = date.getTime();
+         action.innerHTML = "<b>"+meth+"</b>";
+         action.innerHTML += "<br>"+params;
+         suite.appendChild(action);
+         return action;
+       }
+       var a = buildUI(action.method, fleegix.json.serialize(action.params));
+       
+       //Set the id in the IDE so we can manipulate it
+       action.params.aid = a.id;
 
       //Run the action in the UI
       var result = namespace[meth].apply(namespace, args);

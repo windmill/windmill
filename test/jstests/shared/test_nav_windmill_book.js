@@ -5,6 +5,6 @@ windmillHomeTest.shared.test_navWindmillBook = new function () {
   ];
   this.test_hasNavigated = [
     { method: "waits.forElement", params: { id: "WindmillBook" } }
-  ];
+  ];  
 };
 
