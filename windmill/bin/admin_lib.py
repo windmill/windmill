@@ -200,7 +200,7 @@ def runserver_action(shell_objects):
     """Run the server in the foreground with the options given to the command line"""
     try:
         print 'Server running...'
-        if windmill.settings['EXIT_ON_DONE']:
+        if windmill.settings['EXIT_ON_DONE'] and not windmill.settings['JAVASCRIPT_TEST_DIR']:
             while windmill.block_exit or ( 
                     len(shell_objects['httpd'].controller_queue.queue) is not 0 ) or (
                     len(shell_objects['httpd'].test_resolution_suite.unresolved) is not 0 ):
