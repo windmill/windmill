@@ -140,8 +140,9 @@ class WindmillCompressor(object):
         self.enabled = enabled
         self.js_path = js_path
         self.compressed_windmill = None
-        self._thread = threading.Thread(target=self.compress_file)
-        self._thread.start()
+        if enabled:
+            self._thread = threading.Thread(target=self.compress_file)
+            self._thread.start()
             
     def compress_file(self):
         compressed_windmill = ''
@@ -166,11 +167,13 @@ class WindmillCompressor(object):
         return [self.compressed_windmill]
         
         
-def make_windmill_server(http_port=None, js_path=None, compression_enabled=True):
+def make_windmill_server(http_port=None, js_path=None, compression_enabled=None):
     if http_port is None:
         http_port = windmill.settings['SERVER_HTTP_PORT']
     if js_path is None:
         js_path = windmill.settings['JS_PATH']
+    if compression_enabled is None:
+        compression_enabled = windmill.settings['COMPRESS_JS']
         
     # Start up all the convergence objects    
     import convergence
