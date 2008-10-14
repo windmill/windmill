@@ -109,10 +109,13 @@ windmill.controller.commands.getControllerMethods = function (param_object){
 	  str += 'commands.'+i;
 	}
 	for (var i in windmill.controller.asserts) {
-	  if ((i.indexOf('_') == -1) && (typeof(windmill.controller.asserts.assertRegistry[i]) != 'object')){
+	  if ((i.indexOf('_') == -1) && (i.indexOf('Registry') == -1) && 
+	    (typeof(windmill.controller.asserts.assertRegistry[i]) != 'object')){
 
 	    if (str) { str += ',' }
 	      str += 'asserts.'+i;
+	      str += ',';
+	      str += 'asserts.assertNot'+i.replace('assert', '');
       }
 	}
 	for (var i in windmill.controller.waits) {
