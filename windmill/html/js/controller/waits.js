@@ -111,7 +111,12 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
            //set the result in the ide
             windmill.xhr.setWaitBgAndReport(aid,true,obj);
         }
-      setTimeout(c, 500);
+      if ((windmill.browser.isSafari) || (windmill.browser.current_ua.indexOf('firefox/2') != -1)){
+        setTimeout(c, 2000);
+      }
+      else{
+        setTimeout(c, 500);
+      }
     }
   }
     
