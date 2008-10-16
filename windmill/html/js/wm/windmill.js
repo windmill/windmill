@@ -152,12 +152,12 @@ var windmill = new function() {
 
     //When the page is unloaded turn off the loop until it loads the new one
     this.unloaded = function() {
-        busyOn();
         this.controller.stopLoop();
         
         //if we are recording, we just detected a new page load, but only add one.
         //Opera and IE appear to be calling unload multiple times
         if (windmill.ui.recorder.recordState){
+          busyOn();
           var suiteActions = windmill.ui.remote.getSuite().childNodes;
           var lastNode = suiteActions[suiteActions.length-1];
           var method = null;
