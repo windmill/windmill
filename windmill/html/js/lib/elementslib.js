@@ -162,7 +162,7 @@ var elementslib = new function(){
     for (var i = 0; i < links.length; i++) {
       var el = links[i];
       var linkText = getText(el);
-      if (linkText.indexOf(s) != -1) {
+      if (linkText.trim() == s.trim()) {
         return el;
       }
     }
