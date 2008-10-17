@@ -971,7 +971,19 @@ windmill.controller = new function () {
       return true;
     }
     return false;
-  }
+  };
+  
+  //Execute some arbitrary JS in the testing app window
+  this.execJS = function(param_object){
+    var js = param_object.js;
+    
+    try {
+      eval.call(opener, js);
+    } catch(err){ return false; }
+    
+    return true;
+  
+  };
 
 };
 
