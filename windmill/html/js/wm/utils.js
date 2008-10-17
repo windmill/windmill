@@ -40,7 +40,7 @@ windmill.service = new function() {
 
     //Set the URL we are starting out testing
     this.setStartURL = function() {
-        windmill.locationObj = windmill.testWindow.location;
+        windmill.locationObj = windmill.testWin().location;
         var json_object = new json_call('1.1', 'set_test_url');
         var params_obj = {};
         var loc = window.location;

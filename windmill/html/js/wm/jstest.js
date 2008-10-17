@@ -44,7 +44,7 @@ windmill.jsTest = new function () {
     return true;
   }
   function globalEval(path, code, testWin) {
-    var win = testWin ? windmill.testWindow : window;
+    var win = testWin ? windmill.testWin() : window;
     // Do we have a working eval?
     if (typeof brokenEval == 'undefined') {
       window.eval.call(window, 'var __EVAL_TEST__ = true;');
@@ -232,12 +232,12 @@ windmill.jsTest = new function () {
     jsFilesBasePath = serverBasePath + '/windmill-jstest/';
 
     // Create a ref to the windmill object in the testing app
-    windmill.testWindow.windmill = windmill;
+    windmill.testWin().windmill = windmill;
 
     // Load the asserts into the test window scope
     // as the 'jum' object
     if (this.runInTestWindowScope) {
-      windmill.testWindow.jum = windmill.controller.asserts;
+      windmill.testWin().jum = windmill.controller.asserts;
     }
 
     loadedJSCodeFiles = {};
@@ -503,7 +503,7 @@ windmill.jsTest = new function () {
   };
   this.getCurrentTestScope = function () {
     var win = this.runInTestWindowScope ?
-      windmill.testWindow : window;
+      windmill.testWin() : window;
     return win;
   };
   this.lookupObjRef = function (objPathString) {

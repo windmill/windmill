@@ -72,18 +72,18 @@ var openFirebug = function(){
   firebug.init();
   firebug.win.minimize();
   //if firebug has already been injected into the app
-  if (!opener.firebug){
-    var piScript = opener.document.createElement('script');
+  if (!windmill.testWin().firebug){
+    var piScript = windmill.testWin().document.createElement('script');
     piScript.src = "windmill-serv/js/lib/pi.js"
-    var fbScript = opener.document.createElement('script');
+    var fbScript = windmill.testWin().document.createElement('script');
     fbScript.src = "windmill-serv/js/lib/firebug-lite.js";
-    opener.document.body.insertBefore(piScript, opener.document.body.childNodes[0]);
-    opener.document.body.insertBefore(fbScript, opener.document.body.childNodes[0]);
-    setTimeout('opener.firebug.init();opener.firebug.win.maximize()', 1000);
+    windmill.testWin().document.body.insertBefore(piScript, windmill.testWin().document.body.childNodes[0]);
+    windmill.testWin().document.body.insertBefore(fbScript, windmill.testWin().document.body.childNodes[0]);
+    setTimeout('windmill.testWin().firebug.init();windmill.testWin().firebug.win.maximize()', 1000);
   }
   else{
-    opener.firebug.init();
-    opener.firebug.win.maximize();
+    windmill.testWin().firebug.init();
+    windmill.testWin().firebug.win.maximize();
   }
 }
 
@@ -96,7 +96,7 @@ var toggleRec = function() {
         windmill.ui.domexplorer.domExplorerOff();
         windmill.ui.assertexplorer.assertExplorerOff();
         windmill.ui.recorder.recordOn();
-        opener.window.focus();
+        windmill.testWin().focus();
         $('record').src = 'img/stoprecord.png';
     }
     else {
@@ -139,7 +139,7 @@ var toggleExplore = function() {
         $('domExp').style.visibility = 'visible';
         $('domExp').innerHTML = '';
         windmill.ui.domexplorer.domExplorerOn();
-        opener.window.focus();
+        windmill.testWin().focus();
         $('explorer').src = 'img/xoff.png';
     }
     else {
@@ -158,7 +158,7 @@ var toggleAExplore = function() {
         $('domExp').style.visibility = 'visible';
         $('domExp').innerHTML = '';
         windmill.ui.assertexplorer.assertExplorerOn();
-        opener.window.focus();
+        windmill.testWin().focus();
         $('assertx').src = 'img/axoff.png';
     }
     else {
@@ -439,7 +439,7 @@ function AssertionFailedError(message) {
 //JSUtils
 var parseString = function(str, s){
   var arr = str.split('.');
-  var win = windmill.testWindow;
+  var win = windmill.testWin();
   if (s){ win = s;}
       
   var parseRecurse = function (n) {

@@ -156,7 +156,7 @@ windmill.controller = new function () {
         //If the doc domain has changed
         //and we can't get to it, try updating it
         try {
-          var v = opener.document.domain;
+          var v = windmill.testWin().document.domain;
         }
         catch(err){
           document.domain = windmill.docDomain;
@@ -208,7 +208,7 @@ windmill.controller = new function () {
     //make sure we got a valid js string
     if (typeof param_object.js == 'string') {
       try {
-        param_object.value = eval.call(windmill.testWindow, param_object.js);
+        param_object.value = eval.call(windmill.testWin(), param_object.js);
       }
       catch(err){
         param_object.value = "error";
@@ -239,7 +239,7 @@ windmill.controller = new function () {
     }
     //We need to tell the service where we are before we
     //head to a new page
-    try{ opener.location = param_object.url; }
+    try{ windmill.testWin().location = param_object.url; }
     catch(err){ return false; }
     
     return true;
@@ -353,9 +353,9 @@ windmill.controller = new function () {
     }
     
     //Do the initial move to the drag element position
-    windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, dragCoords.left, dragCoords.top);
+    windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, dragCoords.left, dragCoords.top);
     windmill.events.triggerMouseEvent(drag, 'mousedown', true, dragCoords.left, dragCoords.top); //do the mousedown
-    //windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, destCoords.left, destCoords.top); //do the move
+    //windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, destCoords.left, destCoords.top); //do the move
     //windmill.events.triggerMouseEvent(dest, 'mouseup', true, destCoords.left, destCoords.top);
     //IE doesn't appear to expect a click to complete the simulation
     // if (!windmill.browser.isIE){
@@ -366,7 +366,7 @@ windmill.controller = new function () {
          windmill.controller.continueLoop();
      }
      windmill.controller.doMove = function(attrib, startx, starty){
-       windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, startx, starty); 
+       windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, startx, starty); 
    
        windmill.controller.moveCount--;
        if (windmill.controller.moveCount == 0){
@@ -405,77 +405,6 @@ windmill.controller = new function () {
     return true;
   }
   
-  // this.dragDropElem = function(param_object){
-  //        var p = param_object;
-  //        var el = this._lookupDispatch(p);
-  //        if (!el){ return false; }
-  //        
-  //        windmill.controller.stopLoop();
-  //        windmill.controller.moveCount = 0;
-  //        windmill.controller.dragElem = el;
-  //        
-  //        var dist = p.pixels.split(',');
-  //        dist[0] = dist[0].replace('(','');
-  //        dist[1] = dist[1].replace(')','');
-  //         
-  //        var box = el.getBoundingClientRect(); 
-  //        var left = box.left;
-  //        var top = box.top + 2;
-  //        
-  //        windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, left, top);
-  //        windmill.events.triggerMouseEvent(el, 'mousedown', true, left, top);
-  //        // windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, left+100, top);
-  //        //        windmill.events.triggerMouseEvent(el, 'mouseup', true, left, top);
-  //        
-  //        windmill.controller.doRem = function(){
-  //            try{
-  //              windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true);
-  //            }
-  //            catch(err){}
-  //            windmill.controller.continueLoop();
-  //         }
-  //         windmill.controller.doMove = function(x,y){
-  //           windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, x, y);
-  //           windmill.controller.moveCount--;
-  //           if (windmill.controller.moveCount == 0){
-  //             setTimeout('windmill.controller.doRem()', 1000);
-  //           }
-  //         }
-  //         
-  //         var delay = 0;
-  //         var i = 0;
-  //         var newX = left;
-  //         
-  //         while(i != dist[0]){
-  //           if (i < dist[0]){ newX++; }
-  //           else{ newX--; }
-  //           
-  //           setTimeout("windmill.controller.doMove("+newX+","+top+")", delay)
-  //           if (i < dist[0]){ i++; }
-  //           else{ i--; }
-  //           windmill.controller.moveCount++;
-  //           delay = delay + 5;
-  //         }
-  //         
-  //         var delay = 0;
-  //         var i = 0;
-  //         var newBox = el.getBoundingClientRect(); 
-  //         var newY = top;
-  //         
-  //         while(i != dist[1]){
-  //           if (i < dist[0]){ newY++; }
-  //           else{ newY--; }
-  //           
-  //           setTimeout("windmill.controller.doMove("+newBox.left+", "+newY+")", delay)
-  //           if (i < dist[1]){ i++; }
-  //           else{ i--; }
-  //           windmill.controller.moveCount++;
-  //           delay = delay + 5;
-  //         }
-  //        
-  //        return true;
-  //    }
-     
   this.dragDropElem = function(param_object){
          var p = param_object;
          var el = this._lookupDispatch(p);
@@ -494,9 +423,9 @@ windmill.controller = new function () {
               var left = box.left;
               var top = box.top + 2;
 
-              windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, left, top);
+              windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, left, top);
               windmill.events.triggerMouseEvent(el, 'mousedown', true, left, top);
-              // windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, left+100, top);
+              // windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, left+100, top);
               //        windmill.events.triggerMouseEvent(el, 'mouseup', true, left, top);
 
               windmill.controller.doRem = function(x,y){
@@ -507,7 +436,7 @@ windmill.controller = new function () {
                   windmill.controller.continueLoop();
                }
                windmill.controller.doMove = function(x,y){
-                 windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, x, y);
+                 windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, x, y);
                  windmill.controller.moveCount--;
                  if (windmill.controller.moveCount == 0){
                    setTimeout('windmill.controller.doRem('+x+','+y+')', 1000);
@@ -562,7 +491,7 @@ windmill.controller = new function () {
               dist[0] = dist[0].replace('(','');
               dist[1] = dist[1].replace(')','');
       
-              windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, el.offsetLeft, el.offsetTop);
+              windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, el.offsetLeft, el.offsetTop);
               windmill.events.triggerMouseEvent(el, 'mousedown', true);
               
               windmill.controller.doRem = function(){
@@ -571,7 +500,7 @@ windmill.controller = new function () {
                  windmill.controller.continueLoop();
               }
               windmill.controller.doMove = function(x,y){
-                windmill.events.triggerMouseEvent(_w.document.body, 'mousemove', true, x, y);
+                windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, x, y);
                 windmill.controller.moveCount--;
                 if (windmill.controller.moveCount == 0){
                   setTimeout('windmill.controller.doRem()', 1000);
@@ -613,7 +542,7 @@ windmill.controller = new function () {
      windmill.controller.moveCount = 0;
      windmill.controller.ddeParamObj = param_object;
      
-     var webApp = windmill.testWindow;
+     var webApp = windmill.testWin();
      //takes a coordinates param (x,y),(x,y) start, end
      var coords = p.coords.split('),(');
      
@@ -624,14 +553,14 @@ windmill.controller = new function () {
      end[1] = end[1].replace(')','');
      
      //get to the starting point
-      var i = windmill.testWindow.document.createElement('img');
+      var i = windmill.testWin().document.createElement('img');
       i.id = "mc";
       i.style.border = "0px";
       i.style.left = start[0]+'px';
       i.style.top = start[1]+'px';
       i.style.position = "absolute";
       i.zIndex = "100000000000";
-      windmill.testWindow.document.body.appendChild(i);
+      windmill.testWin().document.body.appendChild(i);
       i.src = "/windmill-serv/img/mousecursor.png";
      
      windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
@@ -642,13 +571,13 @@ windmill.controller = new function () {
      windmill.controller.remMouse = function(x,y){
        windmill.events.triggerMouseEvent(windmill.controller._lookupDispatch(p), 'mouseup', true, x, y);
        windmill.events.triggerMouseEvent(windmill.controller._lookupDispatch(p), 'click', true);
-       var c = windmill.testWindow.document.getElementById('mc');
-       windmill.testWindow.document.body.removeChild(c);
+       var c = windmill.testWin().document.getElementById('mc');
+       windmill.testWin().document.body.removeChild(c);
        windmill.controller.continueLoop();
      }
    
      windmill.controller.doMove = function(attrib, startx, starty){
-       var w = windmill.testWindow.document;
+       var w = windmill.testWin().document;
        if (attrib == "left"){ w.getElementById('mc').style['left'] = startx+'px'; }
        else{ w.getElementById('mc').style['top'] = starty+'px'; }
        windmill.events.triggerMouseEvent(w.body, 'mousemove', true, startx, starty); 
@@ -720,7 +649,7 @@ windmill.controller = new function () {
     var mouseDownPos = getPos(dragged, 'mouseDown');
     var mouseUpPos = getPos(dest, 'mouseUp');
     
-    var webApp = windmill.testWindow;
+    var webApp = windmill.testWin();
     windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
     windmill.events.triggerMouseEvent(dragged, 'mousedown', true);
     windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
@@ -734,7 +663,7 @@ windmill.controller = new function () {
   this.dragDropXY = function (param_object){
 
     var p = param_object;
-    var webApp = windmill.testWindow;
+    var webApp = windmill.testWin();
     windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.source[0], p.source[1]);
     windmill.events.triggerMouseEvent(webApp.document.body, 'mousedown', true);
     windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.destination[0], p.destination[1]);
@@ -769,7 +698,7 @@ windmill.controller = new function () {
   this.mouseDown = function (param_object){
       var mupElement = this._lookupDispatch(param_object);
       if (mupElement == null){
-        mupElement = windmill.testWindow.document.body;
+        mupElement = windmill.testWin().document.body;
       }
       if (windmill.browser.isIE){
           var box = mupElement.getBoundingClientRect(); 
@@ -784,7 +713,7 @@ windmill.controller = new function () {
     //Drag Drop functionality allowing functions passed to calculate cursor offsets
   this.mouseMoveTo = function (param_object){
     var p = param_object;
-    var webApp = windmill.testWindow;
+    var webApp = windmill.testWin();
     var coords = p.coords.split(',');
     coords[0] = coords[0].replace('(','');
     coords[1] = coords[1].replace(')','');
@@ -795,7 +724,7 @@ windmill.controller = new function () {
   
   // this.mouseMove = function (param_object){
   //    var p = param_object;
-  //    var webApp = windmill.testWindow;
+  //    var webApp = windmill.testWin();
   //    var coords = p.coords.split('),(');
   //          
   //    var start = coords[0].split(',');
@@ -815,7 +744,7 @@ windmill.controller = new function () {
        windmill.controller.stopLoop();
        windmill.controller.moveCount = 0;
        var p = param_object;
-       var webApp = windmill.testWindow;
+       var webApp = windmill.testWin();
        //takes a coordinates param (x,y),(x,y) start, end
        var coords = p.coords.split('),(');
        
@@ -826,14 +755,14 @@ windmill.controller = new function () {
        end[1] = end[1].replace(')','');
     
        //get to the starting point
-        var i = windmill.testWindow.document.createElement('img');
+        var i = windmill.testWin().document.createElement('img');
         i.id = "mc";
         i.style.border = "0px";
         i.style.left = start[0]+'px';
         i.style.top = start[1]+'px';
         i.style.position = "absolute";
         i.zIndex = "100000000000";
-        windmill.testWindow.document.body.appendChild(i);
+        windmill.testWin().document.body.appendChild(i);
         i.src = "/windmill-serv/img/mousecursor.png";
        
        windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
@@ -841,13 +770,13 @@ windmill.controller = new function () {
        var starty = start[1];
      
        windmill.controller.remMouse = function(){
-         var c = windmill.testWindow.document.getElementById('mc');
-         windmill.testWindow.document.body.removeChild(c);
+         var c = windmill.testWin().document.getElementById('mc');
+         windmill.testWin().document.body.removeChild(c);
          windmill.controller.continueLoop();
        }
      
        windmill.controller.doMove = function(attrib, startx, starty){
-         var w = windmill.testWindow.document;
+         var w = windmill.testWin().document;
          if (attrib == "left"){ w.getElementById('mc').style['left'] = startx+'px'; }
          else{ w.getElementById('mc').style['top'] = starty+'px'; }
          windmill.events.triggerMouseEvent(w.body, 'mousemove', true, startx, starty); 
@@ -883,7 +812,7 @@ windmill.controller = new function () {
   this.mouseUp = function (param_object){
     var mdnElement = this._lookupDispatch(param_object);
     if (mdnElement == null){
-      mdnElement = windmill.testWindow.document.body;
+      mdnElement = windmill.testWin().document.body;
     }
     if(windmill.browser.isIE){
       var box = mdnElement.getBoundingClientRect(); 
@@ -914,15 +843,15 @@ windmill.controller = new function () {
   
   //Browser navigation functions
   this.goBack = function(param_object){
-    windmill.testWindow.history.back();
+    windmill.testWin().history.back();
     return true;
   }
   this.goForward = function(param_object){
-    windmill.testWindow.history.forward();
+    windmill.testWin().history.forward();
     return true;
   }
   this.refresh = function(param_object){
-    windmill.testWindow.location.reload(true);
+    windmill.testWin().location.reload(true);
     return true;
   }
   
@@ -931,14 +860,14 @@ windmill.controller = new function () {
     d = d.replace('(','');
     d = d.replace(')','');
     var cArr = d.split(',');
-    _w.scrollTo(cArr[0],cArr[1]);
+    windmill.testWin().scrollTo(cArr[0],cArr[1]);
     return true;
   }
   
   //After the app reloads you have to re overwrite the alert function for the TestingApp
   this.reWriteAlert = function(param_object){
     windmill.reAlert = true;
-    windmill.testWindow.alert = function(s){
+    windmill.testWin().alert = function(s){
       windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
     };
     
@@ -958,7 +887,7 @@ windmill.controller = new function () {
           }
         }
     }
-    rwaRecurse(windmill.testWindow);
+    rwaRecurse(windmill.testWin());
     
     return true;
   };
@@ -978,7 +907,7 @@ windmill.controller = new function () {
     var js = param_object.js;
     
     try {
-      eval.call(opener, js);
+      eval.call(windmill.testWin(), js);
     } catch(err){ return false; }
     
     return true;

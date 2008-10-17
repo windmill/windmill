@@ -1,14 +1,12 @@
 var elementslib = new function(){
-  //base vars
-  var win = opener;
+ 
   var domNode = null;
   //keep track of the locators we cant get via the domNode
   var locators = {};
   
-  this.setWindow = function(windowObj){
-    win = windowObj;
-    return win;
-  };
+  this.getWindow = function(){
+    return windmill.testWin();
+  }
   
   //element constructor
   this.Element = function(node){
@@ -98,17 +96,17 @@ var elementslib = new function(){
     };
     
     //IE cross window problems require you to talk directly to opener
-     try{ element = func.call(opener, s);}
+     try{ element = func.call(windmill.testWin(), s);}
      catch(err){ element = null; }
      if (!element){
-       for (var i=0;i<opener.frames.length;i++){
-         try { element = func.call(opener.frames[i], s); }
+       for (var i=0;i<windmill.testWin().frames.length;i++){
+         try { element = func.call(windmill.testWin().frames[i], s); }
          catch(err){ element = null; }
        }
      }
      
     if (element){ return element; }
-    recurse(win, func, s);
+    recurse(getWindow(), func, s);
     
     return e;
   }

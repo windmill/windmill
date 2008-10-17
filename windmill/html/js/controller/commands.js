@@ -163,7 +163,7 @@ windmill.controller.commands.setOptions = function (param_object){
 
 //Get the document HTML
 windmill.controller.commands.getPageText = function (param_object){
-  var dom = windmill.testWindow.document.documentElement.innerHTML.replace('\n','');
+  var dom = windmill.testWin().document.documentElement.innerHTML.replace('\n','');
   dom = '<html>' + dom + '</html>';
   //Send to the server
   var json_object = new json_call('1.1', 'command_result');

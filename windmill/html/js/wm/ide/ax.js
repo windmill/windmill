@@ -159,7 +159,7 @@ windmill.ui.assertexplorer = new function() {
         $('assertx').src = 'img/axoff.png';
         $('domExp').style.display = 'block';
         $('domExp').innerHTML = '';
-        this.axRecursiveBind(opener);
+        this.axRecursiveBind(windmill.testWin());
       }
       catch(error) {
         windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
@@ -178,7 +178,7 @@ windmill.ui.assertexplorer = new function() {
         $('assertx').src = 'img/axon.png';
         $('domExp').style.visibility = 'hidden';
         $('domExp').innerHTML = '';
-        this.axRecursiveUnBind(opener);
+        this.axRecursiveUnBind(windmill.testWin());
       }
       catch(error) {
         windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');

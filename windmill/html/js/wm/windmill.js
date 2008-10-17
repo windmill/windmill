@@ -65,6 +65,20 @@ var windmill = new function() {
     this.remote = parent.window;
     this.browser = null;
     
+    //we need to defined a function that returns the test window
+    //because in IE if the document.domain has been altered
+    //the only way to access the document is via opener
+    //this way the popup support is only broken in this IE case
+    this.testWin = function(){
+      try {
+        var doc = windmill.testWindow.document;
+        return windmill.testWindow;
+      }
+      catch(err){
+        return opener;
+      }
+    }
+    
     this.init = function(b) { this.browser = b;}
     
     this.setupMenu = function(){
@@ -103,14 +117,14 @@ var windmill = new function() {
        }
        else { windmill.docDomain = window.location.hostname; }
        
-       try { var wdwTitle = opener.document.title; }
+       try { var wdwTitle = windmill.testWin().document.title; }
        catch(err){
          if (window.location.href.indexOf('www.') == -1){
       	   windmill.ui.results.writeResult('This application loads and immediately redirects to the www. version of itself, trying to correct the domain.');
       		 window.location.href = 'http://www.'+window.location.hostname+"/windmill-serv/remote.html";
       	 }
        }
-       try{ var v = opener.document.domain; }
+       try{ var v = windmill.testWin().document.domain; }
           catch(err){
             try { document.domain = windmill.docDomain; }
             catch(err){
@@ -120,7 +134,7 @@ var windmill = new function() {
               }
               else { document.domain = windmill.docDomain; }
             }
-            try{ var v = opener.document.domain; }
+            try{ var v = windmill.testWin().document.domain; }
             catch(err){
                if (arr.length > 2){
                   arr.shift();
@@ -130,8 +144,8 @@ var windmill = new function() {
             }
           }
           try { 
-            opener.windmill = windmill; 
-            windmill.initialHost = opener.location.href;
+            windmill.testWin().windmill = windmill; 
+            windmill.initialHost = windmill.testWin().location.href;
           } catch(err){}
     };
     
@@ -189,7 +203,7 @@ var windmill = new function() {
 
         //If the doc domain has changed
         //and we can't get to it, try updating it
-        try{ var v = opener.document.domain; }
+        try{ var v = windmill.testWin().document.domain; }
         catch(err){ document.domain = windmill.docDomain; }
         //rewrite the open function to keep track of windows popping up
         //windmill.controller.reWriteOpen();
@@ -202,9 +216,9 @@ var windmill = new function() {
         //test window to allow the JS test framework
         //to access different functionality
         try {
-          opener.windmill = windmill; 
-          fleegix.event.unlisten(opener.document.body, 'onunload', windmill, 'unloaded');
-          fleegix.event.listen(opener.document.body, 'onunload', windmill, 'unloaded');
+          windmill.testWin().windmill = windmill; 
+          fleegix.event.unlisten(windmill.testWin().document.body, 'onunload', windmill, 'unloaded');
+          fleegix.event.listen(windmill.testWin().document.body, 'onunload', windmill, 'unloaded');
         }
         catch(err){
           try { setTimeout('windmill.loaded()', 500); return;}
@@ -235,6 +249,6 @@ var windmill = new function() {
 //Set the browser
 windmill.init(browser);
 //Setup a convenience variable
-var _w = opener;
+var _w = windmill.testWin();
 fleegix.xhr.defaultTimeoutSeconds = windmill.xhrTimeout;
 fleegix.event.compatibilityMode = true;

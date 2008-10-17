@@ -171,14 +171,14 @@ windmill.ui.domexplorer = new function() {
   //Set the listeners for the dom explorer
   this.domExplorerOn = function() {
     //Display the mouse coords in the IDE
-    fleegix.event.listen(opener.document.body, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
+    fleegix.event.listen(windmill.testWin().document.body, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
     
     this.exploreState = true;
     try {
       $('explorer').src = 'img/xoff.png';
       $('domExp').style.display = 'block';
       $('domExp').innerHTML = '';
-      this.dxRecursiveBind(opener);
+      this.dxRecursiveBind(windmill.testWin());
     }
     catch(error) {
       windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
@@ -190,7 +190,7 @@ windmill.ui.domexplorer = new function() {
   //Remove the listeners for the dom explorer
   this.domExplorerOff = function() {
     //Mouse coords display off
-    fleegix.event.unlisten(opener.document.body, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
+    fleegix.event.unlisten(windmill.testWin().document.body, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
     $('mouseExp').innerHTML = "";
     this.exploreState = false;
 
@@ -202,7 +202,7 @@ windmill.ui.domexplorer = new function() {
       $('explorer').src = 'img/xon.png';
       $('domExp').style.display = 'none';
       $('domExp').innerHTML = '';
-      this.dxRecursiveUnBind(opener);
+      this.dxRecursiveUnBind(windmill.testWin());
     }
     catch(error) {
       windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');

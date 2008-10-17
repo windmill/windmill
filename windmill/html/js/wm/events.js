@@ -199,7 +199,7 @@ windmill.events = new function() {
                 // ideally we could just slide it in as follows in the try-block below, but this normally
                 // doesn't work.  This is why I try to avoid this code path, which is only required if we need to
                 // set attributes on the event (e.g., clientX).
-                try { _w.event = evt; }
+                try { windmill.testWin().event = evt; }
                 catch(e) {
                     // getting an "Object does not support this action or property" error.  Save the event away
                     // for future reference.

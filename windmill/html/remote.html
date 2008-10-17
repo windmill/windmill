@@ -152,7 +152,7 @@
        		<center> <a id="loopLink" href = "#" onclick="javascript:toggleLoop();">
        		    Toggle Service Loop
        		  </a> &nbsp | &nbsp
-       		<a href='#' onclick="windmill.testWindow.document.location.reload()">
+       		<a href='#' onclick="windmill.testWin().document.location.reload()">
        		  Reload Testing Application
        		</a>
        		</center>
@@ -191,7 +191,7 @@
   var noFile = function(s){
     //Double check to make sure we aren't loading windmill src twice
     if (typeof(windmill) != "undefined"){ return; }
-    jQuery("#loadMessage").html("Defaulting to JavaScript includes..");
+    jQuery("#loadMessage").html("Reverting to JavaScript includes..");
     
     //Define all the files to be loaded
     var scriptsArr = [];
