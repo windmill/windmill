@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class NSWrapper(object):
     def __init__(self, ):
-        pass
+        pass        
         
 def setup_module(module):
     """setup_module function for functest based python tests"""
@@ -120,6 +120,14 @@ class WindmillFunctestRunner(functest.runner.FunctestRunnerInterface):
     def test_function_failed(self, test):
         logger.error('Functest test failed: '+test.__name__)
 
+class WindmillTestClientException(AssertionError):
+    def __init__(self, result):
+        self.result = result
+    def __str__(self):
+        self.result.pop('version', None)
+        self.result['params'].pop('uuid', None)
+        return repr(self.result)
+
 class WindmillTestClient(object):
     """Windmill controller implementation for python test authoring library"""
     assertions = True
@@ -186,7 +194,7 @@ class WindmillTestClient(object):
         if not self.browser_debugging:
             result = self._method_proxy.execute_command({'method':command_name, 'params':kwargs})
             if not result and assertion:
-                assert result['result']
+                raise WindmillTestClientException(result)
             else:
                 return result['result']
         else:
@@ -201,7 +209,7 @@ class WindmillTestClient(object):
         if not self.browser_debugging:
             result = self._method_proxy.execute_test({'method':test_name, 'params':kwargs})
             if not result['result']['result'] and assertion:
-                assert result['result']['result']
+                raise WindmillTestClientException(result['result'])
             else:
                 return result['result']
         else:
