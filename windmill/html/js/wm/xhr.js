@@ -45,19 +45,19 @@ windmill.xhr = new function() {
         
         //If there was a legit json response
         if (resp.error) {
-            windmill.ui.results.writeResult("There was a JSON syntax error: '" + 
+            windmill.out("There was a JSON syntax error: '" + 
             resp.error + "'");
         }
         else {
             if (resp.result.method != 'defer') {
                 windmill.serviceDelay = windmill.serviceDelayRunning;
-                windmill.ui.results.writeStatus("Running " + resp.result.method + "...");
+                windmill.stat("Running " + resp.result.method + "...");
                 windmill.ui.playback.setPlaying();
             }
             else {
                 windmill.serviceDelay = windmill.serviceDelayDefer;
                 windmill.ui.playback.resetPlayBack();
-                windmill.ui.results.writeStatus("Ready, Waiting for tests...");
+                windmill.stat("Ready, Waiting for tests...");
             }
 
             //Init and start performance but not if the protocol defer
@@ -109,10 +109,14 @@ windmill.xhr = new function() {
                         else { var result = windmill.controller[resp.result.method](resp.result.params); }
                     }
                     catch(error) {
-                        windmill.ui.results.writeResult("<font color=\"#FF0000\">There was an error in the " + 
+                        var newParams = copyObj(resp.result.params);
+                        delete newParams.uuid;
+                        
+                        windmill.out("<font color=\"#FF0000\">There was an error in the " + 
                         resp.result.method + " action. " + error + "</font>");
-                        windmill.ui.results.writeResult("<br>Action: <b>" + resp.result.method + 
-                        "</b><br>Parameters: " + fleegix.json.serialize(resp.result.params) + 
+                        
+                        windmill.out("<br>Action: <b>" + resp.result.method + 
+                        "<br>Parameters: " + fleegix.json.serialize(newParams) + 
                         "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
 
                         result = false;
@@ -134,18 +138,20 @@ windmill.xhr = new function() {
                 }
                 else {
                     //we must be loading, change the status to reflect that
-                    windmill.ui.results.writeStatus("Loading " + resp.result.method + "...");
+                    windmill.stat("Loading " + resp.result.method + "...");
                     result == true;
                 }
                 var m = resp.result.method.split(".");
                 //Send the report if it's not in the commands namespace, we only call report for test actions
                 if ((m[0] != 'commands') && (m[0] != 'waits') && (windmill.runTests == true)) {
+                    var newParams = copyObj(resp.result.params);
+                    delete newParams.uuid;
                     //End timer and store
                     windmill.xhr.action_timer.endTime();
                     windmill.xhr.sendReport(resp.result.method, result, windmill.xhr.action_timer);
                     windmill.xhr.setActionBackground(action, result, resp.result);
                     //Do the timer write
-                    windmill.xhr.action_timer.write(fleegix.json.serialize(resp.result.params));
+                    windmill.xhr.action_timer.write(fleegix.json.serialize(newParams));
                 }
             }
         }
@@ -159,7 +165,7 @@ windmill.xhr = new function() {
         var reportHandler = function(str) {
             response = eval('(' + str + ')');
             if (!response.result == 200) {
-                windmill.ui.results.writeResult('Error: Report receiving non 200 response.');
+                windmill.out('Error: Report receiving non 200 response.');
             }
         };
         var result_string = fleegix.json.serialize(windmill.xhr.xhrResponse.result);
@@ -181,7 +187,7 @@ windmill.xhr = new function() {
         
         //write to the output tab what is going on
         var handleTimeout = function() {
-            windmill.ui.results.writeResult('One of the XHR requests to the server timed out.');
+            windmill.out('One of the XHR requests to the server timed out.');
         }
         //var handleErr = function(){ setTimeout("windmill.xhr.getNext()", windmill.serviceDelay); }
         
@@ -211,7 +217,7 @@ windmill.xhr = new function() {
 
     this.clearQueue = function() {
         var h = function(str) {
-            windmill.ui.results.writeResult('Cleared backend queue, ' + str);
+            windmill.out('Cleared backend queue, ' + str);
         }
         var test_obj = {};
         var json_object = new json_call('1.1', 'clear_queue');
@@ -253,19 +259,19 @@ windmill.xhr = new function() {
                 action.parentNode.style.border.borderTop = "1px solid red";
                 action.parentNode.style.border.borderBottom = "1px solid red";
             }
-            windmill.ui.results.writeResult("<br>Action: <b>" + obj.method + 
+            windmill.out("<br>Action: <b>" + obj.method + 
             "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
             "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
             
             //if the continue on error flag has been set by the shell.. then we just keep on going
             if (windmill.stopOnFailure == true) {
                 windmill.xhr.loopState = false;
-                windmill.ui.results.writeStatus("Paused, error?...");
+                windmill.stat("Paused, error?...");
             }
         }
         else {
             //Write to the result tab
-            windmill.ui.results.writeResult("<br>Action: <b>" + obj.method + 
+            windmill.out("<br>Action: <b>" + obj.method + 
             "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
             "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');
             
@@ -286,19 +292,19 @@ windmill.xhr = new function() {
 
         if (result != true) {
             if (typeof(action) != 'undefined') { action.style.background = '#FF9692'; }
-            windmill.ui.results.writeResult("<br>Action: <b>" + obj.method + 
+            windmill.out("<br>Action: <b>" + obj.method + 
             "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
             "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
             
             //if the continue on error flag has been set by the shell.. then we just keep on going
             if (windmill.stopOnFailure == true) {
                 windmill.xhr.loopState = false;
-                windmill.ui.results.writeStatus("Paused, error?...");
+                windmill.stat("Paused, error?...");
             }
         }
         else {
             //Write to the result tab
-            windmill.ui.results.writeResult("<br>Action: <b>" + obj.method + 
+            windmill.out("<br>Action: <b>" + obj.method + 
             "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
             "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');
             

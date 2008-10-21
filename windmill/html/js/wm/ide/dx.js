@@ -126,7 +126,7 @@ windmill.ui.domexplorer = new function() {
           $(id + 'option').focus();
         }
         catch(error) {
-          windmill.ui.results.writeResult('Error in dom explorer');
+          windmill.out('Error in dom explorer');
         }
     }
     
@@ -145,7 +145,7 @@ windmill.ui.domexplorer = new function() {
           $(id + 'locator').focus();
         }
         catch(error) {
-          windmill.ui.results.writeResult('Error in dom explorer');
+          windmill.out('Error in dom explorer');
         }
     }
     
@@ -181,7 +181,7 @@ windmill.ui.domexplorer = new function() {
       this.dxRecursiveBind(windmill.testWin());
     }
     catch(error) {
-      windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
+      windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
       $('explorer').src = 'img/xon.png';
       this.exploreState = false;
     }
@@ -205,7 +205,7 @@ windmill.ui.domexplorer = new function() {
       this.dxRecursiveUnBind(windmill.testWin());
     }
     catch(error) {
-      windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
+      windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
       $('explorer').src = 'img/xon.png';
       this.exploreState = false;
     }
@@ -230,7 +230,7 @@ windmill.ui.domexplorer = new function() {
         this.dxRecursiveBind(iframeArray[i]);
       }
       catch(error) {
-        windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
+        windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
       }
     }
   };
@@ -251,7 +251,7 @@ windmill.ui.domexplorer = new function() {
         this.dxRecursiveUnBind(iframeArray[i]);
       }
       catch(error) {
-        windmill.ui.results.writeResult('Binding to windows and iframes, '+error +'.. binding all others.');
+        windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
       }
     }
   };

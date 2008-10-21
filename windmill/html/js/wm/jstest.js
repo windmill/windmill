@@ -565,7 +565,7 @@ windmill.jsTest = new function () {
       testName = this.testOrder.shift();
       testFunc = this.lookupObjRef(testName);
       // Tell IDE what is going on
-      windmill.ui.results.writeStatus('Running '+ testName + '...');
+      windmill.stat('Running '+ testName + '...');
       if (testFunc.length > 0) {
         this.testItemArray = {
           name: testName,
@@ -596,7 +596,7 @@ windmill.jsTest = new function () {
       // -----------------------
       this.currentJsTestTimer.endTime();
       // Write to the results tab in the IDE
-      windmill.ui.results.writeResult("<br><b>Test:</b> " + testName +
+      windmill.out("<br><b>Test:</b> " + testName +
         "<br>Test Result:" + true);
       // Send report for pass
       windmill.jsTest.sendJSReport(testName, true, null,
@@ -688,9 +688,9 @@ windmill.jsTest = new function () {
           // CheX0r for any needed string replacements for {$*} shortcuts
           item.params = windmill.utilities.doShortcutStringReplacements(item.params);
           // Execute the UI action with the set params
-          windmill.ui.results.writeStatus('Running '+ item.method + '...');
+          windmill.stat('Running '+ item.method + '...');
           testActionFunc(item.params);
-          windmill.ui.results.writeResult("<br><b>Action:</b> " + item.method +
+          windmill.out("<br><b>Action:</b> " + item.method +
             "<br>Params: " + fleegix.json.serialize(item.params));
           if (this.testItemArray.name == 'setup') {
 
@@ -710,7 +710,7 @@ windmill.jsTest = new function () {
     // Escape angle brackets for display in HTML
     msg = msg.replace(/</g, '&lt;');
     msg = msg.replace(/>/g, '&gt;');
-    windmill.ui.results.writeResult("<br>Test: <b>" +
+    windmill.out("<br>Test: <b>" +
             testName + "<br>Test Result:" + false + '<br>Error: '+ msg);
     windmill.jsTest.sendJSReport(testName, false, e, this.currentJsTestTimer);
     this.testFailures.push(fail);
@@ -750,7 +750,7 @@ windmill.jsTest.sendJSReport = function (testname, result, error, timer) {
   var reportHandler = function (str) {
     response = eval('(' + str + ')');
     if (!response.result || response.result != 200) {
-      windmill.ui.results.writeResult('Error: Report receiving non 200 response.');
+      windmill.out('Error: Report receiving non 200 response.');
     }
   };
   var result_string = fleegix.json.serialize(result);

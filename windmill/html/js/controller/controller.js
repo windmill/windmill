@@ -112,7 +112,7 @@ windmill.controller = new function () {
     }
     
     //write out the results to the ide
-    windmill.ui.results.writeResult(s);
+    windmill.out(s);
     //scroll so that the element is in view
     if (element) { element.scrollIntoView(); }
     
@@ -868,7 +868,7 @@ windmill.controller = new function () {
   this.reWriteAlert = function(param_object){
     windmill.reAlert = true;
     windmill.testWin().alert = function(s){
-      windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
+      windmill.out("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
     };
     
     rwaRecurse = function(frame){
@@ -878,12 +878,12 @@ windmill.controller = new function () {
       for (var i=0;i<iframeCount;i++){
           try{
   	        iframeArray[i].alert = function(s){
-        		  windmill.ui.results.writeResult("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
+        		  windmill.out("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
      	      };
   	        rwaRecurse(iframeArray[i]);
           }
           catch(error){             
-           	windmill.ui.results.writeResult('Could not bind to iframe number '+ iframeCount +' '+error);     
+           	windmill.out('Could not bind to iframe number '+ iframeCount +' '+error);     
           }
         }
     }

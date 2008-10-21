@@ -54,20 +54,22 @@ windmill.TimeObj = function() {
     //Write to the log div
     this.write = function(parameters) {
         this.calculateTime();
-        var perf_tab = $("perfOut");
 
-        perf_tab.innerHTML = "<br>Total: " + this.identifier + " : " + runTime + " ms<br>" + perf_tab.innerHTML;
-        perf_tab.innerHTML = "<br>Ending: " + this.identifier + " : " + timeEnded + perf_tab.innerHTML;
-        perf_tab.innerHTML = "<br>Starting: " + this.identifier + " : " + timeStarted + perf_tab.innerHTML;
+        windmill.perf("<b>Total: </b><i>" + runTime + "</i> ms");
+        windmill.perf("Ending:  <i>" + timeEnded + "</i>");
+        windmill.perf("Starting: <i>" + timeStarted + "</i>");
 
         //perf_tab.scrollTop = perf_tab.scrollHeight;
         if (!parameters) {
-            perf_tab.innerHTML = "<br>Executing: " + 
-            this.identifier + perf_tab.innerHTML;
+          windmill.perf("<br><b>Executing: <font color=\"orange\">" + this.identifier + "</font></b>");
         }
         else {
-            perf_tab.innerHTML = "<br>Executing: " + this.identifier +
-             " - Parameters: " + parameters + perf_tab.innerHTML;
+          var param = eval("(" + parameters + ")");
+          delete param.uuid;
+          delete param.test;
+          parameters = fleegix.json.serialize(param);
+          windmill.perf("<br><b>Executing: <font color=\"orange\">" + this.identifier + "</font></b><br>"+
+            "Parameters: " + parameters);
         }
     }
 };

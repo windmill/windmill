@@ -41,3 +41,7 @@ windmill.ui.results = new function() {
     }
 
 };
+//shortcuts
+windmill.out = windmill.ui.results.writeResult;
+windmill.stat = windmill.ui.results.writeStatus;
+windmill.perf = windmill.ui.results.writePerformance;

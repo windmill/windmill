@@ -107,7 +107,7 @@ var toggleRec = function() {
 }
 var togglePlay = function() {
     if ($('playback').src.indexOf("img/playback.png") != -1) {
-        windmill.ui.results.writeStatus("Playing IDE Actions...");
+        windmill.stat("Playing IDE Actions...");
         windmill.controller.continueLoop();
         windmill.ui.playback.sendPlayBack();
         $('playback').src = 'img/playbackstop.png';
@@ -198,6 +198,14 @@ var doSubmit = function() {
 var $ = function(id) {
 		  return document.getElementById(id);
 };
+
+var copyObj = function(obj){
+   var n = new Object;
+   for (i in obj){
+      n[i] = obj[i];
+    }
+  return n;
+}
 
 var PatternMatcher = function(pattern) {
     this.selectStrategy(pattern);
