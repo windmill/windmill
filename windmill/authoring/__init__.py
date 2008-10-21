@@ -178,12 +178,14 @@ class WindmillTestClient(object):
         # We'll need to start the suite for the name passed to the initializer
         self._method_proxy.start_suite(suite_name)
                         
-    def _exec_command(self, command_name, **kwargs):
+    def _exec_command(self, command_name, assertion=None, **kwargs):
         """Execute command, if browser_debugging then just add it to queue"""
+        if assertion is None:
+            assertion = self.assertions
         command = {'method':command_name, 'params':kwargs}
         if not self.browser_debugging:
             result = self._method_proxy.execute_command({'method':command_name, 'params':kwargs})
-            if not result and self.assertions:
+            if not result and assertion:
                 assert result['result']
             else:
                 return result['result']
@@ -191,12 +193,14 @@ class WindmillTestClient(object):
             return self._method_proxy.add_command({'method':command_name, 'params':kwargs})
             
 
-    def _exec_test(self, test_name, **kwargs):
+    def _exec_test(self, test_name, assertion=None, **kwargs):
         """Execute test, if browser_debugging then just add it to queue"""
+        if assertion is None:
+            assertion = self.assertions
         test = {'method':test_name, 'params':kwargs}
         if not self.browser_debugging:
             result = self._method_proxy.execute_test({'method':test_name, 'params':kwargs})
-            if not result['result']['result'] and self.assertions:
+            if not result['result']['result'] and assertion:
                 assert result['result']['result']
             else:
                 return result['result']

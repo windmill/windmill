@@ -36,13 +36,13 @@ from windmill.authoring import WindmillTestClient
 def test():
     client = WindmillTestClient(__name__)
 
-    client.click(jsid=u'{$calView}')
-    client.click(jsid=u'{$calView}')
-    client.waits.forElement(id=u'hourDiv1-1200', timeout=40000)
-    client.click(id=u'viewNavCenterRight')
-    client.doubleClick(id=u'hourDiv1-1200')
+    client.click(jsid='{$calView}')
+    client.click(jsid='{$calView}')
+    client.waits.forElement(id='hourDiv1-1200', timeout=40000)
+    client.click(id='viewNavCenterRight')
+    client.doubleClick(id='hourDiv1-1200')
     client.waits.sleep(milliseconds=2000)
-    client.extensions.cosmoDragDrop(destination={u'id': u'hourDiv4-1300'}, dragged={u'pfx': u'eventDivContent__', u'jsid': u'windmill.testWindow.cosmo.view.cal.canvasInstance.getSelectedItemId()'})"""
+    client.extensions.cosmoDragDrop(destination={'id': 'hourDiv4-1300'}, dragged={'pfx': 'eventDivContent__', 'jsid': 'windmill.testWindow.cosmo.view.cal.canvasInstance.getSelectedItemId()'})"""
     
 def test_save_to_python():
     import windmill
@@ -51,6 +51,8 @@ def test_save_to_python():
     file_path = os.path.join(windmill.settings['SAVES_PATH'], file_name)
     cleanup_files.append(file_path)
     python_code = open(file_path, 'r').read()
+    if python_code != proper_python_code:
+        print python_code
     assert python_code == proper_python_code
 
 def teardown_module(module):
