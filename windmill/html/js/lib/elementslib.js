@@ -4,10 +4,6 @@ var elementslib = new function(){
   //keep track of the locators we cant get via the domNode
   var locators = {};
   
-  this.getWindow = function(){
-    return windmill.testWin();
-  }
-  
   //element constructor
   this.Element = function(node){
     if (node){ domNode = node;}
@@ -104,9 +100,10 @@ var elementslib = new function(){
          catch(err){ element = null; }
        }
      }
-     
+        
     if (element){ return element; }
-    recurse(getWindow(), func, s);
+    recurse(windmill.testWin(), func, s);
+    recurse(windmill.baseTestWindow, func, s);
     
     return e;
   }

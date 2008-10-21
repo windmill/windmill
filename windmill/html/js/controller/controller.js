@@ -902,6 +902,31 @@ windmill.controller = new function () {
     return false;
   };
   
+  this.setWindowByTitle = function(param_object){
+    var title = param_object.title;
+    var newW = windmill.testWin();
+    for (var i = 0; i < windmill.windowReg.length; i++){
+      if (windmill.windowReg[i].document.title == title){
+        newW = windmill.windowReg[i];
+      }
+    }
+    windmill.testWindow = newW;
+    return true;
+  };
+  
+  this.revertWindow = function(param_object){
+    windmill.testWindow = windmill.baseTestWindow;
+    return true;
+  }
+  
+  this.closeWindow = function(param_object){
+    if (windmill.testWin() != windmill.baseTestWindow){
+      windmill.testWin().close();
+      windmill.testWindow = windmill.baseTestWindow;
+    }
+    return true;
+  }
+  
   //Execute some arbitrary JS in the testing app window
   this.execJS = function(param_object){
     var js = param_object.js;
@@ -911,7 +936,6 @@ windmill.controller = new function () {
     } catch(err){ return false; }
     
     return true;
-  
   };
 
 };

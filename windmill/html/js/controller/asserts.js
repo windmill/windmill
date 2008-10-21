@@ -113,12 +113,12 @@ windmill.controller.asserts.assertText = function (param_object) {
     }
     if (n.hasChildNodes()){
       for(var m = n.firstChild; m != null; m = m.nextSibling) {
-	if (m.innerHTML.indexOf(validator) != -1){
-	  return true;
-	}
-	if (m.value.indexOf(validator) != -1){
-	  return true;
-	}
+	      if (m.innerHTML.indexOf(validator) != -1){
+	        return true;
+	      }
+	      if (m.value.indexOf(validator) != -1){
+	        return true;
+	      }
       }
     }
   }

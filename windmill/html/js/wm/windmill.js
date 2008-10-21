@@ -52,10 +52,11 @@ var windmill = new function() {
     this.initialHost = '';
     
     this.openWindow;
+    this.popup = null;
     
     this.locationObj = null;
     //Keep track of windows the page opened with pointers
-    this.windowReg = new fleegix.hash.Hash();    
+    this.windowReg = [];    
     
     //This is so that if you are doing multiple frame testing
     //And you have to change testingApp to point at various frames
@@ -70,16 +71,49 @@ var windmill = new function() {
     //the only way to access the document is via opener
     //this way the popup support is only broken in this IE case
     this.testWin = function(){
-      try {
-        var doc = windmill.testWindow.document;
-        return windmill.testWindow;
+
+      //if we were pointing at a popup
+      if (windmill.popup != null){
+        if (windmill.popup.document != null){
+          windmill.testWindow = windmill.popup;
+          return windmill.testWindow;
+        }
       }
-      catch(err){
-        return opener;
+      
+      //grab the next window in line
+      for (var i = 0; i < windmill.windowReg.length; i++){
+        try{
+          var wDoc = windmill.windowReg[i].document;              
+          //found another window
+          if (wDoc != null){
+            windmill.testWindow = windmill.windowReg[i];
+          }
+          return windmill.testWindow;
+        } catch(err){}
       }
-    }
+      
+       try {
+          var doc = windmill.testWindow.document;
+          if (doc == null){
+            throw "err";
+          }
+          return windmill.testWindow;
+        }
+        catch(err){
+          windmill.ui.results.writeResult('Either the popup window was destroyed, or you are in IE with a changed document.domain.');
+          windmill.ui.results.writeResult('Defaulting to the opener as target window...');
+          try {
+            var d = opener.document;
+            windmill.testWindow = opener;
+            return opener;
+          } catch(err){
+            windmill.testWindow = windmill.baseTestWindow;
+            return windmill.baseTestWindow;
+          }
+        }
+    };
     
-    this.init = function(b) { this.browser = b;}
+    this.init = function(b) { this.browser = b;};
     
     this.setupMenu = function(){
       var dispatchDD = function(e){
@@ -103,7 +137,8 @@ var windmill = new function() {
           break;
         }
         resetDD();
-      }
+      };
+      
       fleegix.event.listen($('actionDD'), 'onchange', dispatchDD);    
     };
     
@@ -159,15 +194,146 @@ var windmill = new function() {
         this.setupMenu();
         //this.setEnv();
         this.remoteLoaded = true;
+        
         jQuery("#loadMessage").html("Starting Windmill Communication Loop...");        
         windmill.controller.continueLoop();
         busyOff();
     };
+    
+    this.attachUnload = function(w){
+      if (windmill.browser.isIE){
+        //w.document.body.onunload = function(){ windmill.unloaded(); };   
+        fleegix.event.unlisten(windmill.testWin().document.body, 'onunload', windmill, 'unloaded');
+        fleegix.event.listen(windmill.testWin().document.body, 'onunload', windmill, 'unloaded');
+      }
+      else{
+        jQuery(w).unbind("unload", windmill.unloaded); 
+        jQuery(w).unload(windmill.unloaded); 
+      }
+    };
+    
+    this.popupLogic = function(){
+      if (typeof windmill.testWin().oldOpen == "function"){
+        return;
+      }
+      //if the popup is manually navigated by the user, then they close it
+      //we want to generate a closeWindow action in the remote
+      if ((windmill.testWin() == windmill.popup) && (windmill.ui.recorder.recordState)){
+            windmill.testWin().onbeforeunload = function(){
+              windmill.popup = windmill.testWindow; 
+              windmill.testWindow = opener; 
+              setTimeout(function(){ 
+                try {
+                  if (windmill.popup.document == null){
+                    throw "closed window";
+                  }
+                } catch(err){
+                  var wfpl = windmill.ui.remote.buildAction("closeWindow");
+                  windmill.ui.remote.addAction(wfpl);
+                }
+              }, 500);
+          }
+      }
+      
+     //Window popup wrapper
+      try { windmill.testWin().oldOpen = windmill.testWin().open; } 
+      catch(err){ 
+        windmill.ui.results.writeResult("Did you close a popup window, without using closeWindow?");
+        windmill.ui.results.writeResult("We can no longer access test windows, start over and don't close windows manually.");
+        alert('See output tab, unrecoverable error has occured.');
+        return;
+      }
+      
+      //re-define the open function
+      windmill.testWin().open = function(){
+        if (windmill.browser.isIE){
+           var str = '';
+           var arg;
+           for (var i = 0; i < arguments.length; i++) {
+             arg = arguments[i];
+             if (typeof arg == 'string') {
+               str += '"' + arg + '"';
+             }
+             else {
+               str += arg;
+             }
+             str += ","
+           }
+           str = str.substr(0, str.length-1);
+           eval('var newWindow = windmill.testWin().oldOpen(' + str + ');');
+        }
+        else {
+          var newWindow = windmill.testWin().oldOpen.apply(windmill.testWin(), arguments);
+        }
 
+        var newReg = [];
+        for (var i = 0; i < windmill.windowReg.length; i++){
+          try{
+            var wDoc = windmill.windowReg[i].document;              
+            newReg.push(windmill.windowReg[i]);
+          } catch(err){}
+          windmill.windowReg = newReg;
+        }
+
+        windmill.windowReg.push(newWindow);
+
+        var doAdd = function(){
+          
+          var wLen = windmill.windowReg.length -1;
+          windmill.testWindow = windmill.windowReg[wLen];                
+          //turn off all the recorders
+          // windmill.ui.recorder.recordOff();
+          // windmill.ui.domexplorer.domExplorerOff();
+          // windmill.ui.assertexplorer.assertExplorerOff();
+
+          windmill.controller.stopLoop();
+          //what do do when the window is loaded
+          var popupLoaded = function(){
+            if (!windmill.ui.recorder.recordState){ return; }
+            try {
+              var b = windmill.testWin().document.body;
+              var wLen = windmill.windowReg.length -1;
+              
+              //build the new actions
+              var wfpl = windmill.ui.remote.buildAction("setTestWindow", {path: 'windmill.windowReg['+wLen+']'});
+              windmill.ui.remote.addAction(wfpl);
+              var wfpl = windmill.ui.remote.buildAction("waits.forPageLoad", {timeout:20000});
+              windmill.ui.remote.addAction(wfpl);
+              windmill.testWindow = windmill.windowReg[wLen];
+              windmill.loaded();
+              
+              //Allows us to keep access to the opener, otherwise we get permission denied
+              windmill.testWin().onbeforeunload = function(){
+                windmill.popup = windmill.testWindow; 
+                windmill.testWindow = opener; 
+                
+                setTimeout(function(){ 
+                  try {
+                    if (windmill.popup.document == null){
+                      throw "closed window";
+                    }
+                  } catch(err){
+                    var wfpl = windmill.ui.remote.buildAction("closeWindow");
+                    windmill.ui.remote.addAction(wfpl);
+                  }
+                }, 500);
+              };
+              
+              windmill.ui.domexplorer.setExploreState();
+              windmill.ui.recorder.setRecState();
+              
+              return true;
+            } catch(err){}
+          };
+          windmill.controller.waits.forJS(popupLoaded);
+        };
+        setTimeout(doAdd, 1000);
+      }
+    };
+    
     //When the page is unloaded turn off the loop until it loads the new one
     this.unloaded = function() {
-        this.controller.stopLoop();
-        
+        windmill.controller.stopLoop();
         //if we are recording, we just detected a new page load, but only add one.
         //Opera and IE appear to be calling unload multiple times
         if (windmill.ui.recorder.recordState){
@@ -188,11 +354,29 @@ var windmill = new function() {
         }
         setTimeout('checkPage()', 1000);
     };
+    
+    //try binding unload stuff to each of the windows and iframes
+    this.rUnLoadBind = function(w){
+        if (w != windmill.testWin()){
+          windmill.attachUnload(w);
+          w.windmill = windmill;
+        }
+        
+        var fc = w.frames.length;
+        var fa = w.frames;
 
+        for (var i = 0; i < fc; i++) {
+            try {
+                this.rUnLoadBind(fa[i]);
+            } catch(error) { }
+        }
+    };
+    
     //On load setup all the listener stuff
     //Set the listener on the testingApp on unload
     this.loaded = function() {
-        busyOff();
+        this.popupLogic();
+        
         //When the waits happen I set a timeout
         //to ensure that if it takes longer than the
         //windmill default timeout to load
@@ -216,9 +400,8 @@ var windmill = new function() {
         //test window to allow the JS test framework
         //to access different functionality
         try {
-          windmill.testWin().windmill = windmill; 
-          fleegix.event.unlisten(windmill.testWin().document.body, 'onunload', windmill, 'unloaded');
-          fleegix.event.listen(windmill.testWin().document.body, 'onunload', windmill, 'unloaded');
+          windmill.attachUnload(windmill.testWin());
+          windmill.testWin().windmill = windmill;
         }
         catch(err){
           try { setTimeout('windmill.loaded()', 500); return;}
@@ -226,12 +409,14 @@ var windmill = new function() {
             windmill.ui.results.writeResult("Loaded method was unable to bind listeners, <br>Error: " + err);
           }
         }
-
+        windmill.rUnLoadBind(windmill.testWin());
+        
         //Reset the explorer and recorder to what
         //they were before the new page load
         windmill.ui.domexplorer.setExploreState();
         windmill.ui.recorder.setRecState();
-		
+		    busyOff();
+      
         delayed = function() {
           if (windmill.waiting == false) {
             windmill.controller.continueLoop(); 
@@ -239,7 +424,7 @@ var windmill = new function() {
         }
         setTimeout('delayed()', 0);
     };
-
+    
     //windmill Options to be set
     this.stopOnFailure = false;
     this.runTests = true;

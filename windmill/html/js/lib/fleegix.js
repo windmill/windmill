@@ -583,7 +583,10 @@ fleegix.event = new function () {
         // Try to be a good citizen -- preserve existing listeners
         // Execute with arguments passed, in the right execution context
         if (reg.orig.methCode) {
-          reg.orig.methCode.apply(reg.orig.obj, args);
+          /*breaks in IE occasionally */ 
+          try {
+            reg.orig.methCode.apply(reg.orig.obj, args);
+          } catch(err){}
         }
         // DOM events
         // Normalize the different event models
@@ -750,7 +753,9 @@ fleegix.event = new function () {
       var reg = listenerCache[i];
       removeObj = reg.orig.obj;
       removeMethod = reg.orig.methName;
-      removeObj[removeMethod] = null;
+      //In IE if you destroya window, you will get an exception
+      try{ removeObj[removeMethod] = null; }
+      catch(err){}
     }
   };
   this.subscribe = function(subscr, obj, method) {

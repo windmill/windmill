@@ -112,11 +112,9 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
             windmill.xhr.setWaitBgAndReport(aid,true,obj);
         }
       if ((windmill.browser.isSafari) || (windmill.browser.current_ua.indexOf('firefox/2') != -1)){
-        setTimeout(c, 2000);
+        setTimeout(c, 1500);
       }
-      else{
-        setTimeout(c, 500);
-      }
+      else{ setTimeout(c, 800); }
     }
   }
     
@@ -127,6 +125,19 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
   //the calling code will jump back up and process the ui accordingly
   return true;
 
+};
+
+windmill.controller.waits.forJS = function (f) {
+    var p = {};
+    if (typeof f == "function"){
+      p.test = f;
+    }
+    else if (typeof f == "string"){
+      p.test = eval(f);
+    }
+    else { return false; }
+    
+    return windmill.controller.waits.forJSTrue(p, null);
 };
 
 //wait for an element to show up on the page
