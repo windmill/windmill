@@ -104,7 +104,12 @@ if PLATFORM == 'darwin':
 #             MOZILLA_DEFAULT_PROFILE = path
 
 elif os.name == 'nt' or sys.platform == 'cygwin':
-    IE_BINARY  = os.path.join(os.environ['ProgramFiles'], 'Internet Explorer', 'iexplore.exe')
+    program_files = os.environ['ProgramFiles']
+    IE_BINARY  = os.path.join(program_files, 'Internet Explorer', 'iexplore.exe')
+    
+    if os.path.isfile(os.path.join(program_files, 'Safari', 'Safari.exe')):
+        SAFARI_BINARY = os.path.join(program_files, 'Safari', 'Safari.exe')
+    
     # firefoxBin = findInPath('firefox')
     # 
     # if firefoxBin is None:

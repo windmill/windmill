@@ -35,11 +35,20 @@ class InternetExplorer(object):
         self.cmd = [self.ie_binary, self.test_url]
         
     
-    
-    def start(self):
-        
+    def set_proxy(self):
         for key, value in self.registry_modifications.items():
             wreg.SetValueEx(self.reg, key, 0, value['type'], value['new_value'])
+            
+    def unset_proxy(self):
+        for key, value in self.registry_modifications.items():
+            if value['previous_value'] is not None:
+                wreg.SetValueEx(self.reg, key, 0, value['type'], value['previous_value'])
+            else:
+                wreg.DeleteValue(self.reg, key)
+    
+    def start(self):
+        """Start IE"""
+        self.set_proxy()
             
         # allow_reg = wreg.OpenKey(wreg.HKEY_CURRENT_USER, 
         #                          "Software\\Microsoft\\Internet Explorer\\New Windows\\Allow", 0, wreg.KEY_ALL_ACCESS)
@@ -52,12 +61,8 @@ class InternetExplorer(object):
         self.p_handle = killableprocess.Popen(self.cmd, **kwargs)
         
     def stop(self):
-        
-        for key, value in self.registry_modifications.items():
-            if value['previous_value'] is not None:
-                wreg.SetValueEx(self.reg, key, 0, value['type'], value['previous_value'])
-            else:
-                wreg.DeleteValue(self.reg, key)
+        """Stop IE"""
+        self.unset_proxy()
         
         try:
             self.p_handle.kill(group=True)

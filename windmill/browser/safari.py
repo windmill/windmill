@@ -75,9 +75,16 @@ class Safari(object):
 	    self.netsetup_binary = windmill.settings['NETWORKSETUP_BINARY']
 	    self.safari_binary = windmill.settings['SAFARI_BINARY']
 	    self.test_url = windmill.settings['TEST_URL']
+	
+	def create_redirect(self):
+	    self.redirection_page = tempfile.mktemp(suffix='.html')
+	    f = open(self.redirection_page, 'w') 
+	    test_url = windmill.get_test_url(windmill.settings['TEST_URL']) 
+	    f.write( html_redirection.replace('{replace}', test_url) )
+	    f.flush() ; f.close()
 	    
-	def start(self):
-	    # Set local Proxy
+	def set_proxy_mac(self):
+	    """Set local Proxy"""
 	    interface_name = find_default_interface_name()
 	    uri = urlparse.urlparse(self.test_url)
 	    set_proxy_command = ' '.join([ self.netsetup_binary, 
@@ -93,19 +100,38 @@ class Safari(object):
 	                                      'on'
 	                                    ])
 	    commands.getoutput(enable_proxy_command)	    
-	    
-	    redirection_page = tempfile.mktemp(suffix='.html')
-	    f = open(redirection_page, 'w') 
-	    test_url = windmill.get_test_url(windmill.settings['TEST_URL']) 
-	    f.write( html_redirection.replace('{replace}', test_url) )
-	    f.flush() ; f.close()
-	    kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
-	    self.p_handle = killableprocess.runCommand([self.safari_binary, redirection_page], **kwargs)
-	    logger.info([self.safari_binary, redirection_page])
+	    self.create_redirect()
 	    self.interface_name = interface_name
 	
-	def kill(self, kill_signal=None):
+	def unset_proxy_mac(self):
 	    commands.getoutput(' '.join([self.netsetup_binary, '-setwebproxystate', '"'+self.interface_name+'"', 'off']))
+	
+	def set_proxy_windows(self):
+	    import ie
+	    self.ie_obj = ie.InternetExplorer()
+	    self.ie_obj.set_proxy()
+	
+	def unset_proxy_windows(self):
+	    self.ie_obj.unset_proxy()
+	    
+	def start(self):
+	    """Start Safari"""
+	    if sys.platform == 'darwin':
+	        self.set_proxy_mac()
+	    elif os.name == 'nt' or sys.platform == 'cygwin':
+	        self.set_proxy_windows()
+	    
+	    kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
+	    self.p_handle = killableprocess.runCommand([self.safari_binary, self.redirection_page], **kwargs)
+	    logger.info([self.safari_binary, self.redirection_page])
+
+	def kill(self, kill_signal=None):
+	    """Stop Safari"""
+	    if sys.platform == 'darwin':
+	        self.unset_proxy_mac()
+	    elif os.name == 'nt' or sys.platform == 'cygwin':
+	        self.unset_proxy_windows()
+	        
 	    try:
 	        self.p_handle.kill(group=True)
 	    except:
