@@ -200,10 +200,14 @@ windmill.ui.remote = new function() {
 
             //Append the new suite to the IDE
             $('ideForm').appendChild(suite);
+            
             //Make the suites and actions draggable
             jQuery(suite).sortable({revert:true});
-            jQuery($('ideForm')).sortable({revert:true});
+            if (!windmill.browser.isIE){
+              jQuery($('ideForm')).sortable({revert:true});
+            }
             
+            //minimize the last suite
             try {
               var h = $(suite.id).previousSibling.style.height;
               //If the last suite is expanded, collapse it
