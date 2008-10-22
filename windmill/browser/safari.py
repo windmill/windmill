@@ -138,7 +138,6 @@ class Safari(object):
 	        logger.error('Cannot kill Safari')
 	        
 	def stop(self):
-	    commands.getoutput(' '.join([self.netsetup_binary, '-setwebproxystate', '"'+self.interface_name+'"', 'off']))
 	    self.kill(signal.SIGTERM)
 	        
 	def is_alive(self):
