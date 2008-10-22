@@ -106,6 +106,7 @@ class Safari(object):
 	    commands.getoutput(' '.join([self.netsetup_binary, '-setwebproxystate', '"'+self.interface_name+'"', 'off']))
 	
 	def set_proxy_windows(self):
+	    self.create_redirect()
 	    import ie
 	    self.ie_obj = ie.InternetExplorer()
 	    self.ie_obj.set_proxy()
