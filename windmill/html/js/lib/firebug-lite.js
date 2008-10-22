@@ -15,7 +15,7 @@ var firebug = {
 		with(firebug){
 			
 			document.documentElement.childNodes[0].appendChild(
-				new pi.element("link").attribute.set("rel","stylesheet").attribute.set("href","http://firebuglite.appspot.com/firebug-lite.css").environment.getElement()
+				new pi.element("link").attribute.set("rel","stylesheet").attribute.set("href","/windmill-serv/css/firebug-lite.css").environment.getElement()
 			);
 
 			/* 
@@ -351,10 +351,14 @@ var firebug = {
 				with (firebug) {
 					var item = document.styleSheets[_index];
 					var uri = item.href;
-					if(uri.indexOf("http:\/\/")>-1&&getDomain(uri)!=document.domain){
-						el.left.css.container.update("<em>Access to restricted URI denied</em>");
-						return;
-					}
+					
+					try {
+  					if(uri.indexOf("http:\/\/")>-1&&getDomain(uri)!=document.domain){
+  						el.left.css.container.update("<em>Access to restricted URI denied</em>");
+  						return;
+  					}
+  				} catch(err){}
+  				
 					var rules = item[pi.env.ie ? "rules" : "cssRules"];
 					var str = "";
 					for (var i=0; i<rules.length; i++) {

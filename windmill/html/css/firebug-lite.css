@@ -1,0 +1,736 @@
+#Firebug div, #Firebug h3, #Firebug span, #Firebug input, #Firebug textarea, #Firebug select, #Firebug option, #Firebug a, #Firebug strong, #Firebug em, #Firebug label, #Firebug center {
+background:transparent none repeat scroll 0 0;
+border:0 none;
+color:#111111;
+float:none;
+font-family:sans-serif;
+font-size:1em;
+font-style:normal;
+font-weight:normal;
+height:auto;
+margin:0;
+overflow:visible;
+padding:0;
+text-align:left;
+width:auto;
+}
+#Firebug input, #Firebug select, #Firebug textarea {
+-x-system-font:none;
+background:#FFFFFF none repeat scroll 0 0;
+border:1px outset #AAAAAA;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+padding:2px;
+}
+#Firebug center {
+text-align:center;
+}
+#Firebug strong {
+font-weight:bold;
+}
+#Firebug em {
+font-style:italic;
+}
+#Firebug {
+background:#FFFFFF none repeat scroll 0 0;
+bottom:0;
+height:295px;
+left:0;
+overflow:hidden;
+position:fixed !important;
+width:100%;
+z-index:99999999;
+}
+#Firebug .Resizer {
+-moz-user-select:none;
+background:transparent none repeat scroll 0 0;
+cursor:n-resize;
+height:5px;
+position:absolute;
+top:0;
+width:100%;
+}
+#Firebug .Header {
+background:#CCCCCC url(/windmill-serv/img/firebug.gif) repeat scroll 0 -85px;
+height:38px;
+}
+#Firebug .Left, #Firebug > .Right {
+background:#FFFFFF none repeat scroll 0 0;
+height:257px;
+overflow:hidden;
+}
+#Firebug .Left {
+float:left;
+width:100%;
+}
+#Firebug .Right {
+display:none;
+float:left;
+width:30%;
+}
+#Firebug .Right .Container {
+border-left:1px solid #CCCCCC;
+height:100%;
+}
+#Firebug .ButtonContainer {
+padding:8px 0 5px 10px;
+}
+#Firebug .ButtonContainer .Button {
+-x-system-font:none;
+border:1px solid transparent !important;
+color:#000000;
+cursor:pointer;
+font-family:"MS Sans Serif",Geneva,sans-serif;
+font-size:12px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+margin-right:5px;
+padding:4px;
+text-decoration:none;
+}
+#Firebug .ButtonContainer .Button:hover {
+border:1px outset #AAAAAA !important;
+}
+#Firebug .ButtonContainer .Button:active {
+background-color:#CCCCCC;
+border-style:inset !important;
+}
+#Firebug .ButtonContainer .Enabled {
+border:1px outset #AAAAAA !important;
+}
+#Firebug .ButtonContainer .Logo {
+background:transparent url(/windmill-serv/img/firebug.gif) no-repeat scroll 5px 3px;
+border:0 none !important;
+opacity:0.7;
+padding-left:24px;
+text-decoration:none;
+}
+#Firebug .ButtonContainer .Logo:hover, #Firebug .ButtonContainer .Logo:active {
+background-color:transparent;
+border:0 none !important;
+opacity:1;
+}
+#Firebug .ButtonContainer .Maximize, #Firebug .ButtonContainer .Minimize, #Firebug .ButtonContainer .Close {
+background:transparent url(/windmill-serv/img/firebug.gif) no-repeat scroll -3px -48px;
+border:0 none !important;
+opacity:0.7;
+padding:6px 8px 8px;
+position:absolute;
+right:0;
+top:12px;
+}
+#Firebug .ButtonContainer .Maximize:hover, #Firebug .ButtonContainer .Maximize:active, #Firebug .ButtonContainer .Minimize:hover, #Firebug .ButtonContainer .Minimize:active, #Firebug .ButtonContainer .Close:hover, #Firebug .ButtonContainer .Close:active {
+background-color:transparent;
+border:0 none !important;
+opacity:1;
+}
+#Firebug .ButtonContainer .Minimize {
+background-position:-3px -20px;
+right:20px;
+}
+#Firebug .ButtonContainer .Maximize {
+background-position:-3px -34px;
+display:none;
+right:20px;
+}
+#Firebug .ButtonContainer .ButtonSet {
+border-left:1px solid #CCCCCC;
+display:inline;
+padding:0 0 0 3px;
+}
+#Firebug .Nav {
+background:transparent url(/windmill-serv/img/firebug.gif) repeat-x scroll 0 -62px;
+height:23px;
+padding-left:10px;
+}
+#Firebug .Nav .Tab {
+-x-system-font:none;
+border:1px outset transparent !important;
+color:#666666;
+cursor:pointer;
+display:block;
+float:left;
+font-family:Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:bold;
+line-height:normal;
+padding:3px 6px 2px;
+width:auto;
+}
+#Firebug .Nav .Tab:hover, #Firebug .Nav .Selected {
+border-color:transparent #CCCCCC #CCCCCC !important;
+border-style:outset !important;
+border-width:1px !important;
+}
+#Firebug .Nav .Selected {
+background-color:#F2F2F2;
+color:#111111;
+cursor:default;
+}
+#FirebugBorderInspector {
+background:transparent none repeat scroll 0 0;
+border:2px solid #0000FF;
+display:none;
+left:0;
+margin:0;
+opacity:0.5;
+padding:0;
+position:absolute;
+top:0;
+z-index:99999998;
+}
+#FirebugBGInspector {
+background:#0096FF none repeat scroll 0 0;
+display:none;
+left:0;
+margin:0;
+opacity:0.5;
+padding:0;
+position:absolute;
+top:0;
+z-index:99999998;
+}
+#Firebug .DOMRow {
+width:100% !important;
+}
+#Firebug .DOMRow .DOMRowLeft {
+float:left;
+overflow:hidden;
+width:30%;
+}
+#Firebug .DOMRow .DOMRowLeft a {
+padding-left:15px;
+}
+#Firebug .DOMRow .DOMRowRight {
+float:left;
+white-space:nowrap;
+width:60%;
+}
+#Firebug .DOMRow .DOMRowLeft .Object {
+background:transparent url(/windmill-serv/img/tree_open.gif) no-repeat scroll left center;
+cursor:pointer;
+}
+#Firebug .DOMRow .DOMRowLeft .Object:hover {
+color:#0000FF;
+text-decoration:underline;
+}
+#Firebug .DOMRow .DOMRowLeft .Opened {
+background-image:url(/windmill-serv/img/tree_close.gif);
+}
+#Firebug .DOMRow .DOMRowSubContainer {
+display:none;
+padding-left:25px;
+}
+#Firebug .Left .Console {
+overflow:hidden;
+}
+#Firebug .Left .Console .Monitor {
+border-bottom:1px solid #CCCCCC;
+height:210px;
+overflow-x:hidden;
+overflow-y:scroll;
+}
+#Firebug .Left .Console .Monitor .Error {
+background:#FFEFF1 none repeat scroll 0 0;
+color:#FF0000;
+}
+#Firebug .Left .Console .Monitor .Error strong {
+color:#FF0000;
+}
+#Firebug .Left .Console .Monitor .Row {
+-x-system-font:none;
+border-bottom:1px solid #E5E5E5;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+overflow:hidden;
+padding:2px 5px;
+}
+#Firebug .Left .Console .Monitor .Arrow {
+color:#0000FF;
+white-space:nowrap;
+}
+#Firebug .Left .Console .InputArrow {
+-x-system-font:none;
+color:#0000FF;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:12px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+left:0;
+line-height:normal;
+padding:2px 4px 0;
+position:absolute;
+width:20px;
+}
+#Firebug .Left .Console .InputContainer {
+margin-left:35px;
+margin-right:5px;
+}
+#Firebug .Left .Console .Input {
+-x-system-font:none;
+border:0 none;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:12px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+margin-top:2px;
+overflow:hidden;
+width:100% !important;
+}
+#Firebug .Console .MLButton {
+background:transparent url(/windmill-serv/img/firebug.gif) no-repeat scroll -3px -34px;
+cursor:pointer;
+font-size:1px;
+opacity:0.8;
+padding:4px 10px 10px;
+position:absolute;
+right:-22px;
+top:276px;
+width:20px;
+}
+#Firebug .Console .MLButton:hover {
+opacity:1;
+}
+#Firebug .Console .CloseML {
+background-position:-3px -20px;
+}
+#Firebug .Right .Console {
+background:#EEEEEE none repeat scroll 0 0;
+}
+#Firebug .Right .Console .Input {
+-x-system-font:none;
+background:#FFFFFF none repeat scroll 0 0;
+border-color:-moz-use-text-color -moz-use-text-color #CCCCCC;
+border-style:none none solid;
+border-width:0 0 1px;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:12px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+height:228px;
+line-height:normal;
+margin-bottom:2px;
+width:100%;
+}
+#Firebug .Right .Console .Button {
+-x-system-font:none;
+background:#EEEEEE none repeat scroll 0 0;
+border:1px solid #EEEEEE;
+cursor:pointer;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:12px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+margin:0 4px;
+padding:1px 4px;
+text-decoration:none;
+}
+#Firebug .Right .Console .Button:hover {
+background:#FFFFFF none repeat scroll 0 0;
+border:1px outset #CCCCCC;
+}
+#Firebug .Right .Console .Button:active {
+background:#CCCCCC none repeat scroll 0 0;
+border:1px inset #CCCCCC;
+}
+#Firebug .Left .HTML {
+display:none;
+height:250px;
+overflow:scroll;
+padding-right:10px;
+}
+#Firebug .Left .HTML .Block {
+padding:0 0 0 10px;
+}
+#Firebug .Left .HTML .Block .Link {
+-x-system-font:none;
+color:#333333;
+cursor:pointer;
+display:block;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+padding:2px 2px 2px 12px;
+}
+#Firebug .Left .HTML .Block .ParentLink {
+background:#FFFFFF url(/windmill-serv/img/tree_open.gif) no-repeat scroll 2px center;
+color:#111111;
+font-weight:bold;
+text-decoration:none;
+}
+#Firebug .Left .HTML .Block .ParentLink:hover {
+text-decoration:underline;
+}
+#Firebug .Left .HTML .Block .Open {
+background-image:url(/windmill-serv/img/tree_close.gif);
+}
+#Firebug .Left .HTML .Block .Selected {
+background-color:#86ABD9;
+}
+#Firebug .Left .HTML .Block .Selected * {
+color:#FFFFFF;
+}
+#Firebug .Left .HTML .Block .SubContainer {
+padding-left:20px;
+}
+#Firebug .Right .HTML {
+display:none;
+}
+#Firebug .Right .HTML .Content {
+-x-system-font:none;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+height:235px;
+line-height:normal;
+overflow:scroll;
+}
+#Firebug .Right .HTML .Content .CSSItem {
+color:#333333;
+height:6px;
+padding:5px;
+}
+#Firebug .Right .HTML .Content .CSSProperty {
+float:left;
+overflow:hidden;
+width:45%;
+}
+#Firebug .Right .HTML .Content .CSSValue {
+float:left;
+overflow:visible !important;
+white-space:nowrap;
+width:55%;
+}
+#Firebug .Right .HTML .Content .CSSItem center {
+-x-system-font:none;
+color:#009600;
+font-family:Arial,Helvetica,sans-serif;
+font-size:12px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:bold;
+line-height:normal;
+padding:0 0 3px;
+}
+#Firebug .ButtonContainer .HTML {
+display:none;
+}
+#Firebug .Left .CSS {
+-x-system-font:none;
+display:none;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+height:225px;
+line-height:normal;
+overflow:scroll;
+padding:5px;
+}
+#Firebug .Right .CSS {
+display:none;
+}
+#Firebug .Left .CSS .Selector {
+margin-top:10px;
+}
+#Firebug .Left .CSS .CSSText {
+padding-left:20px;
+}
+#Firebug .Left .CSS .CSSProperty {
+color:#005500;
+margin-top:10px;
+}
+#Firebug .Left .CSS .CSSValue {
+color:#000088;
+padding-left:5px;
+}
+#Firebug .ButtonContainer .CSS {
+display:none;
+}
+#Firebug .Right .CSS {
+background:#EEEEEE none repeat scroll 0 0;
+}
+#Firebug .Right .CSS .Input {
+-x-system-font:none;
+background:#FFFFFF none repeat scroll 0 0;
+border-color:-moz-use-text-color -moz-use-text-color #CCCCCC;
+border-style:none none solid;
+border-width:0 0 1px;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:12px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+height:205px;
+line-height:normal;
+margin-bottom:2px;
+width:100%;
+}
+#Firebug .Right .CSS .Button {
+-x-system-font:none;
+background:#EEEEEE none repeat scroll 0 0;
+border:1px solid #EEEEEE;
+cursor:pointer;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:12px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+margin:0 4px;
+padding:1px 4px;
+text-decoration:none;
+}
+#Firebug .Right .CSS .Button:hover {
+background:#FFFFFF none repeat scroll 0 0;
+border:1px outset #CCCCCC;
+}
+#Firebug .Right .CSS .Button:active {
+background:#CCCCCC none repeat scroll 0 0;
+border:1px inset #CCCCCC;
+}
+#Firebug .Left .Scripts {
+-x-system-font:none;
+display:none;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:12px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+height:225px;
+line-height:normal;
+overflow:scroll;
+}
+#Firebug .Left .Scripts .LineNumber {
+background:#EEEEEE none repeat scroll 0 0;
+border-right:1px solid #CCCCCC;
+color:#666666;
+float:left;
+font-family:Courier;
+height:20px;
+padding:0 2px 0 0;
+text-align:right;
+width:30px;
+}
+#Firebug .Left .Scripts .CodeContainer {
+padding:5px;
+}
+#Firebug .Left .Scripts .Code {
+height:20px;
+}
+#Firebug .Left .Scripts .CodeContainer, #Firebug .Left .Scripts .Code {
+white-space:nowrap;
+}
+#Firebug .Right .Scripts {
+display:none;
+}
+#Firebug .ButtonContainer .Scripts {
+display:none;
+}
+#Firebug .Left .DOM {
+-x-system-font:none;
+display:none;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+height:225px;
+line-height:normal;
+overflow:scroll;
+padding:5px;
+}
+#Firebug .Left .DOM .Object {
+font-weight:bold;
+}
+#Firebug .Right .DOM {
+display:none;
+overflow:scroll;
+}
+#Firebug .ButtonContainer .DOM {
+display:none;
+}
+#Firebug .ButtonContainer .DOM label {
+-x-system-font:none;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+}
+#Firebug .Left .XHR {
+-x-system-font:none;
+display:none;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+height:225px;
+line-height:normal;
+overflow:scroll;
+padding:5px;
+}
+#Firebug .Left .XHR .Block {
+float:left;
+width:30%;
+}
+#Firebug .Left .XHR .BlockContent {
+border-right:1px dotted #AAAAAA;
+padding:3px;
+}
+#Firebug .Left .XHR .Block strong {
+background:#C8E1FF none repeat scroll 0 0;
+color:#323232;
+display:block;
+padding:3px;
+text-align:center;
+}
+#Firebug .Left .XHR .Block span {
+display:block;
+overflow:hidden;
+text-align:center;
+}
+#Firebug .Left .XHR .Block span a {
+color:#0000C8;
+cursor:pointer;
+}
+#Firebug .Right .XHR {
+display:none;
+overflow:scroll;
+}
+#Firebug .ButtonContainer .XHR {
+display:none;
+}
+#Firebug .ButtonContainer .XHR label {
+-x-system-font:none;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+}
+#Firebug .Left .STR {
+-x-system-font:none;
+display:none;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+height:225px;
+line-height:normal;
+overflow:scroll;
+padding:5px;
+}
+#Firebug .Italic {
+font-style:italic;
+}
+#Firebug .Strong {
+font-weight:bold;
+}
+#Firebug .NormalWeight {
+font-weight:normal;
+}
+#Firebug .Green {
+color:#008800;
+}
+#Firebug .Gray {
+color:#666666;
+}
+#Firebug .Blue {
+color:#0000EE;
+}
+#Firebug .DarkBlue {
+color:#000099;
+}
+#Firebug .Red {
+color:#EE0000;
+}
+#Firebug .Null {
+-x-system-font:none;
+background:#999999 none repeat scroll 0 0;
+border:1px solid #666666;
+color:#FFFFFF;
+font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+padding:0 2px;
+}
+#Firebug .ObjectLink, #Firebug .ObjectLinkHover {
+cursor:pointer;
+}
+#Firebug .ObjectLinkHover {
+border-bottom:1px solid #008800;
+}
