@@ -73,7 +73,6 @@ class Safari(object):
 	
 	def __init__(self):
 	    self.netsetup_binary = windmill.settings['NETWORKSETUP_BINARY']
-	    self.safari_binary = windmill.settings['SAFARI_BINARY']
 	    self.test_url = windmill.settings['TEST_URL']
 	
 	def create_redirect(self):
@@ -85,6 +84,7 @@ class Safari(object):
 	    
 	def set_proxy_mac(self):
 	    """Set local Proxy"""
+	    self.safari_binary = windmill.settings['SAFARI_BINARY']
 	    interface_name = find_default_interface_name()
 	    uri = urlparse.urlparse(self.test_url)
 	    set_proxy_command = ' '.join([ self.netsetup_binary, 
