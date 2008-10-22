@@ -34,6 +34,18 @@ a:hover {
 	overflow: auto;
 }
 
+.suite {
+  overflow:hidden;
+  border-bottom:1px solid black;
+  position:relative;
+}
+
+.suiteHeader {
+  padding:2px;
+  width:100%;
+  font-size:12px;
+}
+
 .action {
   position:relative;
   border-top: 1px solid #aaa;

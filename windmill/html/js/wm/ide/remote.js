@@ -171,32 +171,28 @@ windmill.ui.remote = new function() {
     this.getSuite = function(suiteName) {
 
         if (!suiteName) {
-            var suiteName = 'recordingSuite' + windmill.ui.recordSuiteNum;
+          var suiteName = 'recordingSuite' + windmill.ui.recordSuiteNum;
         }
 
         var suite = $(suiteName);
         if (suite == null) {
             var ide = $('ideForm');
             suite = document.createElement('div');
-            suite.style.position = 'relative';
+            suite.className = "suite";
             suite.id = suiteName;
 
             if (windmill.browser.isIE) {
                 var vWidth = fleegix.dom.getViewportWidth();
                 suite.style.width = (vWidth - 22) + 'px';
-
             }
-            else {
-                suite.style.width = "100%";
-            }
-            // suite.style.background = "#33CC99";
-            suite.style.overflow = 'hidden';
-            //suite.style.height='40px';
-            //suite.style.borderTop = '1px solid black';
-            suite.style.borderBottom = '1px solid black';
-
-            suite.innerHTML = "<table id='"+suiteName+"Header' style='padding:2px;width:100%;font-size:12px;'><tr><td><strong>Suite </strong>" + suiteName + 
-            "</td><td><span align=\"right\" style='top:0px;float:right;'><a href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
+            else { suite.style.width = "100%"; }
+            
+            suite.innerHTML = "<table id='"+suiteName+"Header'"+
+            "onmouseover=\"jQuery('.suite').sortable('disable');\"" +
+            "onmouseout=\"jQuery('.suite').sortable('enable');\"" + 
+            "class='suiteHeader'><tr><td><strong>Suite </strong>" + suiteName + 
+            "</td><td><span align=\"right\" style='top:0px;float:right;'>"+
+            "<a href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
             "\')\">[play]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'" + suiteName + 
             "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'" + suiteName + 
             "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.ui.toggleCollapse(\'" + suiteName + 
@@ -204,13 +200,17 @@ windmill.ui.remote = new function() {
 
             //Append the new suite to the IDE
             $('ideForm').appendChild(suite);
-
+            //Make the suites and actions draggable
+            jQuery(suite).sortable({revert:true});
+            jQuery($('ideForm')).sortable({revert:true});
+            
             try {
-                var h = $(suite.id).previousSibling.style.height;
-                //If the last suite is expanded, collapse it
-                if (h != '18px') { windmill.ui.toggleCollapse($(suite.id).previousSibling.id); }
+              var h = $(suite.id).previousSibling.style.height;
+              //If the last suite is expanded, collapse it
+              if (h != '18px') { 
+                windmill.ui.toggleCollapse($(suite.id).previousSibling.id); 
+              }
             } catch(err) { }
-
         }
         return suite;
 
