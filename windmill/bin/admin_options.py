@@ -155,7 +155,7 @@ class Firebug(GeneralBoolSettingToTrue):
     option_names = (None, 'firebug')    
     setting = "INSTALL_FIREBUG"
     
-class NoCompress(GeneralBoolSettingToFalse):
+class NoCompress(GeneralBoolSettingToTrue):
     """Do not compress windmill javascript files."""
     option_names = (None, 'nocompress')
     setting = "DISABLE_JS_COMPRESS"
