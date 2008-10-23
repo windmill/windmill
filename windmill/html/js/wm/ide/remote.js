@@ -167,7 +167,23 @@ windmill.ui.remote = new function() {
         catch(err){alert('Please enter valid JSON');}
       }
     }
-
+    
+    //Update all the required DOM to rename the suite
+    this.updateSuite = function(suiteName){
+      var newSN = prompt("New Suite Name?", "test_");
+      if ((!newSN) || (newSN == "")){
+        return;
+      }
+      //make sure it's a legit suite name
+      newSN = newSN.replace(" ", "_");
+      var oldSuite = $(suiteName);  
+      oldSuite.id = newSN;
+      
+      //change all of the old suite names
+      var re = new RegExp(suiteName, "g");
+      jQuery(oldSuite).html(oldSuite.innerHTML.replace(re, newSN));
+    };
+    
     this.getSuite = function(suiteName) {
 
         if (!suiteName) {
@@ -182,14 +198,13 @@ windmill.ui.remote = new function() {
             suite.id = suiteName;
 
             if (windmill.browser.isIE) {
-                var vWidth = fleegix.dom.getViewportWidth();
-                suite.style.width = (vWidth - 22) + 'px';
+              var vWidth = fleegix.dom.getViewportWidth();
+              suite.style.width = (vWidth - 22) + 'px';
             }
             else { suite.style.width = "100%"; }
-            
             suite.innerHTML = "<table id='"+suiteName+"Header'"+
-            "class='suiteHeader'><tr><td id='"+suiteName+"Title'><strong>Suite </strong>" + suiteName + 
-            "</td><td><span align=\"right\" style='top:0px;float:right;'>"+
+            "class='suiteHeader'><tr><td id='"+suiteName+"Title' onclick=\"windmill.ui.remote.updateSuite(\'"+suiteName+"\');\"><strong>Suite </strong>" + suiteName + 
+            "</td><td><span id='"+suiteName+"Links' align=\"right\" style='top:0px;float:right;'>"+
             "<a href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
             "\')\">[play]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'" + suiteName + 
             "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'" + suiteName + 

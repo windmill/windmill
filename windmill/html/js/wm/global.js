@@ -164,7 +164,7 @@ var openFirebug = function(){
   	windmill.testWin().document.body.insertBefore(fbCSS, windmill.testWin().document.body.childNodes[0]);
   	
     var piScript = windmill.testWin().document.createElement('script');
-    piScript.src = "windmill-serv/js/lib/pi.js"
+    piScript.src = "windmill-serv/js/lib/firebug/pi.js"
     var fbScript = windmill.testWin().document.createElement('script');
     fbScript.src = "windmill-serv/js/lib/firebug/firebug-lite.js";
     windmill.testWin().document.body.insertBefore(piScript, windmill.testWin().document.body.childNodes[0]);
