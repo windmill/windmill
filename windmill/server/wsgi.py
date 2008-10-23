@@ -104,8 +104,8 @@ class WindmillCompressor(object):
     js_file_list = [
         ('lib', 'fleegix.js',),
         ('lib', 'hash.js',),
-        ('lib', 'pi.js',),
-        ('lib', 'firebug-lite.js',),
+        ('lib', 'firebug', 'pi.js',),
+        ('lib', 'firebug', 'firebug-lite.js',),
         ('lib', 'json2.js',),
         ('lib', 'browserdetect.js',),
         ('wm', 'windmill.js',),

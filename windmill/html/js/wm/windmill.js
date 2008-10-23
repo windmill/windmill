@@ -144,6 +144,7 @@ var windmill = new function() {
     
     this.setEnv = function(){
       jQuery("#loadMessage").html("Setting document.domain environment...");
+      incProgressBar();
       
       var arr = window.location.hostname.split('.');
        if (arr.length > 2){
@@ -186,16 +187,20 @@ var windmill = new function() {
     
     this.start = function() {
         jQuery("#loadMessage").html("Setting URL and Building Asserts..");
+        incProgressBar();
       
         windmill.service.setStartURL();
         windmill.service.buildNotAsserts();
         jQuery("#loadMessage").html("Building UI..");
+        incProgressBar();
         
         this.setupMenu();
         //this.setEnv();
         this.remoteLoaded = true;
         
-        jQuery("#loadMessage").html("Starting Windmill Communication Loop...");        
+        jQuery("#loadMessage").html("Starting Windmill Communication Loop...");
+        incProgressBar();
+             
         windmill.continueLoop();
         busyOff();
     };

@@ -8,6 +8,7 @@
   var url = 'js/controller/mozController.js';
 
   jQuery("#loadMessage").html("Determining your Browser...");
+  incProgressBar();
   
 	if (browser.isIE){
 		url = 'js/controller/ieController.js';
@@ -20,6 +21,7 @@
 	}
   
   jQuery("#loadMessage").html("Downloading Browser Specific JS...");
+  incProgressBar();
   
   var ctrlScriptTag = document.createElement('script');
   ctrlScriptTag.src = url;

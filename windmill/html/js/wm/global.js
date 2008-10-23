@@ -115,7 +115,7 @@ var busyOn = function(){
   $('cover').style.display = "block";
 }
 var busyOff = function(){
-  jQuery("#loadMessage").html("Please wait, (Doing Stuff)...");        
+  jQuery("#loadMessage").html("Please wait, (Doing Stuff)...");
   $('actionDD').style.visibility = "visible";
   $('cover').style.display = "none";
 }
@@ -166,7 +166,7 @@ var openFirebug = function(){
     var piScript = windmill.testWin().document.createElement('script');
     piScript.src = "windmill-serv/js/lib/pi.js"
     var fbScript = windmill.testWin().document.createElement('script');
-    fbScript.src = "windmill-serv/js/lib/firebug-lite.js";
+    fbScript.src = "windmill-serv/js/lib/firebug/firebug-lite.js";
     windmill.testWin().document.body.insertBefore(piScript, windmill.testWin().document.body.childNodes[0]);
     windmill.testWin().document.body.insertBefore(fbScript, windmill.testWin().document.body.childNodes[0]);
     setTimeout('windmill.testWin().firebug.init();windmill.testWin().firebug.win.maximize()', 1000);

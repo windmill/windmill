@@ -8,13 +8,13 @@
 	<link rel="stylesheet" type="text/css" href="css/windmill.css"/>
 	<link rel="stylesheet" type="text/css" href="css/jquery.css"/>
 	
-	<script type='text/javascript' src='js/lib/jquery-1.2.6.pack.js'></script>	
+	<script type='text/javascript' src='js/lib/jquery/jquery-1.2.6.pack.js'></script>	
 	<script type="text/javascript" charset="utf-8">
 	  jQuery.noConflict();
 	</script>
-	<script type='text/javascript' src='js/lib/jquery-ui-wm-1.6b.min.js'></script>
+	<script type='text/javascript' src='js/lib/jquery/jquery-ui-wm-1.6b.min.js'></script>
+	<script type='text/javascript' src='js/lib/jquery/ui.progressbar.js'></script>
 		<script type="text/javascript">
-		  
 			jQuery(function(){
 			  //tabs
         jQuery('#tabs ul').tabs();
@@ -28,16 +28,18 @@
 		
 <body>
   <div id="cover">
-    <div style="top:35%;left:20%;position:absolute;">
+    <div style="top:35%;left:10%;position:absolute;width:70%">
       <center><div style="font-weight:bold;font-size:14px;" id="loadMessage">Starting Up..</div></center><br>
-      <center><img src="img/loading.gif"></center>
+      <center><img src="img/loading.gif"</center>
     </div>
   </div>
   <div id="main">
-	  <img id="icon" src="img/wmIcon.png" alt="Welcome to Windmill!">
-	  <div id="runningStatus" align="center">
-	    <br><br><br><br><br><br>
-	    <h2>Loading, Please Wait...</h2>
+    <div style="height:40px;"></div>
+	  <img style="left:1px;top:1px;position:absolute;" id="icon" src="img/wmIcon.png" alt="Welcome to Windmill!">
+	  <div id="runningStatus" align="center" style="width:70%">
+	    <br><br><br><br>
+	    <center><h2>Loading, Please Wait...</h2></center>
+	    <center><div id="progressbar"></div></center>
 	  </div>
 	
 	  <div id="controllers">
@@ -186,6 +188,22 @@
 
 </body>
 <script type="text/javascript">
+  
+  //function to increment the progress bar if we aren't in IE
+  incProgressBar = function(){
+    if (typeof progress == "undefined"){
+      progress = 10;
+    }
+    else{
+      progress = progress + 10;
+    }
+    if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent) != true){
+      jQuery("#progressbar").progressbar();
+      jQuery("#progressbar").progressbar("progress", progress);
+    }
+  }
+  
+  //define the path to try to pull the compressed JS from
   var path = "/windmill-compressor/windmill.js";
   
   //use document.write to include all the non cooked files
@@ -198,8 +216,8 @@
     var scriptsArr = [];
     scriptsArr.push('js/lib/fleegix.js')
     scriptsArr.push('js/lib/hash.js')
-    scriptsArr.push('js/lib/pi.js')
-    scriptsArr.push('js/lib/firebug-lite.js')
+    scriptsArr.push('js/lib/firebug/pi.js')
+    scriptsArr.push('js/lib/firebug/firebug-lite.js')
     if (!/Opera[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
       scriptsArr.push('js/lib/json2.js')
     }
@@ -238,8 +256,8 @@
       document.body.appendChild(scriptTag);
     }      
   }
-  
   jQuery("#loadMessage").html("Downloading JavaScript Source...");
+  incProgressBar();
   
   if (/Opera[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
     noFile();
