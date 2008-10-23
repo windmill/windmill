@@ -173,7 +173,7 @@ def make_windmill_server(http_port=None, js_path=None, compression_enabled=None)
     if js_path is None:
         js_path = windmill.settings['JS_PATH']
     if compression_enabled is None:
-        compression_enabled = windmill.settings['COMPRESS_JS']
+        compression_enabled = not windmill.settings['DISABLE_JS_COMPRESS']
         
     # Start up all the convergence objects    
     import convergence
