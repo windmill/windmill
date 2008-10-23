@@ -170,7 +170,7 @@ windmill.ui.remote = new function() {
     
     //Update all the required DOM to rename the suite
     this.updateSuite = function(suiteName){
-      var newSN = prompt("New Suite Name?", "test_");
+      var newSN = prompt("New Suite Name?");
       if ((!newSN) || (newSN == "")){
         return;
       }
