@@ -188,8 +188,6 @@ windmill.ui.remote = new function() {
             else { suite.style.width = "100%"; }
             
             suite.innerHTML = "<table id='"+suiteName+"Header'"+
-            "onmouseover=\"jQuery('.suite').sortable('disable');\"" +
-            "onmouseout=\"jQuery('.suite').sortable('enable');\"" + 
             "class='suiteHeader'><tr><td><strong>Suite </strong>" + suiteName + 
             "</td><td><span align=\"right\" style='top:0px;float:right;'>"+
             "<a href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
@@ -202,10 +200,8 @@ windmill.ui.remote = new function() {
             $('ideForm').appendChild(suite);
             
             //Make the suites and actions draggable
-            jQuery(suite).sortable({revert:true});
-            if (!windmill.browser.isIE){
-              jQuery($('ideForm')).sortable({revert:true});
-            }
+            jQuery(suite).sortable({revert:true, items: "div", axis: "y"});
+            jQuery($('ideForm')).sortable({revert:true});
             
             //minimize the last suite
             try {
