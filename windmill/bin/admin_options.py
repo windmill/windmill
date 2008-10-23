@@ -158,7 +158,7 @@ class Firebug(GeneralBoolSettingToTrue):
 class NoCompress(GeneralBoolSettingToFalse):
     """Do not compress windmill javascript files."""
     option_names = (None, 'nocompress')
-    setting = "COMPRESS_JS"
+    setting = "DISABLE_JS_COMPRESS"
     
 class Port(object):
     """Set port for windmill to run. Default is 4444."""
