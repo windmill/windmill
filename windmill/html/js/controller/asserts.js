@@ -105,115 +105,95 @@ windmill.controller.asserts.assertRegistry = {
 //To make it more thorough it needs recursion to be implemented later
 windmill.controller.asserts.assertText = function (param_object) {
 
-  var n = windmill.controller._lookupDispatch(param_object);
+  var n = lookupNode(param_object);
   var validator = param_object.validator;
-  try{
-    if (n.innerHTML.indexOf(validator) != -1){
-      return true;
-    }
-    if (n.hasChildNodes()){
-      for(var m = n.firstChild; m != null; m = m.nextSibling) {
-	      if (m.innerHTML.indexOf(validator) != -1){
-	        return true;
-	      }
-	      if (m.value.indexOf(validator) != -1){
-	        return true;
-	      }
+  if (n.innerHTML.indexOf(validator) != -1){
+    return true;
+  }
+  if (n.hasChildNodes()){
+    for(var m = n.firstChild; m != null; m = m.nextSibling) {
+      if (m.innerHTML.indexOf(validator) != -1){
+        return true;
+      }
+      if (m.value.indexOf(validator) != -1){
+        return true;
       }
     }
   }
-  catch(error){
-    return false;
-  }
-  return false;
+  throw "Text not found, neither" + m.innerHTML + " nor " + m.value + " contained " + validator;
 };
 
 //Assert that a specified node exists
 windmill.controller.asserts.assertNode = function (param_object) {
-  var element = windmill.controller._lookupDispatch(param_object);
-  if (!element){
-    return false;
-  }
-  return true;
+  var element = lookupNode(param_object);
 };
 
 //Assert that a form element contains the expected value
 windmill.controller.asserts.assertValue = function (param_object) {
-  var n = windmill.controller._lookupDispatch(param_object);
+  var n = lookupNode(param_object);
   var validator = param_object.validator;
 
-  if (n.value.indexOf(validator) != -1){
-    return true;
+  if (n.value.indexOf(validator) == -1){
+    throw "Value not found, "+ n.value + "not equal to "+ validator;
   }
-  return false;
+  
 };
 
 //Assert that a provided value is selected in a select element
 windmill.controller.asserts.assertJS = function (param_object) {
   var js = param_object.js;
   var result = eval(js);
-  return result;
 };
 
 //Asserting javascript with an element object available
 windmill.controller.asserts.assertElemJS = function (param_object) {
-  var element = windmill.controller._lookupDispatch(param_object);
-  if (!element){ return false; }
+  var element = lookupNode(param_object);
   var js = param_object.js;
   var result = eval(js);
-  return result;
 };
 
 //Assert that a provided value is selected in a select element
 windmill.controller.asserts.assertSelected = function (param_object) {
-  var n = windmill.controller._lookupDispatch(param_object);
+  var n = lookupNode(param_object);
   var validator = param_object.validator;
 
-  if (n.options[n.selectedIndex].value == validator){
-    return true;
+  if ((n.options[n.selectedIndex].value != validator) && (n.options[n.selectedIndex].innerHTML != validator)){
+    throw "Not selected, "+n.options[n.selectedIndex].value+" is not equal to " + validator;
   }
-  return false;
 };
 
 //Assert that a provided checkbox is checked
 windmill.controller.asserts.assertChecked = function (param_object) {
-  var n = windmill.controller._lookupDispatch(param_object);
+  var n = lookupNode(param_object);
 
-  if (n.checked == true){
-    return true;
+  if (!n.checked){
+    throw "Checked property not true";
   }
-  return false;
 };
 
 // Assert that a an element's property is a particular value
 windmill.controller.asserts.assertProperty = function (param_object) {
-  var element = windmill.controller._lookupDispatch(param_object);
-  if (!element){
-    return false;
-  }
+  var element = lookupNode(param_object);
   var vArray = param_object.validator.split('|');
   var value = eval ('element.' + vArray[0]+';');
-  var res = false;
-  try {
-    if (value.indexOf(vArray[1]) != -1){
-      res = true;
-    }
-  }
-  catch(err){
+  
+  if (value.indexOf(vArray[1]) != -1){
+    return true;
   }
   if (String(value) == String(vArray[1])) {
-    res = true;
+    return true;
   }
-  return res;
+  
+  throw "Property did not match."
 };
 
 // Assert that a specified image has actually loaded
 // The Safari workaround results in additional requests
 // for broken images (in Safari only) but works reliably
 windmill.controller.asserts.assertImageLoaded = function (param_object) {
-  var img = windmill.controller._lookupDispatch(param_object);
+  var img = lookupNode(param_object);
   if (!img || img.tagName != 'IMG') {
-    return false;
+    throw "The node was not an image."
   }
   var comp = img.complete;
   var ret = null; // Return value
@@ -234,12 +214,12 @@ windmill.controller.asserts.assertImageLoaded = function (param_object) {
   // False -- Img failed to load in IE/Safari, or is
   // still trying to load in FF
   if (comp === false) {
-    ret = false;
+    throw "Image complete attrib false."
   }
   // True, but image has no size -- image failed to
   // load in FF
   else if (comp === true && img.naturalWidth == 0) {
-    ret = false;
+    throw "Image has no size, failure to load."
   }
   // Otherwise all we can do is assume everything's
   // hunky-dory

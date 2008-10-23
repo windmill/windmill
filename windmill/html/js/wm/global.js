@@ -26,6 +26,90 @@ var json_call = function(version, method, params) {
     this.params = params || [];
 };
 
+
+//Translates from the way we are passing objects to functions to the lookups
+var lookupNode = function (param_object){
+  var s = null;
+  var element = null;
+  //If a link was passed, lookup as link
+  if(typeof param_object.link != "undefined") {
+    s = 'Looking up link '+ param_object.link;
+    element = elementslib.Element.LINK(param_object.link);
+  }
+  //if xpath was passed, lookup as xpath
+  if(typeof param_object.xpath != "undefined") {
+    s = 'Looking up xpath '+ param_object.xpath;        
+    element = elementslib.Element.XPATH(param_object.xpath);
+  }
+  //if id was passed, do as such
+  if(typeof param_object.id != "undefined") {
+    s = 'Looking up id '+ param_object.id;
+    element = elementslib.Element.ID(param_object.id);
+  }
+  //if jsid was passed
+  if(typeof param_object.jsid != "undefined") {
+    //Here if the user hasn't specified the test window scope
+    //we use the default and prepend it, else we eval whatever js they passed
+    var jsid; 
+    if ((param_object.jsid.indexOf('windmill.testWindow') != -1) || (param_object.jsid.indexOf('_w') != -1)){
+      eval ("jsid=" + param_object.jsid + ";");
+    }
+    else{
+      eval ("jsid=" + this._getWindowStr() + '.' +param_object.jsid + ";");
+    }
+      s = 'Looking up jsid '+ jsid;
+      element = elementslib.Element.ID(param_object.id);
+  }
+  //if name was passed
+  if(typeof param_object.name != "undefined") {
+    s = 'Looking up name '+ param_object.name;
+    element = elementslib.Element.NAME(param_object.name);
+  }
+  //if name was passed
+  if(typeof param_object.value != "undefined") {
+    s = 'Looking up value '+ param_object.value;
+    element = elementslib.Element.VALUE(param_object.value);
+  }
+  //if name was passed
+  if(typeof param_object.classname != "undefined") {
+    s = 'Looking up classname '+ param_object.classname;
+    element = elementslib.Element.CLASSNAME(param_object.classname);
+  }
+  //if name was passed
+  if(typeof param_object.tagname != "undefined") {
+    s = 'Looking up tagname '+ param_object.tagname;
+    element = elementslib.Element.TAGNAME(param_object.tagname);
+  }
+  
+  //write out the results to the ide
+  windmill.out(s);
+  //scroll so that the element is in view
+  if (element) { 
+    element.scrollIntoView(); 
+    return element;
+  }
+  else { throw s + ", failed."; }
+};
+
+//Function to handle the random keyword scenario
+var handleVariable = function (val){
+  var ret = val;
+  var matches = val.match(/{\$[^}]*}/g);
+  if (matches) {
+    for (var i = 0; i < matches.length; i++){
+      var m = matches[i];
+      if (windmill.varRegistry.hasKey(m)){
+        ret = val.replace(m, windmill.varRegistry.getByKey(m));
+      }
+      //if it doesn't exist and contains the string random we create it (username or pass etc)
+      else if (m.indexOf('random') != -1){
+        ret = val.replace(m, windmill.varRegistry.addItemCreateValue(m));
+      }
+    }
+  }
+  return ret;
+};
+
 var busyOn = function(){
   $('actionDD').style.visibility = "hidden";
   $('cover').style.display = "block";
@@ -114,7 +198,7 @@ var toggleRec = function() {
 var togglePlay = function() {
     if ($('playback').src.indexOf("img/playback.png") != -1) {
         windmill.stat("Playing IDE Actions...");
-        windmill.controller.continueLoop();
+        windmill.continueLoop();
         windmill.ui.playback.sendPlayBack();
         $('playback').src = 'img/playbackstop.png';
 
@@ -129,11 +213,11 @@ var togglePlay = function() {
 var toggleLoop = function() {
     if ($('loopLink').innerHTML.indexOf('Pause') != -1) {
         $('loopLink').innerHTML = 'Resume Service Loop';
-        windmill.controller.stopLoop();
+        windmill.pauseLoop();
     }
     else {
         $('loopLink').innerHTML = 'Pause Service Loop';
-        windmill.controller.continueLoop();
+        windmill.continueLoop();
     }
 
 }

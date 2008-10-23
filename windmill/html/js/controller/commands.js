@@ -187,7 +187,7 @@ windmill.controller.commands.jsTests = function (paramObj) {
       throw new Error('No JavaScript tests to run.');
     }
     var _j = windmill.jsTest;
-    windmill.controller.stopLoop();
+    windmill.pauseLoop();
     
     //Timing the suite
     var jsSuiteSummary = new TimeObj();
@@ -225,7 +225,7 @@ windmill.controller.commands.jsTestResults = function () {
   var method = 'JS Test Suite Completion';
   windmill.jsTest.sendJSReport(method, result, null, jsSuiteSummary);
   // Fire the polling loop back up
-  windmill.controller.continueLoop();
+  windmill.continueLoop();
 
 };
 

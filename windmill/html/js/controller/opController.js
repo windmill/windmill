@@ -19,116 +19,86 @@ Copyright 2006-2007, Open Source Applications Foundation
 windmill.controller.what = function() {
   alert('Internet Explorer');
 }
-
-/**
- * In IE, getElementById() also searches by name - this is an optimisation for IE.
- */
-windmill.controller.locateElementByIdentifer = function(identifier, inDocument, inWindow) {
-  return inDocument.getElementById(identifier);
-};
   
 windmill.controller.click = function(param_object){        
-    var element = this._lookupDispatch(param_object);
-    if (!element){ return false; }
-    windmill.events.triggerEvent(element, 'focus', false);
+  var element = lookupNode(param_object);
+  windmill.events.triggerEvent(element, 'focus', false);
 
-    // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-    try {windmill.events.triggerMouseEvent(element, 'mousedown', true); } catch(err){}
-    try {windmill.events.triggerMouseEvent(element, 'mouseup', true); } catch(err){}
-    try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}
-  
-   return true;
+  // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
+  try {windmill.events.triggerMouseEvent(element, 'mousedown', true); } catch(err){}
+  try {windmill.events.triggerMouseEvent(element, 'mouseup', true); } catch(err){}
+  try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}
 };
   
 //Sometimes opera requires that you manually toggle it
 windmill.controller.check = function(param_object){
   //return windmill.controller.click(param_object);
-   var element = this._lookupDispatch(param_object);
-    if (!element){ return false; }
-    windmill.events.triggerEvent(element, 'focus', false);
+  var element = lookupNode(param_object);
+  windmill.events.triggerEvent(element, 'focus', false);
 
+  var state = element.checked;
+  // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
+  try {windmill.events.triggerMouseEvent(element, 'mousedown', true); } catch(err){}
+  try {windmill.events.triggerMouseEvent(element, 'mouseup', true); } catch(err){}
+  try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}
 
-    var state = element.checked;
-    // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-    try {windmill.events.triggerMouseEvent(element, 'mousedown', true); } catch(err){}
-    try {windmill.events.triggerMouseEvent(element, 'mouseup', true); } catch(err){}
-    try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}
-
-    //if the event firing didn't toggle the checkbox, do it directly
-    if (element.checked == state){
-      if (element.checked){
-        element.checked = false;
-      }
-      else {
-        element.checked = true;
-      }
+  //if the event firing didn't toggle the checkbox, do it directly
+  if (element.checked == state){
+    if (element.checked){
+      element.checked = false;
     }
-
-    return true;
-}
+    else {
+      element.checked = true;
+    }
+  }
+};
 
 //Radio buttons are even WIERDER in safari, not breaking in FF
 windmill.controller.radio = function(param_object){
-    //var element = this._lookupDispatch(param_object);
-    return windmill.controller.click(param_object);
-}
+  return windmill.controller.click(param_object);
+};
   
 //double click for ie
 windmill.controller.doubleClick = function(param_object){      
-   var element = this._lookupDispatch(param_object);
-   if (!element){
-     return false;
-   }
-   windmill.events.triggerEvent(element, 'focus', false);
-
-     // Trigger the mouse event.
-     //windmill.events.triggerMouseEvent(element, 'dblclick', true, clientX, clientY);
-     windmill.events.triggerMouseEvent(element, 'dblclick', true);   
-   /* if (this.windowClosed()) {
-         return;
-     }*/
-     windmill.events.triggerEvent(element, 'blur', false);       
-  return true;
+  var element = lookupNode(param_object);
+  windmill.events.triggerEvent(element, 'focus', false);
+  windmill.events.triggerMouseEvent(element, 'dblclick', true);   
+  windmill.events.triggerEvent(element, 'blur', false);       
 };
 
 //Type Function
- windmill.controller.type = function (param_object){
+windmill.controller.type = function (param_object){
+  var element = lookupNode(param_object);
+  //clear the box
+  element.value = '';
+  //Get the focus on to the item to be typed in, or selected
+  windmill.events.triggerEvent(element, 'focus', false);
+  windmill.events.triggerEvent(element, 'select', true);
 
-   var element = this._lookupDispatch(param_object);
-   if (!element){
-     return false;
+  //Make sure text fits in the textbox
+  var maxLengthAttr = element.getAttribute("maxLength");
+  var actualValue = param_object.text;
+  var stringValue = param_object.text;
+
+  if (maxLengthAttr != null) {
+   var maxLength = parseInt(maxLengthAttr);
+   if (stringValue.length > maxLength) {
+     //truncate it to fit
+     actualValue = stringValue.substr(0, maxLength);
    }
-   //clear the box
-   element.value = '';
-   //Get the focus on to the item to be typed in, or selected
-   windmill.events.triggerEvent(element, 'focus', false);
-   windmill.events.triggerEvent(element, 'select', true);
-    
-   //Make sure text fits in the textbox
-   var maxLengthAttr = element.getAttribute("maxLength");
-   var actualValue = param_object.text;
-   var stringValue = param_object.text;
-    
-   if (maxLengthAttr != null) {
-     var maxLength = parseInt(maxLengthAttr);
-     if (stringValue.length > maxLength) {
-       //truncate it to fit
-       actualValue = stringValue.substr(0, maxLength);
-     }
-   }
-   
-   var s = actualValue;
-   for (var c = 0; c < s.length; c++){
-     element.value += s.charAt(c);
-     windmill.events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
-     windmill.events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false); 
-     windmill.events.triggerKeyEvent(element, 'keyup', s.charAt(c), true, false,false, false,false);
-   }
-    
-   // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
-   //Another wierd chrome thing?
-   windmill.events.triggerEvent(element, 'change', true);
-    
-   return true;
- };
+  }
+
+  var s = actualValue;
+  for (var c = 0; c < s.length; c++){
+   element.value += s.charAt(c);
+   windmill.events.triggerKeyEvent(element, 'keydown', s.charAt(c), true, false,false, false,false);
+   windmill.events.triggerKeyEvent(element, 'keypress', s.charAt(c), true, false,false, false,false); 
+   windmill.events.triggerKeyEvent(element, 'keyup', s.charAt(c), true, false,false, false,false);
+  }
+
+  // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
+  //Another wierd chrome thing?
+  windmill.events.triggerEvent(element, 'change', true);
+
+};
   

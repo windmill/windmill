@@ -22,8 +22,7 @@ windmill.controller.what = function() {
 
 //Click function for Mozilla with Chrome
 windmill.controller.click = function(param_object){
-    var element = this._lookupDispatch(param_object);
-    if (!element){ return false; }
+    var element = lookupNode(param_object);
     windmill.events.triggerEvent(element, 'focus', false);
 
     // Add an event listener that detects if the default action has been prevented.
@@ -61,49 +60,31 @@ windmill.controller.click = function(param_object){
       }
     }
     catch(err){}
-  return true;    
 };
 
 //there is a problem with checking via click in safari
 windmill.controller.check = function(param_object){
   return windmill.controller.click(param_object);    
-}
+};
 
 //Radio buttons are even WIERDER in safari, not breaking in FF
 windmill.controller.radio = function(param_object){
   return windmill.controller.click(param_object);      
-}
+};
 
 //Double click for Mozilla
 windmill.controller.doubleClick = function(param_object) {
-
  //Look up the dom element, return false if its not there so we can report failure
- var element = this._lookupDispatch(param_object);
- if (!element){
-    return false;
- }
-    
+ var element = lookupNode(param_object);
  windmill.events.triggerEvent(element, 'focus', false);
-
- // Trigger the mouse event.
  windmill.events.triggerMouseEvent(element, 'dblclick', true);
-
- /*if (this._windowClosed()) {
-     return;
- }*/
-
  windmill.events.triggerEvent(element, 'blur', false);
- 
- return true;
 };
 
 //Type Function
  windmill.controller.type = function (param_object){
+   var element = lookupNode(param_object);
 
-   var element = this._lookupDispatch(param_object);
-   if (!element){
-     return false;
-   }
    //clear the box
    element.value = '';
    //Get the focus on to the item to be typed in, or selected
@@ -140,6 +121,4 @@ windmill.controller.doubleClick = function(param_object) {
    // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
    //Another wierd chrome thing?
    windmill.events.triggerEvent(element, 'change', true);
-    
-   return true;
  };

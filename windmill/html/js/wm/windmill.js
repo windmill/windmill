@@ -196,7 +196,7 @@ var windmill = new function() {
         this.remoteLoaded = true;
         
         jQuery("#loadMessage").html("Starting Windmill Communication Loop...");        
-        windmill.controller.continueLoop();
+        windmill.continueLoop();
         busyOff();
     };
     
@@ -286,7 +286,7 @@ var windmill = new function() {
           // windmill.ui.domexplorer.domExplorerOff();
           // windmill.ui.assertexplorer.assertExplorerOff();
 
-          windmill.controller.stopLoop();
+          windmill.pauseLoop();
           //what do do when the window is loaded
           var popupLoaded = function(){
             if (!windmill.ui.recorder.recordState){ return; }
@@ -333,7 +333,9 @@ var windmill = new function() {
     
     //When the page is unloaded turn off the loop until it loads the new one
     this.unloaded = function() {
-        windmill.controller.stopLoop();
+        try {
+          windmill.pauseLoop();
+        } catch(err){}
         //if we are recording, we just detected a new page load, but only add one.
         //Opera and IE appear to be calling unload multiple times
         if (windmill.ui.recorder.recordState){
@@ -419,11 +421,37 @@ var windmill = new function() {
       
         delayed = function() {
           if (windmill.waiting == false) {
-            windmill.controller.continueLoop(); 
+            windmill.continueLoop(); 
           }
         }
         setTimeout('delayed()', 0);
     };
+    
+    //After a page is done loading, continue the loop
+     this.continueLoop = function (){
+       cont = function(){
+           //If the doc domain has changed
+           //and we can't get to it, try updating it
+           try {
+             var v = windmill.testWin().document.domain;
+           }
+           catch(err){
+             document.domain = windmill.docDomain;
+           }
+
+         $('loopLink').innerHTML = 'Pause Service Loop';
+         if (windmill.xhr.loopState == false){
+           windmill.xhr.loopState = true;
+           windmill.xhr.getNext();
+         }
+       }
+       //Just making sure the page is fully loaded
+       setTimeout("cont()", 1);
+     };
+
+     this.pauseLoop = function () {
+       windmill.xhr.loopState = false;
+     };
     
     //windmill Options to be set
     this.stopOnFailure = false;

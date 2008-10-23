@@ -20,24 +20,14 @@ windmill.controller.what = function() {
   alert('Internet Explorer');
 }
 
-/**
- * In IE, getElementById() also searches by name - this is an optimisation for IE.
- */
-windmill.controller.locateElementByIdentifer = function(identifier, inDocument, inWindow) {
-  return inDocument.getElementById(identifier);
-};
-  
 windmill.controller.click = function(param_object){        
-   var element = this._lookupDispatch(param_object);
-    if (!element){ return false; }
-    windmill.events.triggerEvent(element, 'focus', false);
+  var element = lookupNode(param_object);
+  windmill.events.triggerEvent(element, 'focus', false);
 
-    // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-    try {windmill.events.triggerMouseEvent(element, 'mousedown', true); } catch(err){}
-    try {windmill.events.triggerMouseEvent(element, 'mouseup', true); } catch(err){}
-    try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}
-  
-   return true;
+  // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
+  try {windmill.events.triggerMouseEvent(element, 'mousedown', true); } catch(err){}
+  try {windmill.events.triggerMouseEvent(element, 'mouseup', true); } catch(err){}
+  try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}
 };
   
 //there is a problem with checking via click in safari
@@ -47,35 +37,23 @@ windmill.controller.check = function(param_object){
 
 //Radio buttons are even WIERDER in safari, not breaking in FF
 windmill.controller.radio = function(param_object){
-    //var element = this._lookupDispatch(param_object);
-    return windmill.controller.click(param_object);
+  return windmill.controller.click(param_object);
 }
   
 //double click for ie
 windmill.controller.doubleClick = function(param_object){      
-   var element = this._lookupDispatch(param_object);
-   if (!element){
-     return false;
-   }
+   var element = lookupNode(param_object);
    windmill.events.triggerEvent(element, 'focus', false);
-
-     // Trigger the mouse event.
-     //windmill.events.triggerMouseEvent(element, 'dblclick', true, clientX, clientY);
-     windmill.events.triggerMouseEvent(element, 'dblclick', true);   
-   /* if (this.windowClosed()) {
-         return;
-     }*/
-     windmill.events.triggerEvent(element, 'blur', false);       
-  return true;
+   // Trigger the mouse event.
+   windmill.events.triggerMouseEvent(element, 'dblclick', true);   
+   windmill.events.triggerEvent(element, 'blur', false);       
 };
  
 //Type Function
  windmill.controller.type = function (param_object){
 
-   var element = this._lookupDispatch(param_object);
-   if (!element){
-     return false;
-   }
+   var element = lookupNode(param_object);
+
    //clear the box
    element.value = '';
    //Get the focus on to the item to be typed in, or selected
@@ -106,6 +84,4 @@ windmill.controller.doubleClick = function(param_object){
    // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
    //Another wierd chrome thing?
    windmill.events.triggerEvent(element, 'change', true);
-    
-   return true;
  };

@@ -24,7 +24,7 @@ windmill.controller.waits.sleep = function (paramObj, obj) {
   
   done = function(){
     windmill.waiting = false;
-    windmill.controller.continueLoop();
+    windmill.continueLoop();
     //we passed the id in the parms object of the action in the ide
     var aid = paramObj.aid;
     delete paramObj.aid;
@@ -32,7 +32,6 @@ windmill.controller.waits.sleep = function (paramObj, obj) {
     windmill.xhr.setWaitBgAndReport(aid,true,obj);
   }    
   setTimeout('done()', paramObj.milliseconds);
-  return true;
 };
   
 windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) { 
@@ -73,9 +72,9 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
       else {
         if (pageLoad){ 
           windmill.loaded();
-          windmill.controller.continueLoop();
+          windmill.continueLoop();
         }
-        else{ windmill.controller.continueLoop(); }
+        else{ windmill.continueLoop(); }
       }
       windmill.xhr.setWaitBgAndReport(aid,false,obj);
       return false;
@@ -105,7 +104,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
           }
           else{ 
              if (pageLoad){ windmill.loaded(); }
-             else{ windmill.controller.continueLoop(); }
+             else{ windmill.continueLoop(); }
           }
         
            //set the result in the ide
@@ -117,26 +116,14 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
       else{ setTimeout(c, 800); }
     }
   }
-    
+  
+  //start the looking up
   lookup();
-   
-  //waits are going to wait, so I return true
-  //Optimally it would return false if it times out, so when it does return false
-  //the calling code will jump back up and process the ui accordingly
-  return true;
-
 };
 
 windmill.controller.waits.forJS = function (f) {
     var p = {};
-    if (typeof f == "function"){
-      p.test = f;
-    }
-    else if (typeof f == "string"){
-      p.test = eval(f);
-    }
-    else { return false; }
-    
+    p.test = f;
     return windmill.controller.waits.forJSTrue(p, null);
 };
 
@@ -145,7 +132,7 @@ windmill.controller.waits.forJS = function (f) {
 windmill.controller.waits.forElement = function (paramObj,obj) { 
     var p = paramObj || {};
     var f = function () {
-      try { return windmill.controller._lookupDispatch(p); }
+      try { return lookupNode(p); }
       catch(err){}
     };
     p.test = f;
@@ -158,7 +145,7 @@ windmill.controller.waits.forNotElement = function (paramObj,obj) {
     var p = paramObj || {};
     var f = function () {
       try{
-        var node = windmill.controller._lookupDispatch(p);
+        var node = lookupNode(p);
         return !node; 
       }
       catch(err){}

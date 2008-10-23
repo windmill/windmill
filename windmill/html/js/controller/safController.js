@@ -17,86 +17,53 @@ Copyright 2006-2007, Open Source Applications Foundation
 //Safari specific controller functions
 
 windmill.controller.what = function() {
-    alert('Safari');
+  alert('Safari');
 } 
-
-/**
- * In non-IE browsers, getElementById() does not search by name.  Instead, we
- * we search separately by id and name.
- */
-windmill.controller.locateElementByIdentifier = function(identifier, inDocument, inWindow) {
-    return PageBot.prototype._locateElementById(identifier, inDocument, inWindow)
-            || PageBot.prototype._locateElementByName(identifier, inDocument, inWindow)
-            || null;
-};
 
 //there is a problem with checking via click in safari
 windmill.controller.check = function(param_object){
-   return windmill.controller.click(param_object);    
-}
+  return windmill.controller.click(param_object);    
+};
 
 //Radio buttons are even WIERDER in safari
 windmill.controller.radio = function(param_object){
-    var element = this._lookupDispatch(param_object);
-    
-    element.checked = true;
-    
-    return true;
-}
-
+  var element = lookupNode(param_object);
+  element.checked = true;
+};
 
 //Safari Click function
 windmill.controller.click = function(param_object){
-    var element = this._lookupDispatch(param_object);
-    if (!element){ return false; }
-    windmill.events.triggerEvent(element, 'focus', false);
-      
-      // For form element it is simple.
-      if (element['click']) {
-          element['click']();
+  var element = lookupNode(param_object);
+  windmill.events.triggerEvent(element, 'focus', false);
+  
+    // For form element it is simple.
+    if (element['click']) {
+      element['click']();
+    }
+    else{
+      // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
+      if (element.nodeName != 'SELECT'){
+        windmill.events.triggerMouseEvent(element, 'mousedown', true);
+        windmill.events.triggerMouseEvent(element, 'mouseup', true);
       }
-      else{
-        // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-        if (element.nodeName != 'SELECT'){
-          windmill.events.triggerMouseEvent(element, 'mousedown', true);
-          windmill.events.triggerMouseEvent(element, 'mouseup', true);
-        }
-        windmill.events.triggerMouseEvent(element, 'click', true);
-      }
-    
-   return true;
+      windmill.events.triggerMouseEvent(element, 'click', true);
+    }
+
+  return true;
 };
 
 //Double click for Safari
 windmill.controller.doubleClick = function(param_object) {
-
-    var element = this._lookupDispatch(param_object);
-    if (!element){
-           return false;
-    }
-    
-    windmill.events.triggerEvent(element, 'focus', false);
-
-    // Trigger the mouse event.
-    windmill.events.triggerMouseEvent(element, 'dblclick', true);
-
-   /* if (this._windowClosed()) {
-      return;
-      }
-   */
-    windmill.events.triggerEvent(element, 'blur', false);
-    
-    return true;
+  var element = lookupNode(param_object);
+  windmill.events.triggerEvent(element, 'focus', false);
+  windmill.events.triggerMouseEvent(element, 'dblclick', true);
+  windmill.events.triggerEvent(element, 'blur', false);
 };
 
 //Type Function
 windmill.controller.type = function (param_object){
 
-  var element = this._lookupDispatch(param_object);
-  if (!element){
-    return false;
-  }
-
+  var element = lookupNode(param_object);
   //clear the box
   element.value = '';
   //Get the focus on to the item to be typed in, or selected
@@ -126,6 +93,4 @@ windmill.controller.type = function (param_object){
   // DGF this used to be skipped in chrome URLs, but no longer.  Is xpcnativewrappers to blame?
   //Another wierd chrome thing?
   windmill.events.triggerEvent(element, 'change', true);
-   
-  return true;
 };

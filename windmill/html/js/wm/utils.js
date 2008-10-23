@@ -112,7 +112,7 @@ windmill.utilities = new function () {
     for (var propName in replObj) {
       var prop = replObj[propName];
       if (typeof prop == 'string' && prop.indexOf('{$') > -1) {
-        replObj[propName] = windmill.controller.handleVariable(prop);
+        replObj[propName] = handleVariable(prop);
       }
     }
     return replObj;

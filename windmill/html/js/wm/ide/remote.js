@@ -188,7 +188,7 @@ windmill.ui.remote = new function() {
             else { suite.style.width = "100%"; }
             
             suite.innerHTML = "<table id='"+suiteName+"Header'"+
-            "class='suiteHeader'><tr><td><strong>Suite </strong>" + suiteName + 
+            "class='suiteHeader'><tr><td id='"+suiteName+"Title'><strong>Suite </strong>" + suiteName + 
             "</td><td><span align=\"right\" style='top:0px;float:right;'>"+
             "<a href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
             "\')\">[play]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'" + suiteName + 
