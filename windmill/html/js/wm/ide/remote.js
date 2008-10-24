@@ -182,14 +182,27 @@ windmill.ui.remote = new function() {
       //change all of the old suite names
       var re = new RegExp(suiteName, "g");
       jQuery(oldSuite).html(oldSuite.innerHTML.replace(re, newSN));
+      windmill.ui.currentSuite = newSN;
     };
     
-    this.getSuite = function(suiteName) {
-
-        if (!suiteName) {
+    this.getSuite = function(suiteName, newFlag) {
+        //If what we really want is a new suite, the newFlag was passed
+        if (newFlag){
           var suiteName = 'recordingSuite' + windmill.ui.recordSuiteNum;
+          windmill.ui.currentSuite = null;
         }
-
+        //if not
+        else {
+          //if there is a current suite selected
+          if (windmill.ui.currentSuite){
+              var suiteName = windmill.ui.currentSuite;
+          }
+          //default to a new one
+          else {
+            var suiteName = 'recordingSuite' + windmill.ui.recordSuiteNum;
+          }
+        }
+          
         var suite = $(suiteName);
         if (suite == null) {
             var ide = $('ideForm');
@@ -209,7 +222,7 @@ windmill.ui.remote = new function() {
             "\')\">[play]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'" + suiteName + 
             "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'" + suiteName + 
             "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.ui.toggleCollapse(\'" + suiteName + 
-            "\')\">[hide/show]</a></span></td></tr></table>";
+            "\')\">[hide/show]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.currentSuite=\'"+suiteName+"\'\">[select]</a></span></td></tr></table>";
 
             //Append the new suite to the IDE
             $('ideForm').appendChild(suite);

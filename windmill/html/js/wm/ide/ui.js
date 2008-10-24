@@ -30,6 +30,7 @@ windmill.ui = new function() {
     
     //keeping track of the recorder state when a new page is loaded and wipes the document
     this.recordSuiteNum = 0;
+    this.currentSuite = null;
     
     //Setter, incremeneting the recordSuiteNum
     this.incRecSuite = function() {

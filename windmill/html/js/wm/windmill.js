@@ -78,7 +78,7 @@ var windmill = new function() {
       else {
         windmill.ui.results.writeResult(s);
       }
-    }
+    };
     
     //we need to defined a function that returns the test window
     //because in IE if the document.domain has been altered
@@ -135,7 +135,7 @@ var windmill = new function() {
         switch(sel){
           case 'addSuite':
             windmill.ui.incRecSuite();
-            windmill.ui.remote.getSuite();
+            windmill.ui.remote.getSuite(null, true);
           break;
           case 'addAction':
             windmill.ui.remote.addAction();
