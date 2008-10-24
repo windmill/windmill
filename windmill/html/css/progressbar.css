@@ -1,0 +1,39 @@
+.ui-progressbar {
+	padding: 1px;
+	line-height: 19px;
+	border: 1px #ccc solid;
+	background:#E0E8F3 url(../img/progressbar/bg.gif) repeat-x scroll 0%;
+	position:relative;
+}
+
+.ui-progressbar-text {
+	padding-left: 2px;
+	color: #000;
+}
+
+.ui-progressbar-inner {
+	background:#9CBFEE url(../img/progressbar/progress-bg.gif) repeat-x scroll left center;
+	border-bottom:1px solid #7FA9E4;
+	border-right:1px solid #7FA9E4;
+	border-top:1px solid #D1E4FD;
+	height:18px;
+	width:0pt;
+}
+
+.ui-progressbar-inner-custom {
+	background: url(../img/progressbar/custom-bar.gif) repeat-x scroll left center;
+	border-bottom:1px solid #EFEFEF;
+	border-right:0pt none;
+	border-top:1px solid #BEBEBE;
+	height:15px;
+}
+
+.ui-progressbar-disabled {
+	opacity:.5;
+	filter:Alpha(Opacity=50);
+}
+
+.ui-progressbar-text-custom {
+	padding-left: 2px;
+	color: #000;
+}

@@ -1,5 +1,5 @@
 /*
- * jQuery UI ProgressBar
+ * jQuery UI Slider
  *
  * Copyright (c) 2008 Eduardo Lundgren (braeker)
  * Dual licensed under the MIT (MIT-LICENSE.txt)
@@ -10,7 +10,7 @@
  * Depends:
  *   ui.base.js
  *
- * Revision: $Id: ui.progressbar.js 5196 2008-04-04 12:52:32Z braeker $
+ * Revision: $Id: ui.progressbar.js 5196 2008-04-04 12:52:32Z paul.bakaus $
  */
 ;(function($) {
 
@@ -51,16 +51,11 @@
 		
 		var text = o.text ? o.text : (o.range ? '0%' : '');
 		
-		el.css({overflow: 'hidden'});
-		
-		this.wrapper = $("<div>")
-			.addClass('ui-progressbar-wrap').css({ height: 'auto', width: 'auto' }).appendTo(el);
+		this.textEl = $("<div>")
+			.addClass('ui-progressbar-text').addClass(o.textClass).css({ width: el.css('width') }).html(text);
 		
 		this.bar = $("<div>")
-			.addClass('ui-progressbar-inner').addClass(o.addClass).css({ width: '0px', 'float': o.align || null }).appendTo(this.wrapper);
-			
-		this.textEl = $("<div>")
-			.addClass('ui-progressbar-text').addClass(o.textClass).css({ width: el.css('width'), zIndex: 99 }).html(text).appendTo(this.wrapper);
+			.addClass('ui-progressbar-inner').addClass(o.addClass).html(this.textEl).css({ width: '0px' }).appendTo(el);
 	};
 	
 	$.extend($.ui.progressbar.prototype, {
@@ -86,7 +81,7 @@
 			this.element
 				.removeClass("ui-progressbar ui-progressbar-disabled")
 				.removeData("progressbar").unbind(".progressbar")
-				.find('.ui-progressbar-wrap').remove();
+				.find('.ui-progressbar-inner').remove();
 		},
 		enable: function() {
 			this.element.removeClass("ui-progressbar-disabled");
@@ -111,7 +106,7 @@
 					self.waitThread = null;
 				}, o.wait);
 			
-			var frames = Math.ceil(100/o.increment) || 0, ms = o.duration/frames || 0,
+			var frames = Math.round(100/o.increment) || 0, ms = o.duration/frames || 0,
 			
 			render = function(step, t) { return function() {
 					clearInterval(t);
@@ -164,36 +159,26 @@
 			var o = this.options, el = this.element, bar = this.bar;
 			if (this.disabled) return false;
 			
-			range = parseInt(range, 10);
-			this.rangeValue = this._fixRange(range);
+			this._step = Math.round(range/o.increment);
+			this.rangeValue = Math.round(o.increment * this._step);
+			var elw = el.innerWidth() - (el.outerWidth() - el.innerWidth()) - (bar.outerWidth() - bar.innerWidth()), range = Math.round( ((range/100)||0) * elw );
+			this.bar.css({ width: range + 'px' });
 			
-			var elw = el.innerWidth() - (el.outerWidth() - el.innerWidth()) - (bar.outerWidth() - bar.innerWidth());
-			
-			this.pixelRange = Math.round( ((this.rangeValue/100)||0) * elw );
-			
-			this.bar.css({ width: this.pixelRange + 'px' });
-			
+			this.pixelRange = range;
 			if (!o.text && o.range) this.text(this.rangeValue + '%');
 			this.propagate('progress', this.rangeValue);
 			return false;
 		},
 		text: function(text) {
 			this.textEl.html(text);
-		},
-		_fixRange: function(range) {
-			var o = this.options;
-			this._step = Math.ceil(range/o.increment);
-			this.rangeValue = Math.round(o.increment * this._step);
-			this.rangeValue = (this.rangeValue) >= 100 ? 100 : this.rangeValue;
-			return this.rangeValue;
 		}
 	});
 	
 	$.ui.progressbar.defaults = {
-    duration: 3000,
-    increment: 1,
+    duration: 0,
+    increment: 0,
 		text: '',
-		range: true,
+		range: false,
 		addClass: '',
 		textClass: ''
 	};
