@@ -32,7 +32,10 @@ var windmill = new function() {
     this.serviceDelayDefer = 800;
 
     this.safeWaits = true;
-
+    
+    //Enable windmill popup support
+    this.popups = false;
+    
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*
     this.waiting = false;
@@ -383,7 +386,11 @@ var windmill = new function() {
     //On load setup all the listener stuff
     //Set the listener on the testingApp on unload
     this.loaded = function() {
-        this.popupLogic();
+        
+        //if popup support is enabled
+        if (windmill.popups){
+          this.popupLogic();
+        }
         
         //When the waits happen I set a timeout
         //to ensure that if it takes longer than the
