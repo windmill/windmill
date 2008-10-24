@@ -228,8 +228,11 @@ windmill.ui.remote = new function() {
             $('ideForm').appendChild(suite);
             
             //Make the suites and actions draggable
-            jQuery(suite).sortable({revert:true, items: "div", axis: "y"});
-            jQuery($('ideForm')).sortable({revert:true});
+            //draggability is broken in safari :-(
+            if (!windmill.browser.isSafari){
+              jQuery(suite).sortable({revert:true, items: "div", axis: "y"});
+              jQuery($('ideForm')).sortable({revert:true}); 
+            }
             
             //minimize the last suite
             try {
@@ -637,7 +640,24 @@ windmill.ui.remote = new function() {
             r.appendChild(c);
             t.appendChild(r);
         }
-
+        
+        //Fixing annoying bug in FF when you are dragging the scroll bar
+        //for the drop downs it moves the action
+        if (windmill.browser.isGecko){
+           jQuery(action).bind("mousedown", function(e){
+              if (e.target.tagName == "SELECT"){
+                jQuery(".suite").sortable("disable");
+                jQuery($('ideForm')).sortable("disable");
+              }
+            });
+            jQuery(action).bind("mouseup", function(e){
+              if (e.target.tagName == "SELECT"){
+                jQuery(".suite").sortable("enable");
+                jQuery($('ideForm')).sortable("enable");
+              }
+            });
+        }
+        
         action.appendChild(t);
         if (windmill.browser.isIE) {
             action.innerHTML = t.innerHTML;
