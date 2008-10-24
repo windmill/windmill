@@ -91,6 +91,8 @@ class TestResolutionSuite(object):
     def resolve(self, result, uuid, starttime, endtime, debug=None):
         """Resolve test by uuid"""
         test = self.unresolved.pop(uuid)
+        if debug:
+            test['debug'] = debug
         test['result'] = result
         test['starttime'] = starttime
         test['endtime'] = endtime
