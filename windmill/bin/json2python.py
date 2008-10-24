@@ -12,7 +12,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import simplejson
+try:
+    import json as simplejson
+except:
+    import simplejson
 import sys, os
 from windmill.authoring import transforms
 

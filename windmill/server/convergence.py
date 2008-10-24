@@ -16,7 +16,10 @@
 server interfaces and the browser's js interface"""
 
 import copy, os 
-import simplejson
+try:
+    import json as simplejson
+except:
+    import simplejson
 import logging
 from uuid import uuid1
 import windmill

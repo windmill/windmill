@@ -17,7 +17,10 @@ from windmill.bin import admin_lib
 import logging
 import functest
 import transforms
-import simplejson
+try:
+    import json as simplejson
+except:
+    import simplejson
 import os, sys, re
 from time import sleep
 

@@ -29,16 +29,18 @@ We welcome any and all interest and contribution, as we work diligently at addin
 Thanks for your interest and participation!
 """
 
-base_dependencies = ['CherryPy >= 3.0.2',
-                     'simplejson >= 1.7.1',
+dependencies =      ['CherryPy >= 3.0.2',
                      'wsgi_jsonrpc >= 0.2.2',
                      'wsgi_xmlrpc >= 0.2.3',
                      'wsgi_fileserver >= 0.2.3',
                      'functest >= 0.7.1',
                      ]
-                
-python_24_dependencies = ['xmlrpclib >= 1.0.1',
-                          '']
+
+two_five_dependencies = [ 'simplejson >= 1.7.1',
+                        ]                
+
+if not sys.version.startswith('2.6'):
+    dependencies.extend(two_five_dependencies)
 
 setup(name=PACKAGE_NAME,
       version=PACKAGE_VERSION,
@@ -52,14 +54,7 @@ setup(name=PACKAGE_NAME,
       packages = find_packages(exclude=['test', 'trac-files', 'tutorial', 'test.test_live', 'scripts']),
       package_data = {'': ['*.js', '*.css', '*.html', '*.txt', '*.xpi' ],},
       platforms =['Any'],
-      install_requires = ['CherryPy >= 3.0.2',
-                          'simplejson >= 1.7.1',
-                          'wsgi-jsonrpc',
-                          'wsgi-xmlrpc',
-                          'wsgi-fileserver',
-                          'functest >= 0.7.1',
-                          'mozrunner >= 0.5',
-                          ],
+      install_requires = dependencies,
       entry_points="""
         [console_scripts]
         windmill = windmill.bin.windmill_bin:main

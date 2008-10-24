@@ -16,7 +16,10 @@ import time
 import httplib, urllib, copy
 from urlparse import urlparse
 import xmlrpclib
-import simplejson
+try:
+    import json as simplejson
+except:
+    import simplejson
 import logging
 
 __version__ = str(0.1)

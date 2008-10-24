@@ -14,7 +14,10 @@
 
 import os
 import windmill
-import simplejson
+try:
+    import json as simplejson
+except:
+    import simplejson
 import tempfile
 
 def create_saves_path():
