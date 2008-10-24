@@ -18,4 +18,8 @@ forwarding_conditions = [lambda e : 'google.com/safebrowsing/downloads' not in e
 
 def add_forward_condition(condition):
     forwarding_conditions.append(condition)
+    
+def remove_forward_condition(condition):
+    while condition in forwarding_conditions:
+        forwarding_conditions.remove(condition)
 
