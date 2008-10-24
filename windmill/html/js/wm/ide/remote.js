@@ -657,7 +657,7 @@ windmill.ui.remote = new function() {
               }
             });
         }
-        
+        //stick the action in the IDE
         action.appendChild(t);
         if (windmill.browser.isIE) {
             action.innerHTML = t.innerHTML;

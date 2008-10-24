@@ -83,6 +83,8 @@ windmill.xhr = new function() {
                 
                 //default to true
                 var result = true;
+                var info = null;
+                
                 //Forgotten case; If the windmill.runTests is false, but we are trying to change it back to true with a command
                 //This fix runs all commands regardless  
                 //Run the action
@@ -122,6 +124,7 @@ windmill.xhr = new function() {
                         else { windmill.controller[method](params); }
                     }
                     catch(error) {
+                        info = error;
                         result = false;
                         var newParams = copyObj(params);
                         delete newParams.uuid;
@@ -156,7 +159,7 @@ windmill.xhr = new function() {
                     delete newParams.uuid;
                     //End timer and store
                     windmill.xhr.action_timer.endTime();
-                    windmill.xhr.sendReport(method, result, windmill.xhr.action_timer);
+                    windmill.xhr.sendReport(method, result, windmill.xhr.action_timer, info);
                     windmill.xhr.setActionBackground(action, result, resp.result);
                     //Do the timer write
                     windmill.xhr.action_timer.write(fleegix.json.serialize(newParams));
@@ -169,16 +172,24 @@ windmill.xhr = new function() {
     };
 
     //Send the report
-    this.sendReport = function(method, result, timer) {
+    this.sendReport = function(method, result, timer, info) {
+        //if no info was specified
+        if (typeof(info) == "undefined"){
+          var info = "";
+        }
+        //handle the response
         var reportHandler = function(str) {
             response = eval('(' + str + ')');
             if (!response.result == 200) {
                 windmill.out('Error: Report receiving non 200 response.');
             }
         };
+        
+        //send the report
         var result_string = fleegix.json.serialize(windmill.xhr.xhrResponse.result);
         var test_obj = {
             "result": result,
+            "debug": info,
             "uuid": windmill.xhr.xhrResponse.result.params.uuid,
             "starttime": timer.getStart(),
             "endtime": timer.getEnd()

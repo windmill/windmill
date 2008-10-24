@@ -46,13 +46,18 @@ windmill.controller = new function () {
 /* User facing windmill functionality
 /************************************/
 
-  //When the service has nothing for us to do  
+  /**
+  * Does absolutely nothing
+  */ 
   this.defer = function (){
     //At some point we may want to display somewhere that we continually get deferred
     //when the backend has nothing for us to do
   };
   
-  //Store an attribute of a DOM element in the variable registry
+  /**
+  * Creates a windmill variable antry from a DOM element attribute
+  * @param {Object} paramObject The JavaScript object providing the necessary options 
+  */
   this.storeVarFromLocAttrib = function (paramObject) {
     var element = lookupNode(paramObject);
 
@@ -71,7 +76,11 @@ windmill.controller = new function () {
     }
   };
   
-  //expects a name and js param
+  /**
+  * Creates a windmill variable antry from evaluated JavaScript
+  * @param {Object} paramObject The JavaScript providing the necessary options
+  * @throws SyntaxError JavaScript eval exception 
+  */
   this.storeVarFromJS = function (paramObject) {
     //extract the options
     var arr = paramObject.options.split('|');
@@ -90,7 +99,10 @@ windmill.controller = new function () {
     }
   };
 
-  //open an url in the webapp iframe
+  /**
+  * Navigates the Windmill testing applicatoin to the provided url
+  * @param {Object} paramObject The JavaScript object used to provide the necessary options
+  */
   this.open = function (paramObject) {
     //clear the domain forwarding cache
     if (paramObject.reset == undefined){
@@ -102,7 +114,11 @@ windmill.controller = new function () {
   };
 
 
-  /* Select the specified option and trigger the relevant events of the element.*/
+  /**
+  * Select an option from a Select element by either value or innerHTML
+  * @param {Object} paramObject The JavaScript providing: Locator, option or value
+  * @throws Exception Unable to select the specified option.
+  */
   this.select = function (paramObject) {
     var element = lookupNode(paramObject);
     
@@ -149,8 +165,12 @@ windmill.controller = new function () {
     }
   };
   
-  //Drag one eleent to the top x,y coords of another specified element
-  this.dragDropElemToElem = function(p){
+  /**
+  * Drag one DOM element to the top x,y coords of another specified DOM element
+  * @param {Object} paramObject The JavaScript object providing: Locator, option or value
+  */
+  this.dragDropElemToElem = function(paramObject){
+    var p = paramObject;
     //Get the drag and dest
     var drag = lookupNode(p);
 
@@ -243,6 +263,10 @@ windmill.controller = new function () {
      }
   };
   
+  /**
+  * Drag a specified DOM element a specified amount of pixels
+  * @param {Object} paramObject The JavaScript object providing: Locator and pixels (x,y)
+  */  
   this.dragDropElem = function(paramObject) {
     var p = paramObject;
     var el = lookupNode(p);
@@ -368,7 +392,10 @@ windmill.controller = new function () {
     }
   };
   
-  //Drag Drop functionality allowing functions passed to calculate cursor offsets
+  /**
+  * Use absolute coordinates to click an element, and move it from one set of coords to another. 
+  * @param {Object} paramObject The JavaScript object providing: Locator, coords ( Format; ex. '(100,100),(300,350)' )
+  */
   this.dragDropAbs = function (paramObject) {
      var p = paramObject;
      var el = lookupNode(p);
@@ -444,8 +471,10 @@ windmill.controller = new function () {
       }
    };
 
-
-  //Drag Drop functionality allowing functions passed to calculate cursor offsets
+  /**
+  * Use absolute coordinates to click an element, and move it from one set of coords to another. 
+  * @param {Object} paramObject The JavaScript object providing: Locator, destination paramObject
+  */
   this.dragDrop = function (paramObject) {   
    
     var p = paramObject;
@@ -491,7 +520,10 @@ windmill.controller = new function () {
     
   };
 
-  //Drag Drop functionality allowing functions passed to calculate cursor offsets
+  /**
+  * Raw drag drop using abs x,y
+  * @param {Object} paramObject The JavaScript object providing: Locator, source paramObject, dest paramObj
+  */
   this.dragDropXY = function (paramObject) {
 
     var p = paramObject;
@@ -504,20 +536,27 @@ windmill.controller = new function () {
 
   };
    
-  //Functions for interacting with the windmill variable storage
-  //Store the url of a provided link on the page, to be accessed later
-  //Ususally with an open
+  /**
+  * Create a Windmill variable registry entry from the href of a provided locator
+  * @param {Object} paramObject The JavaScript object providing: Locator
+  */
   this.storeURL = function(paramObject) {
     var linkNode = lookupNode(paramObject);
     windmill.varRegistry.addItem('{$'+paramObject.link +'}',linkNode.href);
   }
   
-  //Allow the user to update the document.domain for the IDE
+  /**
+  * Manually change the document.domain of the windmill IDE window
+  * @param {Object} paramObject The JavaScript object providing: domain
+  */
   this.setDocDomain = function(paramObject) {
     document.domain = paramObject.domain;
   };
 
-  //Directly access mouse events
+  /**
+  * Fire a mousedown event on the provided node
+  * @param {Object} paramObject The JavaScript object providing: Locator
+  */  
   this.mouseDown = function (paramObject) {
       var mupElement = lookupNode(paramObject);
       if (mupElement == null){
@@ -531,7 +570,11 @@ windmill.controller = new function () {
       }
       else { windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  }
   };
-    //Drag Drop functionality allowing functions passed to calculate cursor offsets
+  
+  /**
+  * Fire a mousemove event ending at a specified set of coordinates
+  * @param {Object} paramObject The JavaScript object providing: coords
+  */
   this.mouseMoveTo = function (paramObject) {
     var p = paramObject;
     var webApp = windmill.testWin();
@@ -559,7 +602,10 @@ windmill.controller = new function () {
   //   return true;
   // };
     
-  //Drag Drop functionality allowing functions passed to calculate cursor offsets
+  /**
+  * Fire the mousemove event starting at one point and ending at another
+  * @param {Object} paramObject The JavaScript object providing: coords (Format: '(x,y),(x,y)' )
+  */
   this.mouseMove = function (paramObject) {
      windmill.pauseLoop();
      windmill.controller.moveCount = 0;
@@ -628,6 +674,10 @@ windmill.controller = new function () {
       }
   };
   
+  /**
+  * Fire the mouseup event against a specified node, defaulting to document.body
+  * @param {Object} paramObject The JavaScript object providing: Locator
+  */
   this.mouseUp = function (paramObject){
     try {
       var mupElement = lookupNode(paramObject);
@@ -647,27 +697,49 @@ windmill.controller = new function () {
     }
   };
   
+  /**
+  * Fire the mouseover event against a specified DOM element
+  * @param {Object} paramObject The JavaScript object providing: Locator
+  */  
   this.mouseOver = function (paramObject){
     var mdnElement = lookupNode(paramObject);
     windmill.events.triggerMouseEvent(mdnElement, 'mouseover', true);
   };
-
+  
+  /**
+  * Fire the mouseout event against a specified DOM element
+  * @param {Object} paramObject The JavaScript object providing: Locator
+  */
   this.mouseOut = function (paramObject){
     var mdnElement = lookupNode(paramObject);
     windmill.events.triggerMouseEvent(mdnElement, 'mouseout', true);
   };
   
-  //Browser navigation functions
+  /**
+  * Trigger the back function in the Windmill Testing Application Window
+  */
   this.goBack = function(paramObject){
     windmill.testWin().history.back();
   }
+  
+  /**
+  * Trigger the forward function in the Windmill Testing Application Window
+  */
   this.goForward = function(paramObject){
     windmill.testWin().history.forward();
   }
+  
+  /**
+  * Trigger the refresh function in the Windmill Testing Application Window
+  */
   this.refresh = function(paramObject){
     windmill.testWin().location.reload(true);
   }
   
+  /**
+  * Trigger the scroll function in the Windmill Testing Application Window
+  * @param {Object} paramObject The JavaScript object providing: coords
+  */
   this.scroll = function(paramObject){
     var d = paramObject.coords;
     d = d.replace('(','');
@@ -676,7 +748,9 @@ windmill.controller = new function () {
     windmill.testWin().scrollTo(cArr[0],cArr[1]);
   }
   
-  //After the app reloads you have to re overwrite the alert function for the TestingApp
+  /**
+  * Re-write the window alert function to instead send it's output to the output tab
+  */
   this.reWriteAlert = function(paramObject){
     windmill.reAlert = true;
     windmill.testWin().alert = function(s){
@@ -698,12 +772,15 @@ windmill.controller = new function () {
            	windmill.out('Could not bind to iframe number '+ iframeCount +' '+error);     
           }
         }
-    }
-    rwaRecurse(windmill.testWin());
-    };
+      };
+      rwaRecurse(windmill.testWin());
+  };
 
-  //Allow the user to set the testWindow to a different window 
-  //or frame within the page 
+  /**
+  * Update the windmill.testWindow reference to point to a different window
+  * @param {Object} paramObject The JavaScript object providing: path
+  * @throws EvalException "Error setting the test window, undefined."
+  */
   this.setTestWindow = function(paramObject){
     var res = eval ('windmill.testWindow ='+ paramObject.path +';');
     if (typeof(res) == 'undefined'){
@@ -711,6 +788,10 @@ windmill.controller = new function () {
     }
   };
   
+  /**
+  * Set the windmill.testWindow by iterating through the windowReg to find a matching title
+  * @param {Object} paramObject The JavaScript object providing: title
+  */
   this.setWindowByTitle = function(paramObject){
     var title = paramObject.title;
     var newW = windmill.testWin();
@@ -722,10 +803,17 @@ windmill.controller = new function () {
     windmill.testWindow = newW;
   };
   
+  /**
+  * Revert the windmill.testWindow to the original when the page was loaded
+  * @param {Object} paramObject The JavaScript object providing: title
+  */
   this.revertWindow = function(paramObject){
     windmill.testWindow = windmill.baseTestWindow;
   };
   
+  /**
+  * If the windmill.testWindow is not the original opener, close it.
+  */
   this.closeWindow = function(paramObject){
     if (windmill.testWin() != windmill.baseTestWindow){
       windmill.testWin().close();
@@ -733,11 +821,13 @@ windmill.controller = new function () {
     }
   };
   
-  //Execute some arbitrary JS in the testing app window
+  /**
+  * Execute some arbitrary JS in the testing app window
+  * @param {Object} paramObject The JavaScript object providing: js
+  */
   this.execJS = function(paramObject){
     var js = paramObject.js;
     eval.call(windmill.testWin(), js);
   };
-
 };
 
