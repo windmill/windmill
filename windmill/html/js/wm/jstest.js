@@ -669,17 +669,17 @@ windmill.jsTest = new function () {
           var a = windmill.xhr.createActionFromSuite('jsTests', action);
           windmill.xhr.setWaitBgAndReport(a.id,true,action);
         }
-        //If the waits.forElement is called
-        //We want to pause this loop and call it
-        else if (item.method == 'waits.forElement' ||
-          item.method == 'waits.forTrue' ||
-          item.method == 'waits.forNotElement'){
+        // Public waits methods, not including sleep
+        else if (item.method.indexOf('waits.') > -1 &&
+          item.method.indexOf('waits._') == -1 &&
+          item.method != 'waits.sleep') {
           var func = eval('windmill.jsTest.actions.' + item.method);
-          //Add a parameter so we know the js framework
-          //is calling the function inside waits.forElement
+          // Add a parameter so we know the js framework
+          // is the source so it knows to kick execution back
+          // to this loop
           item.params.orig = 'js';
           func(item.params, item);
-          //Let the js test framework know that it's in a waiting state
+          // Let the js test framework know that it's in a waiting state
           this.waiting = true;
         }
         else {

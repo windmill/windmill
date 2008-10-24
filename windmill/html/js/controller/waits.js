@@ -34,7 +34,7 @@ windmill.controller.waits.sleep = function (paramObj, obj) {
   setTimeout('done()', paramObj.milliseconds);
 };
   
-windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) { 
+windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) { 
   _this = this;
   
   //we passed the id in the parms object of the action in the ide
@@ -44,7 +44,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
   var p = paramObj || {};
   var timeout = 8000;
   var isJsTest = (p.orig == 'js');
-  var testCondition = p.test;
+  var jsCode = p.js || p.test;
   
   // If we get the weird string "NaN" (yes, the actual 
   // string, "NaN" :)) value from the IDE, or some other 
@@ -67,7 +67,7 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
       if (isJsTest) {
         windmill.jsTest.runTestItemArray();
         windmill.jsTest.waiting = false;
-        windmill.jsTest.handleErr('waits.forElement timed out after ' + timeout + ' seconds.');
+        windmill.jsTest.handleErr('Wait timed out after ' + timeout + ' seconds.');
       }
       else {
         if (pageLoad){ 
@@ -83,14 +83,14 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
     
     // Get a result
     var result;
-    if (typeof testCondition == 'string') {
-      result = eval(testCondition);
+    if (typeof jsCode == 'string') {
+      result = eval(jsCode);
     }
-    else if (typeof testCondition == 'function') {
-      result = testCondition();
+    else if (typeof jsCode == 'function') {
+      result = jsCode();
     }
     else {
-      throw new Error('waits.forTrue test condition must be a string or function.');
+      throw new Error('waits.forJS js property must be a function, or string to eval.');
     }
     result = !!result; // Make sure we've got a Boolean
     
@@ -121,11 +121,8 @@ windmill.controller.waits.forJSTrue = function (paramObj, obj, pageLoad) {
   lookup();
 };
 
-windmill.controller.waits.forJS = function (f) {
-    var p = {};
-    p.test = f;
-    return windmill.controller.waits.forJSTrue(p, null);
-};
+windmill.controller.waits.forJSTrue = 
+  windmill.controller.waits.forJS;
 
 //wait for an element to show up on the page
 //if it doesn't after a provided timeout, defaults to 20 seconds
@@ -136,7 +133,7 @@ windmill.controller.waits.forElement = function (paramObj,obj) {
       catch(err){}
     };
     p.test = f;
-    return windmill.controller.waits.forJSTrue(p, obj);
+    return windmill.controller.waits.forJS(p, obj);
 };
   
 //wait for an element to show up on the page
@@ -151,7 +148,7 @@ windmill.controller.waits.forNotElement = function (paramObj,obj) {
       catch(err){}
     };
     p.test = f;
-    return windmill.controller.waits.forJSTrue(p, obj);
+    return windmill.controller.waits.forJS(p, obj);
 };
 
 //This is more of an internal function used by wait and click events
@@ -179,7 +176,7 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
     };
     p.test = f;
     
-    return windmill.controller.waits.forJSTrue(p, obj, true);
+    return windmill.controller.waits.forJS(p, obj, true);
   }
   setTimeout(sl, 500);
   //we can't access the body, so now wait for the loading
@@ -205,5 +202,5 @@ windmill.controller.waits._forNotTitleAttach = function (paramObj, obj) {
     };
     p.test = f;
     p.timeout = 60000;
-    return windmill.controller.waits.forJSTrue(p, obj, true);
+    return windmill.controller.waits.forJS(p, obj, true);
 };
