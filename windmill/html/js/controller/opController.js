@@ -20,8 +20,8 @@ windmill.controller.what = function() {
   alert('Internet Explorer');
 }
   
-windmill.controller.click = function(param_object){        
-  var element = lookupNode(param_object);
+windmill.controller.click = function(paramObject){        
+  var element = lookupNode(paramObject);
   windmill.events.triggerEvent(element, 'focus', false);
 
   // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
@@ -31,9 +31,9 @@ windmill.controller.click = function(param_object){
 };
   
 //Sometimes opera requires that you manually toggle it
-windmill.controller.check = function(param_object){
-  //return windmill.controller.click(param_object);
-  var element = lookupNode(param_object);
+windmill.controller.check = function(paramObject){
+  //return windmill.controller.click(paramObject);
+  var element = lookupNode(paramObject);
   windmill.events.triggerEvent(element, 'focus', false);
 
   var state = element.checked;
@@ -54,21 +54,21 @@ windmill.controller.check = function(param_object){
 };
 
 //Radio buttons are even WIERDER in safari, not breaking in FF
-windmill.controller.radio = function(param_object){
-  return windmill.controller.click(param_object);
+windmill.controller.radio = function(paramObject){
+  return windmill.controller.click(paramObject);
 };
   
 //double click for ie
-windmill.controller.doubleClick = function(param_object){      
-  var element = lookupNode(param_object);
+windmill.controller.doubleClick = function(paramObject){      
+  var element = lookupNode(paramObject);
   windmill.events.triggerEvent(element, 'focus', false);
   windmill.events.triggerMouseEvent(element, 'dblclick', true);   
   windmill.events.triggerEvent(element, 'blur', false);       
 };
 
 //Type Function
-windmill.controller.type = function (param_object){
-  var element = lookupNode(param_object);
+windmill.controller.type = function (paramObject){
+  var element = lookupNode(paramObject);
   //clear the box
   element.value = '';
   //Get the focus on to the item to be typed in, or selected
@@ -77,8 +77,8 @@ windmill.controller.type = function (param_object){
 
   //Make sure text fits in the textbox
   var maxLengthAttr = element.getAttribute("maxLength");
-  var actualValue = param_object.text;
-  var stringValue = param_object.text;
+  var actualValue = paramObject.text;
+  var stringValue = paramObject.text;
 
   if (maxLengthAttr != null) {
    var maxLength = parseInt(maxLengthAttr);

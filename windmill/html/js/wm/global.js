@@ -28,57 +28,61 @@ var json_call = function(version, method, params) {
 
 
 //Translates from the way we are passing objects to functions to the lookups
-var lookupNode = function (param_object){
+var lookupNode = function (paramObject, throwErr){
+  if (typeof(throwErr) == "undefined"){
+    var throwErr = false;
+  }
+  
   var s = null;
   var element = null;
   //If a link was passed, lookup as link
-  if(typeof param_object.link != "undefined") {
-    s = 'Looking up link '+ param_object.link;
-    element = elementslib.Element.LINK(param_object.link);
+  if(typeof paramObject.link != "undefined") {
+    s = 'Looking up link '+ paramObject.link;
+    element = elementslib.Element.LINK(paramObject.link);
   }
   //if xpath was passed, lookup as xpath
-  if(typeof param_object.xpath != "undefined") {
-    s = 'Looking up xpath '+ param_object.xpath;        
-    element = elementslib.Element.XPATH(param_object.xpath);
+  if(typeof paramObject.xpath != "undefined") {
+    s = 'Looking up xpath '+ paramObject.xpath;        
+    element = elementslib.Element.XPATH(paramObject.xpath);
   }
   //if id was passed, do as such
-  if(typeof param_object.id != "undefined") {
-    s = 'Looking up id '+ param_object.id;
-    element = elementslib.Element.ID(param_object.id);
+  if(typeof paramObject.id != "undefined") {
+    s = 'Looking up id '+ paramObject.id;
+    element = elementslib.Element.ID(paramObject.id);
   }
   //if jsid was passed
-  if(typeof param_object.jsid != "undefined") {
+  if(typeof paramObject.jsid != "undefined") {
     //Here if the user hasn't specified the test window scope
     //we use the default and prepend it, else we eval whatever js they passed
     var jsid; 
-    if ((param_object.jsid.indexOf('windmill.testWindow') != -1) || (param_object.jsid.indexOf('_w') != -1)){
-      eval ("jsid=" + param_object.jsid + ";");
+    if ((paramObject.jsid.indexOf('windmill.testWindow') != -1) || (paramObject.jsid.indexOf('_w') != -1)){
+      eval ("jsid=" + paramObject.jsid + ";");
     }
     else{
-      eval ("jsid=" + this._getWindowStr() + '.' +param_object.jsid + ";");
+      eval ("jsid=" + this._getWindowStr() + '.' +paramObject.jsid + ";");
     }
       s = 'Looking up jsid '+ jsid;
-      element = elementslib.Element.ID(param_object.id);
+      element = elementslib.Element.ID(paramObject.id);
   }
   //if name was passed
-  if(typeof param_object.name != "undefined") {
-    s = 'Looking up name '+ param_object.name;
-    element = elementslib.Element.NAME(param_object.name);
+  if(typeof paramObject.name != "undefined") {
+    s = 'Looking up name '+ paramObject.name;
+    element = elementslib.Element.NAME(paramObject.name);
   }
   //if name was passed
-  if(typeof param_object.value != "undefined") {
-    s = 'Looking up value '+ param_object.value;
-    element = elementslib.Element.VALUE(param_object.value);
+  if(typeof paramObject.value != "undefined") {
+    s = 'Looking up value '+ paramObject.value;
+    element = elementslib.Element.VALUE(paramObject.value);
   }
   //if name was passed
-  if(typeof param_object.classname != "undefined") {
-    s = 'Looking up classname '+ param_object.classname;
-    element = elementslib.Element.CLASSNAME(param_object.classname);
+  if(typeof paramObject.classname != "undefined") {
+    s = 'Looking up classname '+ paramObject.classname;
+    element = elementslib.Element.CLASSNAME(paramObject.classname);
   }
   //if name was passed
-  if(typeof param_object.tagname != "undefined") {
-    s = 'Looking up tagname '+ param_object.tagname;
-    element = elementslib.Element.TAGNAME(param_object.tagname);
+  if(typeof paramObject.tagname != "undefined") {
+    s = 'Looking up tagname '+ paramObject.tagname;
+    element = elementslib.Element.TAGNAME(paramObject.tagname);
   }
   
   //write out the results to the ide
@@ -88,7 +92,8 @@ var lookupNode = function (param_object){
     element.scrollIntoView(); 
     return element;
   }
-  else { throw s + ", failed."; }
+  else if (throwErr == true) { throw s + ", failed."; }
+  else{ lookupNode(paramObject, true); }
 };
 
 //Function to handle the random keyword scenario

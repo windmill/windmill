@@ -22,13 +22,13 @@ Copyright 2006-2007, Open Source Applications Foundation
 //When we load the test suites we want to fill the registry
 //with variables to make the tests cleaner when it comes to
 //js paths and random vars, currently delimited by |'s
-windmill.controller.commands.createVariables = function(param_object){
-  for (var i = 0;i<param_object.variables.length;i++){
-    windmill.varRegistry.addItem('{$'+param_object.variables[i].split('|')[0] +'}',param_object.variables[i].split('|')[1]);
+windmill.controller.commands.createVariables = function(paramObject){
+  for (var i = 0;i<paramObject.variables.length;i++){
+    windmill.varRegistry.addItem('{$'+paramObject.variables[i].split('|')[0] +'}',paramObject.variables[i].split('|')[1]);
   }
   //Send to the server
   var json_object = new json_call('1.1', 'command_result');
-  var params_obj = {"status":true, "uuid":param_object.uuid, "result":'true'};
+  var params_obj = {"status":true, "uuid":paramObject.uuid, "result":'true'};
   json_object.params = params_obj;
   var json_string = fleegix.json.serialize(json_object)
 
@@ -39,19 +39,19 @@ windmill.controller.commands.createVariables = function(param_object){
 };
  
 //This function stores a variable and its value in the variable registry
-windmill.controller.commands.createVariable = function(param_object){
+windmill.controller.commands.createVariable = function(paramObject){
     var value = null;
-    if (windmill.varRegistry.hasKey('{$'+param_object.name +'}')){
-      value = windmill.varRegistry.getByKey('{$'+param_object.name +'}');
+    if (windmill.varRegistry.hasKey('{$'+paramObject.name +'}')){
+      value = windmill.varRegistry.getByKey('{$'+paramObject.name +'}');
     }
     else{
-      windmill.varRegistry.addItem('{$'+param_object.name +'}',param_object.value);
-      value = windmill.varRegistry.getByKey('{$'+param_object.name +'}');
+      windmill.varRegistry.addItem('{$'+paramObject.name +'}',paramObject.value);
+      value = windmill.varRegistry.getByKey('{$'+paramObject.name +'}');
     }
   
     //Send to the server
     var json_object = new json_call('1.1', 'command_result');
-    var params_obj = {"status":true, "uuid":param_object.uuid, "result":value };
+    var params_obj = {"status":true, "uuid":paramObject.uuid, "result":value };
 
     json_object.params = params_obj;
     var json_string = fleegix.json.serialize(json_object)
@@ -64,20 +64,20 @@ windmill.controller.commands.createVariable = function(param_object){
   };
 
 //This function allows the user to specify a string of JS and execute it
-windmill.controller.commands.execJS = function(param_object){
+windmill.controller.commands.execJS = function(paramObject){
       //Lets send the result now to the server
       var json_object = new json_call('1.1', 'command_result');
       var params_obj = {};
     
       try {
-	      params_obj.result = eval(param_object.code);
+	      params_obj.result = eval(paramObject.code);
       }
       catch(error){
 	      params_obj.result = error;
       }
     
       params_obj.status = true;
-      params_obj.uuid = param_object.uuid;
+      params_obj.uuid = paramObject.uuid;
       json_object.params = params_obj;
       var json_string = fleegix.json.serialize(json_object)
 
@@ -89,15 +89,15 @@ windmill.controller.commands.execJS = function(param_object){
 };
 
 //Dynamically loading an extensions directory
-windmill.controller.commands.loadExtensions = function(param_object){
-  var l = param_object.extensions;
+windmill.controller.commands.loadExtensions = function(paramObject){
+  var l = paramObject.extensions;
   for (var n in l){
     windmill.utilities.appendScript(windmill.remote,l[0]); 
   }
 };
 
 //Give the backend a list of available controller methods
-windmill.controller.commands.getControllerMethods = function (param_object){
+windmill.controller.commands.getControllerMethods = function (paramObject){
 	var str = '';
 	for (var i in windmill.controller) { if ((i.indexOf('_') == -1) && (i != 'waits' )){ str += "," + i; } }
 	for (var i in windmill.controller.extensions) {
@@ -134,7 +134,7 @@ windmill.controller.commands.getControllerMethods = function (param_object){
 
 	//Send to the server
 	var json_object = new json_call('1.1', 'command_result');
-	var params_obj = {"status":true, "uuid":param_object.uuid, "result":ca};
+	var params_obj = {"status":true, "uuid":paramObject.uuid, "result":ca};
 	json_object.params = params_obj;
 	var json_string = fleegix.json.serialize(json_object)
 
@@ -145,12 +145,12 @@ windmill.controller.commands.getControllerMethods = function (param_object){
 };
   
 //Keeping the suites running 
-windmill.controller.commands.setOptions = function (param_object){
-  if(typeof param_object.stopOnFailure != "undefined") {
-    windmill.stopOnFailure = param_object.stopOnFailure;
+windmill.controller.commands.setOptions = function (paramObject){
+  if(typeof paramObject.stopOnFailure != "undefined") {
+    windmill.stopOnFailure = paramObject.stopOnFailure;
   }
-  if(typeof param_object.runTests != "undefined") {
-    windmill.runTests = param_object.runTests;
+  if(typeof paramObject.runTests != "undefined") {
+    windmill.runTests = paramObject.runTests;
     //Attempt to make the loading process a bit faster than running
     if (windmill.runTests == false){
      windmill.serviceDelay = 0;
@@ -162,12 +162,12 @@ windmill.controller.commands.setOptions = function (param_object){
 };
 
 //Get the document HTML
-windmill.controller.commands.getPageText = function (param_object){
+windmill.controller.commands.getPageText = function (paramObject){
   var dom = windmill.testWin().document.documentElement.innerHTML.replace('\n','');
   dom = '<html>' + dom + '</html>';
   //Send to the server
   var json_object = new json_call('1.1', 'command_result');
-  var params_obj = {"status":true, "uuid":param_object.uuid, "result":dom};
+  var params_obj = {"status":true, "uuid":paramObject.uuid, "result":dom};
   json_object.params = params_obj;
   var json_string = fleegix.json.serialize(json_object)
 

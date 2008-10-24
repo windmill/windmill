@@ -53,10 +53,10 @@ windmill.controller = new function () {
   };
   
   //Store an attribute of a DOM element in the variable registry
-  this.storeVarFromLocAttrib = function (param_object) {
-    var element = lookupNode(param_object);
+  this.storeVarFromLocAttrib = function (paramObject) {
+    var element = lookupNode(paramObject);
 
-    var arr = param_object.options.split('|');
+    var arr = paramObject.options.split('|');
     var varName = arr[0];
     var attrib = arr[1];
     
@@ -72,45 +72,45 @@ windmill.controller = new function () {
   };
   
   //expects a name and js param
-  this.storeVarFromJS = function (param_object) {
+  this.storeVarFromJS = function (paramObject) {
     //extract the options
-    var arr = param_object.options.split('|');
-    param_object.name = arr[0];
-    param_object.js = arr[1];
+    var arr = paramObject.options.split('|');
+    paramObject.name = arr[0];
+    paramObject.js = arr[1];
     
-    param_object.value = eval.call(windmill.testWin(), param_object.js);
+    paramObject.value = eval.call(windmill.testWin(), paramObject.js);
 
     //if the code evaled and returned a value add it
-    if (windmill.varRegistry.hasKey('{$'+param_object.name +'}')){
-      windmill.varRegistry.removeItem('{$'+param_object.name +'}');
-      windmill.varRegistry.addItem('{$'+param_object.name +'}',param_object.value);
+    if (windmill.varRegistry.hasKey('{$'+paramObject.name +'}')){
+      windmill.varRegistry.removeItem('{$'+paramObject.name +'}');
+      windmill.varRegistry.addItem('{$'+paramObject.name +'}',paramObject.value);
     }
     else{
-      windmill.varRegistry.addItem('{$'+param_object.name +'}',param_object.value);
+      windmill.varRegistry.addItem('{$'+paramObject.name +'}',paramObject.value);
     }
   };
 
   //open an url in the webapp iframe
-  this.open = function (param_object) {
+  this.open = function (paramObject) {
     //clear the domain forwarding cache
-    if (param_object.reset == undefined){
+    if (paramObject.reset == undefined){
       windmill.service.setTestURL(windmill.initialHost); 
     }
     //We need to tell the service where we are before we
     //head to a new page
-    windmill.testWin().location = param_object.url;
+    windmill.testWin().location = paramObject.url;
   };
 
 
   /* Select the specified option and trigger the relevant events of the element.*/
-  this.select = function (param_object) {
-    var element = lookupNode(param_object);
+  this.select = function (paramObject) {
+    var element = lookupNode(paramObject);
     
     //if it's already selected
-    if (element.options[element.options.selectedIndex].text == param_object['option']){
+    if (element.options[element.options.selectedIndex].text == paramObject['option']){
       return true;
     }
-    if (element.options[element.options.selectedIndex].value == param_object['value']){
+    if (element.options[element.options.selectedIndex].value == paramObject['value']){
       return true;
     }
     
@@ -119,8 +119,8 @@ windmill.controller = new function () {
     for (opt = 0; opt < element.options.length; opt++){
       try {
         var el = element.options[opt];
-        if (param_object.option != undefined){
-          if(el.innerHTML.indexOf(param_object.option) != -1){
+        if (paramObject.option != undefined){
+          if(el.innerHTML.indexOf(paramObject.option) != -1){
             if (el.selected && el.options[opt] == optionToSelect){
               continue;
             }
@@ -131,7 +131,7 @@ windmill.controller = new function () {
           }
         }
         else {
-           if(el.value.indexOf(param_object.value) != -1){
+           if(el.value.indexOf(paramObject.value) != -1){
               if (el.selected && el.options[opt] == optionToSelect){
                 continue;
               }
@@ -243,8 +243,8 @@ windmill.controller = new function () {
      }
   };
   
-  this.dragDropElem = function(param_object) {
-    var p = param_object;
+  this.dragDropElem = function(paramObject) {
+    var p = paramObject;
     var el = lookupNode(p);
 
     windmill.pauseLoop();
@@ -369,13 +369,13 @@ windmill.controller = new function () {
   };
   
   //Drag Drop functionality allowing functions passed to calculate cursor offsets
-  this.dragDropAbs = function (param_object) {
-     var p = param_object;
+  this.dragDropAbs = function (paramObject) {
+     var p = paramObject;
      var el = lookupNode(p);
     
      windmill.pauseLoop();
      windmill.controller.moveCount = 0;
-     windmill.controller.ddeParamObj = param_object;
+     windmill.controller.ddeParamObj = paramObject;
      
      var webApp = windmill.testWin();
      //takes a coordinates param (x,y),(x,y) start, end
@@ -446,9 +446,9 @@ windmill.controller = new function () {
 
 
   //Drag Drop functionality allowing functions passed to calculate cursor offsets
-  this.dragDrop = function (param_object) {   
+  this.dragDrop = function (paramObject) {   
    
-    var p = param_object;
+    var p = paramObject;
     var hash_key;
      
     eval ("hash_key=" + p.dragged.jsid + ";");
@@ -456,7 +456,7 @@ windmill.controller = new function () {
     delete p.dragged.jsid;
              
     function getPos(elem, evType) {
-      // param_object.mouseDownPos or param_obj.mouseUpPos
+      // paramObject.mouseDownPos or param_obj.mouseUpPos
       var t = evType + 'Pos';
       var res = [];
       // Explicit function for getting XY of both
@@ -492,9 +492,9 @@ windmill.controller = new function () {
   };
 
   //Drag Drop functionality allowing functions passed to calculate cursor offsets
-  this.dragDropXY = function (param_object) {
+  this.dragDropXY = function (paramObject) {
 
-    var p = param_object;
+    var p = paramObject;
     var webApp = windmill.testWin();
     windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.source[0], p.source[1]);
     windmill.events.triggerMouseEvent(webApp.document.body, 'mousedown', true);
@@ -507,19 +507,19 @@ windmill.controller = new function () {
   //Functions for interacting with the windmill variable storage
   //Store the url of a provided link on the page, to be accessed later
   //Ususally with an open
-  this.storeURL = function(param_object) {
-    var linkNode = lookupNode(param_object);
-    windmill.varRegistry.addItem('{$'+param_object.link +'}',linkNode.href);
+  this.storeURL = function(paramObject) {
+    var linkNode = lookupNode(paramObject);
+    windmill.varRegistry.addItem('{$'+paramObject.link +'}',linkNode.href);
   }
   
   //Allow the user to update the document.domain for the IDE
-  this.setDocDomain = function(param_object) {
-    document.domain = param_object.domain;
+  this.setDocDomain = function(paramObject) {
+    document.domain = paramObject.domain;
   };
 
   //Directly access mouse events
-  this.mouseDown = function (param_object) {
-      var mupElement = lookupNode(param_object);
+  this.mouseDown = function (paramObject) {
+      var mupElement = lookupNode(paramObject);
       if (mupElement == null){
         mupElement = windmill.testWin().document.body;
       }
@@ -532,8 +532,8 @@ windmill.controller = new function () {
       else { windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  }
   };
     //Drag Drop functionality allowing functions passed to calculate cursor offsets
-  this.mouseMoveTo = function (param_object) {
-    var p = param_object;
+  this.mouseMoveTo = function (paramObject) {
+    var p = paramObject;
     var webApp = windmill.testWin();
     var coords = p.coords.split(',');
     coords[0] = coords[0].replace('(','');
@@ -542,8 +542,8 @@ windmill.controller = new function () {
     windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, coords[0], coords[1]);
   };
   
-  // this.mouseMove = function (param_object){
-  //    var p = param_object;
+  // this.mouseMove = function (paramObject){
+  //    var p = paramObject;
   //    var webApp = windmill.testWin();
   //    var coords = p.coords.split('),(');
   //          
@@ -560,10 +560,10 @@ windmill.controller = new function () {
   // };
     
   //Drag Drop functionality allowing functions passed to calculate cursor offsets
-  this.mouseMove = function (param_object) {
+  this.mouseMove = function (paramObject) {
      windmill.pauseLoop();
      windmill.controller.moveCount = 0;
-     var p = param_object;
+     var p = paramObject;
      var webApp = windmill.testWin();
      //takes a coordinates param (x,y),(x,y) start, end
      var coords = p.coords.split('),(');
@@ -628,9 +628,9 @@ windmill.controller = new function () {
       }
   };
   
-  this.mouseUp = function (param_object){
+  this.mouseUp = function (paramObject){
     try {
-      var mupElement = lookupNode(param_object);
+      var mupElement = lookupNode(paramObject);
     } catch(err){}
     
     if (mupElement == null){
@@ -647,29 +647,29 @@ windmill.controller = new function () {
     }
   };
   
-  this.mouseOver = function (param_object){
-    var mdnElement = lookupNode(param_object);
+  this.mouseOver = function (paramObject){
+    var mdnElement = lookupNode(paramObject);
     windmill.events.triggerMouseEvent(mdnElement, 'mouseover', true);
   };
 
-  this.mouseOut = function (param_object){
-    var mdnElement = lookupNode(param_object);
+  this.mouseOut = function (paramObject){
+    var mdnElement = lookupNode(paramObject);
     windmill.events.triggerMouseEvent(mdnElement, 'mouseout', true);
   };
   
   //Browser navigation functions
-  this.goBack = function(param_object){
+  this.goBack = function(paramObject){
     windmill.testWin().history.back();
   }
-  this.goForward = function(param_object){
+  this.goForward = function(paramObject){
     windmill.testWin().history.forward();
   }
-  this.refresh = function(param_object){
+  this.refresh = function(paramObject){
     windmill.testWin().location.reload(true);
   }
   
-  this.scroll = function(param_object){
-    var d = param_object.coords;
+  this.scroll = function(paramObject){
+    var d = paramObject.coords;
     d = d.replace('(','');
     d = d.replace(')','');
     var cArr = d.split(',');
@@ -677,7 +677,7 @@ windmill.controller = new function () {
   }
   
   //After the app reloads you have to re overwrite the alert function for the TestingApp
-  this.reWriteAlert = function(param_object){
+  this.reWriteAlert = function(paramObject){
     windmill.reAlert = true;
     windmill.testWin().alert = function(s){
       windmill.out("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
@@ -704,15 +704,15 @@ windmill.controller = new function () {
 
   //Allow the user to set the testWindow to a different window 
   //or frame within the page 
-  this.setTestWindow = function(param_object){
-    var res = eval ('windmill.testWindow ='+ param_object.path +';');
+  this.setTestWindow = function(paramObject){
+    var res = eval ('windmill.testWindow ='+ paramObject.path +';');
     if (typeof(res) == 'undefined'){
       throw "Error setting the test window, undefined."
     }
   };
   
-  this.setWindowByTitle = function(param_object){
-    var title = param_object.title;
+  this.setWindowByTitle = function(paramObject){
+    var title = paramObject.title;
     var newW = windmill.testWin();
     for (var i = 0; i < windmill.windowReg.length; i++){
       if (windmill.windowReg[i].document.title == title){
@@ -722,11 +722,11 @@ windmill.controller = new function () {
     windmill.testWindow = newW;
   };
   
-  this.revertWindow = function(param_object){
+  this.revertWindow = function(paramObject){
     windmill.testWindow = windmill.baseTestWindow;
   };
   
-  this.closeWindow = function(param_object){
+  this.closeWindow = function(paramObject){
     if (windmill.testWin() != windmill.baseTestWindow){
       windmill.testWin().close();
       windmill.testWindow = windmill.baseTestWindow;
@@ -734,8 +734,8 @@ windmill.controller = new function () {
   };
   
   //Execute some arbitrary JS in the testing app window
-  this.execJS = function(param_object){
-    var js = param_object.js;
+  this.execJS = function(paramObject){
+    var js = paramObject.js;
     eval.call(windmill.testWin(), js);
   };
 

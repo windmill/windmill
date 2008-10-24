@@ -100,8 +100,8 @@ var windmill = new function() {
           return windmill.testWindow;
         }
         catch(err){
-          windmill.out('Either the popup window was destroyed, or you are in IE with a changed document.domain.');
-          windmill.out('Defaulting to the opener as target window...');
+          windmill.ui.results.writeResult('Either the popup window was destroyed, or you are in IE with a changed document.domain.');
+          windmill.ui.results.writeResult('Defaulting to the opener as target window...');
           try {
             var d = opener.document;
             windmill.testWindow = opener;
@@ -153,13 +153,6 @@ var windmill = new function() {
        }
        else { windmill.docDomain = window.location.hostname; }
        
-       try { var wdwTitle = windmill.testWin().document.title; }
-       catch(err){
-         if (window.location.href.indexOf('www.') == -1){
-      	   windmill.out('This application loads and immediately redirects to the www. version of itself, trying to correct the domain.');
-      		 window.location.href = 'http://www.'+window.location.hostname+"/windmill-serv/remote.html";
-      	 }
-       }
        try{ var v = windmill.testWin().document.domain; }
           catch(err){
             try { document.domain = windmill.docDomain; }
@@ -176,13 +169,21 @@ var windmill = new function() {
                   arr.shift();
                   document.domain = arr.join('.');
                 }
-                else { windmill.out('Our failover logic cant sync up with your apps document.domain.'); }
+                else { windmill.ui.results.writeResult('Our failover logic cant sync up with your apps document.domain.'); }
             }
           }
           try { 
             windmill.testWin().windmill = windmill; 
             windmill.initialHost = windmill.testWin().location.href;
           } catch(err){}
+          
+          try { var wdwTitle = windmill.testWin().document.title; }
+          catch(err){
+            if (window.location.href.indexOf('www.') == -1){
+               alert('This application loads and immediately redirects to the www. version of itself, trying to correct the domain.');
+               window.location.href = 'http://www.'+window.location.hostname+"/windmill-serv/remote.html";
+             }
+          }
     };
     
     this.start = function() {
@@ -243,8 +244,8 @@ var windmill = new function() {
      //Window popup wrapper
       try { windmill.testWin().oldOpen = windmill.testWin().open; } 
       catch(err){ 
-        windmill.out("Did you close a popup window, without using closeWindow?");
-        windmill.out("We can no longer access test windows, start over and don't close windows manually.");
+        windmill.ui.results.writeResult("Did you close a popup window, without using closeWindow?");
+        windmill.ui.results.writeResult("We can no longer access test windows, start over and don't close windows manually.");
         alert('See output tab, unrecoverable error has occured.');
         return;
       }
@@ -413,7 +414,7 @@ var windmill = new function() {
         catch(err){
           try { setTimeout('windmill.loaded()', 500); return;}
           catch(err){         
-            windmill.out("Loaded method was unable to bind listeners, <br>Error: " + err);
+            windmill.ui.results.writeResult("Loaded method was unable to bind listeners, <br>Error: " + err);
           }
         }
         windmill.rUnLoadBind(windmill.testWin());

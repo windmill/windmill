@@ -103,10 +103,10 @@ windmill.controller.asserts.assertRegistry = {
 
 //Currently only does one level below the provided div
 //To make it more thorough it needs recursion to be implemented later
-windmill.controller.asserts.assertText = function (param_object) {
+windmill.controller.asserts.assertText = function (paramObject) {
 
-  var n = lookupNode(param_object);
-  var validator = param_object.validator;
+  var n = lookupNode(paramObject);
+  var validator = paramObject.validator;
   if (n.innerHTML.indexOf(validator) != -1){
     return true;
   }
@@ -124,14 +124,14 @@ windmill.controller.asserts.assertText = function (param_object) {
 };
 
 //Assert that a specified node exists
-windmill.controller.asserts.assertNode = function (param_object) {
-  var element = lookupNode(param_object);
+windmill.controller.asserts.assertNode = function (paramObject) {
+  var element = lookupNode(paramObject);
 };
 
 //Assert that a form element contains the expected value
-windmill.controller.asserts.assertValue = function (param_object) {
-  var n = lookupNode(param_object);
-  var validator = param_object.validator;
+windmill.controller.asserts.assertValue = function (paramObject) {
+  var n = lookupNode(paramObject);
+  var validator = paramObject.validator;
 
   if (n.value.indexOf(validator) == -1){
     throw "Value not found, "+ n.value + "not equal to "+ validator;
@@ -140,22 +140,22 @@ windmill.controller.asserts.assertValue = function (param_object) {
 };
 
 //Assert that a provided value is selected in a select element
-windmill.controller.asserts.assertJS = function (param_object) {
-  var js = param_object.js;
+windmill.controller.asserts.assertJS = function (paramObject) {
+  var js = paramObject.js;
   var result = eval(js);
 };
 
 //Asserting javascript with an element object available
-windmill.controller.asserts.assertElemJS = function (param_object) {
-  var element = lookupNode(param_object);
-  var js = param_object.js;
+windmill.controller.asserts.assertElemJS = function (paramObject) {
+  var element = lookupNode(paramObject);
+  var js = paramObject.js;
   var result = eval(js);
 };
 
 //Assert that a provided value is selected in a select element
-windmill.controller.asserts.assertSelected = function (param_object) {
-  var n = lookupNode(param_object);
-  var validator = param_object.validator;
+windmill.controller.asserts.assertSelected = function (paramObject) {
+  var n = lookupNode(paramObject);
+  var validator = paramObject.validator;
 
   if ((n.options[n.selectedIndex].value != validator) && (n.options[n.selectedIndex].innerHTML != validator)){
     throw "Not selected, "+n.options[n.selectedIndex].value+" is not equal to " + validator;
@@ -163,8 +163,8 @@ windmill.controller.asserts.assertSelected = function (param_object) {
 };
 
 //Assert that a provided checkbox is checked
-windmill.controller.asserts.assertChecked = function (param_object) {
-  var n = lookupNode(param_object);
+windmill.controller.asserts.assertChecked = function (paramObject) {
+  var n = lookupNode(paramObject);
 
   if (!n.checked){
     throw "Checked property not true";
@@ -172,9 +172,9 @@ windmill.controller.asserts.assertChecked = function (param_object) {
 };
 
 // Assert that a an element's property is a particular value
-windmill.controller.asserts.assertProperty = function (param_object) {
-  var element = lookupNode(param_object);
-  var vArray = param_object.validator.split('|');
+windmill.controller.asserts.assertProperty = function (paramObject) {
+  var element = lookupNode(paramObject);
+  var vArray = paramObject.validator.split('|');
   var value = eval ('element.' + vArray[0]+';');
   
   if (value.indexOf(vArray[1]) != -1){
@@ -190,8 +190,8 @@ windmill.controller.asserts.assertProperty = function (param_object) {
 // Assert that a specified image has actually loaded
 // The Safari workaround results in additional requests
 // for broken images (in Safari only) but works reliably
-windmill.controller.asserts.assertImageLoaded = function (param_object) {
-  var img = lookupNode(param_object);
+windmill.controller.asserts.assertImageLoaded = function (paramObject) {
+  var img = lookupNode(paramObject);
   if (!img || img.tagName != 'IMG') {
     throw "The node was not an image."
   }
