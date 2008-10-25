@@ -251,6 +251,7 @@ windmill.xhr = new function() {
         if (suiteName == null) {
             suiteName = 'Default';
         }
+        windmill.ui.currentSuite = suiteName;
         var suite = windmill.ui.remote.getSuite(suiteName);
 
         //Add the action to the suite

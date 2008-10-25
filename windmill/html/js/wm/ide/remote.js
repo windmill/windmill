@@ -186,6 +186,9 @@ windmill.ui.remote = new function() {
     };
     
     this.getSuite = function(suiteName, newFlag) {
+        if (typeof(newFlag) == "undefined"){
+          var newFlag = false;
+        }
         //If what we really want is a new suite, the newFlag was passed
         if (newFlag){
           var suiteName = 'recordingSuite' + windmill.ui.recordSuiteNum;
