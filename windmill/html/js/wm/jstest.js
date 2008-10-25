@@ -560,10 +560,24 @@ windmill.jsTest = new function () {
         setTimeout(f, 2000);
         return false;
       }
-
       // Get the test name
       testName = this.testOrder.shift();
-      testFunc = this.lookupObjRef(testName);
+      // Need to separate scope and executable in cases
+      // where testable is an executable function because
+      // waits occur in a setTimeout loop that breaks scope
+      // Namespaced testables
+      if (testName.indexOf('.') > -1) {
+        var testNameArr = testName.split('.');
+        var testNameKey = testNameArr.pop();
+        var testScope = testNameArr.join('.');
+        testScope = this.lookupObjRef(testScope);
+        testFunc = testScope[testNameKey];
+      }
+      // Top-level, global named testables
+      else {
+        testScope = this.getCurrentTestScope();
+        testFunc = this.lookupObjRef(testName);
+      }
       // Tell IDE what is going on
       windmill.stat('Running '+ testName + '...');
       if (testFunc.length > 0) {
@@ -575,13 +589,13 @@ windmill.jsTest = new function () {
       }
       else if (typeof testFunc == 'function' ||
         (document.all && testFunc.toString().indexOf('function') == 0)) {
-        var success = this.runSingleTestFunction(testName, testFunc);
+        var success = this.runSingleTestFunction(testName, testFunc, testScope);
         this.runNextTest();
       }
     }
     return true;
   };
-  this.runSingleTestFunction = function (testName, testFunc) {
+  this.runSingleTestFunction = function (testName, testFunc, testScope) {
     //Do some timing of test run
     this.currentTestName = testName;
     var timer = new windmill.TimeObj();
@@ -592,7 +606,13 @@ windmill.jsTest = new function () {
     try {
       // Actually executing the function object
       // -----------------------
-      testFunc();
+      if (testScope) {
+        testFunc.call(testScope);
+      }
+      else {
+        testFunc();
+      }
+
       // -----------------------
       this.currentJsTestTimer.endTime();
       // Write to the results tab in the IDE
@@ -673,7 +693,8 @@ windmill.jsTest = new function () {
         else if (item.method.indexOf('waits.') > -1 &&
           item.method.indexOf('waits._') == -1 &&
           item.method != 'waits.sleep') {
-          var func = eval('windmill.jsTest.actions.' + item.method);
+          var meth = item.method.replace('waits.', '');
+          var func = windmill.jsTest.actions.waits[meth];
           // Add a parameter so we know the js framework
           // is the source so it knows to kick execution back
           // to this loop
