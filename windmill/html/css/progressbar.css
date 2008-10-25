@@ -1,8 +1,7 @@
 .ui-progressbar {
 	padding: 1px;
 	line-height: 19px;
-	border: 1px #ccc solid;
-	background:#E0E8F3 url(../img/progressbar/bg.gif) repeat-x scroll 0%;
+	border: 0px #ccc solid;
 	position:relative;
 }
 
@@ -25,7 +24,6 @@
 	border-bottom:1px solid #EFEFEF;
 	border-right:0pt none;
 	border-top:1px solid #BEBEBE;
-	height:15px;
 }
 
 .ui-progressbar-disabled {
