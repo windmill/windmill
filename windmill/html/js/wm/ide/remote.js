@@ -140,6 +140,7 @@ windmill.ui.remote = new function() {
 
     this.addAction = function(action) {
         var suite = this.getSuite();
+        suite.style.height = '';
         if (typeof(action) == 'undefined') {
             var action = this.buildAction(null, {});
         }
@@ -233,15 +234,32 @@ windmill.ui.remote = new function() {
             //Make the suites and actions draggable
             //draggability is broken in safari :-(
             if (!windmill.browser.isSafari){
-              jQuery(suite).sortable({revert:true, items: "div", axis: "y"});
-              jQuery($('ideForm')).sortable({revert:true}); 
+              jQuery(suite).sortable({items: "div", axis: "y"});
+              jQuery($('ideForm')).sortable({});
+                          
+              // jQuery('a').bind("mousedown", function(e){
+              //   jQuery($('ideForm')).sortable("disable");
+              //   jQuery(".suite").sortable("disable");
+              // });
+              // jQuery('a').bind("mouseup", function(e){
+              //   jQuery($('ideForm')).sortable("enable");
+              //   jQuery(".suite").sortable("enable");
+              // });
+              // jQuery(':image').bind("mousedown", function(e){
+              //   jQuery($('ideForm')).sortable("disable");
+              //   jQuery(".suite").sortable("disable");
+              // });
+              // jQuery(':image').bind("mouseup", function(e){
+              //   jQuery($('ideForm')).sortable("enable");
+              //   jQuery(".suite").sortable("enable");
+              // });
             }
             
             //minimize the last suite
             try {
               var h = $(suite.id).previousSibling.style.height;
               //If the last suite is expanded, collapse it
-              if (h != '18px') { 
+              if (h != '22px') { 
                 windmill.ui.toggleCollapse($(suite.id).previousSibling.id); 
               }
             } catch(err) { }
