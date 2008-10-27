@@ -184,7 +184,10 @@ windmill.controller.commands.jsTests = function (paramObj) {
     var wm = windmill.jsTest.actions;
     var testFiles = paramObj.files;
     if (!testFiles.length) {
-      throw new Error('No JavaScript tests to run.');
+      var err = 'No JavaScript tests to run.';
+      windmill.jsTest.sendJSReport('jsTests', false, err,
+        new TimeObj());
+      throw new Error();
     }
     var _j = windmill.jsTest;
     windmill.pauseLoop();

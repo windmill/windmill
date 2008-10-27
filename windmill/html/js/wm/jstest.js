@@ -67,7 +67,7 @@ windmill.jsTest = new function () {
     }
     // Pass along syntax errors
     catch (e) {
-      windmill.jsTest.sendJSReport('Evaling', false, null, new windmill.TimeObj());
+      windmill.jsTest.sendJSReport('Evaling', false, e, new windmill.TimeObj());
       windmill.jsTest.teardown();
       
       var err = new Error("Error eval'ing code in file '" +
