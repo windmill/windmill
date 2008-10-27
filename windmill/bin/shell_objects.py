@@ -130,6 +130,7 @@ load_test.__name__ = 'load_test'
 load_test.__doc__ = "Load the test file or directory passed to this function"   
 
 def run_js_tests(js_dir, test_filter=None, phase=None):
+    js_dir = os.path.abspath(os.path.expanduser(js_dir))
     from wsgi_fileserver import WSGIFileServerApplication
     application = WSGIFileServerApplication(root_path=os.path.abspath(js_dir), mount_point='/windmill-jstest/')
     from windmill.server import wsgi
