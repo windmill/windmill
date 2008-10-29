@@ -71,13 +71,13 @@ windmill.controller.asserts.assertRegistry = {
   },
 
   'assertNaN': {
-  expr: function (a) { return typeof a == 'undefined'; },
-  errMsg: 'expected to be undefined but was $1.'
+  expr: function (a) { return isNaN(a); },
+  errMsg: 'expected $1 to be NaN, but was not NaN.'
   },
 
   'assertNotNaN': {
-  expr: function (a) { return typeof a != 'undefined'; },
-  errMsg: 'expected not to be undefined but was undefined.'
+  expr: function (a) { return !isNaN(a); },
+  errMsg: 'expected $1 not to be NaN, but was NaN.'
   },
 
   'assertEvaluatesToTrue': {
