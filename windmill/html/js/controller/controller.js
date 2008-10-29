@@ -716,6 +716,57 @@ windmill.controller = new function () {
   };
   
   /**
+  * Fire keypress event
+  * @param
+  */
+  this.keyPress = function(paramObject){
+    try {
+      var element = lookupNode(paramObject);
+    } catch(err){ var element = windmill.testWin().document.body; }
+
+    paramObject.options = paramObject.options.replace(/ /g, "");
+
+    var opts = paramObject.options.split(",");
+    windmill.events.triggerEvent(element, 'focus', false);
+    //element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown
+    windmill.events.triggerKeyEvent(element, "keypress", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]));
+  };
+  
+  /**
+  * Fire keydown event
+  * @param
+  */
+  this.keyDown = function(paramObject){
+    try {
+      var element = lookupNode(paramObject);
+    } catch(err){ var element = windmill.testWin().document.body; }
+
+    paramObject.options = paramObject.options.replace(/ /g, "");
+
+    var opts = paramObject.options.split(",");
+    windmill.events.triggerEvent(element, 'focus', false);
+    //element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown
+    windmill.events.triggerKeyEvent(element, "keyDown", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]));
+  };
+  
+  /**
+  * Fire keydown event
+  * @param
+  */
+  this.keyUp = function(paramObject){
+    try {
+      var element = lookupNode(paramObject);
+    } catch(err){ var element = windmill.testWin().document.body; }
+
+    paramObject.options = paramObject.options.replace(/ /g, "");
+
+    var opts = paramObject.options.split(",");
+    windmill.events.triggerEvent(element, 'focus', false);
+    //element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown
+    windmill.events.triggerKeyEvent(element, "keyUp", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]));
+  };
+  
+  /**
   * Trigger the back function in the Windmill Testing Application Window
   */
   this.goBack = function(paramObject){
