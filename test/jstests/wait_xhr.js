@@ -8,7 +8,7 @@ windmillMain.test_waitForXHR = new function () {
     var success = function () {
       windmillMain.tempData = 'returned';
     };
-    fleegix.xhr.get(success, '/test.txt');
+    fleegix.xhr.get(success, '/windmill-serv/jstest/data.json');
   };
   this.test_wait = windmillMain.shared.util.waitForTempData;
   this.test_afterWait = function () {
