@@ -14,9 +14,9 @@ windmillMain.test_waitForXHR = new function () {
   this.test_afterWait = function () {
     jum.assertEquals('returned', windmillMain.tempData);
   };
-  // Remove the node so we can run the test again
+  // Remove the temp data so we can run the test again
   this.teardown = function () {
     windmillMain.tempData = null;
-  }
+  };
 };
 
