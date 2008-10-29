@@ -139,6 +139,13 @@ windmill.jsTest = new function () {
     this.testFailureCount = 0;
     this.runInTestWindowScope = true;
     this.waiting = false;
+    
+    //Tell the JS test not to output all the extra stuff
+    windmill.chatty = false;
+    //clean up output tab for test run
+    $('resOut').innerHTML = "";
+    //Select the output tab
+    jQuery('#tabs ul').tabs("select", 1);
   };
   // Main function to run a directory of JS tests
   this.run = function (paramObj) {
@@ -579,7 +586,10 @@ windmill.jsTest = new function () {
         testFunc = this.lookupObjRef(testName);
       }
       // Tell IDE what is going on
-      windmill.stat('Running '+ testName + '...');
+      //if the string is really long and namespaced, just use the functions name
+      var testNameArr = testName.split(".");
+      windmill.stat('Running '+ testNameArr[testNameArr.length - 1] + '...');
+
       if (testFunc.length > 0) {
         this.testItemArray = {
           name: testName,
@@ -617,7 +627,8 @@ windmill.jsTest = new function () {
       this.currentJsTestTimer.endTime();
       // Write to the results tab in the IDE
       windmill.out("<br><b>Test:</b> " + testName +
-        "<br>Test Result:" + true);
+        "<br>Test Result: <font color=\"#61d91f\"><b>" + true + "</b></font>");
+      this.currentJsTestTimer.write()
       // Send report for pass
       windmill.jsTest.sendJSReport(testName, true, null,
         this.currentJsTestTimer);
@@ -669,11 +680,11 @@ windmill.jsTest = new function () {
       if (typeof item == 'function' ||
         (document.all && item.toString().indexOf('function') == 0)) {
         this.runSingleTestFunction(this.testItemArray.name, item);
-          var action = {};
-          action.method = 'function';
-          action.params = '(JavaScript code is being executed)';
-          var a = windmill.xhr.createActionFromSuite('jsTests', action);
-          windmill.xhr.setActionBackground(a,true,action);
+          //var action = {};
+          //action.method = 'function';
+          //action.params = '(JavaScript code is being executed)';
+          //var a = windmill.xhr.createActionFromSuite('jsTests', action);
+          //windmill.xhr.setActionBackground(a,true,action);
       }
       else {
         // If the action is a sleep, set the sleep
@@ -686,8 +697,8 @@ windmill.jsTest = new function () {
           action.params = item.params;
           action.params.orig = 'js';
 
-          var a = windmill.xhr.createActionFromSuite('jsTests', action);
-          windmill.xhr.setWaitBgAndReport(a.id,true,action);
+          //var a = windmill.xhr.createActionFromSuite('jsTests', action);
+          //windmill.xhr.setWaitBgAndReport(a.id,true,action);
         }
         // Public waits methods, not including sleep
         else if (item.method.indexOf('waits.') > -1 &&
@@ -711,8 +722,11 @@ windmill.jsTest = new function () {
           // Execute the UI action with the set params
           windmill.stat('Running '+ item.method + '...');
           testActionFunc(item.params);
-          windmill.out("<br><b>Action:</b> " + item.method +
-            "<br>Params: " + fleegix.json.serialize(item.params));
+          
+          if (windmill.chatty){
+            windmill.out("<br><b>Action:</b> " + item.method +
+                       "<br>Params: " + fleegix.json.serialize(item.params));
+          }
           if (this.testItemArray.name == 'setup') {
 
           };
@@ -803,43 +817,47 @@ windmill.jsTest.actions.loadActions = function () {
       cwTimer.startTime();
 
       //Build some UI
-       var action = {};
-       if (name){ action.method = name+'.'+meth; }
-       else { action.method = meth; }
-       action.params = eval(args[0]);
+       // var action = {};
+       //     if (name){ action.method = name+'.'+meth; }
+       //     else { action.method = meth; }
+       //     action.params = eval(args[0]);
        
        //var a = windmill.xhr.createActionFromSuite('jsTests', action);
-       var buildUI = function(actionObj){
-         var suite = windmill.ui.remote.getSuite("jsTests");
-         var action = windmill.ui.remote.buildAction(actionObj.method, actionObj.params);
-         suite.appendChild(action);
-         $(action.id+"method").disabled = true;
-         try {
-           $(action.id+"locatorType").disabled = true;
-           $(action.id+"locator").disabled = true;
-         } catch(err){}
-         try {
-           $(action.id+"optionType").disabled = true;
-           $(action.id+"option").disabled = true;
-         } catch(err){}
-         return action;
-       }
-       var a = buildUI(action);
+       // var buildUI = function(actionObj){
+       //   //var suite = windmill.ui.remote.getSuite("jsTests");
+       //   //var action = windmill.ui.remote.buildAction(actionObj.method, actionObj.params);
+       //   //suite.appendChild(action);
+       //   $(action.id+"method").disabled = true;
+       //   try {
+       //     $(action.id+"locatorType").disabled = true;
+       //     $(action.id+"locator").disabled = true;
+       //   } catch(err){}
+       //   try {
+       //     $(action.id+"optionType").disabled = true;
+       //     $(action.id+"option").disabled = true;
+       //   } catch(err){}
+       //   return action;
+       // }
+       //var a = buildUI(action);
        
        //Set the id in the IDE so we can manipulate it
-       action.params.aid = a.id;
+       //action.params.aid = a.id;
 
       //Run the action in the UI
-      var result = namespace[meth].apply(namespace, args);
+      var result = true;
+      try {
+        namespace[meth].apply(namespace, args);
+      } catch(err) { this.handleErr(err); }
+      
       //Set results, but not for waits, they do it themselves
-      if (action.method.indexOf('waits') == -1){
-        windmill.xhr.setActionBackground(a,result,action);
-      }
-
+      // if (action.method.indexOf('waits') == -1){
+      //         windmill.xhr.setActionBackground(a,result,action);
+      //       }
+      
       //End the timer
-      cwTimer.endTime();
+      //cwTimer.endTime();
       //Send a report to the backend
-      windmill.jsTest.sendJSReport(meth, result, null, cwTimer);
+      //windmill.jsTest.sendJSReport(meth, result, null, cwTimer);
       //Continue on with the test running
       return;
     };

@@ -108,7 +108,9 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
           }
         
            //set the result in the ide
-            windmill.xhr.setWaitBgAndReport(aid,true,obj);
+           if (windmill.chatty){
+             windmill.xhr.setWaitBgAndReport(aid,true,obj);
+           }
         }
       if ((windmill.browser.isSafari) || (windmill.browser.current_ua.indexOf('firefox/2') != -1)){
         setTimeout(c, 1500);

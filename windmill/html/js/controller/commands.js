@@ -206,10 +206,10 @@ windmill.controller.commands.jsTestResults = function () {
   var _j = windmill.jsTest;
   var jsSuiteSummary = _j.jsSuiteSummary;
   var s = '';
-  s += 'Number of tests run: ' + _j.testCount + '<br/>';
-  s += 'Number of tests failures: ' + _j.testFailureCount + '<br/>';
+  s += '<b style="font-size:12px">Number of tests run:</b> ' + _j.testCount + '<br/>';
+  s += '<b style="font-size:12px">Number of tests failures:</b> ' + _j.testFailureCount;
   if (_j.testFailureCount > 0) {
-    s += 'Test failures:<br/>';
+    s += '<br/>Test failures:<br/>';
     var fails = _j.testFailures;
     for (var i = 0; i < fails.length; i++) {
       var fail = fails[i];
@@ -217,7 +217,7 @@ windmill.controller.commands.jsTestResults = function () {
       // Escape angle brackets for display in HTML
       msg = msg.replace(/</g, '&lt;');
       msg = msg.replace(/>/g, '&gt;');
-      s += msg + '<br/>';
+      s += msg;
     }
   };
 

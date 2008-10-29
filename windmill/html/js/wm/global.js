@@ -86,7 +86,9 @@ var lookupNode = function (paramObject, throwErr){
   }
   
   //write out the results to the ide
-  windmill.out(s);
+  if (windmill.chatty){
+    windmill.out(s);
+  }
   //scroll so that the element is in view
   if (element) { 
     element.scrollIntoView(); 
@@ -165,13 +167,13 @@ var openFirebug = function(){
   	var fbCSS = windmill.testWin().document.createElement('link');
   	fbCSS.rel = "stylesheet";
   	fbCSS.type = "text/css";
-  	fbCSS.href = "windmill-serv/css/firebug-lite.css";
+  	fbCSS.href = "/windmill-serv/css/firebug-lite.css";
   	windmill.testWin().document.body.insertBefore(fbCSS, windmill.testWin().document.body.childNodes[0]);
   	
     var piScript = windmill.testWin().document.createElement('script');
-    piScript.src = "windmill-serv/js/lib/firebug/pi.js"
+    piScript.src = "/windmill-serv/js/lib/firebug/pi.js"
     var fbScript = windmill.testWin().document.createElement('script');
-    fbScript.src = "windmill-serv/js/lib/firebug/firebug-lite.js";
+    fbScript.src = "/windmill-serv/js/lib/firebug/firebug-lite.js";
     windmill.testWin().document.body.insertBefore(piScript, windmill.testWin().document.body.childNodes[0]);
     windmill.testWin().document.body.insertBefore(fbScript, windmill.testWin().document.body.childNodes[0]);
     setTimeout('windmill.testWin().firebug.init();windmill.testWin().firebug.win.maximize()', 1000);

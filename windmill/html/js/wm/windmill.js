@@ -39,6 +39,7 @@ var windmill = new function() {
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*
     this.waiting = false;
+    this.chatty = true;
     
     //The timeout ID of whatever is keeping
     //us from continuing the tests runs, if it reaches
