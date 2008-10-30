@@ -403,7 +403,8 @@ windmill.ui.remote = new function() {
             i0.type = 'text';
             i0.id = action.id + 'method';
             i0.className = 'texta';
-            i0.size = '40';
+            //i0.size = '40';
+            //i0.style.width = "100%";
             i0.setAttribute('value', method);
             c.appendChild(i0);
 
@@ -627,7 +628,8 @@ windmill.ui.remote = new function() {
             var i1 = document.createElement('input');
             i1.name = 'optValue';
             i1.className = 'texta';
-            i1.size = '40';
+            //i1.size = '40';
+            //i1.style.width = "100%";
             
             //if the action had a special flag, dragDropElemToElem
             if (windmill.ui.remote.optionValue != undefined){
