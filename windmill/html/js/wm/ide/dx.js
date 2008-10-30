@@ -155,7 +155,13 @@ windmill.ui.domexplorer = new function() {
     $('mouseExp').innerHTML = '('+e.clientX + ',' + e.clientY+')';
   }
   
-  this.explorerClick = function(e) { 
+  this.explorerClick = function(e) {
+    e.cancelBubble = true;
+    if (windmill.browser.isIE == false) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    
     var optId = windmill.ui.remote.selectedElementOption;
     //if an option section is selected and the altKey is down append the mouse coords
     if ((optId != null) && (e.altKey)){
@@ -166,8 +172,12 @@ windmill.ui.domexplorer = new function() {
         $(optId).value += '('+e.clientX+','+e.clientY+')';
       }
     }
-    else{ window.focus();}
+    else{
+        windmill.ui.domexplorer.dxRecursiveUnBind(windmill.testWin());
+        window.focus();
+    }
   };
+  
   //Set the listeners for the dom explorer
   this.domExplorerOn = function() {
     //Display the mouse coords in the IDE
