@@ -102,9 +102,9 @@ class TestResolutionSuite(object):
         self.resolved[uuid] = test
                 
         if result is False:
-            test_results_logger.error('Test Failure in test %s' % test)
+            test_results_logger.error('Test Failure in test %s' % repr(test))
         elif result is True:
-            test_results_logger.debug('Test Success in test %s' % test)
+            test_results_logger.debug('Test Success in test %s' % repr(test))
         
         if self.result_processor is not None:
             if result is False:
@@ -116,9 +116,9 @@ class TestResolutionSuite(object):
         test = {'result':result, 'uuid':uuid, 'starttime':starttime, 'endtime':endtime, 
                 'suite_name':suite_name, 'debug':debug}
         if result is False:
-            test_results_logger.error('Test Failure in test %s' % test)
+            test_results_logger.error('Test Failure in test %s' % repr(test))
         elif result is True:
-            test_results_logger.debug('Test Success in test %s' % test)
+            test_results_logger.debug('Test Success in test %s' % repr(test))
     
         if self.result_processor is not None:
             if result is False:

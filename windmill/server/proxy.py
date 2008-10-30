@@ -53,6 +53,12 @@ exclude_from_retry = []
 #         else:
 #             yield self.response_instance.read()
 
+def conditions_pass(e):
+    for c in windmill.server.forwarding_conditions:
+        if c(e) is False:
+            return False
+    return True
+
 class WindmillProxyApplication(object):
     """Application to handle requests that need to be proxied"""
 
@@ -78,7 +84,7 @@ class WindmillProxyApplication(object):
         if windmill.settings['FORWARDING_TEST_URL'] is not None and (
            not url.netloc.startswith('localhost') ) and (
            not url.netloc.startswith('127.0.0.1') ) and (
-           reduce(lambda x, y: x == y(environ), windmill.server.forwarding_conditions, True)):
+           conditions_pass(environ) ):
             # Do our domain change magic
             url = urlparse(environ['reconstructed_url'])
             
