@@ -1,201 +1,130 @@
 /*
- * jQuery UI ProgressBar
+ * jQuery Progress Bar plugin
+ * Version 1.1.0 (06/20/2008)
+ * @requires jQuery v1.2.1 or later
  *
- * Copyright (c) 2008 Eduardo Lundgren (braeker)
- * Dual licensed under the MIT (MIT-LICENSE.txt)
- * and GPL (GPL-LICENSE.txt) licenses.
- * 
- * http://docs.jquery.com/UI/ProgressBar
- *
- * Depends:
- *   ui.base.js
- *
- * Revision: $Id: ui.progressbar.js 5196 2008-04-04 12:52:32Z braeker $
- */
-;(function($) {
+ * Copyright (c) 2008 Gary Teo
+ * http://t.wits.sg
 
-	$.fn.extend({
-		progressbar: function(options) {
-			var args = Array.prototype.slice.call(arguments, 1);
-			
-			if ( options == "value" )
-				return $.data(this[0], "progressbar").value(arguments[1]);
-			
-			return this.each(function() {
-				if (typeof options == "string") {
-					var progressbar = $.data(this, "progressbar");
-					if (progressbar) progressbar[options].apply(progressbar, args);
+USAGE:
+	$(".someclass").progressBar();
+	$("#progressbar").progressBar();
+	$("#progressbar").progressBar(45);							// percentage
+	$("#progressbar").progressBar({showText: false });			// percentage with config
+	$("#progressbar").progressBar(45, {showText: false });		// percentage with config
+*/
+(function($) {
+	$.extend({
+		progressBar: new function() {
 
-				} else if(!$.data(this, "progressbar"))
-					new $.ui.progressbar(this, options);
-			});
-		}
-	});
-	
-	$.ui.progressbar = function(element, options) {
-		//Initialize needed constants
-		var self = this;
-		this.element = $(element);
-		$.data(element, "progressbar", this);
-		this.element.addClass("ui-progressbar");
-		
-		//Prepare the passed options
-		this.options = $.extend({}, $.ui.progressbar.defaults, options);
-		var o = this.options, el = this.element;
-		$.extend(o, {
-			increment: o.increment > 100 ? 100 : o.increment
-		});
-		this._step = 0;
-		this.rangeValue = 0;
-		this.threads = {};
-		
-		var text = o.text ? o.text : (o.range ? '0%' : '');
-		
-		el.css({overflow: 'hidden'});
-		
-		this.wrapper = $("<div>")
-			.addClass('ui-progressbar-wrap').css({ height: 'auto', width: 'auto' }).appendTo(el);
-		
-		this.bar = $("<div>")
-			.addClass('ui-progressbar-inner').addClass(o.addClass).css({ width: '0px', 'float': o.align || null }).appendTo(this.wrapper);
-			
-		this.textEl = $("<div>")
-			.addClass('ui-progressbar-text').addClass(o.textClass).css({ width: el.css('width'), zIndex: 99 }).html(text).appendTo(this.wrapper);
-	};
-	
-	$.extend($.ui.progressbar.prototype, {
-		plugins: {},
-		ui: function(e) {
-			return {
-				instance: this,
-				options: this.options,
-				step: this._step,
-				rangeValue: this.rangeValue,
-				pixelRange: this.pixelRange
-			}
-		},
-		propagate: function(n,e) {
-			$.ui.plugin.call(this, n, [e, this.ui()]);
-			this.element.triggerHandler(
-				n == "progressbar" ? n : ["progressbar", n].join(""), [e, this.ui()], this.options[n]
-			);
-		},
-		destroy: function() {
-			this.reset();
-			
-			this.element
-				.removeClass("ui-progressbar ui-progressbar-disabled")
-				.removeData("progressbar").unbind(".progressbar")
-				.find('.ui-progressbar-wrap').remove();
-		},
-		enable: function() {
-			this.element.removeClass("ui-progressbar-disabled");
-			this.disabled = false;
-			if (this.inprogress)	this.start();
-		},
-		disable: function() {
-			this.element.addClass("ui-progressbar-disabled");
-			this.disabled = true;
-			this.clearThreads();
-		},
-		start: function() {
-			if (this.disabled) return false;
-			this.inprogress = true;
-			
-			var o = this.options, el = this.element, self = this;
-			this.clearThreads();
-			
-			if (typeof o.wait == 'number' && !self.waitThread)
-				self.waitThread = setTimeout(function() {
-					clearInterval(self.waitThread);
-					self.waitThread = null;
-				}, o.wait);
-			
-			var frames = Math.ceil(100/o.increment) || 0, ms = o.duration/frames || 0,
-			
-			render = function(step, t) { return function() {
-					clearInterval(t);
-					self.progress(o.increment * step);
-					// on end
-					if (step >= frames) {
-						self.stop();
-
-						if (self.waitThread || o.wait == 'loop') {
-							self._step = 0;
-							self.start();
-						}
-					}
-				};
+			this.defaults = {
+				increment	: 2,
+				speed		: 15,
+				showText	: true,											// show text with percentage in next to the progressbar? - default : true
+				width		: 120,											// Width of the progressbar - don't forget to adjust your image too!!!
+				boxImage	: '/windmill-serv/img/progressbar/progressbar.gif',		// boxImage : image around the progress bar
+				barImage	: '/windmill-serv/img/progressbar/progressbg_green.gif',	// Image to use in the progressbar. Can be an array of images too.
+				height		: 15											// Height of the progressbar - don't forget to adjust your image too!!!
 			};
-			var from = this._step;
 			
-			for(var step = from; step <= frames; step++) {
-				var interval = (step - (from - 1)) * ms;
-				this.threads[step] = setTimeout(render(step, this.threads[step]), interval);
-			}
-			
-			this.propagate('start');
-			return false;
-		},
-		clearThreads: function() {
-			$.each(this.threads, function(s, t) { clearInterval(t); });
-			this.threads = {};
-		},
-		stop: function() {
-			if (this.disabled) return false;
-			var o = this.options, self = this;
-			
-			this.clearThreads();
-			this.propagate('stop');
-			
-			this.inprogress = false;
-			return false;
-		},
-		reset: function() {
-			if (this.disabled) return false;
-			this._step = 0;
-			this.rangeValue = 0;
-			this.inprogress = false;
-			this.clearThreads();
-			this.progress(0);
-			return false;
-		},
-		progress: function(range) {
-			var o = this.options, el = this.element, bar = this.bar;
-			if (this.disabled) return false;
-			
-			range = parseInt(range, 10);
-			this.rangeValue = this._fixRange(range);
-			
-			var elw = el.innerWidth() - (el.outerWidth() - el.innerWidth()) - (bar.outerWidth() - bar.innerWidth());
-			
-			this.pixelRange = Math.round( ((this.rangeValue/100)||0) * elw );
-			
-			this.bar.css({ width: this.pixelRange + 'px' });
-			
-			if (!o.text && o.range) this.text(this.rangeValue + '%');
-			this.propagate('progress', this.rangeValue);
-			return false;
-		},
-		text: function(text) {
-			this.textEl.html(text);
-		},
-		_fixRange: function(range) {
-			var o = this.options;
-			this._step = Math.ceil(range/o.increment);
-			this.rangeValue = Math.round(o.increment * this._step);
-			this.rangeValue = (this.rangeValue) >= 100 ? 100 : this.rangeValue;
-			return this.rangeValue;
+			/* public methods */
+			this.construct = function(arg1, arg2) {
+				var argpercentage	= null;
+				var argconfig		= null;
+				
+				if (arg1 != null) {
+					if (!isNaN(arg1)) {
+						argpercentage 	= arg1;
+						if (arg2 != null) {
+							argconfig	= arg2; }
+					} else {
+						argconfig		= arg1; 
+					}
+				}
+				
+				return this.each(function(child) {
+					var pb		= this;
+					if (argpercentage != null && this.bar != null && this.config != null) {
+						this.config.tpercentage	= argpercentage;
+						if (argconfig != null)
+							pb.config			= $.extend(this.config, argconfig);
+					} else {
+						var $this				= $(this);
+						var config				= $.extend({}, $.progressBar.defaults, argconfig);
+						var percentage			= argpercentage;
+						if (argpercentage == null)
+							var percentage		= $this.html().replace("%","");	// parsed percentage
+						
+						
+						$this.html("");
+						var bar					= document.createElement('img');
+						var text				= document.createElement('span');
+						bar.id 					= this.id + "_percentImage";
+						text.id 				= this.id + "_percentText";
+						bar.src					= config.boxImage;
+						bar.width				= config.width;
+						var $bar				= $(bar);
+						var $text				= $(text);
+						
+						this.bar				= $bar;
+						this.ntext				= $text;
+						this.config				= config;
+						this.config.cpercentage	= 0;
+						this.config.tpercentage	= percentage;
+						
+						$bar.css("width", config.width + "px");
+						$bar.css("height", config.height + "px");
+						$bar.css("background-image", "url(" + config.barImage + ")");
+						$bar.css("padding", "0");
+						$bar.css("margin", "0");
+						$this.append($bar);
+						$this.append($text);
+						
+						bar.alt				= this.tpercentage;
+						bar.title			= this.tpercentage;
+					}
+					
+					
+					
+					var t = setInterval(function() {
+						var config		= pb.config;
+						var cpercentage = parseInt(config.cpercentage);
+						var tpercentage = parseInt(config.tpercentage);
+						var increment	= parseInt(config.increment);
+						var bar			= pb.bar;
+						var text		= pb.ntext;
+						var pixels		= config.width / 100;			// Define how many pixels go into 1%
+						
+						bar.css("background-position", (((config.width * -1)) + (cpercentage * pixels)) + 'px 50%');
+						
+						if (config.showText)
+							text.html(" " + Math.round(cpercentage) + "%");
+						
+						if (cpercentage > tpercentage) {
+							if (cpercentage - increment  < tpercentage) {
+								pb.config.cpercentage = 0 + tpercentage
+							} else {
+								pb.config.cpercentage -= increment;
+							}
+						}
+						else if (pb.config.cpercentage < pb.config.tpercentage) {
+							if (cpercentage + increment  > tpercentage) {
+								pb.config.cpercentage = tpercentage
+							} else {
+								pb.config.cpercentage += increment;
+							}
+						} 
+						else {
+							clearInterval(t);
+						}
+					}, pb.config.speed); 
+				});
+			};
 		}
 	});
+		
+	$.fn.extend({
+        progressBar: $.progressBar.construct
+	});
 	
-	$.ui.progressbar.defaults = {
-    duration: 3000,
-    increment: 1,
-		text: '',
-		range: true,
-		addClass: '',
-		textClass: ''
-	};
-
 })(jQuery);
