@@ -196,7 +196,10 @@
       progress = 10;
     }
     else { progress = progress + 10; }
-      jQuery("#progressbar").progressBar(progress);
+      if (progress <= 100){
+        //Keep it from going over 100%
+        jQuery("#progressbar").progressBar(progress);
+      }
     }
   
   //define the path to try to pull the compressed JS from
