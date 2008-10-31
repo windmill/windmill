@@ -27,11 +27,14 @@ windmill.ui.domexplorer = new function() {
   
   //Display the id in the remote
   this.setIdInRemote = function(e) {
+    if ($(windmill.ui.remote.selectedElement) == null){
+      windmill.ui.remote.selectedElement = null;
+    }
     if (windmill.ui.remote.selectedElement != null) {
       $("domExp").style.display = 'none';
     }
     if (windmill.ui.remote.selectedElementOption != null) {
-        $("domExp").style.display = 'none';
+      $("domExp").style.display = 'none';
     }
     
     //if absolute xpath is not wanted try our best to get a better locater
@@ -132,6 +135,7 @@ windmill.ui.domexplorer = new function() {
     
     if (windmill.ui.remote.selectedElement != null) {
         var id = windmill.ui.remote.selectedElement.replace('locator', '');
+        
         //Incase if that node has been removed somehow
         try {
           var a = $("domExp").innerHTML.split(': ');
@@ -172,9 +176,13 @@ windmill.ui.domexplorer = new function() {
         $(optId).value += '('+e.clientX+','+e.clientY+')';
       }
     }
-    else{
+    else {
+      if ($("domExp").style.display == 'none'){
+        windmill.ui.domexplorer.domExplorerOff();
+      } else {
         windmill.ui.domexplorer.dxRecursiveUnBind(windmill.testWin());
-        window.focus();
+      }
+      window.focus();
     }
   };
   
