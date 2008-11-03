@@ -34,6 +34,8 @@ dependencies =  ['CherryPy >= 3.0.2',
                  'wsgi_xmlrpc >= 0.2.3',
                  'wsgi_fileserver >= 0.2.3',
                  'functest >= 0.7.1',
+                 'mozrunner',
+                 'simplesettings',
                  ]
 
 two_five_dependencies = [ 'simplejson >= 1.7.1',
