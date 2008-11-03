@@ -50,9 +50,9 @@ var elementslib = new function(){
     domNode = nodeSearch(nodeByValue, s);
     return returnOrThrow(s);
   };
-  this.Element.XPATH = function(s, xb){
+  this.Element.XPATH = function(s){
     locators.xpath = s;
-    domNode = nodeSearch(nodeByXPath, s, xb);
+    domNode = nodeSearch(nodeByXPath, s, document);
     //do the lookup, then set the domNode to the result
     return returnOrThrow(s);
   };
@@ -72,38 +72,38 @@ var elementslib = new function(){
   
   //do the recursive search
   //takes the function for resolving nodes and the string
-  var nodeSearch = function(func, s){
+  var nodeSearch = function(func, s, doc){
     var e = null;
 
     //inline function to recursively find the element in the DOM, cross frame.
-    var recurse = function(w, func, s){
+    var recurse = function(w, func, s, doc){
      //do the lookup in the current window
-     try{ element = func.call(w, s);}
+     try{ element = func.call(w, s, doc);}
      catch(err){ element = null; }
      
       if (!element){
         var fc = w.frames.length;
         var fa = w.frames;   
         for (var i=0;i<fc;i++){
-          recurse(fa[i], func, s); 
+          recurse(fa[i], func, s, doc); 
         }
      }
      else { e = element; }
     };
     
     //IE cross window problems require you to talk directly to opener
-     try{ element = func.call(windmill.testWin(), s);}
+     try{ element = func.call(windmill.testWin(), s, doc);}
      catch(err){ element = null; }
      if (!element){
        for (var i=0;i<windmill.testWin().frames.length;i++){
-         try { element = func.call(windmill.testWin().frames[i], s); }
+         try { element = func.call(windmill.testWin().frames[i], s, doc); }
          catch(err){ element = null; }
        }
      }
         
     if (element){ return element; }
-    recurse(windmill.testWin(), func, s);
-    recurse(windmill.baseTestWindow, func, s);
+    recurse(windmill.testWin(), func, s, doc);
+    recurse(windmill.baseTestWindow, func, s, doc);
     
     return e;
   }
@@ -221,29 +221,14 @@ var elementslib = new function(){
   };
   
   //Lookup with xpath
-  var nodeByXPath = function (xpath, xb) {
-    var nsResolver = function (prefix) {
-      if (prefix == 'html' || prefix == 'xhtml' || prefix == 'x') {
-        return 'http://www.w3.org/1999/xhtml';
-      } else if (prefix == 'mathml') {
-        return 'http://www.w3.org/1998/Math/MathML';
-      } else {
-        throw new Error("Unknown namespace: " + prefix + ".");
-      }
+  var nodeByXPath = function (xpath, doc) {
+    //if there is built in document.evaluate
+    if (this.document.evaluate){
+      return this.document.evaluate(xpath, this.document, null, 0, null).iterateNext();
     }
-    // Use document.evaluate() if it's available
-    if (this.document.evaluate && !xb) {
-      return this.document.evaluate(xpath, this.document, nsResolver, 0, null).iterateNext();
+    //Else pass the IDE window.document that has a document.evaluate
+    else {
+      return doc.evaluate(xpath, this.document, null, 0, null).iterateNext();
     }
-    
-    xpath = xpath.replace(/\[@.*?\]/g, '');
-    var expr = xpathParse(xpath.toUpperCase());
-    var xpathResult = expr.evaluate(new ExprContext(this.document));
-    
-    if (xpathResult && xpathResult.value) {
-      return xpathResult.value[0];
-    } 
-    
-    return null;
   };
 };

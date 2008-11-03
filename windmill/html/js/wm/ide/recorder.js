@@ -74,9 +74,8 @@ windmill.ui.recorder = new function() {
               if (locator == ''){
                   var stringXpath = getXSPath(e.target);
                   var element = elementslib.Element.XPATH(stringXpath);
-                  var elementXB = elementslib.Element.XPATH(stringXpath, true);
                   
-                  if ((element == e.target) && (elementXB == e.target)){
+                  if (element == e.target){
                     locator = 'xpath';
                     locValue = stringXpath;
                   }
@@ -89,9 +88,7 @@ windmill.ui.recorder = new function() {
           else {
             var stringXpath = getXSPath(e.target);
             var element = elementslib.Element.XPATH(stringXpath);
-            var elementXB = elementslib.Element.XPATH(stringXpath, true);
-
-            if ((element == e.target) && (elementXB == e.target)){
+            if (element == e.target){
               locator = 'xpath';
               locValue = stringXpath;
             }

@@ -21,7 +21,7 @@ windmill.ui.remote = new function() {
     this.selectedElementOption = null;
 
     this.scrollRecorderTextArea = function() {
-        var obj = $("ide");
+        var obj = $("ideForm");
         obj.scrollTop = obj.scrollHeight;
     };
 

@@ -71,9 +71,7 @@ windmill.ui.domexplorer = new function() {
           var stringXpath = getXSPath(e.target);
           //test to make sure it actually works
           var element = elementslib.Element.XPATH(stringXpath);
-          var elementXB = elementslib.Element.XPATH(stringXpath, true);
-
-          if ((element == e.target) && (elementXB == e.target)){
+          if (element == e.target){
             $("domExp").innerHTML = 'XPath: ' + stringXpath;
           }
           else{
@@ -82,11 +80,9 @@ windmill.ui.domexplorer = new function() {
         }
       }
       else {
-        var stringXpath = getXSPath(e.target);
+         var stringXpath = getXSPath(e.target);
          var element = elementslib.Element.XPATH(stringXpath);
-         var elementXB = elementslib.Element.XPATH(stringXpath, true);
-         
-         if ((element == e.target) && (elementXB == e.target)){
+         if (element == e.target){
             $("domExp").innerHTML = 'XPath: ' + stringXpath;
           }
           else{

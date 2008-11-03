@@ -6,6 +6,7 @@ def test_dragdropunit():
 
     client.open(url=u'http://tutorial.getwindmill.com/windmill-unittests/jqueryui152/demos/functional/index.html')
     client.waits.forPageLoad(timeout=u'40000')
+    client.waits.forElement(link=u'Draggable', timeout=u'40000')
     #test the draggable widgets
     client.click(link=u'Draggable')
     client.dragDropElem(pixels=u'(200,0)', id=u'dragImage')
