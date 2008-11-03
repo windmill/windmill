@@ -7,6 +7,7 @@
 	
 	<link rel="stylesheet" type="text/css" href="css/windmill.css"/>
 	<link rel="stylesheet" type="text/css" href="css/jquery.css"/>
+	<link rel="stylesheet" type="text/css" href="css/superfish.css" media="screen">
 	
 	<script type='text/javascript' src='js/lib/jquery/jquery-1.2.6.pack.js'></script>	
 	<script type="text/javascript" charset="utf-8">
@@ -14,6 +15,8 @@
 	</script>
 	<script type='text/javascript' src='js/lib/jquery/jquery-ui-wm-1.6b.min.js'></script>
 	<script type='text/javascript' src='js/lib/jquery/ui.progressbar.js'></script>
+	<script type="text/javascript" src="js/lib/jquery/hoverIntent.js"></script>
+	<script type="text/javascript" src="js/lib/jquery/superfish.js"></script>
 		<script type="text/javascript">
 			jQuery(function(){
 			  //tabs
@@ -21,23 +24,79 @@
         jQuery("#dialog").dialog({ autoOpen: false });
         jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
         ui.panel.style.height = "95%";
+        jQuery('ul.sf-menu').superfish({
+          speed: 'fast',
+          autoArrows:  false,                     
+          dropShadows: false
+        });
       });
     });
 	</script>
 </head>
-		
 <body>
-  <div id="cover">
-    <div style="top:35%;left:10%;position:absolute;width:70%;">
-      <center><div style="font-weight:bold;font-size:14px;" id="loadMessage">Starting Up..</div></center><br>
-      <center><img src="img/loading.gif"></center>
-    </div>
+  <img style="position:absolute;" id="icon" src="img/wmIcon.png" alt="Welcome to Windmill!">
+  
+  <div id="menu" style="position:relative;height:20px;z-index:99;">
+    <ul class="sf-menu" style="float:right;">
+     			<li class="current">
+     				<a href="#a">Test Building</a>
+     				<ul id="actionDD">
+     					<li>
+     						<a id="addSuite" href="#aa">New Suite</a>
+     					</li>
+     					<li class="current">
+     						<a id="addAction" href="#ab">New Action</a>
+     					</li>
+     					<li>
+     						<a id="addActionJSON" href="#">From JSON</a>
+     					</li>
+     					<li>
+     						<a id="clearIDE" href="#">Clear IDE</a>
+     					</li>
+     				</ul>
+     			</li>
+     			<li>
+     				<a href="#">Tools</a>
+     				<ul>
+     					<li>
+     						<a href="#" onclick="javascript:openFirebug()">Firebug Lite</a>
+     					</li>
+     					<li>
+     						<a href="#" onclick="javascript:openSettings()">Settings</a>
+     					</li>
+     				</ul>
+     			</li>
+     			<li>
+     				<a href="#">Information</a>
+     				<ul>
+     					<li>
+     						<a target="_blank" href="http://www.getwindmill.com">Homepage</a>
+     					</li>
+     					<li>
+     						<a target="_blank" href="http://trac.getwindmill.com/wiki">Wiki</a>
+     					</li>
+     					<li>
+     						<a target="_blank" href="http://trac.getwindmill.com/report">Tickets</a>
+     					</li>
+     					<li>
+     						<a target="_blank" href="http://trac.getwindmill.com/browser">Source</a>
+     					</li>
+     					<li>
+     						<a target="_blank" href="http://www.getwindmill.com/documentation">Docs</a>
+     					</li>
+     				</ul>
+     			</li>
+     		</ul>
   </div>
-  <div id="main">
-    <div style="height:40px;"></div>
-	  <img style="left:1px;top:1px;position:absolute;" id="icon" src="img/wmIcon.png" alt="Welcome to Windmill!">
-	  <div id="runningStatus" align="center" style="width:60%">
-	    <br><br><br><br>
+  
+    <div id="cover">
+      <div style="position:absolute;top:40%;left:20%">
+        <center><div style="font-weight:bold;font-size:14px;" id="loadMessage">Starting Up..</div></center><br>
+        <center><img src="img/loading.gif"></center>
+      </div>
+    </div>
+    <div id="runningStatus" align="center">
+	    <br><br><br><br><br>
 	    <center><h2>Loading, Please Wait...</h2></center>
 	    <center><div id="progressbar"></div></center>
 	  </div>
@@ -65,27 +124,26 @@
   	</div>
 	
   	<div id="domExp"></div>
-  	
-    <div id="tabs" style="height:98%;">
+    <div id="tabs">
       <ul>
           <li class="ui-tabs-nav-item"><a href="#actionsTab">Actions</a></li>
           <li class="ui-tabs-nav-item"><a href="#outputTab">Output</a></li>
           <li class="ui-tabs-nav-item"><a href="#performanceTab">Performance</a></li>
       </ul>
       
-      <div id="actionsTab" style="height:95%;padding:0px;margin:0px;">
-        <div id="ide" onscroll="scroll();">
-        		<form id="ideForm" name="ideForm" onsubmit="return false;"></form>
+      <div id="actionsTab" style="padding:0px;margin:0px;">
+        <div id="ide">
+        		<form id="ideForm" name="ideForm" onsubmit="return false;" onscroll="scroll();"></form>
         	</div>
       </div>
       
-      <div id="outputTab" style="height:95%;padding:0px;margin:0px;padding-left:5px;">
+      <div id="outputTab" style="padding:0px;margin:0px;padding-left:5px;">
         <div class="tab">
           <div id="resOut"></div>
         </div>
       </div>
       
-      <div id="performanceTab" style="height:95%;padding:0px;margin:0px;padding-left:5px;">
+      <div id="performanceTab" style="padding:0px;margin:0px;padding-left:5px;">
         <div class="tab">
           <div id="perfOut"></div>
         </div>
@@ -163,29 +221,7 @@
        </div>
       
     </div>
- 
-  	<div id="navigation" style="font-weight:bold">
-  	   <span style="font-weight: bold;">
-  	    <a href="#" onclick="javascript:openFirebug()">Firebug</a>&nbsp | &nbsp 
-  			<a href="#" onclick='javascript:openSettings()'>Settings</a>&nbsp
-  		</span>
-  		<span>| &nbsp
-  		  Actions: &nbsp <select id="actionDD" style="visibility:hidden;">
-  		    <option selected>--</option>
-  		    <option id="addSuite">Add Suite</option>
-  		    <option id="addAction">Add Action</option>
-  		    <option id="addActionJSON">Action from JSON</option>
-    			<option id="clearIDE">Clear IDE</option>
-  		  </select>
-  		</span>
-  		<span>
-  		  &nbsp &nbsp
-  		</span>
-  		<span id="mouseExp">
-      </span>
-  	</div>	
-  </div>
-
+    	<div style="position:absolute;left:85%;top:95%;background:#FFF" id="mouseExp"></div>
 </body>
 <script type="text/javascript">
   jQuery("#progressbar").progressBar({ width: '120', barImage: '/windmill-serv/img/progressbar/progressbg_black.gif'} );
@@ -270,6 +306,22 @@
     });
   }
 
+  var reFlow = function(){
+    if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
+      document.getElementById('ide').style.height = document.body.clientHeight -70 + "px";
+      document.getElementById('ideForm').style.height = document.body.clientHeight -70 + "px";
+      document.getElementById('resOut').style.height = document.body.clientHeight -70 + "px";
+      document.getElementById('perfOut').style.height = document.body.clientHeight -70 + "px";
+    }
+    else {
+      document.getElementById('ide').style.height = window.innerHeight -70 + "px";
+      document.getElementById('ideForm').style.height = window.innerHeight -70 + "px";
+      document.getElementById('resOut').style.height = window.innerHeight -70 + "px";
+      document.getElementById('perfOut').style.height = window.innerHeight -70 + "px";
+    }
+  }
+  jQuery(document).ready(reFlow);
+  jQuery(window).resize(reFlow);
 
 </script>
 

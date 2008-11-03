@@ -262,7 +262,7 @@ windmill.xhr = new function() {
         if (windmill.browser.isIE) {
             $(action.id).innerHTML = action.innerHTML;
         }
-        var ide = $('ide');
+        var ide = $('ideForm');
 
         //If the settings box is checked, scroll to the bottom
         if ($('autoScroll').checked == true) {

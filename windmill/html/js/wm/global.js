@@ -275,7 +275,7 @@ var scroll = function() {
     //However if they scroll back to the bottom, we want to turn auto scroll on
     $('autoScroll').checked = false;
 
-    var ide = $('ide');
+    var ide = $('ideForm');
     var a = ide.scrollTop;
     var b = ide.scrollHeight - ide.offsetHeight + 1;
     var c = a - b;

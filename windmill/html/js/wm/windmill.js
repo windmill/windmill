@@ -132,7 +132,7 @@ var windmill = new function() {
     
     this.setupMenu = function(){
       var dispatchDD = function(e){
-        var sel = e.target.options[e.target.options.selectedIndex].id;
+        var sel = e.target.id;
         switch(sel){
           case 'addSuite':
             windmill.ui.incRecSuite();
@@ -154,7 +154,7 @@ var windmill = new function() {
         resetDD();
       };
       
-      fleegix.event.listen($('actionDD'), 'onchange', dispatchDD);    
+      fleegix.event.listen($('actionDD'), 'onclick', dispatchDD);    
     };
     
     this.setEnv = function(){
