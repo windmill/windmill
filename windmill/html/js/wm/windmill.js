@@ -135,16 +135,16 @@ var windmill = new function() {
         var sel = e.target.id;
         switch(sel){
           case 'addSuite':
+            jQuery('#tabs ul').tabs("select", 0);
             windmill.ui.incRecSuite();
             windmill.ui.remote.getSuite(null, true);
           break;
           case 'addAction':
+            jQuery('#tabs ul').tabs("select", 0);
             windmill.ui.remote.addAction();
           break;
-          case 'addActionJSON':
-            windmill.ui.remote.actionFromJSON();
-          break;
           case 'clearIDE':
+            jQuery('#tabs ul').tabs("select", 0);
             windmill.ui.remote.clearIDE();
           break;
           default:
