@@ -331,7 +331,7 @@ class JSONRPCMethods(RPCMethods):
                 test['params'].pop('uuid')
         return windmill.authoring.transforms.registry[transformer](suite_name, tests)
         
-    def teardown(self):
+    def teardown(self, tests):
         """teardown_module function for functest based python tests"""
         import windmill
         if windmill.settings['EXIT_ON_DONE']:
