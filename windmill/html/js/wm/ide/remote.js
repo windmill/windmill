@@ -213,15 +213,17 @@ windmill.ui.remote = new function() {
             suite = document.createElement('div');
             suite.className = "suite";
             suite.id = suiteName;
-
+            
             if (windmill.browser.isIE) {
-              var vWidth = fleegix.dom.getViewportWidth();
-              suite.style.width = (vWidth - 22) + 'px';
+              //var vWidth = fleegix.dom.getViewportWidth();
+              //suite.style.width = (vWidth - 22) + 'px';
+              suite.style.width = "95%";
             }
             else { suite.style.width = "100%"; }
+            
             suite.innerHTML = "<table id='"+suiteName+"Header'"+
             "class='suiteHeader'><tr><td style=\"font-size:13px\" id='"+suiteName+"Title' onclick=\"windmill.ui.remote.updateSuite(\'"+suiteName+"\');\"><strong>Suite </strong>" + suiteName + 
-            "</td><td><span id='"+suiteName+"Links' align=\"right\" style='top:0px;float:right;'>"+
+            "</td><td VALIGN='top'><span id='"+suiteName+"Links' align=\"right\" style='top:0px;float:right;'>"+
             "<a href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
             "\')\">[play]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'" + suiteName + 
             "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'" + suiteName + 

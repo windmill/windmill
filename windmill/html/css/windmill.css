@@ -82,11 +82,10 @@ a:hover {
 #runningStatus {
  width:85%;
  height:18px;
- left:35px;
- top:10px;
  font-size:12px;
  color:#456068; 
  z-index:10;
+ position:relative;
 }
 
 #controllers {
