@@ -41,7 +41,19 @@ windmill.xhr = new function() {
         //Process variables
         str = windmill.xhr.processVar(str);
         //Eval 
-        windmill.xhr.xhrResponse = eval('(' + str + ')');
+        try {
+          if (JSON){
+            windmill.xhr.xhrResponse = JSON.parse(str);
+          }
+          else {
+            windmill.xhr.xhrResponse = eval('(' + str + ')');
+          }
+        } catch (err){
+          windmill.out(err);
+          windmill.xhr.getNext();
+          return;
+        }
+        
         var resp = windmill.xhr.xhrResponse;
         var method = resp.result.method;
         var params = resp.result.params;
