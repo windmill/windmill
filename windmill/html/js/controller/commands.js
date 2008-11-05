@@ -138,38 +138,38 @@ windmill.controller.commands.getPageText = function (paramObject){
 
 //Function to start the running of jsTests
 windmill.controller.commands.jsTests = function (paramObj) {
+    var jsTest = windmill.jsTest;
     //Setup needed variables
-    windmill.jsTest.actions.loadActions();
-    var wm = windmill.jsTest.actions;
+    jsTest.actions.loadActions();
+    var wm = jsTest.actions;
     var testFiles = paramObj.files;
     if (!testFiles.length) {
       var err = 'No JavaScript tests to run.';
-      windmill.jsTest.sendJSReport('jsTests', false, err,
+      jsTest.sendJSReport('jsTests', false, err,
         new TimeObj());
       throw new Error();
     }
-    var _j = windmill.jsTest;
     windmill.pauseLoop();
     
     //Timing the suite
     var jsSuiteSummary = new TimeObj();
     jsSuiteSummary.setName('jsSummary');
     jsSuiteSummary.startTime();
-    _j.jsSuiteSummary = jsSuiteSummary;
+    jsTest.jsSuiteSummary = jsSuiteSummary;
 
-    _j.run(paramObj);
+    jsTest.run(paramObj);
 };
 
 //Commands function to hande the test results of the js tests
 windmill.controller.commands.jsTestResults = function () {
-  var _j = windmill.jsTest;
-  var jsSuiteSummary = _j.jsSuiteSummary;
+  var jsTest = windmill.jsTest;
+  var jsSuiteSummary = jsTest.jsSuiteSummary;
   var s = '';
-  s += '<b style="font-size:12px">Number of tests run:</b> ' + _j.testCount + '<br/>';
-  s += '<b style="font-size:12px">Number of tests failures:</b> ' + _j.testFailureCount;
-  if (_j.testFailureCount > 0) {
+  s += '<b style="font-size:12px">Number of tests run:</b> ' + jsTest.testCount + '<br/>';
+  s += '<b style="font-size:12px">Number of tests failures:</b> ' + jsTest.testFailureCount;
+  if (jsTest.testFailureCount > 0) {
     s += '<br/>Test failures:<br/>';
-    var fails = _j.testFailures;
+    var fails = jsTest.testFailures;
     for (var i = 0; i < fails.length; i++) {
       var fail = fails[i];
       var msg = fail.message;
@@ -183,9 +183,9 @@ windmill.controller.commands.jsTestResults = function () {
   jsSuiteSummary.endTime();
   windmill.out(s);
   //We want the summary to have a concept of success/failure
-  var result = !(_j.testFailureCount > 0);
+  var result = !(jsTest.testFailureCount > 0);
   var method = 'JS Test Suite Completion';
-  windmill.jsTest.sendJSReport(method, result, null, jsSuiteSummary);
+  jsTest.sendJSReport(method, result, null, jsSuiteSummary);
   // Fire the polling loop back up
   windmill.continueLoop();
 };

@@ -18,6 +18,7 @@ var jum = windmill.controller.asserts;
 
 windmill.jsTest = new function () {
 
+  var _this = this;
   // Private vars
   var brokenEval;
   var assumedLocation = '';
@@ -67,8 +68,8 @@ windmill.jsTest = new function () {
     }
     // Pass along syntax errors
     catch (e) {
-      windmill.jsTest.sendJSReport('Evaling', false, e, new windmill.TimeObj());
-      windmill.jsTest.teardown();
+      _this.sendJSReport('Evaling', false, e, new windmill.TimeObj());
+      _this.teardown();
       
       var err = new Error("Error eval'ing code in file '" +
         path + "' (" + e.message + ")");
@@ -180,7 +181,7 @@ windmill.jsTest = new function () {
       testResults[this.testFailures[x].message] = this.testFailures[x].error;
       testResults[this.testFailures[x].message]['result'] = false;
     }
-    windmill.jsTest.testResults = testResults;
+    _this.testResults = testResults;
     
     var json_object = new json_call('1.1', 'teardown');
     json_object.params = {tests:testResults};
@@ -214,8 +215,8 @@ windmill.jsTest = new function () {
     // Remove any directories or non-js files returned
     for (var i = 0; i < testFiles.length; i++) {
       if (t.indexOf('\.js') == -1) {
-        windmill.jsTest.sendJSReport('Evaling', false, null, new windmill.TimeObj());
-        windmill.jsTest.teardown();
+        _this.sendJSReport('Evaling', false, null, new windmill.TimeObj());
+        _this.teardown();
         throw new Error('Non-js file in list of JavaScript test files.');
       }
     }
@@ -643,7 +644,7 @@ windmill.jsTest = new function () {
         "<br>Test Result: <font color=\"#61d91f\"><b>" + true + "</b></font>");
       this.currentJsTestTimer.write()
       // Send report for pass
-      windmill.jsTest.sendJSReport(testName, true, null,
+      _this.sendJSReport(testName, true, null,
         this.currentJsTestTimer);
       return true;
     }
@@ -718,7 +719,7 @@ windmill.jsTest = new function () {
           item.method.indexOf('waits._') == -1 &&
           item.method != 'waits.sleep') {
           var meth = item.method.replace('waits.', '');
-          var func = windmill.jsTest.actions.waits[meth];
+          var func = _this.actions.waits[meth];
           // Add a parameter so we know the js framework
           // is the source so it knows to kick execution back
           // to this loop
@@ -753,14 +754,14 @@ windmill.jsTest = new function () {
   this.handleErr = function (e) {
     var testName = this.currentTestName;
     this.currentJsTestTimer.endTime();
-    var fail = new windmill.jsTest.TestFailure(testName, e);
+    var fail = new _this.TestFailure(testName, e);
     var msg = fail.message;
     // Escape angle brackets for display in HTML
     msg = msg.replace(/</g, '&lt;');
     msg = msg.replace(/>/g, '&gt;');
     windmill.out("<br>Test: <b>" +
             testName + "<br>Test Result:" + false + '<br>Error: '+ msg);
-    windmill.jsTest.sendJSReport(testName, false, e, this.currentJsTestTimer);
+    _this.sendJSReport(testName, false, e, this.currentJsTestTimer);
     this.testFailures.push(fail);
   };
   this.getFile = function (path) {
