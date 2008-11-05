@@ -169,12 +169,25 @@ windmill.jsTest = new function () {
   };
   this.teardown = function(){
     //call the teardown
+    //Build testResults
+    var testResults = {};
+    //create a testResults entry for each test we ran, default result to true
+    for (var i = 0;i<this.testList.length-1;i++){
+      testResults[this.testList[i]] = {result: true};
+    }
+    //iterate all the failures and update the testResults to reflect that
+    for (var x = 0;x<this.testFailures.length-1; x++){
+      testResults[this.testFailures[x].message] = this.testFailures[x].error;
+      testResults[this.testFailures[x].message]['result'] = false;
+    }
+    windmill.jsTest.testResults = testResults;
+    
     var json_object = new json_call('1.1', 'teardown');
-    var params_obj = [];
-    json_object.params = params_obj;
+    json_object.params = {tests:testResults};
     var json_string = fleegix.json.serialize(json_object);
     fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
   }
+  
   this.doSetup = function (paramObj) {
     var testFiles = paramObj.files;
     var regIndex = null;

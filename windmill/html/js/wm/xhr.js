@@ -326,7 +326,7 @@ windmill.xhr = new function() {
         windmill.xhr.action_timer.endTime();
 
         if (result != true) {
-            if (typeof(action) != 'undefined') { action.style.background = '#FF9692'; }
+            if (action != null) { action.style.background = '#FF9692'; }
             windmill.out("<br>Action: <b>" + obj.method + 
             "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
             "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
