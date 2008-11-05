@@ -117,6 +117,19 @@ var handleVariable = function (val){
   return ret;
 };
 
+var sendCommandResult = function(status, uuid, result){
+  //Send to the server
+	var json_object = new json_call('1.1', 'command_result');
+	var params_obj = {"status":status, "uuid":uuid, "result":result};
+	json_object.params = params_obj;
+	var json_string = fleegix.json.serialize(json_object)
+
+	var resp = function(str){ return true; }
+    
+	result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+	resp(result);
+}
+
 var busyOn = function(){
   $('actionDD').style.visibility = "hidden";
   $('cover').style.display = "block";

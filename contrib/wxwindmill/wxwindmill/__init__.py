@@ -386,10 +386,19 @@ class Frame(wx.Frame):
         b = self.shell_objects['start_' + browser.lower()]()
         self.open_browser.append(b)
 
+    def ConfirmDialog(self, text, title):
+        dialog = wx.MessageDialog(self, text, title, wx.YES_NO | wx.ICON_QUESTION)
+	retCode = dialog.ShowModal()
+        return retCode
+
     def OnCloseWindow(self, event):
         #should probably manually stop logging to prevent output errors
         #self.theLogger.removeHandler(self.programOutput)
-	self.Destroy()
+	retCode = self.ConfirmDialog('Are you sure you want to close all Windmill browsers and exit?', 'Warning')
+	
+	if retCode == wx.ID_YES:
+	    self.OnCloseBrowser(self)
+	    self.Destroy()
 	
     def OnWebsiteLink(self, event):
         """Bring up a link to the windmill homepage"""

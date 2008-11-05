@@ -27,15 +27,7 @@ windmill.controller.commands.createVariables = function(paramObject){
     windmill.varRegistry.addItem('{$'+paramObject.variables[i].split('|')[0] +'}',paramObject.variables[i].split('|')[1]);
   }
   //Send to the server
-  var json_object = new json_call('1.1', 'command_result');
-  var params_obj = {"status":true, "uuid":paramObject.uuid, "result":'true'};
-  json_object.params = params_obj;
-  var json_string = fleegix.json.serialize(json_object)
-
-  var resp = function(str){ return true; }
-    
-  result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-  resp(result);        
+  sendCommandResult(true, paramObject.uuid, 'true');
 };
  
 //This function stores a variable and its value in the variable registry
@@ -50,50 +42,32 @@ windmill.controller.commands.createVariable = function(paramObject){
     }
   
     //Send to the server
-    var json_object = new json_call('1.1', 'command_result');
-    var params_obj = {"status":true, "uuid":paramObject.uuid, "result":value };
-
-    json_object.params = params_obj;
-    var json_string = fleegix.json.serialize(json_object)
-
-    var resp = function(str){ return true; }
-    
-    result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-    resp(result);
+    sendCommandResult(true, paramObject.uuid, value);
     return true;
   };
 
 //This function allows the user to specify a string of JS and execute it
 windmill.controller.commands.execJS = function(paramObject){
-      //Lets send the result now to the server
-      var json_object = new json_call('1.1', 'command_result');
-      var params_obj = {};
-    
+      var res = true;
+      var result = null;
       try {
-	      params_obj.result = eval(paramObject.code);
+	      result = eval(paramObject.code);
+      } catch(error){
+	      res = false;
       }
-      catch(error){
-	      params_obj.result = error;
-      }
-    
-      params_obj.status = true;
-      params_obj.uuid = paramObject.uuid;
-      json_object.params = params_obj;
-      var json_string = fleegix.json.serialize(json_object)
-
-      var resp = function(str){ return true; }
-    
-      result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-      resp(result);
-      return false;
+      //Send to the server
+      sendCommandResult(res, paramObject.uuid, result);
+      return true;
 };
 
 //Dynamically loading an extensions directory
 windmill.controller.commands.loadExtensions = function(paramObject){
   var l = paramObject.extensions;
   for (var n in l){
-    windmill.utilities.appendScript(windmill.remote,l[0]); 
+    windmill.utilities.appendScript(window,l[n]); 
   }
+  //Send to the server
+  sendCommandResult(true, paramObject.uuid, 'true');
 };
 
 //Give the backend a list of available controller methods
@@ -131,17 +105,9 @@ windmill.controller.commands.getControllerMethods = function (paramObject){
 	ca.pop();
 	ca.pop();
 	ca = ca.sort();
-
-	//Send to the server
-	var json_object = new json_call('1.1', 'command_result');
-	var params_obj = {"status":true, "uuid":paramObject.uuid, "result":ca};
-	json_object.params = params_obj;
-	var json_string = fleegix.json.serialize(json_object)
-
-	var resp = function(str){ return true; }
-    
-	result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-	resp(result);
+	
+	sendCommandResult(true, paramObject.uuid, ca);
+	
 };
   
 //Keeping the suites running 
@@ -157,7 +123,8 @@ windmill.controller.commands.setOptions = function (paramObject){
     }
     else{ windmill.serviceDelay = 1000; }
   }
-  
+  //Send to the server
+  sendCommandResult(res, paramObject.uuid, 'true');
   return true;
 };
 
@@ -166,15 +133,7 @@ windmill.controller.commands.getPageText = function (paramObject){
   var dom = windmill.testWin().document.documentElement.innerHTML.replace('\n','');
   dom = '<html>' + dom + '</html>';
   //Send to the server
-  var json_object = new json_call('1.1', 'command_result');
-  var params_obj = {"status":true, "uuid":paramObject.uuid, "result":dom};
-  json_object.params = params_obj;
-  var json_string = fleegix.json.serialize(json_object)
-
-  var resp = function(str){ return true; }
-    
-  result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-  resp(result); 
+  sendCommandResult(true, paramObject.uuid, dom);
 };
 
 //Function to start the running of jsTests
@@ -229,6 +188,5 @@ windmill.controller.commands.jsTestResults = function () {
   windmill.jsTest.sendJSReport(method, result, null, jsSuiteSummary);
   // Fire the polling loop back up
   windmill.continueLoop();
-
 };
 
