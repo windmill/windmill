@@ -880,5 +880,14 @@ windmill.controller = new function () {
     var js = paramObject.js;
     eval.call(windmill.testWin(), js);
   };
+  
+  /**
+  * Execute some arbitrary JS
+  * @param {Object} paramObject The JavaScript object providing: js
+  */
+  this.execIDEJS = function(paramObject){
+    var js = paramObject.js;
+    eval.call(window, js);
+  };
 };
 

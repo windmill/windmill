@@ -75,6 +75,7 @@ windmill.registry.methods['storeVarFromLocAttrib']     = {'locator': true, 'opti
 windmill.registry.methods['setDocDomain']           = {'locator': false, 'option': 'domain' };
 windmill.registry.methods['complex']            = {'locator': false, 'option': false };
 windmill.registry.methods['execJS']            = {'locator': false, 'option': 'js' };
+windmill.registry.methods['execIDEJS']            = {'locator': false, 'option': 'js' };
 windmill.registry.methods['-- Asserts --']        = {'locator': false, 'option': false, 'section': true};
 windmill.registry.methods['asserts.assertJS']    = {'locator': false, 'option': 'js' };
 windmill.registry.methods['asserts.assertElemJS']    = {'locator': true, 'option': 'js' };
