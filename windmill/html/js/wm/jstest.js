@@ -20,6 +20,7 @@ windmill.jsTest = new function () {
 
   var _this = this;
   // Private vars
+  var _UNDEF; // Undefined val
   var brokenEval;
   var assumedLocation = '';
   var serverBasePath = '';
@@ -70,14 +71,14 @@ windmill.jsTest = new function () {
     catch (e) {
       _this.sendJSReport('Evaling', false, e, new windmill.TimeObj());
       _this.teardown();
-      
+      // If the browser stays open, throw
       var err = new Error("Error eval'ing code in file '" +
         path + "' (" + e.message + ")");
       err.name = e.name;
       err.stack = e.stack;
       throw err;
     }
-  };
+  }
   function combineLists(listA, listB) {
     var arr = [];
     if (listB.length) {
@@ -106,22 +107,24 @@ windmill.jsTest = new function () {
     return newAbsPath.replace(jsFilesBasePath, '');
   }
 
-  this.testFiles;
-  this.testScriptSrc;
-  this.regFile;
-  this.testNamespaces;
-  this.testList;
-  this.testOrder;
-  this.testItemArray;
-  this.testFailures;
-  this.testCount;
-  this.testFailureCount;
-  this.runInTestWindowScope;
-  this.currentTestName;
-  this.currentJsTestTimer;
-  this.jsSuiteSummary;
-  this.waiting; // Used by waits.sleep waits.forElement
-  this.testsPaused; // User settable
+  // FIXME: Init these to some sort of meaningful values
+  this.testFiles = _UNDEF;
+  this.testScriptSrc = _UNDEF;
+  this.regFile = _UNDEF;
+  this.testNamespaces = _UNDEF;
+  this.testList = _UNDEF;
+  this.testOrder = _UNDEF;
+  this.testItemArray = _UNDEF;
+  this.testFailures = _UNDEF;
+  this.testCount = _UNDEF;
+  this.testFailureCount = _UNDEF;
+  this.runInTestWindowScope = _UNDEF;
+  this.currentTestName = _UNDEF;
+  this.currentJsTestTimer = _UNDEF;
+  this.jsSuiteSummary = _UNDEF;
+  this.waiting = _UNDEF; // Used by waits.sleep waits.forElement
+  this.testsPaused = _UNDEF; // User settable
+  this.completedCallback = null;
 
   // Initialize everything to starting vals
   this.init = function () {
@@ -140,7 +143,7 @@ windmill.jsTest = new function () {
     this.testFailureCount = 0;
     this.runInTestWindowScope = true;
     this.waiting = false;
-    
+
     //Tell the JS test not to output all the extra stuff
     windmill.chatty = false;
     //clean up output tab for test run
@@ -150,14 +153,25 @@ windmill.jsTest = new function () {
   };
   // Main function to run a directory of JS tests
   this.run = function (paramObj) {
-    this.actions.loadActions();
-    this.init(); // Init props to default states
-    this.doSetup(paramObj);
-    this.loadTestFiles();
-    this.getCompleteListOfTestNames();
-    this.limitByFilterAndPhase();
-    this.recordCurrentLocation();
-    this.start();
+    var testFiles = paramObj.files;
+    if (!testFiles.length) {
+      var err = 'No JavaScript tests to run.';
+      this.sendJSReport('jsTests', false, err,
+        new TimeObj());
+      this.teardown();
+      throw new Error();
+    }
+    else {
+      this.startTestTiming();
+      this.actions.loadActions();
+      this.init(); // Init props to default states
+      this.doSetup(paramObj);
+      this.loadTestFiles();
+      this.getCompleteListOfTestNames();
+      this.limitByFilterAndPhase();
+      this.recordCurrentLocation();
+      this.start();
+    }
   };
   this.start = function () {
     this.runNextTest();
@@ -165,30 +179,51 @@ windmill.jsTest = new function () {
   this.finish = function () {
     this.testCount = this.testList.length;
     this.testFailureCount = this.testFailures.length;
-    windmill.controller.commands.jsTestResults();
-    this.teardown();
+    //windmill.controller.commands.jsTestResults();
+    this.endTestTiming();
+    this.reportResults();
+    // Invoke the callback -- this continues the normal
+    // controller loop
+    if (typeof this.completedCallback == 'function') {
+      this.completedCallback();
+    }
+    this.teardown(true);
   };
-  this.teardown = function(){
-    //call the teardown
+  this.teardown = function (c){
     //Build testResults
-    var testResults = {};
+    var completed = c || false;
+    var summary = this.jsSuiteSummary;
+    var startTime = summary.getStart();
+    var endTime = summary.getEnd() || null;
+    var testCount = this.testCount || 0;
+    var testFailureCount = this.testFailureCount || 0;
+    var testResults = {
+      'completed': completed,
+      'startime': startTime,
+      'endtime': endTime,
+      'testCount': testCount,
+      'testFailureCount': testFailureCount
+    };
     //create a testResults entry for each test we ran, default result to true
-    for (var i = 0;i<this.testList.length-1;i++){
-      testResults[this.testList[i]] = {result: true};
+    var tests = this.testList;
+    for (var i = 0; i < tests.length - 1; i++){
+      testResults[tests[i]] = { result: true };
     }
     //iterate all the failures and update the testResults to reflect that
-    for (var x = 0;x<this.testFailures.length-1; x++){
-      testResults[this.testFailures[x].message] = this.testFailures[x].error;
-      testResults[this.testFailures[x].message]['result'] = false;
+    var fails = this.testFailures;
+    for (var x = 0; x < fails.length-1; x++) {
+      testResults[fails[x].message] = fails[x].error;
+      testResults[fails[x].message]['result'] = false;
     }
     _this.testResults = testResults;
-    
+
     var json_object = new json_call('1.1', 'teardown');
-    json_object.params = {tests:testResults};
+    json_object.params = { tests: testResults };
+    console.log(json_object.params);
     var json_string = fleegix.json.serialize(json_object);
     fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
   }
-  
+
   this.doSetup = function (paramObj) {
     var testFiles = paramObj.files;
     var regIndex = null;
@@ -736,7 +771,7 @@ windmill.jsTest = new function () {
           // Execute the UI action with the set params
           windmill.stat('Running '+ item.method + '...');
           testActionFunc(item.params);
-          
+
           if (windmill.chatty){
             windmill.out("<br><b>Action:</b> " + item.method +
                        "<br>Params: " + fleegix.json.serialize(item.params));
@@ -775,6 +810,39 @@ windmill.jsTest = new function () {
   };
   this.resumeTests = function () {
     this.testsPaused = false;
+  };
+  this.startTestTiming = function () {
+    var summary = new TimeObj();
+    summary.setName('jsSummary');
+    summary.startTime();
+    this.jsSuiteSummary = summary;
+  };
+  this.endTestTiming = function () {
+    this.jsSuiteSummary.endTime();
+  };
+  this.reportResults = function () {
+    var s = '';
+    s += '<b style="font-size:12px">Number of tests run:</b> ' +
+      this.testCount + '<br/>';
+    s += '<b style="font-size:12px">Number of tests failures:</b> ' +
+      this.testFailureCount;
+    if (this.testFailureCount > 0) {
+      s += '<br/>Test failures:<br/>';
+      var fails = this.testFailures;
+      for (var i = 0; i < fails.length; i++) {
+        var fail = fails[i];
+        var msg = fail.message;
+        // Escape angle brackets for display in HTML
+        msg = msg.replace(/</g, '&lt;');
+        msg = msg.replace(/>/g, '&gt;');
+        s += msg;
+      }
+    }
+    windmill.out(s);
+    //We want the summary to have a concept of success/failure
+    var result = !(this.testFailureCount > 0);
+    var method = 'JS Test Suite Completion';
+    this.sendJSReport(method, result, null, this.jsSuiteSummary);
   };
 };
 
@@ -835,7 +903,7 @@ windmill.jsTest.actions.loadActions = function () {
        //     if (name){ action.method = name+'.'+meth; }
        //     else { action.method = meth; }
        //     action.params = eval(args[0]);
-       
+
        //var a = windmill.xhr.createActionFromSuite('jsTests', action);
        // var buildUI = function(actionObj){
        //   //var suite = windmill.ui.remote.getSuite("jsTests");
@@ -853,7 +921,7 @@ windmill.jsTest.actions.loadActions = function () {
        //   return action;
        // }
        //var a = buildUI(action);
-       
+
        //Set the id in the IDE so we can manipulate it
        //action.params.aid = a.id;
 
@@ -862,12 +930,12 @@ windmill.jsTest.actions.loadActions = function () {
       try {
         namespace[meth].apply(namespace, args);
       } catch(err) { this.handleErr(err); }
-      
+
       //Set results, but not for waits, they do it themselves
       // if (action.method.indexOf('waits') == -1){
       //         windmill.xhr.setActionBackground(a,result,action);
       //       }
-      
+
       //End the timer
       //cwTimer.endTime();
       //Send a report to the backend
