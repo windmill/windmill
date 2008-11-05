@@ -132,7 +132,6 @@ windmill.ui.playback = new function() {
         suites.push($(suiteOnly));
         $(suiteOnly).style.border = "0px";
         $(suiteOnly).style.borderBottom = '1px solid black';
-        
       }
 
       //else play every suite in the IDE
@@ -219,7 +218,13 @@ windmill.ui.playback = new function() {
       var params_obj = {};
       params_obj.tests = testArray;
       json_object.params = params_obj;
-      var json_string = fleegix.json.serialize(json_object)
+      
+      //if JSON2 is available use it
+      if (JSON){
+         var json_string = JSON.stringify(json_object);
+      } else {
+        var json_string = fleegix.json.serialize(json_object);
+      }
 
       doCall = function() {
           var z = fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
