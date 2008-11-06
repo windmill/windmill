@@ -21,6 +21,7 @@ windmill.jsTest = new function () {
   var _this = this;
   // Private vars
   var _UNDEF; // Undefined val
+  var _debug = false;
   var brokenEval;
   var assumedLocation = '';
   var serverBasePath = '';
@@ -125,6 +126,18 @@ windmill.jsTest = new function () {
   this.waiting = _UNDEF; // Used by waits.sleep waits.forElement
   this.testsPaused = _UNDEF; // User settable
   this.completedCallback = null;
+  this.testCodeStates = {
+    // Test window is loaded and test code has been
+    // injected -- ready to run tests
+    LOADED: 'loaded',
+    // Test window has unloaded -- we're waiting for the
+    // page to come back so we can re-inject the test code
+    CANNOT_LOAD: 'cannot_load',
+    // Test window is back, and we need to re-inject the
+    // test code before we can run any more JS tests
+    NOT_LOADED: 'not_loaded'
+  };
+  this.testCodeState = this.testCodeStates.NOT_LOADED;
 
   // Initialize everything to starting vals
   this.init = function () {
@@ -219,7 +232,6 @@ windmill.jsTest = new function () {
 
     var json_object = new json_call('1.1', 'teardown');
     json_object.params = { tests: testResults };
-    console.log(json_object.params);
     var json_string = fleegix.json.serialize(json_object);
     fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
   }
@@ -283,6 +295,9 @@ windmill.jsTest = new function () {
   // Grab the contents of the test files, and eval
   // them in window scope
   this.loadTestFiles = function () {
+    if (_debug) {
+      console.log('loadTestFiles called.');
+    }
     var testFiles = this.testFiles;
     serverBasePath = testFiles[0].split('/windmill-jstest/')[0];
     jsFilesBasePath = serverBasePath + '/windmill-jstest/';
@@ -317,6 +332,7 @@ windmill.jsTest = new function () {
       }
       var waitForIt = this.require(path);
     }
+    this.setTestCodeState(this.testCodeStates.LOADED);
     return true;
   };
   this.require = function (path) {
@@ -592,6 +608,31 @@ windmill.jsTest = new function () {
     // baseObj = window['foo']['bar']['baz']
     return parseObjPath();
   };
+  this.setTestCodeState = function (state) {
+    if (_debug) {
+      console.log('testCodeState set to ' + state);
+    }
+    this.testCodeState = state;
+  }
+  this.verifyTestWindowState = function (callback) {
+    var ret = true;
+    if (this.testCodeState == this.testCodeStates.NOT_LOADED) {
+      var f = function () {
+        var waitForIt = _this.loadTestFiles.apply(_this);
+        callback.apply(_this);
+      };
+      setTimeout(f, 2000);
+      ret = false;
+    }
+    else if (this.testCodeState == this.testCodeStates.CANNOT_LOAD) {
+      var f = function () {
+        callback.apply(_this);
+      };
+      setTimeout(f, 2000);
+      ret = false;
+    }
+    return ret;
+  };
   this.runNextTest = function () {
     var _this = this;
     var testName = '';
@@ -604,6 +645,7 @@ windmill.jsTest = new function () {
       this.finish();
     }
     else {
+      /*
       // If the window we're running tests in has
       // changed locations, reload all the test files
       // into the app scope
@@ -614,6 +656,10 @@ windmill.jsTest = new function () {
           _this.runNextTest.apply(_this);
         };
         setTimeout(f, 2000);
+        return false;
+      }
+      */
+      if (!this.verifyTestWindowState(this.runNextTest)) {
         return false;
       }
       // Get the test name
@@ -704,6 +750,10 @@ windmill.jsTest = new function () {
       this.runNextTest();
     }
     else {
+      if (!this.verifyTestWindowState(this.runTestItemArray)) {
+        return false;
+      }
+      /*
       // If the window we're running tests in has
       // changed locations, reload all the test files
       // into the app scope
@@ -716,6 +766,7 @@ windmill.jsTest = new function () {
         setTimeout(f, 2000);
         return false;
       }
+      */
       // Look up the array-style test item by string path again
       // in case tests have reloaded due to window location change
       var testItemArray = this.lookupObjRef(this.testItemArray.name);

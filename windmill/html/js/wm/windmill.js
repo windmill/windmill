@@ -358,6 +358,13 @@ var windmill = new function() {
     this.unloaded = function() {
         try {
           windmill.pauseLoop();
+
+          // if we're currently running JS tests, we need to know the
+          // test window has gone bye-bye, and we need to wait to
+          // re-inject the test code when it comes back
+          var jsTest = windmill.jsTest;
+          jsTest.setTestCodeState(jsTest.testCodeStates.CANNOT_LOAD);
+       
           //if we are recording, we just detected a new page load, but only add one.
           //Opera and IE appear to be calling unload multiple times
           if (windmill.ui.recorder.recordState){
@@ -373,7 +380,7 @@ var windmill = new function() {
             }
           }
         } catch(err){}
-       
+        
         checkPage = function() {
             windmill.controller.waits.forPageLoad({});
         }
@@ -449,6 +456,12 @@ var windmill = new function() {
         windmill.ui.recorder.setRecState();
 		    busyOff();
       
+        // if we're currently running JS tests, we need to know the
+        // test window reloaded so we can re-inject all the test code
+        // into test window scope
+        var jsTest = windmill.jsTest;
+        jsTest.setTestCodeState(jsTest.testCodeStates.NOT_LOADED);
+
         delayed = function() {
           if (windmill.waiting == false) {
             windmill.continueLoop(); 

@@ -18,8 +18,7 @@ windmillMain.shared.util = new function () {
 
 windmillMain.shared.test_navMain = new function () {
   this.test_navigate = [
-    { method: "open", params: { url: windmillMain.pages.MAIN +
-      '?rnd=' + new Date().getTime() } }
+    { method: "open", params: { url: windmillMain.pages.MAIN } }
   ];
   this.test_hasNavigated = [
     { method: "waits.forElement", params: { id: "mainPageHeader" } }
@@ -28,8 +27,7 @@ windmillMain.shared.test_navMain = new function () {
 
 windmillMain.shared.test_navForm = new function () {
   this.test_navigate = [
-    { method: "open", params: { url: windmillMain.pages.FORM +
-      '?rnd=' + new Date().getTime() } }
+    { method: "open", params: { url: windmillMain.pages.FORM } }
   ];
   this.test_hasNavigated = [
     { method: "waits.forElement", params: { id: "formPageHeader" } }
