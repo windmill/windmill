@@ -804,9 +804,11 @@ windmill.controller = new function () {
   */
   this.reWriteAlert = function(paramObject){
     
-    windmill.testWin().alert = function(s){
-      windmill.out("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
-    };
+    try {
+      windmill.testWin().alert = function(s){
+        windmill.out("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
+      };
+    } catch(err){ windmill.out(err); }
     
     rwaRecurse = function(frame){
       var iframeCount = frame.frames.length;
