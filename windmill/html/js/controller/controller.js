@@ -803,7 +803,7 @@ windmill.controller = new function () {
   * Re-write the window alert function to instead send it's output to the output tab
   */
   this.reWriteAlert = function(paramObject){
-    windmill.reAlert = true;
+    
     windmill.testWin().alert = function(s){
       windmill.out("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
     };

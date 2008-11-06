@@ -56,6 +56,17 @@ windmill.ui = new function() {
             windmill.stopOnFailure = false;
         }
     }
+    
+    this.updateAlerts = function(){
+      if ($('jsAlerts').checked){
+        windmill.alerts = true;
+      }
+      else {
+        windmill.alerts = false;
+        windmill.testWin().alert = windmill.testWin().oldAlert;
+      }
+    }
+    
     this.getContMethodsUI = function() {
         var str = '';
         for (var i in windmill.controller) {

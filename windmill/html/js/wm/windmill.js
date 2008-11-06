@@ -401,16 +401,6 @@ var windmill = new function() {
     //Set the listener on the testingApp on unload
     this.loaded = function() {
         
-        //Overwrite alerts to keep the browser from getting stuck
-        //on by default
-        if (windmill.alerts){
-          windmill.controller.reWriteAlert();
-        }
-        //if popup support is enabled
-        if (windmill.popups){
-          this.popupLogic();
-        }
-        
         //When the waits happen I set a timeout
         //to ensure that if it takes longer than the
         //windmill default timeout to load
@@ -423,12 +413,17 @@ var windmill = new function() {
         //and we can't get to it, try updating it
         try{ var v = windmill.testWin().document.domain; }
         catch(err){ document.domain = windmill.docDomain; }
-        //rewrite the open function to keep track of windows popping up
-        //windmill.controller.reWriteOpen();
-        //Making rewrite alert persist through the session
-        if (windmill.reAlert == true) { windmill.controller.reWriteAlert(); }
-        //Ovveride the window.open, so we can keep a registry of
-        //Windows getting popped up
+
+        //Overwrite alerts to keep the browser from getting stuck
+        //on by default
+        if (windmill.alerts){
+          windmill.testWin().oldAlert = windmill.testWin().alert;
+          windmill.controller.reWriteAlert();
+        }
+        //if popup support is enabled
+        if (windmill.popups){
+          this.popupLogic();
+        }
 
         //We need to define the windmill object in the
         //test window to allow the JS test framework
