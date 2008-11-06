@@ -84,7 +84,6 @@ windmill.xhr = new function() {
                 //Put on windmill main page that we are running something
                 windmill.xhr.action_timer = new TimeObj();
                 windmill.xhr.action_timer.setName(method);
-                windmill.xhr.action_timer.startTime();
 
                 //If the action already exists in the UI, skip all the creating suite stuff
                 if ($(params.uuid) != null) {
@@ -111,6 +110,8 @@ windmill.xhr = new function() {
                     
                     //try running the actions
                     try {
+                      //Start the action running timer
+                        windmill.xhr.action_timer.startTime();
                         //Wait/open needs to not grab the next action immediately
                         if ((method.split(".")[0] == 'waits')) {
                             windmill.pauseLoop();
@@ -137,8 +138,12 @@ windmill.xhr = new function() {
                         }
                         //Every other action that isn't namespaced
                         else { windmill.controller[method](params); }
+                        //End the timer
+                        windmill.xhr.action_timer.endTime();
                     }
                     catch(error) {
+                        //End the timer if something broke
+                        windmill.xhr.action_timer.endTime();
                         info = error;
                         result = false;
                         var newParams = copyObj(params);
@@ -173,7 +178,7 @@ windmill.xhr = new function() {
                     var newParams = copyObj(params);
                     delete newParams.uuid;
                     //End timer and store
-                    windmill.xhr.action_timer.endTime();
+                    //windmill.xhr.action_timer.endTime();
                     windmill.xhr.sendReport(method, result, windmill.xhr.action_timer, info);
                     windmill.xhr.setActionBackground(action, result, resp.result);
                     //Do the timer write
