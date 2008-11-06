@@ -19,6 +19,7 @@ import os, sys
 from datetime import datetime
 from threading import Thread
 import shutil
+import socket
 import functest
 functest.configure()
 
@@ -120,6 +121,21 @@ def configure_global_settings():
         local_settings = None
 
     windmill.settings = windmill.conf.configure_settings(localSettings=local_settings)
+    
+    port = windmill.settings['SERVER_HTTP_PORT']
+    
+    while 1:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect(('127.0.0.1', port))
+            s.close()
+            port += 1
+        except socket.error:
+            break
+    
+    windmill.settings['SERVER_HTTP_PORT'] = port
+    
+    return windmill.settings
 
 on_ide_awake = []
 
