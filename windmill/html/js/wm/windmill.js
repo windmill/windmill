@@ -417,7 +417,10 @@ var windmill = new function() {
         //Overwrite alerts to keep the browser from getting stuck
         //on by default
         if (windmill.alerts){
-          windmill.testWin().oldAlert = windmill.testWin().alert;
+          //Sometimes we can't access it yet
+          try {
+            windmill.testWin().oldAlert = windmill.testWin().alert;
+          } catch(err){}
           windmill.controller.reWriteAlert();
         }
         //if popup support is enabled

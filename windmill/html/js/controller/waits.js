@@ -123,8 +123,7 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
   lookup();
 };
 
-windmill.controller.waits.forJSTrue = 
-  windmill.controller.waits.forJS;
+windmill.controller.waits.forJSTrue = windmill.controller.waits.forJS;
 
 //wait for an element to show up on the page
 //if it doesn't after a provided timeout, defaults to 20 seconds
