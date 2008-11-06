@@ -35,6 +35,8 @@ var windmill = new function() {
     
     //Enable windmill popup support
     this.popups = false;
+    //Overwrite alerts functionality
+    this.alerts = true;
     
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*
@@ -399,6 +401,11 @@ var windmill = new function() {
     //Set the listener on the testingApp on unload
     this.loaded = function() {
         
+        //Overwrite alerts to keep the browser from getting stuck
+        //on by default
+        if (windmill.alerts){
+          windmill.controller.reWriteAlert();
+        }
         //if popup support is enabled
         if (windmill.popups){
           this.popupLogic();
