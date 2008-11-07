@@ -175,26 +175,28 @@ var openSettings = function() {
 var openFirebug = function(){
   firebug.init();
   firebug.win.minimize();
-  //if firebug has already been injected into the app
-  if (!windmill.testWin().firebug){
-  	var fbCSS = windmill.testWin().document.createElement('link');
-  	fbCSS.rel = "stylesheet";
-  	fbCSS.type = "text/css";
-  	fbCSS.href = "/windmill-serv/css/firebug-lite.css";
-  	windmill.testWin().document.body.insertBefore(fbCSS, windmill.testWin().document.body.childNodes[0]);
+  try {
+    //if firebug has already been injected into the app
+    if (!windmill.testWin().firebug){
+    	var fbCSS = windmill.testWin().document.createElement('link');
+    	fbCSS.rel = "stylesheet";
+    	fbCSS.type = "text/css";
+    	fbCSS.href = "/windmill-serv/css/firebug-lite.css";
+    	windmill.testWin().document.body.insertBefore(fbCSS, windmill.testWin().document.body.childNodes[0]);
   	
-    var piScript = windmill.testWin().document.createElement('script');
-    piScript.src = "/windmill-serv/js/lib/firebug/pi.js"
-    var fbScript = windmill.testWin().document.createElement('script');
-    fbScript.src = "/windmill-serv/js/lib/firebug/firebug-lite.js";
-    windmill.testWin().document.body.insertBefore(piScript, windmill.testWin().document.body.childNodes[0]);
-    windmill.testWin().document.body.insertBefore(fbScript, windmill.testWin().document.body.childNodes[0]);
-    setTimeout('windmill.testWin().firebug.init();windmill.testWin().firebug.win.maximize()', 1000);
-  }
-  else{
-    windmill.testWin().firebug.init();
-    windmill.testWin().firebug.win.maximize();
-  }
+      var piScript = windmill.testWin().document.createElement('script');
+      piScript.src = "/windmill-serv/js/lib/firebug/pi.js"
+      var fbScript = windmill.testWin().document.createElement('script');
+      fbScript.src = "/windmill-serv/js/lib/firebug/firebug-lite.js";
+      windmill.testWin().document.body.insertBefore(piScript, windmill.testWin().document.body.childNodes[0]);
+      windmill.testWin().document.body.insertBefore(fbScript, windmill.testWin().document.body.childNodes[0]);
+      setTimeout('windmill.testWin().firebug.init();windmill.testWin().firebug.win.maximize()', 1000);
+    }
+    else{
+      windmill.testWin().firebug.init();
+      windmill.testWin().firebug.win.maximize();
+    }
+  } catch(err){ windmill.out("Could not add firebug lite to the test app, as it wasn't available, try again."); }
 }
 
 var resetDD = function(){

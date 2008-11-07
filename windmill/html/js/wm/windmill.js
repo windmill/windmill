@@ -117,8 +117,8 @@ var windmill = new function() {
           return windmill.testWindow;
         }
         catch(err){
-          windmill.out('Either the popup window was destroyed, or you are in IE with a changed document.domain.');
-          windmill.out('Defaulting to the opener as target window...');
+          //windmill.out('Either the popup window was destroyed, or you are in IE with a changed document.domain.');
+          //windmill.out('Defaulting to the opener as target window...');
           try {
             var d = opener.document;
             windmill.testWindow = opener;
