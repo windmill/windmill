@@ -90,9 +90,10 @@ TestCase.stop_test_server = classmethod(stop_test_server)
 from windmill.authoring import unit
 
 class WindmillDjangoUnitTest(TestCase, unit.WindmillUnitTestCase):
-    test_url = 'http://localhost:8000'
+    test_port = 8000
     def setUp(self):
-        self.start_test_server('localhost', 8000)
+        self.test_url = 'http://localhost:%d' % self.test_port
+        self.start_test_server('localhost', self.test_port)
         unit.WindmillUnitTestCase.setUp(self)
 
     def tearDown(self):
