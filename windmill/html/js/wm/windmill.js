@@ -34,7 +34,7 @@ var windmill = new function() {
     this.safeWaits = true;
     
     //Enable windmill popup support
-    this.popups = false;
+    this.popups = true;
     //Overwrite alerts functionality
     this.alerts = true;
     
@@ -240,125 +240,6 @@ var windmill = new function() {
       }
     };
     
-    this.popupLogic = function(){
-      if (typeof windmill.testWin().oldOpen == "function"){
-        return;
-      }
-      //if the popup is manually navigated by the user, then they close it
-      //we want to generate a closeWindow action in the remote
-      if ((windmill.testWin() == windmill.popup) && (windmill.ui.recorder.recordState)){
-            windmill.testWin().onbeforeunload = function(){
-              windmill.popup = windmill.testWindow; 
-              windmill.testWindow = opener; 
-              setTimeout(function(){ 
-                try {
-                  if (windmill.popup.document == null){
-                    throw "closed window";
-                  }
-                } catch(err){
-                  var wfpl = windmill.ui.remote.buildAction("closeWindow");
-                  windmill.ui.remote.addAction(wfpl);
-                }
-              }, 500);
-          }
-      }
-      
-     //Window popup wrapper
-      try { windmill.testWin().oldOpen = windmill.testWin().open; } 
-      catch(err){ 
-        windmill.err("Did you close a popup window, without using closeWindow?");
-        windmill.err("We can no longer access test windows, start over and don't close windows manually.");
-        alert('See output tab, unrecoverable error has occured.');
-        return;
-      }
-      
-      //re-define the open function
-      windmill.testWin().open = function(){
-        if (windmill.browser.isIE){
-           var str = '';
-           var arg;
-           for (var i = 0; i < arguments.length; i++) {
-             arg = arguments[i];
-             if (typeof arg == 'string') {
-               str += '"' + arg + '"';
-             }
-             else {
-               str += arg;
-             }
-             str += ","
-           }
-           str = str.substr(0, str.length-1);
-           eval('var newWindow = windmill.testWin().oldOpen(' + str + ');');
-        }
-        else {
-          var newWindow = windmill.testWin().oldOpen.apply(windmill.testWin(), arguments);
-        }
-
-        var newReg = [];
-        for (var i = 0; i < windmill.windowReg.length; i++){
-          try{
-            var wDoc = windmill.windowReg[i].document;              
-            newReg.push(windmill.windowReg[i]);
-          } catch(err){}
-          windmill.windowReg = newReg;
-        }
-
-        windmill.windowReg.push(newWindow);
-
-        var doAdd = function(){
-          
-          var wLen = windmill.windowReg.length -1;
-          windmill.testWindow = windmill.windowReg[wLen];                
-          //turn off all the recorders
-          // windmill.ui.recorder.recordOff();
-          // windmill.ui.domexplorer.domExplorerOff();
-          // windmill.ui.assertexplorer.assertExplorerOff();
-
-          windmill.pauseLoop();
-          //what do do when the window is loaded
-          var popupLoaded = function(){
-            if (!windmill.ui.recorder.recordState){ return; }
-            try {
-              var b = windmill.testWin().document.body;
-              var wLen = windmill.windowReg.length -1;
-              
-              //build the new actions
-              var wfpl = windmill.ui.remote.buildAction("setTestWindow", {path: 'windmill.windowReg['+wLen+']'});
-              windmill.ui.remote.addAction(wfpl);
-              var wfpl = windmill.ui.remote.buildAction("waits.forPageLoad", {timeout:20000});
-              windmill.ui.remote.addAction(wfpl);
-              windmill.testWindow = windmill.windowReg[wLen];
-              windmill.loaded();
-              
-              //Allows us to keep access to the opener, otherwise we get permission denied
-              windmill.testWin().onbeforeunload = function(){
-                windmill.popup = windmill.testWindow; 
-                windmill.testWindow = opener; 
-                
-                setTimeout(function(){ 
-                  try {
-                    if (windmill.popup.document == null){
-                      throw "closed window";
-                    }
-                  } catch(err){
-                    var wfpl = windmill.ui.remote.buildAction("closeWindow");
-                    windmill.ui.remote.addAction(wfpl);
-                  }
-                }, 500);
-              };
-              
-              windmill.ui.domexplorer.setExploreState();
-              windmill.ui.recorder.setRecState();
-              
-              return true;
-            } catch(err){}
-          };
-          windmill.controller.waits.forJS(popupLoaded);
-        };
-        setTimeout(doAdd, 1000);
-      }
-    };
-    
     //When the page is unloaded turn off the loop until it loads the new one
     this.unloaded = function() {
         try {
@@ -437,7 +318,7 @@ var windmill = new function() {
         }
         //if popup support is enabled
         if (windmill.popups){
-          this.popupLogic();
+          windmill.controller.reWritePopups();
         }
 
         //We need to define the windmill object in the

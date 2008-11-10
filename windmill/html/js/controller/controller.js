@@ -822,12 +822,60 @@ windmill.controller = new function () {
   	        rwaRecurse(iframeArray[i]);
           }
           catch(error){             
-           	windmill.out('Could not bind to iframe number '+ iframeCount +' '+error);     
+           	windmill.err('Could not bind to iframe number '+ iframeCount +' '+error);     
           }
         }
       };
       rwaRecurse(windmill.testWin());
   };
+
+  this.reWritePopups = function(paramObject){
+     if (typeof windmill.testWin().oldOpen == "function"){
+       return;
+     }
+     
+    //Window popup wrapper
+     try { windmill.testWin().oldOpen = windmill.testWin().open; } 
+     catch(err){ 
+       windmill.err("Did you close a popup window, without using closeWindow?");
+       windmill.err("We can no longer access test windows, start over and don't close windows manually.");
+       alert('See output tab, unrecoverable error has occured.');
+       return;
+     }
+   
+     //re-define the open function
+     windmill.testWin().open = function(){
+       if (windmill.browser.isIE){
+          var str = '';
+          var arg;
+          for (var i = 0; i < arguments.length; i++) {
+            arg = arguments[i];
+            if (typeof arg == 'string') {
+              str += '"' + arg + '"';
+            }
+            else {
+              str += arg;
+            }
+            str += ","
+          }
+          str = str.substr(0, str.length-1);
+          eval('var newWindow = windmill.testWin().oldOpen(' + str + ');');
+       }
+       else {
+         var newWindow = windmill.testWin().oldOpen.apply(windmill.testWin(), arguments);
+       }
+
+       var newReg = [];
+       for (var i = 0; i < windmill.windowReg.length; i++){
+         try{
+           var wDoc = windmill.windowReg[i].document;              
+           newReg.push(windmill.windowReg[i]);
+         } catch(err){}
+         windmill.windowReg = newReg;
+       }
+       windmill.windowReg.push(newWindow);
+     };
+   };
 
   /**
   * Update the windmill.testWindow reference to point to a different window
