@@ -50,8 +50,8 @@ def reconstruct_url(environ):
         else:
             if environ['SERVER_PORT'] != '80':
                url += ':' + environ['SERVER_PORT']
-    url += environ.get('SCRIPT_NAME','')
-    url += environ.get('PATH_INFO','')
+    url += quote(environ.get('SCRIPT_NAME',''))
+    url += quote(environ.get('PATH_INFO','')).replace(url.replace(':', '%3A'), '')
     # Fix ;arg=value in url
     if url.find('%3B') is not -1:
         url, arg = url.split('%3B', 1)
