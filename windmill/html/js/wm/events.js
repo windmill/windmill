@@ -131,7 +131,7 @@ windmill.events = new function() {
             return match[0];
 
         }
-        windmill.out("invalid keySequence");
+        windmill.err("invalid keySequence");
 
     }
 

@@ -162,7 +162,7 @@ windmill.ui.assertexplorer = new function() {
         this.axRecursiveBind(windmill.testWin());
       }
       catch(error) {
-        windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
+        windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
         $('assertx').src = 'img/axon.png';
         this.exploreState = false;
       }
@@ -181,7 +181,7 @@ windmill.ui.assertexplorer = new function() {
         this.axRecursiveUnBind(windmill.testWin());
       }
       catch(error) {
-        windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
+        windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
       }
     }
 
@@ -204,7 +204,7 @@ windmill.ui.assertexplorer = new function() {
           this.axRecursiveBind(iframeArray[i]);
         }
         catch(error) {
-          windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
+          windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
         }
       }
     }
@@ -226,7 +226,7 @@ windmill.ui.assertexplorer = new function() {
 
         }
         catch(error) {
-          windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
+          windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
         }
       }
     }

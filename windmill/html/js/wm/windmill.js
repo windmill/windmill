@@ -73,14 +73,19 @@ var windmill = new function() {
     this.browser = null;
     
     //results storage if IDE isn't ready
-    this.resultsArr = [];
+    this.errorArr = [];
     this.out = function(s){
       if (typeof(windmill.results) == "undefined"){
-        windmill.resultsArr.push(s);
+        windmill.errorArr.push(s);
       }
       else {
         windmill.ui.results.writeResult(s);
       }
+    };
+    
+    //Directly write errors to the errorArr
+    this.err = function(s){
+      windmill.errorArr.push(s);
     };
     
     //we need to defined a function that returns the test window
@@ -117,8 +122,8 @@ var windmill = new function() {
           return windmill.testWindow;
         }
         catch(err){
-          //windmill.out('Either the popup window was destroyed, or you are in IE with a changed document.domain.');
-          //windmill.out('Defaulting to the opener as target window...');
+          windmill.err('Either the popup window was destroyed, or you are in IE with a changed document.domain.');
+          windmill.err('Defaulting to the opener as target window...');
           try {
             var d = opener.document;
             windmill.testWindow = opener;
@@ -186,7 +191,7 @@ var windmill = new function() {
                   arr.shift();
                   document.domain = arr.join('.');
                 }
-                else { windmill.out('Our failover logic cant sync up with your apps document.domain.'); }
+                else { windmill.err('Our failover logic cant sync up with your apps document.domain.'); }
             }
           }
           try { 
@@ -261,8 +266,8 @@ var windmill = new function() {
      //Window popup wrapper
       try { windmill.testWin().oldOpen = windmill.testWin().open; } 
       catch(err){ 
-        windmill.out("Did you close a popup window, without using closeWindow?");
-        windmill.out("We can no longer access test windows, start over and don't close windows manually.");
+        windmill.err("Did you close a popup window, without using closeWindow?");
+        windmill.err("We can no longer access test windows, start over and don't close windows manually.");
         alert('See output tab, unrecoverable error has occured.');
         return;
       }
@@ -445,7 +450,7 @@ var windmill = new function() {
         catch(err){
           try { setTimeout('windmill.loaded()', 500); return;}
           catch(err){         
-            windmill.out("Loaded method was unable to bind listeners, <br>Error: " + err);
+            windmill.err("Loaded method was unable to bind listeners, <br>Error: " + err);
           }
         }
         windmill.rUnLoadBind(windmill.testWin());

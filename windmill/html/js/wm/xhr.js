@@ -43,6 +43,9 @@ windmill.xhr = new function() {
           str = windmill.xhr.processVar(str);
         }
         
+        //cleanup, apparently json parsers don't like \"
+        str = str.replace(/\\"/g, "\'")
+        
         //Eval 
         try {
           if (JSON){
@@ -52,7 +55,7 @@ windmill.xhr = new function() {
             windmill.xhr.xhrResponse = eval('(' + str + ')');
           }
         } catch (err){
-          windmill.out(err);
+          windmill.err(err);
           windmill.xhr.getNext();
           return;
         }
@@ -63,7 +66,7 @@ windmill.xhr = new function() {
         
         //If there was a legit json response
         if (resp.error) {
-            windmill.out("There was a JSON syntax error: '" + 
+            windmill.err("There was a JSON syntax error: '" + 
             resp.error + "'");
         }
         else {
@@ -201,7 +204,7 @@ windmill.xhr = new function() {
         var reportHandler = function(str) {
             response = eval('(' + str + ')');
             if (!response.result == 200) {
-                windmill.out('Error: Report receiving non 200 response.');
+                windmill.err('Error: Report receiving non 200 response.');
             }
         };
         
@@ -226,7 +229,7 @@ windmill.xhr = new function() {
         
         //write to the output tab what is going on
         var handleTimeout = function() {
-            windmill.out('One of the XHR requests to the server timed out.');
+            windmill.err('One of the XHR requests to the server timed out.');
         }
         //var handleErr = function(){ setTimeout("windmill.xhr.getNext()", windmill.serviceDelay); }
         

@@ -918,7 +918,7 @@ windmill.jsTest.sendJSReport = function (testname, result, error, timer) {
   var reportHandler = function (str) {
     response = eval('(' + str + ')');
     if (!response.result || response.result != 200) {
-      windmill.out('Error: Report receiving non 200 response.');
+      windmill.err('Error: Report receiving non 200 response.');
     }
   };
   var result_string = fleegix.json.serialize(result);

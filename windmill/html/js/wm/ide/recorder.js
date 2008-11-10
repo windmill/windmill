@@ -233,7 +233,7 @@ windmill.ui.recorder = new function() {
         windmill.ui.remote.getSuite();
         try { this.recRecursiveBind(windmill.testWin()); }
         catch(error) {
-            windmill.out('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
+            windmill.err('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
             $('record').src = 'img/record.png';
             this.recordState = false;
         }
@@ -246,7 +246,7 @@ windmill.ui.recorder = new function() {
         try {
             this.recRecursiveUnBind(windmill.testWin());
         } catch(error) {
-          windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
+          windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
         }
 
     }
@@ -295,7 +295,7 @@ windmill.ui.recorder = new function() {
                 this.recRecursiveBind(iframeArray[i]);
 
             } catch(error) {
-              windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
+              windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
             }
         }
 
@@ -338,7 +338,7 @@ windmill.ui.recorder = new function() {
                 jQuery(iframeArray[i].document).unbind("click", this.writeJsonClicks);
                 this.recRecursiveUnBind(iframeArray[i]);
             } catch(error) {
-              windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
+              windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
             }
         }
     }

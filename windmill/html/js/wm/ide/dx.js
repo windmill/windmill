@@ -125,7 +125,7 @@ windmill.ui.domexplorer = new function() {
           $(id + 'option').focus();
         }
         catch(error) {
-          windmill.out('Error in dom explorer');
+          windmill.err('Error in dom explorer');
         }
     }
     
@@ -145,7 +145,7 @@ windmill.ui.domexplorer = new function() {
           $(id + 'locator').focus();
         }
         catch(error) {
-          windmill.out('Error in dom explorer');
+          windmill.err('Error in dom explorer');
         }
     }
     
@@ -195,7 +195,7 @@ windmill.ui.domexplorer = new function() {
       this.dxRecursiveBind(windmill.testWin());
     }
     catch(error) {
-      windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
+      windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
       $('explorer').src = 'img/xon.png';
       this.exploreState = false;
     }
@@ -219,7 +219,7 @@ windmill.ui.domexplorer = new function() {
       this.dxRecursiveUnBind(windmill.testWin());
     }
     catch(error) {
-      windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
+      windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
       $('explorer').src = 'img/xon.png';
       this.exploreState = false;
     }
@@ -244,7 +244,7 @@ windmill.ui.domexplorer = new function() {
         this.dxRecursiveBind(iframeArray[i]);
       }
       catch(error) {
-        windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
+        windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
       }
     }
   };
@@ -265,7 +265,7 @@ windmill.ui.domexplorer = new function() {
         this.dxRecursiveUnBind(iframeArray[i]);
       }
       catch(error) {
-        windmill.out('Binding to windows and iframes, '+error +'.. binding all others.');
+        windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
       }
     }
   };
