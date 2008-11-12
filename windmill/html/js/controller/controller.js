@@ -839,7 +839,6 @@ windmill.controller = new function () {
      catch(err){ 
        windmill.err("Did you close a popup window, without using closeWindow?");
        windmill.err("We can no longer access test windows, start over and don't close windows manually.");
-       alert('See output tab, unrecoverable error has occured.');
        return;
      }
    
