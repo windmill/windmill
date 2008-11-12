@@ -85,10 +85,6 @@ var lookupNode = function (paramObject, throwErr){
     element = elementslib.Element.TAGNAME(paramObject.tagname);
   }
   
-  //write out the results to the ide
-  if (windmill.chatty){
-    windmill.out(s);
-  }
   //scroll so that the element is in view
   if (element) { 
     element.scrollIntoView(); 
@@ -190,13 +186,13 @@ var openFirebug = function(){
       fbScript.src = "/windmill-serv/js/lib/firebug/firebug-lite.js";
       windmill.testWin().document.body.insertBefore(piScript, windmill.testWin().document.body.childNodes[0]);
       windmill.testWin().document.body.insertBefore(fbScript, windmill.testWin().document.body.childNodes[0]);
-      setTimeout('windmill.testWin().firebug.init();windmill.testWin().firebug.win.maximize()', 1000);
+      setTimeout('try { windmill.testWin().firebug.init();windmill.testWin().firebug.win.maximize(); } catch(err){} ', 1000);
     }
     else{
       windmill.testWin().firebug.init();
       windmill.testWin().firebug.win.maximize();
     }
-  } catch(err){ windmill.out("Could not add firebug lite to the test app, as it wasn't available, try again."); }
+  } catch(err){ windmill.err("Could not add firebug lite to the test app, as it wasn't available, try again."); }
 }
 
 var resetDD = function(){

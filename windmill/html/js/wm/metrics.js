@@ -21,12 +21,16 @@ windmill.TimeObj = function() {
     var endMS = 0;
     var runTime = '';
     var identifier = '';
-
+    var runTime = '';
+    
     this.getStart = function() {
         return timeStarted;
     }
     this.getEnd = function() {
         return timeEnded;
+    }
+    this.getRun = function(){
+      return runTime;
     }
     //Set the identifier 
     this.setName = function(identifier) {
@@ -52,25 +56,26 @@ windmill.TimeObj = function() {
         + d.getMinutes() + ':' + d.getSeconds() + '.' + d.getMilliseconds() + 'Z';
     }
     //Write to the log div
-    this.write = function(parameters) {
+    this.write = function(params) {
         this.calculateTime();
-
-        windmill.perf("<b>Total: </b><i>" + runTime + "</i> ms");
-        windmill.perf("Ending:  <i>" + timeEnded + "</i>");
-        windmill.perf("Starting: <i>" + timeStarted + "</i>");
-
-        //perf_tab.scrollTop = perf_tab.scrollHeight;
-        if (!parameters) {
-          windmill.perf("<br><b>Executing: <font color=\"orange\">" + this.identifier + "</font></b>");
-        }
-        else {
-          var param = eval("(" + parameters + ")");
-          delete param.uuid;
-          delete param.test;
-          parameters = fleegix.json.serialize(param);
-          windmill.perf("<br><b>Executing: <font color=\"orange\">" + this.identifier + "</font></b><br>"+
-            "Parameters: " + parameters);
-        }
+        
+        windmill.perf(this, params);
+        
+        // windmill.perf("<b>Total: </b><i>" + runTime + "</i> ms");
+        // windmill.perf("Ending:  <i>" + timeEnded + "</i>");
+        // windmill.perf("Starting: <i>" + timeStarted + "</i>");
+        // 
+        // if (!parameters) {
+        //   windmill.perf("<br><b>Executing: <font color=\"orange\">" + this.identifier + "</font></b>");
+        // }
+        // else {
+        //   var param = eval("(" + parameters + ")");
+        //   delete param.uuid;
+        //   delete param.test;
+        //   parameters = fleegix.json.serialize(param);
+        //   windmill.perf("<br><b>Executing: <font color=\"orange\">" + this.identifier + "</font></b><br>"+
+        //     "Parameters: " + parameters);
+        // }
     }
 };
 

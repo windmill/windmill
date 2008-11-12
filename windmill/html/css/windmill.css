@@ -127,6 +127,14 @@ a:hover {
   overflow: auto; overflow-y: auto; overflow-x: hidden;
 }
 
+.outputEntry {
+    position: relative;
+    padding: 3px;
+    overflow: hidden;
+    border-bottom: 1px solid #aaa;
+    width: 100%;
+}
+
 #navigation {
  padding:8px;
  height:10px;

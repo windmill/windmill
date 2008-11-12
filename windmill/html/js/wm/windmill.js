@@ -318,7 +318,8 @@ var windmill = new function() {
         }
         //if popup support is enabled
         if (windmill.popups){
-          windmill.controller.reWritePopups();
+          try { windmill.controller.reWritePopups(); }
+          catch(err) { windmill.err(err); }
         }
 
         //We need to define the windmill object in the

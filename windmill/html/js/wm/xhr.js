@@ -48,7 +48,7 @@ windmill.xhr = new function() {
         
         //Eval 
         try {
-          if (JSON){
+          if (typeof(JSON) != "undefined"){
             windmill.xhr.xhrResponse = JSON.parse(str);
           }
           else {
@@ -143,21 +143,26 @@ windmill.xhr = new function() {
                         else { windmill.controller[method](params); }
                         //End the timer
                         windmill.xhr.action_timer.endTime();
+                        //Report all bug commands on success
+                        if (method.split(".")[0] != 'commands'){
+                          windmill.actOut(method, params, result);
+                        }
                     }
                     catch(error) {
                         //End the timer if something broke
                         windmill.xhr.action_timer.endTime();
                         info = error;
                         result = false;
-                        var newParams = copyObj(params);
-                        delete newParams.uuid;
-                        
-                        windmill.out("<font color=\"#FF0000\">" + 
-                        method + ": " + error + "</font>");
-                        
-                        windmill.out("<br>Action: <b>" + method + 
-                        "</b><br>Parameters: " + fleegix.json.serialize(newParams) + 
-                        "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
+                        windmill.actOut(method, params, result);
+                        // var newParams = copyObj(params);
+                        // delete newParams.uuid;
+                        // 
+                        // windmill.out("<font color=\"#FF0000\">" + 
+                        // method + ": " + error + "</font>");
+                        // 
+                        // windmill.out("<br>Action: <b>" + method + 
+                        // "</b><br>Parameters: " + fleegix.json.serialize(newParams) + 
+                        // "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
 
                         //If the option to throw errors is set
                         if ($('throwDebug').checked == true) {
@@ -185,7 +190,7 @@ windmill.xhr = new function() {
                     windmill.xhr.sendReport(method, result, windmill.xhr.action_timer, info);
                     windmill.xhr.setActionBackground(action, result, resp.result);
                     //Do the timer write
-                    windmill.xhr.action_timer.write(fleegix.json.serialize(newParams));
+                    windmill.xhr.action_timer.write(newParams);
                 }
             }
         }
@@ -302,10 +307,10 @@ windmill.xhr = new function() {
                 action.parentNode.style.border.borderTop = "1px solid red";
                 action.parentNode.style.border.borderBottom = "1px solid red";
             }
-            windmill.out("<br>Action: <b>" + obj.method + 
-            "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
-            "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
-            
+            // windmill.out("<br>Action: <b>" + obj.method + 
+            //      "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
+            //      "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
+            //             
             //if the continue on error flag has been set by the shell.. then we just keep on going
             if (windmill.stopOnFailure == true) {
                 windmill.xhr.loopState = false;
@@ -314,9 +319,9 @@ windmill.xhr = new function() {
         }
         else {
             //Write to the result tab
-            windmill.out("<br>Action: <b>" + obj.method + 
-            "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
-            "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');
+            // windmill.out("<br>Action: <b>" + obj.method + 
+            // "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
+            // "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');
             
             if ((typeof(action) != 'undefined') && (windmill.runTests == true)) {
                 action.style.background = '#C7FFCC';
@@ -335,9 +340,9 @@ windmill.xhr = new function() {
 
         if (result != true) {
             if (action != null) { action.style.background = '#FF9692'; }
-            windmill.out("<br>Action: <b>" + obj.method + 
-            "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
-            "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
+            // windmill.out("<br>Action: <b>" + obj.method + 
+            // "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
+            // "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
             
             //if the continue on error flag has been set by the shell.. then we just keep on going
             if (windmill.stopOnFailure == true) {
@@ -347,9 +352,9 @@ windmill.xhr = new function() {
         }
         else {
             //Write to the result tab
-            windmill.out("<br>Action: <b>" + obj.method + 
-            "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
-            "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');
+            // windmill.out("<br>Action: <b>" + obj.method + 
+            // "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
+            // "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');
             
             try {
                 if ((typeof(action) != 'undefined') && (windmill.runTests == true)) {
@@ -364,7 +369,7 @@ windmill.xhr = new function() {
         if (obj.params.orig != 'js'){
           windmill.xhr.sendReport(obj.method, result, windmill.xhr.action_timer);
         }
-        windmill.xhr.action_timer.write(fleegix.json.serialize(obj.params));
+        windmill.xhr.action_timer.write(obj.params);
     };
 
 

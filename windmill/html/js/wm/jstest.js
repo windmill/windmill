@@ -721,8 +721,9 @@ windmill.jsTest = new function () {
       // -----------------------
       this.currentJsTestTimer.endTime();
       // Write to the results tab in the IDE
-      windmill.out("<br><b>Test:</b> " + testName +
-        "<br>Test Result: <font color=\"#61d91f\"><b>" + true + "</b></font>");
+      // windmill.out("<br><b>Test:</b> " + testName +
+      //         "<br>Test Result: <font color=\"#61d91f\"><b>" + true + "</b></font>");
+      windmill.actOut(testName, {}, true);
       this.currentJsTestTimer.write()
       // Send report for pass
       _this.sendJSReport(testName, true, null,
@@ -845,9 +846,10 @@ windmill.jsTest = new function () {
     // Escape angle brackets for display in HTML
     msg = msg.replace(/</g, '&lt;');
     msg = msg.replace(/>/g, '&gt;');
-    windmill.out("<br>Test: <b>" +
-            testName + "<br>Test Result:" + false + '<br>Error: '+ msg);
-    _this.sendJSReport(testName, false, e, this.currentJsTestTimer);
+    // windmill.out("<br>Test: <b>" +
+    //             testName + "<br>Test Result:" + false + '<br>Error: '+ msg);
+    windmill.actOut(testName, {}, false);
+        _this.sendJSReport(testName, false, e, this.currentJsTestTimer);
     this.testFailures.push(fail);
   };
   this.getFile = function (path) {

@@ -233,7 +233,7 @@ windmill.ui.playback = new function() {
       json_object.params = params_obj;
       
       //if JSON2 is available use it
-      if (JSON){
+      if (typeof(JSON) != "undefined"){
          var json_string = JSON.stringify(json_object);
       } else {
         var json_string = fleegix.json.serialize(json_object);
