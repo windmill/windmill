@@ -65,7 +65,7 @@ windmill.ui = new function() {
         windmill.alerts = false;
         try {
           windmill.testWin().alert = windmill.testWin().oldAlert;
-        } catch(err){ windmill.out(err); }
+        } catch(err){ windmill.err(err); }
       }
     }
     
