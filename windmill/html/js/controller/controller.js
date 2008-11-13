@@ -122,6 +122,12 @@ windmill.controller = new function () {
   this.select = function (paramObject) {
     //lookup
     var element = lookupNode(paramObject);
+    
+    //if the index selector was used, select by index
+    if (paramObject.index){
+      element.options[paramObject.index];
+      return;
+    }
         
     //if it's already selected
     if (element.options[element.options.selectedIndex].text == paramObject['option']){
