@@ -153,6 +153,7 @@ windmill.xhr = new function() {
                         windmill.xhr.action_timer.endTime();
                         info = error;
                         result = false;
+                        params.error = error;
                         windmill.actOut(method, params, result);
                         // var newParams = copyObj(params);
                         // delete newParams.uuid;

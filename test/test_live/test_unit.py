@@ -42,6 +42,10 @@ def test_wmunti1():
     print (end - start)
     assert ( end - start ).seconds >= 8
     
+    #unit tests for select by value
+    assert client.select(val='d', id='flavor')['result']
+    assert client.asserts.assertSelected(validator='d', id='flavor')['result']
+    
     assert client.asserts.assertText(validator=u'Slept', id=u'sleeper')['result']
     assert client.type(text=u'my test text', id=u'junkfield')['result']
     assert client.asserts.assertValue(validator=u'my test text', id=u'junkfield')['result']

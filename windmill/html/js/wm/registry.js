@@ -28,7 +28,7 @@ for( loc in windmill.registry.locator ){
   windmill.registry.option.push('opt'+loc);
 }
 
-windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js', 'status','domain', 'coords', 'pixels');
+windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js', 'status','domain', 'coords', 'pixels', 'val');
 
 //Setup method registry
 windmill.registry.methods['-- Mouse --']        = {'locator': false, 'option': false, 'section': true};
@@ -45,7 +45,7 @@ windmill.registry.methods['dragDropAbs']         = {'locator': true,'option': 'c
 windmill.registry.methods['dragDropElemToElem']  = {'locator': true,'option': true, 'optionIsLocator': true};
 windmill.registry.methods['radio']               = {'locator': true, 'option': false };
 windmill.registry.methods['check']               = {'locator': true, 'option': false };
-windmill.registry.methods['select']              = {'locator': true, 'option': 'option,value'};
+windmill.registry.methods['select']              = {'locator': true, 'option': 'option,val'};
 windmill.registry.methods['-- Keyboard --']      = {'locator': false, 'option': false, 'section': true};
 windmill.registry.methods['type']                = {'locator': true, 'option': 'text'};
 windmill.registry.methods['keyPress']            = {'locator': true, 'option': 'options'};

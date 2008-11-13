@@ -589,10 +589,13 @@ windmill.ui.remote = new function() {
             }
             //if the options are a comma delimited list, build the drop down
             else if (windmill.registry.methods[method].option.indexOf(',') != -1){
-              optArr = windmill.registry.methods[method].option.split(',');
+              var optArr = windmill.registry.methods[method].option.split(',');
               //for (opt in optArr){
               for (var opt = 0; opt < optArr.length; opt++){
-                newOpt = document.createElement('option');
+                var newOpt = document.createElement('option');
+                if (params[optArr[opt]]){
+                  newOpt.selected = true;
+                }
                 newOpt.value = optArr[opt];
                 newOpt.innerHTML = optArr[opt];
                 s2.appendChild(newOpt);

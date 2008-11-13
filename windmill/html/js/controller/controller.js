@@ -120,13 +120,14 @@ windmill.controller = new function () {
   * @throws Exception Unable to select the specified option.
   */
   this.select = function (paramObject) {
+    //lookup
     var element = lookupNode(paramObject);
-    
+        
     //if it's already selected
     if (element.options[element.options.selectedIndex].text == paramObject['option']){
       return true;
     }
-    if (element.options[element.options.selectedIndex].value == paramObject['value']){
+    if (element.options[element.options.selectedIndex].value == paramObject['val']){
       return true;
     }
     
@@ -147,7 +148,7 @@ windmill.controller = new function () {
           }
         }
         else {
-           if(el.value.indexOf(paramObject.value) != -1){
+           if(el.value.indexOf(paramObject.val) != -1){
               if (el.selected && el.options[opt] == optionToSelect){
                 continue;
               }
