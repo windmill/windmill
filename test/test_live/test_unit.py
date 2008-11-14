@@ -42,6 +42,10 @@ def test_wmunti1():
     print (end - start)
     assert ( end - start ).seconds >= 8
     
+    #execIDEJS and storeURL test
+    assert client.storeURL(link='AwesomeLink')
+    assert client.execIDEJS(js='windmill.varRegistry.items["{$AwesomeLink}"] = windmill.varRegistry.items["{$AwesomeLink}"].replace(\'http\', \'abcd\');')
+    assert client.asserts.assertJS(js="'{$AwesomeLink}' == 'abcd://www.awesome.com/';")
     #unit tests for select by value
     assert client.select(val='d', id='flavor')['result']
     assert client.asserts.assertSelected(validator='d', id='flavor')['result']

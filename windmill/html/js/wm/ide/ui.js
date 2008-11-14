@@ -232,13 +232,9 @@ windmill.ui.playback = new function() {
       params_obj.tests = testArray;
       json_object.params = params_obj;
       
-      //if JSON2 is available use it
-      if (typeof(JSON) != "undefined"){
-         var json_string = JSON.stringify(json_object);
-      } else {
-        var json_string = fleegix.json.serialize(json_object);
-      }
-
+      //Serialize
+      var json_string = fleegix.json.serialize(json_object);
+      
       doCall = function() {
           var z = fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
       }
