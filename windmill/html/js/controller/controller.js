@@ -125,8 +125,8 @@ windmill.controller = new function () {
     
     //if the index selector was used, select by index
     if (paramObject.index){
-      element.options[paramObject.index];
-      return;
+      element.options[paramObject.index].selected = true;
+      return true;
     }
         
     //if it's already selected
