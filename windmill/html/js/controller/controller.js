@@ -129,13 +129,17 @@ windmill.controller = new function () {
       return true;
     }
         
-    //if it's already selected
-    if (element.options[element.options.selectedIndex].text == paramObject['option']){
-      return true;
-    }
-    if (element.options[element.options.selectedIndex].value == paramObject['val']){
-      return true;
-    }
+    //Sometimes we can't directly access these at this point, not sure why
+    try {
+      if (element.options[element.options.selectedIndex].text == paramObject['option']){
+        return true;
+      }
+    } catch(err){ windmill.err(err)}
+    try {  
+      if (element.options[element.options.selectedIndex].value == paramObject['val']){
+        return true;
+      }
+    } catch(err){ windmill.err(err)}
     
     windmill.events.triggerEvent(element, 'focus', false);
     var optionToSelect = null;
