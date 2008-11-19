@@ -61,7 +61,6 @@ def reconstruct_url(environ):
         url += '?' + environ['QUERY_STRING']
     # Stick it in environ for convenience     
     environ['reconstructed_url'] = url
-    print url
     return url
 
 HTTPConnection = httplib.HTTPConnection            
