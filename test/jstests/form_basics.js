@@ -43,7 +43,7 @@ windmillMain.test_formBasics = new function () {
   };
   this.test_visibilityStateStillHidden = function () {
     jum.assertNotEquals('visible', $('visC').style.visibility);
-  }
+  };
 };
 
 

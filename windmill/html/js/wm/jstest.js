@@ -22,8 +22,9 @@ windmill.jsTest = new function () {
   // Private vars
   var _UNDEF; // Undefined val
   var _debug = false;
-  var brokenEval;
-  var assumedLocation = '';
+  var _currentTestTimer;
+  var _testsPaused = false;
+  var _brokenEval;
   var serverBasePath = '';
   var jsFilesBasePath = '';
   var loadedJSCodeFiles = {};
@@ -49,19 +50,19 @@ windmill.jsTest = new function () {
   function globalEval(path, code, testWin) {
     var win = testWin ? windmill.testWin() : window;
     // Do we have a working eval?
-    if (typeof brokenEval == 'undefined') {
+    if (typeof _brokenEval == 'undefined') {
       window.eval.call(window, 'var __EVAL_TEST__ = true;');
       if (typeof window.__EVAL_TEST__ != 'boolean') {
-        brokenEval = true;
+        _brokenEval = true;
       }
       else {
-        brokenEval = false;
+        _brokenEval = false;
         delete window.__EVAL_TEST__;
       }
     }
     // Try to eval the code
     try {
-      if (brokenEval) {
+      if (_brokenEval) {
         appendScriptTag(win, code);
       }
       else {
@@ -96,7 +97,7 @@ windmill.jsTest = new function () {
     }
     var basePath = baseP;
     var requirePath = requireP;
-    while (requirePath.indexOf('../') == 0) {
+    while (requirePath.indexOf('../') === 0) {
       basePath = basePath.substring(0, basePath.lastIndexOf('/'));
       requirePath = requirePath.substr(3);
     }
@@ -120,11 +121,8 @@ windmill.jsTest = new function () {
   this.testCount = _UNDEF;
   this.testFailureCount = _UNDEF;
   this.runInTestWindowScope = _UNDEF;
-  this.currentTestName = _UNDEF;
-  this.currentJsTestTimer = _UNDEF;
   this.jsSuiteSummary = _UNDEF;
   this.waiting = _UNDEF; // Used by waits.sleep waits.forElement
-  this.testsPaused = _UNDEF; // User settable
   this.completedCallback = null;
   this.testCodeStates = {
     // Test window is loaded and test code has been
@@ -182,7 +180,6 @@ windmill.jsTest = new function () {
       this.loadTestFiles();
       this.getCompleteListOfTestNames();
       this.limitByFilterAndPhase();
-      this.recordCurrentLocation();
       this.start();
     }
   };
@@ -226,7 +223,7 @@ windmill.jsTest = new function () {
     var fails = this.testFailures;
     for (var x = 0; x < fails.length-1; x++) {
       testResults[fails[x].message] = fails[x].error;
-      testResults[fails[x].message]['result'] = false;
+      testResults[fails[x].message].result = false;
     }
     _this.testResults = testResults;
 
@@ -234,7 +231,7 @@ windmill.jsTest = new function () {
     json_object.params = { tests: testResults };
     var json_string = fleegix.json.serialize(json_object);
     fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
-  }
+  };
 
   this.doSetup = function (paramObj) {
     var testFiles = paramObj.files;
@@ -314,9 +311,10 @@ windmill.jsTest = new function () {
     loadedJSCodeFiles = {};
     // The aggregated source code for the tests
     this.testScriptSrc = '';
+    var path;
     // Eval any init files first
     for (var i = 0; i < testFiles.length; i++) {
-      var path = testFiles[i];
+      path = testFiles[i];
       if (path.indexOf('/initialize.js') == -1) {
         continue;
       }
@@ -326,7 +324,7 @@ windmill.jsTest = new function () {
     }
     // Then eval the test files
     for (var i = 0; i < testFiles.length; i++) {
-      var path = testFiles[i].replace(jsFilesBasePath, '');
+      path = testFiles[i].replace(jsFilesBasePath, '');
       if (path.indexOf('initialize.js') > -1) {
         continue;
       }
@@ -355,7 +353,7 @@ windmill.jsTest = new function () {
       }
       if (document.all) {
         // IE loses type info for functions across window boundries
-        if ((o.toString && o.toString().indexOf('function')) == 0 ||
+        if ((o.toString && o.toString().indexOf('function')) === 0 ||
           (o.push && typeof o.length == 'number')) {
           return true;
         }
@@ -563,9 +561,6 @@ windmill.jsTest = new function () {
     // Clone the list
     this.testOrder = this.testList.slice();
   };
-  this.recordCurrentLocation = function () {
-    assumedLocation = this.getActualLocation();
-  };
   this.getActualLocation = function () {
     var win = this.getCurrentTestScope();
     return win.document.location.href;
@@ -589,7 +584,7 @@ windmill.jsTest = new function () {
         // The syntax-error possibility is only for browsers with
         // a broken eval (IE, Safari 2) -- the script-append hack
         // blindly sets the text of the script without checking syntax
-        if (brokenEval) {
+        if (_brokenEval) {
           errMsg += ' Either this object is not defined in' +
             ' any test file, or there is a syntax error in the file where it is defined.';
         }
@@ -634,31 +629,25 @@ windmill.jsTest = new function () {
     return ret;
   };
   this.runNextTest = function () {
-    var _this = this;
     var testName = '';
     var testFunc = null;
-    if (this.testsPaused) {
-      setTimeout(runNextItemInArray, 1000);
+    if (_testsPaused) {
+      setTimeout(function () { _this.runNextTest.call(_this); }, 1000);
       return false;
     }
     else if (this.testOrder.length == 0) {
       this.finish();
     }
     else {
-      /*
+      // Test-run timing
+      var timer = new windmill.TimeObj();
+      timer.setName(testName);
+      timer.startTime();
+      _currentTestTimer = timer;
+
       // If the window we're running tests in has
       // changed locations, reload all the test files
       // into the app scope
-      if (assumedLocation != this.getActualLocation()) {
-        var f = function () {
-          var waitForIt = _this.loadTestFiles.apply(_this);
-          _this.recordCurrentLocation.apply(_this);
-          _this.runNextTest.apply(_this);
-        };
-        setTimeout(f, 2000);
-        return false;
-      }
-      */
       if (!this.verifyTestWindowState(this.runNextTest)) {
         return false;
       }
@@ -700,13 +689,7 @@ windmill.jsTest = new function () {
     }
     return true;
   };
-  this.runSingleTestFunction = function (testName, testFunc, testScope) {
-    //Do some timing of test run
-    this.currentTestName = testName;
-    var timer = new windmill.TimeObj();
-    timer.setName(testName);
-    timer.startTime();
-    this.currentJsTestTimer = timer;
+  this.runSingleTestFunction = function (testName, testFunc, testScope, arrayIndex) {
     // Run the test
     try {
       // Actually executing the function object
@@ -717,89 +700,61 @@ windmill.jsTest = new function () {
       else {
         testFunc();
       }
-
-      // -----------------------
-      this.currentJsTestTimer.endTime();
-      // Write to the results tab in the IDE
-      // windmill.out("<br><b>Test:</b> " + testName +
-      //         "<br>Test Result: <font color=\"#61d91f\"><b>" + true + "</b></font>");
-      windmill.actOut(testName, {}, true);
-      this.currentJsTestTimer.write()
-      // Send report for pass
-      _this.sendJSReport(testName, true, null,
-        this.currentJsTestTimer);
+      if (!arrayIndex) {
+        this.handleSuccess(testName);
+      }
       return true;
     }
     // For each failure, create a TestFailure obj, add
     // to the failures list
     catch (e) {
-      this.handleErr(e);
+      this.handleErr(e, testName);
       return false;
     }
   };
   this.runTestItemArray = function () {
-    var _this = this;
+    var testArrayName = this.testItemArray.name;
+    var incr = this.testItemArray.incr;
+    var delay = 0;
     var runNextItemInArray = function () { _this.runTestItemArray.apply(_this); };
-    var t = 0;
-    if (this.testsPaused) {
+    if (_testsPaused) {
       setTimeout(runNextItemInArray, 1000);
       return false;
     }
     // If the array of UI action objects is empty, go back
     // to the normal test loop -- get the next test, etc.
-    else if (this.testItemArray.incr == this.testItemArray.count) {
+    else if (incr == this.testItemArray.count) {
+      this.handleSuccess(testArrayName);
       this.runNextTest();
     }
     else {
-      if (!this.verifyTestWindowState(this.runTestItemArray)) {
-        return false;
-      }
-      /*
       // If the window we're running tests in has
       // changed locations, reload all the test files
       // into the app scope
-      if (assumedLocation != this.getActualLocation()) {
-        var f = function () {
-          var waitForIt = _this.loadTestFiles.apply(_this);
-          _this.recordCurrentLocation.apply(_this);
-          _this.runTestItemArray.apply(_this);
-        };
-        setTimeout(f, 2000);
+      if (!this.verifyTestWindowState(this.runTestItemArray)) {
         return false;
       }
-      */
       // Look up the array-style test item by string path again
       // in case tests have reloaded due to window location change
-      var testItemArray = this.lookupObjRef(this.testItemArray.name);
+      var testItemArray = this.lookupObjRef(testArrayName);
       // Get the next item in the array
-      var item = testItemArray[this.testItemArray.incr];
-      this.testItemArray.incr++;
+      var item = testItemArray[incr];
+
       if (typeof item == 'undefined') {
         throw new Error('Test item in array-style test is undefined --' +
           ' likely a trailing comma separator has caused this.');
       }
-      if (typeof item == 'function' ||
+      // Anonymous functions -- run like a freestanding single test
+      else if (typeof item == 'function' ||
         (document.all && item.toString().indexOf('function') == 0)) {
-        this.runSingleTestFunction(this.testItemArray.name, item);
-          //var action = {};
-          //action.method = 'function';
-          //action.params = '(JavaScript code is being executed)';
-          //var a = windmill.xhr.createActionFromSuite('jsTests', action);
-          //windmill.xhr.setActionBackground(a,true,action);
+        this.runSingleTestFunction(testArrayName, item, null, incr);
       }
+      // Sleeps, waits, UI actions
       else {
-        // If the action is a sleep, set the sleep
-        // wait interval for the setTimeout loop
+        // Sleep -- handled right here by the local runTestItemArray
+        // loop in the setTimeout at the bottom
         if (item.method == 'waits.sleep') {
-          t = item.params.milliseconds;
-           //Build some UI
-          var action = {};
-          action.method = item.method;
-          action.params = item.params;
-          action.params.orig = 'js';
-
-          //var a = windmill.xhr.createActionFromSuite('jsTests', action);
-          //windmill.xhr.setWaitBgAndReport(a.id,true,action);
+          delay = item.params.milliseconds;
         }
         // Public waits methods, not including sleep
         else if (item.method.indexOf('waits.') > -1 &&
@@ -815,6 +770,7 @@ windmill.jsTest = new function () {
           // Let the js test framework know that it's in a waiting state
           this.waiting = true;
         }
+        // UI actions
         else {
           // Get the UI action to execute
           var testActionFunc = eval('windmill.jsTest.actions.' + item.method);
@@ -823,24 +779,26 @@ windmill.jsTest = new function () {
           // Execute the UI action with the set params
           windmill.stat('Running '+ item.method + '...');
           testActionFunc(item.params);
-
-          if (windmill.chatty){
-            windmill.out("<br><b>Action:</b> " + item.method +
-                       "<br>Params: " + fleegix.json.serialize(item.params));
-          }
-          if (this.testItemArray.name == 'setup') {
-
-          };
+        }
+        if (windmill.chatty){
+          windmill.out("<br><b>Action:</b> " + item.method +
+            "<br>Params: " + fleegix.json.serialize(item.params));
         }
       }
+
+      // Increment the counter to make it possible to grab
+      // the next item
+      this.testItemArray.incr++;
+
+      // Run the next item in the test array
       if (!this.waiting){
-        setTimeout(runNextItemInArray, t);
+        setTimeout(runNextItemInArray, delay);
       }
+
     }
   };
-  this.handleErr = function (e) {
-    var testName = this.currentTestName;
-    this.currentJsTestTimer.endTime();
+  this.handleErr = function (e, testName) {
+    _currentTestTimer.endTime();
     var fail = new _this.TestFailure(testName, e);
     var msg = fail.message;
     // Escape angle brackets for display in HTML
@@ -849,8 +807,18 @@ windmill.jsTest = new function () {
     // windmill.out("<br>Test: <b>" +
     //             testName + "<br>Test Result:" + false + '<br>Error: '+ msg);
     windmill.actOut(testName, {}, false);
-        _this.sendJSReport(testName, false, e, this.currentJsTestTimer);
+        _this.sendJSReport(testName, false, e, _currentTestTimer);
     this.testFailures.push(fail);
+  };
+  this.handleSuccess = function (testName) {
+    _currentTestTimer.endTime();
+    if (windmill.chatty){
+    windmill.out("<br><b>Test:</b> " + testName +
+      "<br>Test Result: <font color=\"#61d91f\"><b>" + true + "</b></font>");
+    }
+    windmill.actOut(testName, {}, true);
+    _currentTestTimer.write();
+    _this.sendJSReport(testName, true, null, _currentTestTimer);
   };
   this.getFile = function (path) {
     var file = fleegix.xhr.doReq({ url: path,
@@ -859,10 +827,10 @@ windmill.jsTest = new function () {
     return file;
   };
   this.pauseTests = function () {
-    this.testsPaused = true;
+    _testsPaused = true;
   };
   this.resumeTests = function () {
-    this.testsPaused = false;
+    _testsPaused = false;
   };
   this.startTestTiming = function () {
     var summary = new TimeObj();
@@ -950,50 +918,11 @@ windmill.jsTest.actions.loadActions = function () {
       var cwTimer = new windmill.TimeObj();
       cwTimer.setName(meth);
       cwTimer.startTime();
-
-      //Build some UI
-       // var action = {};
-       //     if (name){ action.method = name+'.'+meth; }
-       //     else { action.method = meth; }
-       //     action.params = eval(args[0]);
-
-       //var a = windmill.xhr.createActionFromSuite('jsTests', action);
-       // var buildUI = function(actionObj){
-       //   //var suite = windmill.ui.remote.getSuite("jsTests");
-       //   //var action = windmill.ui.remote.buildAction(actionObj.method, actionObj.params);
-       //   //suite.appendChild(action);
-       //   $(action.id+"method").disabled = true;
-       //   try {
-       //     $(action.id+"locatorType").disabled = true;
-       //     $(action.id+"locator").disabled = true;
-       //   } catch(err){}
-       //   try {
-       //     $(action.id+"optionType").disabled = true;
-       //     $(action.id+"option").disabled = true;
-       //   } catch(err){}
-       //   return action;
-       // }
-       //var a = buildUI(action);
-
-       //Set the id in the IDE so we can manipulate it
-       //action.params.aid = a.id;
-
       //Run the action in the UI
       var result = true;
       try {
         namespace[meth].apply(namespace, args);
-      } catch(err) { this.handleErr(err); }
-
-      //Set results, but not for waits, they do it themselves
-      // if (action.method.indexOf('waits') == -1){
-      //         windmill.xhr.setActionBackground(a,result,action);
-      //       }
-
-      //End the timer
-      //cwTimer.endTime();
-      //Send a report to the backend
-      //windmill.jsTest.sendJSReport(meth, result, null, cwTimer);
-      //Continue on with the test running
+      } catch(err) { this.handleErr(err, 'No test name, method: ' + meth); }
       return;
     };
   };
