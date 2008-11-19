@@ -131,7 +131,7 @@ var busyOn = function(){
   $('cover').style.display = "block";
 }
 var busyOff = function(){
-  jQuery("#loadMessage").html("Please wait, (Doing Stuff)...");
+  jQuery("#loadMessage").html("Please wait...");
   $('actionDD').style.visibility = "visible";
   $('cover').style.display = "none";
 }
