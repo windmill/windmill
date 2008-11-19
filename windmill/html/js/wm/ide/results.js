@@ -33,6 +33,9 @@ windmill.ui.results = new function() {
           var resDiv = document.createElement('div');
           resDiv.className = "outputEntry";
           resDiv.style.height = "14px";
+          if (windmill.browser.isIE){
+            resDiv.style.width = "95%";
+          }
        
           resDiv.innerHTML = "<strong>"+timeObj.identifier + "</strong>&nbsp;<a href='#'>+</a>";
           for (i in newParams){
@@ -84,6 +87,9 @@ windmill.ui.results = new function() {
       var resDiv = document.createElement('div');
       resDiv.className = "outputEntry";
       resDiv.style.height = "14px";
+      if (windmill.browser.isIE){
+        resDiv.style.width = "95%";
+      }
       if (result){
         resDiv.style.background = "#C7FFCC";
       }
