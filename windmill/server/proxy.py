@@ -36,22 +36,28 @@ def is_hop_by_hop(header):
 initial_forwarding_registry = {}
 forwarding_registry = {}
 exclude_from_retry = []
-# 
-# class IterativeResponse(object):
-#     def __init__(self, response_instance):
-#         self.response_instance = response_instance
-#         
-#     def __iter__(self):
-#         if self.response_instance.chunked:
-#             yield self.response_instance.read(1024)
-#             while self.response_instance.chunk_left is not None:
-#                 if self.response_instance.chunk_left < 1024:
-#                     yield self.response_instance.read()
-#                     self.response_instance.chunk_left = None
-#                 else:
-#                     yield self.response_instance.read(1024)
-#         else:
-#             yield self.response_instance.read()
+
+class IterativeResponse(object):
+    def __init__(self, response_instance):
+        self.response_instance = response_instance
+        
+    def __iter__(self):
+        if self.response_instance.chunked:
+            yield self.response_instance.read(1024)
+            while self.response_instance.chunk_left is not None:
+                if self.response_instance.chunk_left < 1024:
+                    yield self.response_instance.read()
+                    self.response_instance.chunk_left = None
+                else:
+                    yield self.response_instance.read(1024)
+        else:
+            yield self.response_instance.read()
+
+def get_wsgi_response(response):
+    if response.length > 1000:
+        return IterativeResponse(response)
+    else:
+        return [response.read()]
 
 def conditions_pass(e):
     for c in windmill.server.forwarding_conditions:
@@ -194,7 +200,7 @@ class WindmillProxyApplication(object):
                 response = new_response
             else:
                 start_response(*connection.pop(0))
-                return [connection.pop(0)]
+                return [get_wsgi_response(connection.pop(0))]
         else:
             response = connection.getresponse()
         
@@ -210,9 +216,8 @@ class WindmillProxyApplication(object):
         headers = self.parse_headers(response)
         if response.status == 404:
             logger.info('Could not fullfill proxy request to '+url.geturl()+'. '+str(set(initial_forwarding_registry.values())))
-        result = response.read()
         start_response(response.status.__str__()+' '+response.reason, headers)
-        return [result]
+        return get_wsgi_response(response)
 
     def parse_headers(self, response):
         headers = [ (x.lower(), y,) for x, y in [ z.split(':', 1) for z in str(response.msg).splitlines() if ':' in z]]
