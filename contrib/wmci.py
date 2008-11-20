@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # ***** BEGIN LICENSE BLOCK *****
 # Version: MPL 1.1/GPL 2.0/LGPL 2.1
 #
@@ -35,6 +37,7 @@
 #
 # ***** END LICENSE BLOCK *****
 import sys, os
+import os.path
 if sys.platform != 'win32':
     import pwd
 import commands
@@ -53,8 +56,42 @@ from datetime import timedelta
 logger = logging.getLogger(__name__)
 
 stdout_wrap = StringIO()
+                 
+def cleanup_ie():
+    def remove_files(target_dir):
+         for root, dirs, files in os.walk(target_dir):
+             for f in files:
+                 try:
+                     os.unlink(os.path.join(root, f))
+                 except OSError:
+                     pass
+                     
+    userpath = 'C:/Documents and Settings/'
+    userlist = os.listdir(userpath)
+    
+    for u in userlist[:]:
+         if os.path.isdir(userpath+u):
+             pass
+         else:
+             userlist.remove(u)
+    
+    for username in userlist:
+          target_dir = userpath+username+'/Local Settings/Temp/'
+          #print target_dir
+          remove_files(target_dir)
+    
+    for username in userlist:
+        target_dir = userpath+username+'/Cookies/'
+        #print target_dir
+        remove_files(target_dir)
 
+def cleanup_safari():
+    rm_args = ['rm']
+    rm_args.append(os.path.expanduser('~')+'/Library/Cookies/Cookies.plist')
+    subprocess.call(rm_args)
+    
 def run_command(cmd, env=None):
+    print cmd
     """Run the given command in killable process."""
     kwargs = {'stdout':-1 ,'stderr':sys.stderr, 'stdin':sys.stdin}
     
@@ -105,12 +142,27 @@ def kill_process_by_name(name):
                     logger.error('Could not kill process')
                     
 def main():
+    #If the args don't get here, let me know
+    if len(sys.argv) <= 1:
+        print "wmci script requires args"
+        return
+        
     """Command Line main function."""
     args = list(sys.argv)
     args.pop(0)
     
     name = args[0]
     
+    #Do browser cookie cleanup
+    if 'safari' in args:
+        cleanup_safari()
+    if 'ie' in args:
+        cleanup_ie()
+    
+    #Add the continuous integration arguments we need
+    args.append('exit')
+    args.append('report=true')
+
     kill_process_by_name(name)
     
     print "Starting "+str(args)
