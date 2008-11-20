@@ -127,10 +127,26 @@ var sendCommandResult = function(status, uuid, result){
 }
 
 var busyOn = function(){
+  //Centering the message on the screen
+  var load = document.getElementById('statusMessage');
+  load.style.position = 'absolute';
+  load.style.display = 'block';
+  load.style.left = "";
+  load.style.top = "";
+  fleegix.dom.center(load);
+  var left = load.style.left.replace("px", "");
+  var top = load.style.top.replace("px", "");
+  var leftInt = left - 60;
+  var topInt = top - 40;
+  load.style.left = leftInt+"px";
+  load.style.top = topInt+"px";
+
+  //Show it
   $('actionDD').style.visibility = "hidden";
   $('cover').style.display = "block";
 }
 var busyOff = function(){
+
   jQuery("#loadMessage").html("Please wait...");
   $('actionDD').style.visibility = "visible";
   $('cover').style.display = "none";
