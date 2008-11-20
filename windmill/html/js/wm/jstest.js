@@ -639,12 +639,6 @@ windmill.jsTest = new function () {
       this.finish();
     }
     else {
-      // Test-run timing
-      var timer = new windmill.TimeObj();
-      timer.setName(testName);
-      timer.startTime();
-      _currentTestTimer = timer;
-
       // If the window we're running tests in has
       // changed locations, reload all the test files
       // into the app scope
@@ -653,6 +647,13 @@ windmill.jsTest = new function () {
       }
       // Get the test name
       testName = this.testOrder.shift();
+      
+      // Test-run timing
+      var timer = new windmill.TimeObj();
+      timer.setName(testName);
+      timer.startTime();
+      _currentTestTimer = timer;
+      
       // Need to separate scope and executable in cases
       // where testable is an executable function because
       // waits occur in a setTimeout loop that breaks scope
