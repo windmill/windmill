@@ -75,10 +75,11 @@ def cleanup_ie():
          else:
              userlist.remove(u)
     
-    for username in userlist:
-          target_dir = userpath+username+'/Local Settings/Temp/'
-          #print target_dir
-          remove_files(target_dir)
+    #borks for some reason, or is just really slow
+    # for username in userlist:
+    #       target_dir = userpath+username+'/Local Settings/Temp/'
+    #       #print target_dir
+    #       remove_files(target_dir)
     
     for username in userlist:
         target_dir = userpath+username+'/Cookies/'
@@ -166,7 +167,11 @@ def main():
     kill_process_by_name(name)
     
     print "Starting "+str(args)
-    sys.exit(subprocess.call(args))
+    
+    #if 0 exit normally
+    returncode = subprocess.call(args)
+    if returncode is not 0:
+        sys.exit(returncode)
     
 if __name__ == "__main__":
     main()
