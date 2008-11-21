@@ -116,7 +116,7 @@ windmill.jsTest = new function () {
   this.testNamespaces = _UNDEF;
   this.testList = _UNDEF;
   this.testOrder = _UNDEF;
-  this.testItemArray = _UNDEF;
+  this.testItemArrayObj = _UNDEF;
   this.testFailures = _UNDEF;
   this.testCount = _UNDEF;
   this.testFailureCount = _UNDEF;
@@ -148,7 +148,7 @@ windmill.jsTest = new function () {
     this.testNamespaces = [];
     this.testList = [];
     this.testOrder = null;
-    this.testItemArray = null;
+    this.testItemArrayObj = null;
     this.testFailures = [];
     this.testCount = 0;
     this.testFailureCount = 0;
@@ -670,18 +670,21 @@ windmill.jsTest = new function () {
         testScope = this.getCurrentTestScope();
         testFunc = this.lookupObjRef(testName);
       }
-      // Tell IDE what is going on
-      //if the string is really long and namespaced, just use the functions name
+      // Tell IDE what is going on -- if the string is really
+      // long and namespaced, just use the functions name
       var testNameArr = testName.split(".");
       windmill.stat('Running '+ testNameArr[testNameArr.length - 1] + '...');
-
+      // Array-style tests -- array of UI actions or anon functions
       if (testFunc.length > 0) {
-        this.testItemArray = {
+        this.testItemArrayObj = {
           name: testName,
           count: testFunc.length,
-          incr: 0 };
+          incr: 0,
+          currentDelay: 0
+        };
         this.runTestItemArray();
       }
+      // Normal test functions
       else if (typeof testFunc == 'function' ||
         (document.all && testFunc.toString().indexOf('function') == 0)) {
         var success = this.runSingleTestFunction(testName, testFunc, testScope);
@@ -701,6 +704,7 @@ windmill.jsTest = new function () {
       else {
         testFunc();
       }
+      // Success for array-style tests reported in aggregate
       if (!arrayIndex) {
         this.handleSuccess(testName);
       }
@@ -713,19 +717,78 @@ windmill.jsTest = new function () {
       return false;
     }
   };
+  this.runSingleTestAction = function (tests, item, incr) {
+    var success = false;
+    // Sleep -- handled right here by the local runTestItemArray
+    // loop in the setTimeout at the bottom
+    if (item.method == 'waits.sleep') {
+      tests.currentDelay = item.params.milliseconds;
+    }
+    // Public waits methods, not including sleep
+    else if (item.method.indexOf('waits.') > -1 &&
+      item.method.indexOf('waits._') == -1 &&
+      item.method != 'waits.sleep') {
+      var meth = item.method.replace('waits.', '');
+      var func = _this.actions.waits[meth];
+      // Add a parameter so we know the js framework
+      // is the source so it knows to kick execution back
+      // to this loop
+      item.params.orig = 'js';
+      try {
+        func(item.params, item);
+        // Let the js test framework know that it's in a waiting state
+        this.waiting = true;
+        success = true;
+      }
+      catch (e) {
+        this.handleErr(e, tests.name);
+        success = false;
+      }
+    }
+    // UI actions
+    else {
+      // Get the UI action to execute
+      var testActionMethod = eval('windmill.jsTest.actions.' + item.method);
+      // CheX0r for any needed string replacements for {$*} shortcuts
+      item.params = windmill.utilities.doShortcutStringReplacements(item.params);
+      // Execute the UI action with the set params
+      windmill.stat('Running '+ item.method + '...');
+      try {
+        if (typeof testActionMethod == 'function') {
+          testActionMethod(item.params);
+          success = true;
+        }
+        else {
+          throw new Error('"' + item.method +
+            '" is not a valid API controller method.');
+        }
+      }
+      catch (e) {
+        this.handleErr(e, tests.name);
+        success = false;
+      }
+    }
+    if (windmill.chatty){
+      windmill.out("<br><b>Action:</b> " + item.method +
+        "<br>Params: " + fleegix.json.serialize(item.params));
+    }
+    return success;
+  };
   this.runTestItemArray = function () {
-    var testArrayName = this.testItemArray.name;
-    var incr = this.testItemArray.incr;
-    var delay = 0;
+    var tests = this.testItemArrayObj;
+    var success = false;
     var runNextItemInArray = function () { _this.runTestItemArray.apply(_this); };
+
+    tests.currentDelay = 0; // Reset the loop delay
+
     if (_testsPaused) {
       setTimeout(runNextItemInArray, 1000);
       return false;
     }
     // If the array of UI action objects is empty, go back
     // to the normal test loop -- get the next test, etc.
-    else if (incr == this.testItemArray.count) {
-      this.handleSuccess(testArrayName);
+    else if (tests.incr == tests.count) {
+      this.handleSuccess(tests.name);
       this.runNextTest();
     }
     else {
@@ -735,11 +798,10 @@ windmill.jsTest = new function () {
       if (!this.verifyTestWindowState(this.runTestItemArray)) {
         return false;
       }
-      // Look up the array-style test item by string path again
-      // in case tests have reloaded due to window location change
-      var testItemArray = this.lookupObjRef(testArrayName);
-      // Get the next item in the array
-      var item = testItemArray[incr];
+      // Look up the next array-style test item using string path
+      // each time in case tests have reloaded due to
+      // window location change
+      var item = this.lookupObjRef(tests.name)[tests.incr];
 
       if (typeof item == 'undefined') {
         throw new Error('Test item in array-style test is undefined --' +
@@ -748,54 +810,34 @@ windmill.jsTest = new function () {
       // Anonymous functions -- run like a freestanding single test
       else if (typeof item == 'function' ||
         (document.all && item.toString().indexOf('function') == 0)) {
-        this.runSingleTestFunction(testArrayName, item, null, incr);
+        // Errors are caught, and failures are reported, above
+        // in runSingleTestFunction, where the error object is available
+        // 'success' of false stops further execution of this
+        // array of tests
+        success = this.runSingleTestFunction(tests.name, item, null, tests.incr);
       }
       // Sleeps, waits, UI actions
       else {
-        // Sleep -- handled right here by the local runTestItemArray
-        // loop in the setTimeout at the bottom
-        if (item.method == 'waits.sleep') {
-          delay = item.params.milliseconds;
-        }
-        // Public waits methods, not including sleep
-        else if (item.method.indexOf('waits.') > -1 &&
-          item.method.indexOf('waits._') == -1 &&
-          item.method != 'waits.sleep') {
-          var meth = item.method.replace('waits.', '');
-          var func = _this.actions.waits[meth];
-          // Add a parameter so we know the js framework
-          // is the source so it knows to kick execution back
-          // to this loop
-          item.params.orig = 'js';
-          func(item.params, item);
-          // Let the js test framework know that it's in a waiting state
-          this.waiting = true;
-        }
-        // UI actions
-        else {
-          // Get the UI action to execute
-          var testActionFunc = eval('windmill.jsTest.actions.' + item.method);
-          // CheX0r for any needed string replacements for {$*} shortcuts
-          item.params = windmill.utilities.doShortcutStringReplacements(item.params);
-          // Execute the UI action with the set params
-          windmill.stat('Running '+ item.method + '...');
-          testActionFunc(item.params);
-        }
-        if (windmill.chatty){
-          windmill.out("<br><b>Action:</b> " + item.method +
-            "<br>Params: " + fleegix.json.serialize(item.params));
-        }
+        success = this.runSingleTestAction(tests, item, tests.incr);
       }
 
-      // Increment the counter to make it possible to grab
-      // the next item
-      this.testItemArray.incr++;
+      // Increment the counter to get the next item
+      tests.incr++;
 
-      // Run the next item in the test array
-      if (!this.waiting){
-        setTimeout(runNextItemInArray, delay);
+      // No errors running the current test-array item
+      // either loop until wait/sleep is done, or run the
+      // next item in the array
+      if (success) {
+        // Run the next item in the test array
+        if (!this.waiting){
+          setTimeout(runNextItemInArray, tests.currentDelay);
+        }
       }
-
+      // There was an error in the current test-array item
+      // abort the entire array and go to the next test
+      else {
+        this.runNextTest();
+      }
     }
   };
   this.handleErr = function (e, testName) {
@@ -923,7 +965,10 @@ windmill.jsTest.actions.loadActions = function () {
       var result = true;
       try {
         namespace[meth].apply(namespace, args);
-      } catch(err) { this.handleErr(err, 'No test name, method: ' + meth); }
+      }
+      catch (err) {
+        this.handleErr(err, 'No test name, method: ' + meth);
+      }
       return;
     };
   };
