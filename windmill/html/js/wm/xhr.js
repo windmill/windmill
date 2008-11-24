@@ -138,13 +138,15 @@ windmill.xhr = new function() {
                             else {
                                 windmill.controller[mArray[0]][mArray[1]](params, resp.result);
                             }
-                        }
+                        }                        
                         //Every other action that isn't namespaced
                         else { windmill.controller[method](params); }
+                        
                         //End the timer
                         windmill.xhr.action_timer.endTime();
                         //Report all bug commands on success
                         if (method.split(".")[0] != 'commands'){
+                          params.aid = action.id;
                           windmill.actOut(method, params, result);
                         }
                     }
@@ -344,10 +346,13 @@ windmill.xhr = new function() {
         if (!obj) { return false; }
         
         var action = $(aid);
+        var output = $(aid+"result");
         windmill.xhr.action_timer.endTime();
 
         if (result != true) {
             if (action != null) { action.style.background = '#FF9692'; }
+            if (output != null) { output.style.background = '#FF9692'; }
+            
             // windmill.out("<br>Action: <b>" + obj.method + 
             // "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
             // "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
@@ -367,6 +372,9 @@ windmill.xhr = new function() {
             try {
                 if ((typeof(action) != 'undefined') && (windmill.runTests == true)) {
                     action.style.background = '#C7FFCC';
+                }
+                if ((typeof(output) != 'undefined') && (windmill.runTests == true)) {
+                    output.style.background = '#C7FFCC';
                 }
             }
             catch(err) {}

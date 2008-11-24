@@ -59,7 +59,7 @@ stdout_wrap = StringIO()
                  
 def cleanup_ie():
     def remove_files(target_dir):
-         for root, dirs, files in os.walk(target_dir):
+         x root, dirs, files in os.walk(target_dir):
              for f in files:
                  try:
                      os.unlink(os.path.join(root, f))
@@ -153,6 +153,12 @@ def main():
     args.pop(0)
     
     name = args[0]
+    
+    #Make sure the machine is clean and ready to roll
+    kill_process_by_name('Safari')
+    kill_process_by_name('Firefox')
+    kill_process_by_name('iexplore.exe')
+    kill_process_by_name('firefox.exe')
     
     #Do browser cookie cleanup
     if 'safari' in args:

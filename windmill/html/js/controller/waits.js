@@ -45,7 +45,7 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
   var timeout = 8000;
   var isJsTest = (p.orig == 'js');
   var jsCode = p.js || p.test;
-  
+
   // If we get the weird string "NaN" (yes, the actual 
   // string, "NaN" :)) value from the IDE, or some other 
   // unusable string , just use the default value of 20 seconds
@@ -136,7 +136,51 @@ windmill.controller.waits.forElement = function (paramObj,obj) {
     p.test = f;
     return windmill.controller.waits.forJS(p, obj);
 };
-  
+
+//wait for an element to show up on the page
+//if it doesn't after a provided timeout, defaults to 20 seconds
+windmill.controller.waits.forElementProperty = function (paramObj,obj) { 
+    var p = paramObj || {};
+    var vArray = p.option.split('|');
+
+    //if there is a timeout
+    if (vArray[2]){
+      paramObj.timeout = vArray[3];
+    }
+    //function
+    var f = function () {
+      try { 
+        var node = lookupNode(p);
+        var value = eval ('node.' + vArray[0]+';');
+      
+        if (value == vArray[1]){
+          return true;
+        }
+      }
+      catch(err){}
+    };
+    p.test = f;
+    return windmill.controller.waits.forJS(p, obj);
+};
+
+//wait for an element to show up on the page
+//if it doesn't after a provided timeout, defaults to 20 seconds
+windmill.controller.waits.forJSExecTrue = function (paramObj,obj) { 
+    var p = paramObj || {};
+    var f = function () {
+      try { 
+        var r = eval(p.js);
+        
+        if (r == true){
+          return true;
+        }
+       }
+      catch(err){}
+    };
+    p.test = f;
+    return windmill.controller.waits.forJS(p, obj);
+};
+
 //wait for an element to show up on the page
 //if it doesn't after a provided timeout, defaults to 20 seconds
 windmill.controller.waits.forNotElement = function (paramObj,obj) { 

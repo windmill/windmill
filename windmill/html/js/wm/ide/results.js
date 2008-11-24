@@ -85,6 +85,9 @@ windmill.ui.results = new function() {
       
       var resultsDiv = $("resOut");
       var resDiv = document.createElement('div');
+      if (params.aid){
+        resDiv.id = params.aid+"result";
+      }
       resDiv.className = "outputEntry";
       resDiv.style.height = "14px";
       if (windmill.browser.isIE){
