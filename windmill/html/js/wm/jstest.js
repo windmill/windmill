@@ -32,6 +32,25 @@ windmill.jsTest = new function () {
   var testPhases = '';
   var testListReverseMap = {};
 
+  var _isTestNamespace = function (o, n) {
+    if (!o) {
+      throw new Error('Object "' + n + '" is undefined or does not exist.');
+    }
+    // Anything with test_, or setup/teardown
+    for (var p in o) {
+      if (/^test_/.test(p)) {
+        return true;
+      }
+      if (typeof o.setup != 'undefined') {
+        return true;
+      }
+      if (typeof o.teardown != 'undefined') {
+        return true;
+      }
+    }
+    // Nothing to indicate it's a test namespace
+    return false;
+  };
   function appendScriptTag(win, code) {
     var script = win.document.createElement('script');
     script.type = 'text/javascript';
@@ -347,37 +366,16 @@ windmill.jsTest = new function () {
   };
   this.parseTestNamespace = function (name) {
     var arr = [];
-    var isTestable = function (o, n) {
-      if (!o) {
-        throw new Error('Object "' + n + '" is undefined or does not exist.');
-      }
-      if (document.all) {
-        // IE loses type info for functions across window boundries
-        if ((o.toString && o.toString().indexOf('function')) === 0 ||
-          (o.push && typeof o.length == 'number')) {
-          return true;
-        }
-      }
-      else {
-        if (typeof o == 'function' || typeof o.push == 'function') {
-          return true;
-        }
-      }
-      return false;
-    };
     var parseNamespaceObj = function(obj, namespace) {
-      var re = /^test_/;
       var parseObj = obj;
       var doParse = function (parseItem, parseItemName) {
-        // functions or arrays
-          if (isTestable(parseItem, parseItemName)) {
-            arr.push(namespace + '.' + parseItemName);
-          }
-          // Possible namespace objects -- look for more tests
-          else {
-            var n = namespace + '.' + parseItemName;
-            parseNamespaceObj(parseItem, n);
-          }
+        if (_isTestNamespace(parseItem, parseItemName)) {
+          var n = namespace + '.' + parseItemName;
+          parseNamespaceObj(parseItem, n);
+        }
+        else {
+          arr.push(namespace + '.' + parseItemName);
+        }
       };
       // Check for a setup or teardown -- note that you can't
       // just test to see if the property is undefined ...
@@ -400,7 +398,7 @@ windmill.jsTest = new function () {
       // Parse any properties named according to the "test_" convention
       for (var parseProp in parseObj) {
         var item = parseObj[parseProp];
-        if (re.test(parseProp)) {
+        if (/^test_/.test(parseProp)) {
           doParse(item, parseProp);
         }
       }
@@ -415,11 +413,11 @@ windmill.jsTest = new function () {
         '" does not exist -- it is not defined in any of your test files.');
     }
     else {
-      if (isTestable(baseObj, name)) {
-        arr.push(name);
+      if (_isTestNamespace(baseObj, name)) {
+        parseNamespaceObj(baseObj, name);
       }
       else {
-        parseNamespaceObj(baseObj, name);
+        arr.push(name);
       }
     }
 
@@ -630,7 +628,7 @@ windmill.jsTest = new function () {
   };
   this.runNextTest = function () {
     var testName = '';
-    var testFunc = null;
+    var testItem = null;
     if (_testsPaused) {
       setTimeout(function () { _this.runNextTest.call(_this); }, 1000);
       return false;
@@ -647,47 +645,52 @@ windmill.jsTest = new function () {
       }
       // Get the test name
       testName = this.testOrder.shift();
-      
+
       // Test-run timing
       var timer = new windmill.TimeObj();
       timer.setName(testName);
       timer.startTime();
       _currentTestTimer = timer;
-      
+
       // Need to separate scope and executable in cases
       // where testable is an executable function because
       // waits occur in a setTimeout loop that breaks scope
+      // -----------
       // Namespaced testables
       if (testName.indexOf('.') > -1) {
         var testNameArr = testName.split('.');
         var testNameKey = testNameArr.pop();
         var testScope = testNameArr.join('.');
         testScope = this.lookupObjRef(testScope);
-        testFunc = testScope[testNameKey];
+        testItem = testScope[testNameKey];
       }
-      // Top-level, global named testables
+      // Top-level, global-named testables
       else {
         testScope = this.getCurrentTestScope();
-        testFunc = this.lookupObjRef(testName);
+        testItem = this.lookupObjRef(testName);
       }
       // Tell IDE what is going on -- if the string is really
       // long and namespaced, just use the functions name
       var testNameArr = testName.split(".");
       windmill.stat('Running '+ testNameArr[testNameArr.length - 1] + '...');
       // Array-style tests -- array of UI actions or anon functions
-      if (testFunc.length > 0) {
+      if (testItem.length > 0) {
         this.testItemArrayObj = {
           name: testName,
-          count: testFunc.length,
+          count: testItem.length,
           incr: 0,
           currentDelay: 0
         };
         this.runTestItemArray();
       }
       // Normal test functions
-      else if (typeof testFunc == 'function' ||
-        (document.all && testFunc.toString().indexOf('function') == 0)) {
-        var success = this.runSingleTestFunction(testName, testFunc, testScope);
+      else if (typeof testItem == 'function' ||
+        (document.all && testItem.toString().indexOf('function') == 0)) {
+        var success = this.runSingleTestFunction(testName, testItem, testScope);
+        this.runNextTest();
+      }
+      else {
+        var success = this.runSingleTestAction(testName, testItem);
         this.runNextTest();
       }
     }
