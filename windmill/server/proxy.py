@@ -54,6 +54,8 @@ class IterativeResponse(object):
             yield self.response_instance.read()
 
 def get_wsgi_response(response):
+    if type(response) is str:
+        return [response]
     if response.length > 1000:
         return IterativeResponse(response)
     else:
@@ -200,7 +202,7 @@ class WindmillProxyApplication(object):
                 response = new_response
             else:
                 start_response(*connection.pop(0))
-                return [get_wsgi_response(connection.pop(0))]
+                return get_wsgi_response(connection.pop(0))
         else:
             response = connection.getresponse()
         
