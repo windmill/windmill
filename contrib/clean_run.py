@@ -48,6 +48,7 @@ from StringIO import StringIO
 
 from time import sleep
 import subprocess
+from subprocess import Popen, PIPE, call
 
 from datetime import datetime
 from datetime import timedelta
@@ -160,7 +161,9 @@ def main():
     
     
     print "Starting "+str(args)
-    sys.exit(subprocess.call(args))
+    p = subprocess.Popen(args, stdout=PIPE, stderr=PIPE)
+    return_code = p.wait()
+    sys.exit(return_code)
     
 if __name__ == "__main__":
     main()
