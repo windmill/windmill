@@ -546,7 +546,7 @@ windmill.ui.remote = new function() {
             i0.id = action.id + 'locator';
             //in firefox there was a bug moving the focus to the element we clicked, not sure why
             //but this seems to fix it. 
-            if (!windmill.browser.isIE) {
+            if (!windmill.browser.isIE6x) {
                 i0.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElem(\'' + i0.id + '\')');
                 i0.setAttribute('onClick', '$(\'' + i0.id + '\').focus();');
             }
@@ -660,7 +660,7 @@ windmill.ui.remote = new function() {
             
             //give the value input an id
             i1.id = action.id + 'option';
-            if (!windmill.browser.isIE) {
+            if (!windmill.browser.isIE6x) {
                 i1.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElemOption(\'' + i1.id + '\')');
                 i1.setAttribute('onClick', '$(\'' + i1.id + '\').focus();');                
             }
