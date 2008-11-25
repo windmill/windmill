@@ -5,6 +5,7 @@ buildapp.sh
 ez_setup.py
 setup.py
 wmicon.icns
+contrib/bin_wrapper.py
 contrib/wxwindmill/setup.py
 contrib/wxwindmill/wxwindmill/__init__.py
 contrib/wxwindmill/wxwindmill.egg-info/PKG-INFO
