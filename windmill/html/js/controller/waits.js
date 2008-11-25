@@ -38,6 +38,7 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
   _this = this;
   
   //we passed the id in the parms object of the action in the ide
+  var jsTest = windmill.jsTest;
   var aid = paramObj.aid;
   delete paramObj.aid;
   var count = 0;
@@ -64,17 +65,20 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
   //lookup method
   var lookup = function () {
     if (count >= timeout) {
+      // JS tests -- report error and return control either to
+      // the array-test loop, or the normal test loop, by calling
+      // the passed-in callback
       if (isJsTest) {
-        windmill.jsTest.runTestItemArray();
-        windmill.jsTest.waiting = false;
-        windmill.jsTest.handleErr('Wait timed out after ' + timeout + ' seconds.');
+        jsTest.waiting = false;
+        jsTest.handleErr('Wait timed out after ' + timeout + ' seconds.');
+        p.loopCallback.call(jsTest);
       }
       else {
         if (pageLoad){ 
           windmill.loaded();
           windmill.continueLoop();
         }
-        else{ windmill.continueLoop(); }
+        else { windmill.continueLoop(); }
       }
       windmill.xhr.setWaitBgAndReport(aid,false,obj);
       return false;
@@ -97,10 +101,11 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
     if (!result){ var x = setTimeout(lookup, 100); }
     else {
         c = function () {
-          //If this method is being called by the js test framework
+          // JS tests -- return control either to the array-test loop,
+          // or the normal test loop, by calling the passed-in callback
           if (isJsTest) {
-            windmill.jsTest.waiting = false;
-            windmill.jsTest.runTestItemArray();
+            jsTest.waiting = false;
+            p.loopCallback.call(jsTest);
           }
           else{ 
              if (pageLoad){ windmill.loaded(); }
