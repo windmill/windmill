@@ -165,24 +165,6 @@ windmill.controller.waits.forElementProperty = function (paramObj,obj) {
 
 //wait for an element to show up on the page
 //if it doesn't after a provided timeout, defaults to 20 seconds
-windmill.controller.waits.forJSExecTrue = function (paramObj,obj) { 
-    var p = paramObj || {};
-    var f = function () {
-      try { 
-        var r = eval(p.js);
-        
-        if (r == true){
-          return true;
-        }
-       }
-      catch(err){}
-    };
-    p.test = f;
-    return windmill.controller.waits.forJS(p, obj);
-};
-
-//wait for an element to show up on the page
-//if it doesn't after a provided timeout, defaults to 20 seconds
 windmill.controller.waits.forNotElement = function (paramObj,obj) { 
     var p = paramObj || {};
     var f = function () {
