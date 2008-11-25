@@ -36,7 +36,6 @@
 #
 # ***** END LICENSE BLOCK *****
 import sys, os
-import win32api, win32pdhutil, win32con
 if sys.platform != 'win32':
     import pwd
 import commands
@@ -104,6 +103,7 @@ def run_command(cmd, env=None):
 def get_pids(name, minimun_pid=0):
     """Get all the pids matching name, exclude any pids below minimum_pid."""
     if os.name == 'nt' or sys.platform == 'cygwin':
+        import win32api, win32pdhutil, win32con
         #win32pdhutil.ShowAllProcesses()  #uncomment for testing
         pids = win32pdhutil.FindPerformanceAttributesByName(name)
     
