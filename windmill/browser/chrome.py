@@ -77,7 +77,7 @@ class Chrome(safari.Safari):
 	        self.unset_proxy_windows()
 	        
 	    try:
-	        self.p_handle.kill(group=True)
+	        self.p_handle.kill()
 	    except:
 	        logger.error('Cannot kill Chrome')
 	        
