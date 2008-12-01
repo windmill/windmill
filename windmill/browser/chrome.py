@@ -65,8 +65,9 @@ class Chrome(safari.Safari):
 	        self.set_proxy_windows()
 	    
 	    kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
-	    self.p_handle = subprocess.Popen([self.chrome_binary, '--homepage', self.test_url], **kwargs)
-	    logger.info([self.chrome_binary, self.redirection_page])
+	    command = [self.chrome_binary, '--homepage', self.test_url+'/windmill-serv/start.html']
+	    self.p_handle = subprocess.Popen(command, **kwargs)
+	    logger.info(command)
 
 	def kill(self, kill_signal=None):
 	    """Stop Chrome"""
