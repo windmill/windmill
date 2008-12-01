@@ -109,6 +109,9 @@ elif os.name == 'nt' or sys.platform == 'cygwin':
     
     if os.path.isfile(os.path.join(program_files, 'Safari', 'Safari.exe')):
         SAFARI_BINARY = os.path.join(program_files, 'Safari', 'Safari.exe')
+        
+    if os.path.isfile(os.path.join(program_files, 'Google', 'Chrome', 'Application', 'chome.exe')):
+        CHROME_BINARY = os.path.join(program_files, 'Google', 'Chrome', 'Application', 'chome.exe')
     
     # firefoxBin = findInPath('firefox')
     # 

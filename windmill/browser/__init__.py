@@ -107,3 +107,10 @@ def get_safari_controller():
     import safari
     browser = safari.Safari()
     return browser
+    
+def get_chrome_controller():
+    """Get the Safari browser object"""
+    import chrome
+    browser = chrome.Chrome()
+    return browser
+    

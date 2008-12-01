@@ -60,6 +60,13 @@ def start_safari():
     windmill.settings['controllers'].append(controller)
     return controller
     
+def start_chrome():
+    """Start the Crhome web browser configured for windmill"""
+    controller = windmill.browser.get_chrome_controller()
+    controller.start()
+    windmill.settings['controllers'].append(controller)
+    return controller
+    
 def load_json_test_file(filename):
     """Run the json test files passed to this function"""
     test_strings = re.compile("\{.*\}").findall(open(filename, 'r').read())
