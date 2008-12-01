@@ -85,12 +85,12 @@ class StartIE(GeneralBoolSettingToTrue):
     setting = 'START_IE'
     
 class StartSafari(GeneralBoolSettingToTrue):
-    """Start the Safari browser. Mac Only."""
+    """Start the Safari browser."""
     option_names = ('s', 'safari')
     setting = 'START_SAFARI'
     
 class StartChrome(GeneralBoolSettingToTrue):
-    """Start the Chrome browser. Mac Only."""
+    """Start the Chrome browser. Windows Only."""
     option_names = (None, 'chrome')
     setting = 'START_CHROME'
     
