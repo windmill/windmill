@@ -2,7 +2,7 @@ import commands
 import tempfile
 import logging
 import signal
-import killableprocess
+import subprocess
 import sys, os
 import urlparse
 
@@ -49,11 +49,10 @@ class Chrome(safari.Safari):
     # def unset_proxy_mac(self):
     #     commands.getoutput(' '.join([self.netsetup_binary, '-setwebproxystate', '"'+self.interface_name+'"', 'off']))
 	
-    # def set_proxy_windows(self):
-    #     self.create_redirect()
-    #     import ie
-    #     self.ie_obj = ie.InternetExplorer()
-    #     self.ie_obj.set_proxy()
+    def set_proxy_windows(self):
+        import ie
+        self.ie_obj = ie.InternetExplorer()
+        self.ie_obj.set_proxy()
     # 
     # def unset_proxy_windows(self):
     #     self.ie_obj.unset_proxy()
@@ -66,7 +65,7 @@ class Chrome(safari.Safari):
 	        self.set_proxy_windows()
 	    
 	    kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
-	    self.p_handle = killableprocess.runCommand([self.chrome_binary, self.redirection_page], **kwargs)
+	    self.p_handle = subprocess.Popen([self.chrome_binary, '--homepage', self.test_url], **kwargs)
 	    logger.info([self.chrome_binary, self.redirection_page])
 
 	def kill(self, kill_signal=None):
