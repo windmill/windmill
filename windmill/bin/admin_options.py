@@ -89,6 +89,11 @@ class StartSafari(GeneralBoolSettingToTrue):
     option_names = ('s', 'safari')
     setting = 'START_SAFARI'
     
+class StartChrome(GeneralBoolSettingToTrue):
+    """Start the Chrome browser. Mac Only."""
+    option_names = (None, 'chrome')
+    setting = 'START_CHROME'
+    
 # class RunPythonTests(object):
 #     """Run a set of python tests. 
 #         If no test file is specified the current directory is used."""

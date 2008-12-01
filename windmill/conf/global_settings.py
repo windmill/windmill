@@ -51,6 +51,7 @@ BROWSER_DEBUGGING   = False
 START_FIREFOX       = False
 START_IE            = False
 START_SAFARI        = False
+START_CHROME        = False
 
 JAVASCRIPT_TEST_DIR = None
 JAVASCRIPT_TEST_FILTER = None
