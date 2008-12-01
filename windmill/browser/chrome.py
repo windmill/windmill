@@ -79,7 +79,7 @@ class Chrome(safari.Safari):
 	    try:
 	        self.p_handle.kill()
 	    except:
-	        logger.error('Cannot kill Chrome')
+	        logger.exception('Cannot kill Chrome')
 	        
     # def stop(self):
     #     self.kill(signal.SIGTERM)
