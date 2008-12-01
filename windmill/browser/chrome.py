@@ -49,10 +49,10 @@ class Chrome(safari.Safari):
     # def unset_proxy_mac(self):
     #     commands.getoutput(' '.join([self.netsetup_binary, '-setwebproxystate', '"'+self.interface_name+'"', 'off']))
 	
-    def set_proxy_windows(self):
-        import ie
-        self.ie_obj = ie.InternetExplorer()
-        self.ie_obj.set_proxy()
+	def set_proxy_windows(self):
+	    import ie
+	    self.ie_obj = ie.InternetExplorer()
+	    self.ie_obj.set_proxy()
     # 
     # def unset_proxy_windows(self):
     #     self.ie_obj.unset_proxy()
