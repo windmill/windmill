@@ -90,6 +90,18 @@ windmill.ui.remote = new function() {
       this.selectedElement = null;
       this.selectedElementOption = id;
     };
+    
+    //This is because the google chrome rendering engine sucks
+    //and makes drop down boxes with background images black
+    this.addCSSBG = function(){
+      var is_chrome = /chrome/.test( navigator.userAgent.toLowerCase() );
+      if (!is_chrome){
+       var smallopts = jQuery(".smalloption") ;
+       for (i=0; i < smallopts.length; i++){
+         smallopts[i].style.background = 'transparent url("/windmill-serv/img/text_elem_gradient.gif")';
+       }
+      }
+    }
 
     this.addActionAbove = function(uuid) {
         var newAction = this.buildAction(null, {});
@@ -102,6 +114,7 @@ windmill.ui.remote = new function() {
         else {
           $(newAction.id + "locator").focus();
         }
+        this.addCSSBG();
         fleegix.fx.fadeIn($(newAction.id));
     };
 
@@ -115,6 +128,7 @@ windmill.ui.remote = new function() {
           var loc = $(action.id + "locator");
           if (loc){ loc.focus(); }
         }
+        this.addCSSBG();
         fleegix.fx.fadeIn($(action.id));
     };
 
@@ -153,6 +167,7 @@ windmill.ui.remote = new function() {
             try { $(action.id + "locator").focus(); }
             catch(err){}
         }
+        this.addCSSBG();
         return action.id;
 
     };
