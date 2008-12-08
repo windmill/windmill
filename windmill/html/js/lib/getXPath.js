@@ -28,24 +28,45 @@ function getXPath(node, path) {
     }
 
     if(node.nodeType == 1) {
-      if ($('absXpaths').checked){
-        path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 0 ? "["+count+"]" : ''));
-      }
-      else{
-        path.push(node.nodeName.toLowerCase() + (node.id ? "" : count > 0 ? "["+count+"]" : ''));
-      }
+      path.push(node.nodeName.toLowerCase() + (node.id ? "[@id='"+node.id+"']" : count > 0 ? "["+count+"]" : ''));
     }
     return path;
   };
   
   function getXSPath(node){
     var xpArray = getXPath(node);
-    var stringXpath = xpArray.join('/');
-    stringXpath = '/'+stringXpath;
-    stringXpath = stringXpath.replace('//','/');
-    if ($('xbrowsercompat').checked){
-      stringXpath = stringXpath.replace(/\[@.*?\]/g, '');
+    console.log(xpArray);
+    var index = null;
+    //Find the last id'd node in the path and set that as the index
+    for (var i = 0; i < xpArray.length; i++){
+      if (xpArray[i].indexOf('[@') != -1 ){
+        index = i;
+        console.log(index);
+      }
     }
+    
+    var stringXpath = '';
+    
+    //build the path from the index
+    if ((index == null) || ($('absXpaths').checked)){
+      stringXpath = xpArray.join('/');
+      stringXpath = '/'+stringXpath;
+      stringXpath = stringXpath.replace('//','/'); 
+    }
+    else {
+      stringXpath = '//'+xpArray[index];
+      index++;
+      
+      //build the rest of the string
+      while (index < xpArray.length){
+        stringXpath += '/' + xpArray[index];
+        index++;
+      }
+    }
+    
+    // if ($('absXpaths').checked){
+    //   stringXpath = stringXpath.replace(/\[@.*?\]/g, '');
+    // }
     
   return stringXpath;
 }
