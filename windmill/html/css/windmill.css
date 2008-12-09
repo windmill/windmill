@@ -107,21 +107,19 @@ a:hover {
  overflow:auto;
 }
 
-#ide {
-  width:100%;
-  overflow: auto; overflow-y: auto; overflow-x: hidden;
-}
-
 #ideForm {
+  position:relative;
   width:100%;
   overflow: auto; overflow-y: auto; overflow-x: hidden;
 }
 
 #resOut {
+  position:relative;
   width:100%;
   overflow: auto; overflow-y: auto; overflow-x: hidden;
 }
 #perfOut {
+  position:relative;
   width:100%;
   overflow: auto; overflow-y: auto; overflow-x: hidden;
 }
@@ -145,5 +143,5 @@ a:hover {
 
 .tab {
 height:100%;
-overflow: auto; overflow-y: auto; overflow-x: hidden;
+overflow-x: hidden;
 }

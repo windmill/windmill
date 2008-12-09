@@ -131,14 +131,14 @@
       </ul>
       
       <div id="actionsTab" style="padding:0px;margin:0px;">
-        <div id="ide">
+        <div id="ide" class="tab">
         		<form id="ideForm" name="ideForm" onsubmit="return false;" onscroll="scroll();"></form>
         	</div>
       </div>
       
       <div id="outputTab" style="padding:0px;margin:0px;">
         <div class="tab">
-          <div id="resOut"></div>
+          <form id="resOut" onsubmit="return false;"></form>
         </div>
       </div>
       
@@ -300,13 +300,14 @@
 
   var reFlow = function(){
     if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
-      document.getElementById('ide').style.height = document.body.clientHeight -70 + "px";
+      //document.getElementById('ide').style.height = document.body.clientHeight -70 + "px";
       document.getElementById('ideForm').style.height = document.body.clientHeight -70 + "px";
       document.getElementById('resOut').style.height = document.body.clientHeight -70 + "px";
       document.getElementById('perfOut').style.height = document.body.clientHeight -70 + "px";
+
     }
     else {
-      document.getElementById('ide').style.height = window.innerHeight -70 + "px";
+      //document.getElementById('ide').style.height = window.innerHeight -70 + "px";
       document.getElementById('ideForm').style.height = window.innerHeight -70 + "px";
       document.getElementById('resOut').style.height = window.innerHeight -70 + "px";
       document.getElementById('perfOut').style.height = window.innerHeight -70 + "px";
