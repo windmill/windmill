@@ -96,7 +96,7 @@ windmill.ui.results = new function() {
       if (result){
         resDiv.style.background = "#C7FFCC";
       }
-      else { resDiv.style.background = "lightpink"; }
+      else { resDiv.style.background = "#FF9692"; }
 
       var props = false;
       for (i in newParams){
