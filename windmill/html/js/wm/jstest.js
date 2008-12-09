@@ -224,7 +224,7 @@ windmill.jsTest = new function () {
     this.teardown(true);
   };
   this.teardown = function (c){
-    //Build testResults
+    // Build testResults
     var completed = c || false;
     var summary = this.jsSuiteSummary;
     var startTime = summary.getStart();
@@ -713,6 +713,7 @@ windmill.jsTest = new function () {
   this.runSingleTestFunction = function (testName, testFunc,
     testScope, arrayIndex) {
     _log('Calling runSingleTestFunction for ' + testName);
+    var success = false;
     // Run the test
     try {
       // Actually executing the function object
@@ -724,16 +725,25 @@ windmill.jsTest = new function () {
         testFunc();
       }
       // Success for array-style tests reported in aggregate
-      if (!arrayIndex) {
+      if (typeof arrayIndex == 'undefined') {
         this.handleSuccess(testName);
       }
+      success = true;
     }
     // For each failure, create a TestFailure obj, add
     // to the failures list
     catch (e) {
       this.handleErr(e, testName);
     }
-    this.runNextTest();
+    // Array-style -- return control to the array loop
+    if (typeof arrayIndex!= 'undefined') {
+      return success;
+    }
+    // Single action -- run the next test
+    else {
+      _log('Calling runNextTest from runSingleTestFunction');
+      this.runNextTest();
+    }
   };
   this.runSingleTestAction = function (tests, item, incr) {
     var testName = typeof incr != 'undefined' ?
@@ -807,7 +817,11 @@ windmill.jsTest = new function () {
         }
       }
       catch (e) {
-        this.handleErr(e, testName);
+        // Use local var _this here for handleErr, because 
+        // testActionMethod function obj above is called inside 
+        // a function created by wrapperMethodBuilder that makes 
+        // executable functions for each of the UI actions.
+        _this.handleErr(e, testName);
         success = false;
       }
       // Array-style -- return control to the array loop
@@ -816,6 +830,7 @@ windmill.jsTest = new function () {
       }
       // Single action -- run the next test
       else {
+        _log('Calling runNextTest from runSingleTestAction');
         this.runNextTest();
       }
     }
@@ -888,6 +903,7 @@ windmill.jsTest = new function () {
     }
   };
   this.handleErr = function (e, testName) {
+    _log('this.handleErr executing ...');
     _currentTestTimer.endTime();
     var fail = new _this.TestFailure(testName, e);
     var msg = fail.message;
@@ -1003,20 +1019,13 @@ windmill.jsTest.actions.loadActions = function () {
   var wrapperMethodBuilder = function (name, meth) {
     var namespace = name ? windmill.controller[name] : windmill.controller;
     return function () {
-      var args = Array.prototype.slice.call(arguments);
-      //We want to time how long this takes
-      var cwTimer = new windmill.TimeObj();
-      cwTimer.setName(meth);
-      cwTimer.startTime();
-      //Run the action in the UI
-      var result = true;
-      try {
-        namespace[meth].apply(namespace, args);
+      // Run the action in the UI -- no need for try/catch here,
+      // as this function object gets called inside a try/catch
+      // in the controller action test execution code
+      if (typeof namespace[meth] == 'undefined') {
+        throw new Error('No test name, method: ' + meth);
       }
-      catch (err) {
-        this.handleErr(err, 'No test name, method: ' + meth);
-      }
-      return;
+      namespace[meth].apply(namespace, arguments);
     };
   };
   // Build wrappers for controller, controller.extensions,
