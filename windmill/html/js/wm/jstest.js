@@ -486,15 +486,18 @@ windmill.jsTest = new function () {
         // Split the namespace path into its components
         // We'll be looking at each link in the chain for setups/teardowns
         var pathArray = testFilter.split(/\./g);
+        var objBasePath = '';
         var objPath = '';
+        var limit;
         // Setups
         if (!testPhases || inclSetupPhase) {
           // Parse down the namespace chain, looking for setups
           // For namespace filters, look all the way down the chain,
           // for tests, ignore the last item
-          var limit = isNamespace ? pathArray.length : pathArray.length - 1;
-          for (var i = 0; i < limit; i++) {
-            objPath = pathArray[i] + '.setup';
+          limit = pathArray.length; if (isNamespace) { limit++ }
+          for (var i = 1; i < limit; i++) {
+            objBasePath = pathArray.slice(0, i).join('.');
+            objPath = objBasePath + '.setup';
             if (typeof testListReverseMap[objPath] != 'undefined') {
               limitedList.push(objPath);
             }
@@ -522,9 +525,12 @@ windmill.jsTest = new function () {
           // Parse back up the namespace chain, looking for teardowns
           // For namespace filters, start at the very bottom of the chain,
           // for tests, ignore the bottom item
-          var limit = isNamespace ? pathArray.length - 1 : pathArray.length - 2;
-          for (var i = limit; i > -1; i--) {
-            objPath = pathArray[i] + '.teardown';
+          limit = pathArray.length - 1; if (isNamespace) { limit++ }
+          //limit = isNamespace ? pathArray.length - 1 : pathArray.length - 2;
+          for (var i = limit; i > 0; i--) {
+            //objPath = pathArray[i] + '.teardown';
+            objBasePath = pathArray.slice(0, i).join('.');
+            objPath = objBasePath + '.teardown';
             if (typeof testListReverseMap[objPath] != 'undefined') {
               limitedList.push(objPath);
             }
