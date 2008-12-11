@@ -65,7 +65,7 @@ class Chrome(safari.Safari):
 	        self.set_proxy_windows()
 	    
 	    kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
-	    command = [self.chrome_binary, '--homepage', self.test_url+'/windmill-serv/start.html']
+	    command = [self.chrome_binary, '--homepage', self.test_url+'/windmill-serv/start.html', '-disable-popup-blocking']
 	    self.p_handle = subprocess.Popen(command, **kwargs)
 	    logger.info(command)
 
