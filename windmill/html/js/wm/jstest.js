@@ -25,6 +25,7 @@ windmill.jsTest = new function () {
   var _currentTestTimer;
   var _testsPaused = false;
   var _brokenEval;
+  var _testItemArrayObj;
   var serverBasePath = '';
   var jsFilesBasePath = '';
   var loadedJSCodeFiles = {};
@@ -140,7 +141,6 @@ windmill.jsTest = new function () {
   this.testNamespaces = _UNDEF;
   this.testList = _UNDEF;
   this.testOrder = _UNDEF;
-  this.testItemArrayObj = _UNDEF;
   this.testFailures = _UNDEF;
   this.testCount = _UNDEF;
   this.testFailureCount = _UNDEF;
@@ -165,6 +165,7 @@ windmill.jsTest = new function () {
   this.init = function () {
     testFilter = '';
     testPhases = '';
+    _testItemArrayObj = null;
 
     this.testFiles = null;
     this.testScriptSrc = '';
@@ -172,7 +173,6 @@ windmill.jsTest = new function () {
     this.testNamespaces = [];
     this.testList = [];
     this.testOrder = null;
-    this.testItemArrayObj = null;
     this.testFailures = [];
     this.testCount = 0;
     this.testFailureCount = 0;
@@ -423,7 +423,6 @@ windmill.jsTest = new function () {
         arr.push(name);
       }
     }
-
     this.testList = combineLists(this.testList, arr);
   };
   this.getCompleteListOfTestNames = function () {
@@ -692,15 +691,20 @@ windmill.jsTest = new function () {
 
       if (!_isTestNamespace(testItem)) {
         // Array-style tests -- array of UI actions or anon functions
-        if (testItem.length > 0) {
-          _log('Running array-style test: ' + testName);
-          this.testItemArrayObj = {
-            name: testName,
-            count: testItem.length,
-            incr: 0,
-            currentDelay: 0
-          };
-          this.runTestItemArray();
+        if (testItem instanceof Array || typeof testItem.push == 'function') {
+          if (testItem.length > 0) {
+            _log('Running array-style test: ' + testName);
+            _testItemArrayObj = {
+              name: testName,
+              count: testItem.length,
+              incr: 0,
+              currentDelay: 0
+            };
+            this.runTestItemArray();
+          }
+          else {
+            // Allow empty stubs
+          }
         }
         // Normal test functions
         else if (typeof testItem == 'function' ||
@@ -708,6 +712,7 @@ windmill.jsTest = new function () {
           _log('Running test function: ' + testName);
           this.runSingleTestFunction(testName, testItem, testScope);
         }
+        // API controller actions, waits, asserts, etc.
         else {
           _log('Running API controller action: ' + testName);
           this.runSingleTestAction(testName, testItem);
@@ -756,6 +761,10 @@ windmill.jsTest = new function () {
       tests.name : tests;
     _log('Calling runSingleTestAction for ' + testName);
     var success = false;
+    // Add a parameter so we know the js framework
+    // is the source so it knows to kick execution back
+    item.params.origin = 'js';
+    item.params.testName = testName;
     // Sleep
     if (item.method == 'waits.sleep') {
       // Array-style -- set the ms for the array loop to
@@ -770,41 +779,65 @@ windmill.jsTest = new function () {
         return true;
       }
     }
-    // Public waits methods, not including sleep
+    // Public waits methods, not including sleep --
+    // these execute in a setTimemout loop over in the waits
+    // namespace, so we need both a local try/catch loop
+    // here, and one over there to restart test execution
+    // after a failure.
+    // The failure handling over in waits needs to handle
+    // both timeouts and execution failures
     else if (item.method.indexOf('waits.') > -1 &&
-      item.method.indexOf('waits._') == -1 &&
-      item.method != 'waits.sleep') {
+        item.method.indexOf('waits._') == -1 &&
+        item.method != 'waits.sleep') {
+      var localErr = false;
       var meth = item.method.replace('waits.', '');
       var func = _this.actions.waits[meth];
-      // Add a parameter so we know the js framework
-      // is the source so it knows to kick execution back
-      item.params.orig = 'js';
       // Callback so the controller can returns control
       // either to the array-test loop, or the normal test loop
       item.params.loopCallback = typeof incr != 'undefined' ?
         this.runTestItemArray : this.runNextTest;
+      // This try/catch is for errors like the
+      // method being incorrect/not-existing. Errors
+      // like that in this execution scope need to be
+      // handled here, and we need to make sure execution
+      // continues -- see the localErr below
       try {
-        func(item.params, item);
-        // Let the js test framework know that it's in a waiting state
-        this.waiting = true;
-        success = true;
+        if (typeof func == 'function') {
+          func(item.params, item);
+          // Let the js test framework know that it's in
+          // a waiting state
+          this.waiting = true;
+          success = true;
+        }
+        else {
+          throw new Error('"' + item.method +
+            '" is not a valid API controller method.');
+        }
       }
       catch (e) {
         this.handleErr(e, testName);
         success = false;
+        localErr = true;
+        this.waiting = false;
       }
       // Array-style -- return control to the array loop
       if (typeof incr != 'undefined') {
         return success;
       }
       else {
-        // Do nothing
+        // On success, do nothing
         // No need to run the next test -- the WM controller
         // will do that by calling the looopCallback set
         // above when the wait completes successfully or times out
+        // // ---
+        // On error, run the next test
+        if (localErr) {
+          this.runNextTest();
+        }
       }
     }
-    // UI actions
+    // UI actions -- these happen synchronously, so the local
+    // try/catch handles all errors fine
     else {
       // Get the UI action to execute
       var testActionMethod = eval('windmill.jsTest.actions.' + item.method);
@@ -816,6 +849,10 @@ windmill.jsTest = new function () {
         if (typeof testActionMethod == 'function') {
           testActionMethod(item.params);
           success = true;
+          // Success for array-style tests reported in aggregate
+          if (typeof incr == 'undefined') {
+            this.handleSuccess(testName);
+          }
         }
         else {
           throw new Error('"' + item.method +
@@ -823,9 +860,9 @@ windmill.jsTest = new function () {
         }
       }
       catch (e) {
-        // Use local var _this here for handleErr, because 
-        // testActionMethod function obj above is called inside 
-        // a function created by wrapperMethodBuilder that makes 
+        // Use local var _this here for handleErr, because
+        // testActionMethod function obj above is called inside
+        // a function created by wrapperMethodBuilder that makes
         // executable functions for each of the UI actions.
         _this.handleErr(e, testName);
         success = false;
@@ -834,15 +871,43 @@ windmill.jsTest = new function () {
       if (typeof incr != 'undefined') {
         return success;
       }
-      // Single action -- run the next test
+      // Single action -- error or not, run the next test
       else {
         _log('Calling runNextTest from runSingleTestAction');
         this.runNextTest();
       }
     }
   };
+  this.waitsCallback = function (testName, e) {
+    this.waiting = false;
+    // Get a ref to array-based tests, if that's
+    // what we have
+    var tests = _testItemArrayObj;
+    // Errors -- either timeout or execution error
+    // report the error and abort, run next test
+    if (e) {
+      this.handleErr(e, testName);
+      this.runNextTest();
+    }
+    // Success
+    else {
+      // If we're in the middle of some array-style tests
+      // pass control back to the array-test loop
+      if (tests && (tests.incr != tests.count)) {
+        this.runTestItemArray();
+      }
+      // If this was a freestanding test, or the array-style
+      // test is done, empty the storage of the array-test
+      // report success, and run the next test
+      else {
+        _testItemArrayObj = null;
+        this.handleSuccess(testName);
+        this.runNextTest();
+      }
+    }
+  };
   this.runTestItemArray = function () {
-    var tests = this.testItemArrayObj;
+    var tests = _testItemArrayObj;
     var success = false;
     var runNextItemInArray = function () { _this.runTestItemArray.apply(_this); };
     _log('Calling runTestItemArray for ' + tests.name);
@@ -856,6 +921,7 @@ windmill.jsTest = new function () {
     // If the array of UI action objects is empty, go back
     // to the normal test loop -- get the next test, etc.
     else if (tests.incr == tests.count) {
+      _testItemArrayObj = null;
       this.handleSuccess(tests.name);
       this.runNextTest();
     }
@@ -912,12 +978,6 @@ windmill.jsTest = new function () {
     _log('this.handleErr executing ...');
     _currentTestTimer.endTime();
     var fail = new _this.TestFailure(testName, e);
-    var msg = fail.message;
-    // Escape angle brackets for display in HTML
-    msg = msg.replace(/</g, '&lt;');
-    msg = msg.replace(/>/g, '&gt;');
-    // windmill.out("<br>Test: <b>" +
-    //             testName + "<br>Test Result:" + false + '<br>Error: '+ msg);
     windmill.actOut(testName, {}, false);
         _this.sendJSReport(testName, false, e, _currentTestTimer);
     this.testFailures.push(fail);
@@ -955,21 +1015,24 @@ windmill.jsTest = new function () {
   };
   this.reportResults = function () {
     var s = '';
-    s += '<b style="font-size:12px">Number of tests run:</b> ' +
-      this.testCount + '<br/>';
-    s += '<b style="font-size:12px">Number of tests failures:</b> ' +
-      this.testFailureCount;
+    s += '<div><strong>Number of tests run: ' +
+      this.testCount + '</strong></div>';
+    s += '<div><strong>Number of failures: ' +
+      this.testFailureCount + '</strong></div>';
     if (this.testFailureCount > 0) {
-      s += '<br/>Test failures:<br/>';
+      s += '<div style="font-size: 90%;">';
+      s += '<div>Failures ...</div>';
       var fails = this.testFailures;
       for (var i = 0; i < fails.length; i++) {
         var fail = fails[i];
-        var msg = fail.message;
+        var msg = fail.shortMessage;
         // Escape angle brackets for display in HTML
         msg = msg.replace(/</g, '&lt;');
         msg = msg.replace(/>/g, '&gt;');
-        s += msg;
+        s += '<div><span style="font-weight: bold; color: #666;">' +
+          fail.testName + '</span>: ' + msg + '</div>';
       }
+      s += '</div>';
     }
     windmill.out(s);
     //We want the summary to have a concept of success/failure
@@ -984,14 +1047,15 @@ windmill.jsTest.TestFailure = function (testName, errObj) {
   // 1. Name of the test, 2. Optional error comment from
   // the failed assert, and 3. Error message from the
   // failed assert
-  function getMessage() {
+  function getShortMessage() {
     var msg = '';
-    msg += testName + ': ';
     msg += errObj.comment ? '(' + errObj.comment + ') ' : '';
     msg += errObj.message;
     return msg;
   }
-  this.message = getMessage() || '';
+  this.testName = testName;
+  this.shortMessage = getShortMessage() || '';
+  this.message = testName + ': ' + this.shortMessage;
   this.error = errObj;
 };
 

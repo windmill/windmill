@@ -44,7 +44,7 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
   var count = 0;
   var p = paramObj || {};
   var timeout = 8000;
-  var isJsTest = (p.orig == 'js');
+  var isJsTest = (p.origin == 'js');
   var jsCode = p.js || p.test;
 
   // If we get the weird string "NaN" (yes, the actual 
@@ -69,9 +69,8 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
       // the array-test loop, or the normal test loop, by calling
       // the passed-in callback
       if (isJsTest) {
-        jsTest.waiting = false;
-        jsTest.handleErr('Wait timed out after ' + timeout + ' seconds.');
-        p.loopCallback.call(jsTest);
+        var msg = 'Wait timed out after ' + timeout + ' seconds.';
+        jsTest.waitsCallback.call(jsTest, p.testName, new Error(msg));
       }
       else {
         if (pageLoad){ 
@@ -87,14 +86,28 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
     
     // Get a result
     var result;
-    if (typeof jsCode == 'string') {
-      result = eval(jsCode);
+    try {
+      if (typeof jsCode == 'string') {
+        result = eval(jsCode);
+      }
+      else if (typeof jsCode == 'function') {
+        result = jsCode();
+      }
+      else {
+        throw new Error('waits.forJS js property must be a function, or string to eval.');
+      }
     }
-    else if (typeof jsCode == 'function') {
-      result = jsCode();
-    }
-    else {
-      throw new Error('waits.forJS js property must be a function, or string to eval.');
+    catch (e) {
+      // JS tests -- report error and return control either to
+      // the array-test loop, or the normal test loop, by calling
+      // the passed-in callback
+      if (isJsTest) {
+        jsTest.waitsCallback.call(jsTest, p.testName, e);
+        return; // Don't keep looping! :)
+      }
+      else {
+        throw e;
+      }
     }
     result = !!result; // Make sure we've got a Boolean
     
@@ -104,8 +117,7 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
           // JS tests -- return control either to the array-test loop,
           // or the normal test loop, by calling the passed-in callback
           if (isJsTest) {
-            jsTest.waiting = false;
-            p.loopCallback.call(jsTest);
+            jsTest.waitsCallback.call(jsTest, p.testName);
           }
           else{ 
              if (pageLoad){ windmill.loaded(); }
