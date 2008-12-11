@@ -112,15 +112,18 @@ windmill.controller.asserts.assertText = function (paramObject) {
   }
   if (n.hasChildNodes()){
     for(var m = n.firstChild; m != null; m = m.nextSibling) {
-      if (m.innerHTML.indexOf(validator) != -1){
-        return true;
-      }
-      if (m.value.indexOf(validator) != -1){
-        return true;
+      //for non text nodes
+      if (m.nodeType != 3){
+        if (m.innerHTML.indexOf(validator) != -1){
+          return true;
+        }
+        if (m.value.indexOf(validator) != -1){
+          return true;
+        }
       }
     }
   }
-  throw "Text not found, neither" + m.innerHTML + " nor " + m.value + " contained " + validator;
+  throw "Text '"+validator+"' was not found in the provided node.";
 };
 
 //Assert that a specified node exists
