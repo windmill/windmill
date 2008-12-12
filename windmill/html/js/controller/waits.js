@@ -71,6 +71,7 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
       if (isJsTest) {
         var msg = 'Wait timed out after ' + timeout + ' seconds.';
         jsTest.waitsCallback.call(jsTest, p.testName, new Error(msg));
+        return;
       }
       else {
         if (pageLoad){ 
