@@ -58,10 +58,12 @@ windmillMain.test_failures = new function () {
       js: function () { eval('{{'); }
     }
   };
+  /*
   this.test_ApiMethodDoesntExist = {
     method: "orpen",
     params: { url: windmillMain.pages.MAIN }
   };
+  */
   this.teardown = function () {
     throw new Error('Teardown failure, bummer.');
   };

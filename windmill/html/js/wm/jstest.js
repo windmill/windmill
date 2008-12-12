@@ -96,10 +96,10 @@ windmill.jsTest = new function () {
     }
     // Pass along syntax errors
     catch (e) {
-      _this.sendJSReport('Evaling', false, e, new windmill.TimeObj());
+      _this.sendJSReport('(Eval of test code)', false, e, new windmill.TimeObj());
       _this.teardown();
       // If the browser stays open, throw
-      var err = new Error("Error eval'ing code in file '" +
+      var err = new Error("Error in eval of code in file '" +
         path + "' (" + e.message + ")");
       err.name = e.name;
       err.stack = e.stack;
@@ -190,8 +190,8 @@ windmill.jsTest = new function () {
   this.run = function (paramObj) {
     var testFiles = paramObj.files;
     if (!testFiles.length) {
-      var err = 'No JavaScript tests to run.';
-      this.sendJSReport('jsTests', false, err,
+      var msg = 'No JavaScript tests to run.';
+      this.sendJSReport('(No test files)', false, new Error(msg),
         new TimeObj());
       this.teardown();
       throw new Error();
@@ -251,10 +251,10 @@ windmill.jsTest = new function () {
     }
     _this.testResults = testResults;
 
-    var json_object = new json_call('1.1', 'teardown');
-    json_object.params = { tests: testResults };
-    var json_string = fleegix.json.serialize(json_object);
-    fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+    var jsonObj = new json_call('1.1', 'teardown');
+    jsonObj.params = { tests: testResults };
+    var jsonStr = fleegix.json.serialize(jsonObj);
+    fleegix.xhr.doPost('/windmill-jsonrpc/', jsonStr);
   };
 
   this.doSetup = function (paramObj) {
@@ -283,7 +283,7 @@ windmill.jsTest = new function () {
     // Remove any directories or non-js files returned
     for (var i = 0; i < testFiles.length; i++) {
       if (t.indexOf('\.js') == -1) {
-        _this.sendJSReport('Evaling', false, null, new windmill.TimeObj());
+        _this.sendJSReport('(Loading of test code)', false, null, new windmill.TimeObj());
         _this.teardown();
         throw new Error('Non-js file in list of JavaScript test files.');
       }
@@ -1060,26 +1060,33 @@ windmill.jsTest.TestFailure = function (testName, errObj) {
 };
 
 //Send the report
-windmill.jsTest.sendJSReport = function (testname, result, error, timer) {
+windmill.jsTest.sendJSReport = function (testName, result, error, timer) {
   var reportHandler = function (str) {
     response = eval('(' + str + ')');
     if (!response.result || response.result != 200) {
       windmill.err('Error: Report receiving non 200 response.');
     }
   };
-  var result_string = fleegix.json.serialize(result);
-  var dt = new Date();
-  var test_obj = { "result": result,
-		   "starttime": timer.getStart(),
-		   "endtime": timer.getEnd(),
-		   "debug": error,
-		   "uuid": dt.getTime(),
-		   "suite_name": "jsTest" };
-  var json_object = new json_call('1.1', 'report_without_resolve');
-  json_object.params = test_obj;
-  var json_string = fleegix.json.serialize(json_object);
-  //Actually send the report
-  fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', json_string);
+  var jsonObj = new json_call('1.1', 'report_without_resolve');
+  var jsonStr = '';
+  var uuid = new Date().getTime();
+  var debug;
+  if (windmill.chatty) {
+    debug = error || null
+  }
+  else {
+    debug = (error && error.message) ? error.message : null;
+  }
+  jsonObj.params = {
+    "suite_name": testName,
+    "result": !!result,
+    "starttime": timer.getStart(),
+    "endtime": timer.getEnd(),
+    "uuid": uuid,
+    "debug": debug
+  };
+  jsonStr = fleegix.json.serialize(jsonObj);
+  fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', jsonStr);
 };
 
 windmill.jsTest.actions = {};
