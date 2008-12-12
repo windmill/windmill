@@ -249,10 +249,13 @@ windmill.controller.asserts._AssertFactory = new function () {
   function createErrMsg(msg, arr) {
     var str = msg;
     for (var i = 0; i < arr.length; i++) {
-      var val = arr[i];
-      var display = '<' + val.toString().replace(/\n/g, '') +
-        '> (' + getTypeDetails(val) + ')';
-      str = str.replace('$' + (i + 1).toString(), display);
+      //When calling jum functions arr is an array with a null entry
+      if (arr[i] != null){
+        var val = arr[i];
+        var display = '<' + val.toString().replace(/\n/g, '') +
+          '> (' + getTypeDetails(val) + ')';
+        str = str.replace('$' + (i + 1).toString(), display);
+      }
     }
     return str;
   }
@@ -297,8 +300,9 @@ windmill.controller.asserts._AssertFactory = new function () {
 	      return true;
       }
       else {
-	      var message = meth + ' -- ' +
+        var message = meth + ' -- ' +        
         createErrMsg(asrt.errMsg, args);
+        
 	      throw new windmill.controller.asserts._WindmillAssertException(comment, message);
       }
     };
