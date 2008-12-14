@@ -23,6 +23,8 @@ Copyright 2006-2007, Open Source Applications Foundation
 //object is only for the current browser, and there is only one copy of the code being
 //loaded into the browser for performance.
 
+if (typeof windmill.ui == 'undefined') { windmill.ui = {}; }
+
 //Recorder Functionality
 //*********************************/
 windmill.ui.recorder = new function() {
