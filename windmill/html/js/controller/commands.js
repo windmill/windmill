@@ -17,6 +17,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 /*******************************************************************************************************
 /* Commands namespace functions, mostly system specific for the server to interact with the client
 /******************************************************************************************************/
+if (typeof windmill.controller == 'undefined') { windmill.controller = {}; }
 if (typeof windmill.controller.commands == 'undefined') { windmill.controller.commands = {}; }
 
 //Create multiple variables with one function call
