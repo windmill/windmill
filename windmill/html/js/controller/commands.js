@@ -17,7 +17,8 @@ Copyright 2006-2007, Open Source Applications Foundation
 /*******************************************************************************************************
 /* Commands namespace functions, mostly system specific for the server to interact with the client
 /******************************************************************************************************/
- 
+if (typeof windmill.controller.commands == 'undefined') { windmill.controller.commands = {}; }
+
 //Create multiple variables with one function call
 //When we load the test suites we want to fill the registry
 //with variables to make the tests cleaner when it comes to
