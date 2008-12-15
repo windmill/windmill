@@ -39,9 +39,10 @@ def test_dragdropunit():
     client.click(link=u'Sortable')
     client.click(link=u'Sortable')
     client.waits.sleep(milliseconds=u'500')
-    client.asserts.assertJS(js=u"_w.document.getElementById('user_Susan').parentNode.childNodes.length == 11;")
-    client.dragDropElem(pixels=u'(160,0)', id=u'user_Susan')
-    client.asserts.assertJS(js=u"_w.document.getElementById('user_Susan').parentNode.childNodes.length == 12;")
+    client.storeVarFromJS(options="before|_w.document.getElementById('user_Susan').parentNode.childNodes.length")
+    client.dragDropElem(pixels='(160,0)', id='user_Susan')
+    client.storeVarFromJS(options="after|_w.document.getElementById('user_Susan').parentNode.childNodes.length")
+    client.execIDEJS(js="windmill.varRegistry.items['before'] != windmill.varRegistry.items['After'];")
     #test the dialog widgets
     client.click(link=u'Dialog')
     client.click(link=u'Dialog')
