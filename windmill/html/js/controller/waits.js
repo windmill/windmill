@@ -215,20 +215,6 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
         var d = windmill.testWin().document.body.style;
       }catch(err){ d = null;}
       
-      //
-      try {
-        var wm = windmill.testWin().windmill;
-      }
-      catch(err){
-        wm = null;
-      }
-      
-      //if we could get a handle on .windmill in the test window
-      //that means it hasn't left the current page
-      if (!wm){
-        d = null;
-      }
-      
       if (d != null){
         return true;
       }
