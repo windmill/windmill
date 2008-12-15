@@ -31,8 +31,6 @@ def test_dragdropunit():
     client.waits.sleep(milliseconds=u'500')
     client.dragDropElemToElem(xpath="//div/div[3]/div[2]", optxpath="//div/div[3]/div[4]")
     client.waits.sleep(milliseconds=u'500')
-    client.dragDropElemToElem(classname='block ui-draggable', optxpath='//div/div[3]/div[4]')
-    client.waits.sleep(milliseconds=u'500')
     client.asserts.assertText(xpath="//div/div[3]/div[4]", validator='Dropped!')
     client.dragDropElem(xpath="//div/div[3]/div[2]", pixels='(0,200)')
     client.waits.sleep(milliseconds=u'500')
