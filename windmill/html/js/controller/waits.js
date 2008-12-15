@@ -204,19 +204,34 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
   var p = paramObj || {};
   var sl = function(){
     var f = function () {
+      //If the document.domain can't be accessed
       try {
         var v = windmill.testWin().document.domain;
       }catch(err){
         document.domain = windmill.docDomain;
       }
+      //check to see if we can get the window body
       try {
         var d = windmill.testWin().document.body.style;
       }catch(err){ d = null;}
       
+      //
+      try {
+        var wm = windmill.testWin().windmill;
+      }
+      catch(err){
+        wm = null;
+      }
+      
+      //if we could get a handle on .windmill in the test window
+      //that means it hasn't left the current page
+      if (!wm){
+        d = null;
+      }
+      
       if (d != null){
         return true;
       }
-      
       return false;
     };
     p.test = f;

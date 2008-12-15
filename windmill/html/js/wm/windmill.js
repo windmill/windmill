@@ -342,7 +342,6 @@ var windmill = new function() {
         windmill.ui.domexplorer.setExploreState();
         windmill.ui.recorder.setRecState();
 		    busyOff();
-      
         // if we're currently running JS tests, we need to know the
         // test window reloaded so we can re-inject all the test code
         // into test window scope
