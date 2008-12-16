@@ -291,7 +291,7 @@ windmill.controller = new function () {
        var dist = p.pixels.split(',');
         dist[0] = dist[0].replace('(','');
         dist[1] = dist[1].replace(')','');
-
+        
         var box = el.getBoundingClientRect(); 
         var left = box.left;
         var top = box.top + 2;
@@ -337,7 +337,7 @@ windmill.controller = new function () {
          var newY = top;
 
          while(i != dist[1]){
-           if (i < dist[0]){ newY++; }
+           if (i < dist[1]){ newY++; }
            else{ newY--; }
 
            setTimeout("windmill.controller.doMove("+newX+", "+newY+")", delay)
