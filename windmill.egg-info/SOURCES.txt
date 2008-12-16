@@ -6,6 +6,7 @@ ez_setup.py
 setup.py
 wmicon.icns
 contrib/bin_wrapper.py
+contrib/clean_run.py
 contrib/wxwindmill/setup.py
 contrib/wxwindmill/wxwindmill/__init__.py
 contrib/wxwindmill/wxwindmill.egg-info/PKG-INFO
@@ -41,6 +42,7 @@ test/djangoproject/main/windmilltests/__init__.py
 test/files/google_test.py
 test/files/functest_tests/__init__.py
 test/files/functest_tests/test_google.py
+test/jstests/failures.js
 test/jstests/form_basics.js
 test/jstests/initialize.js
 test/jstests/json_dom.js
@@ -439,6 +441,7 @@ windmill/bin/json2python.py
 windmill/bin/shell_objects.py
 windmill/bin/windmill_bin.py
 windmill/browser/__init__.py
+windmill/browser/chrome.py
 windmill/browser/firefox.py
 windmill/browser/ie.py
 windmill/browser/killableprocess.py
