@@ -25,8 +25,10 @@ windmill.controller.click = function(paramObject){
   windmill.events.triggerEvent(element, 'focus', false);
 
   // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
-  try {windmill.events.triggerMouseEvent(element, 'mousedown', true); } catch(err){}
-  try {windmill.events.triggerMouseEvent(element, 'mouseup', true); } catch(err){}
+  //try {windmill.events.triggerMouseEvent(element, 'mousedown', true); } catch(err){}
+  //try {windmill.events.triggerMouseEvent(element, 'mouseup', true); } catch(err){}
+  windmill.controller.mouseDown(paramObject);
+  windmill.controller.mouseUp(paramObject);
   try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}
 };
   
