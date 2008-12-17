@@ -3,7 +3,6 @@ windmill.jsTest.require('shared.js');
 windmillMain.test_jsonDom = new function () {
   // Navigate to the main page
   this.setup = windmillMain.shared.test_navMain;
-
   this.test_getData = function () {
     // Callback function -- sets temp flag to 'returned'
     var success = function (s) {

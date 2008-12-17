@@ -514,6 +514,7 @@ windmill.jsTest = new function () {
       // Get a hash of the tests to run
       var limitedList = [];
       var testList = this.testList;
+      var re;
 
       // Make a reverse map of the test names, so we can
       // test for the existence of any given name
@@ -549,12 +550,18 @@ windmill.jsTest = new function () {
           // Parse down the namespace chain, looking for setups
           // For namespace filters, look all the way down the chain,
           // for tests, ignore the last item
-          limit = pathArray.length; if (isNamespace) { limit++ }
+          // FIXME: It would be much faster to reparse the objs
+          // rather than scanning through the entire list of tests
+          // like this
+          limit = pathArray.length - 1; if (isNamespace) { limit++ }
           for (var i = 1; i < limit; i++) {
             objBasePath = pathArray.slice(0, i).join('.');
             objPath = objBasePath + '.setup';
-            if (typeof testListReverseMap[objPath] != 'undefined') {
-              limitedList.push(objPath);
+            for (var j = 0; j < testList.length; j++) {
+              var testName = testList[j];
+              if (testName.indexOf(objPath) == 0) {
+                limitedList.push(testName);
+              }
             }
           }
         }
@@ -562,10 +569,9 @@ windmill.jsTest = new function () {
         if (!testPhases || inclTestPhase) {
           // Namespace filter -- add any non-setup, non-teardown items
           if (isNamespace) {
-            var re = /\.setup$|\.teardown$/;
             for (var i = 0; i < testList.length; i++) {
               var testName = testList[i];
-              if (testName.indexOf(testFilter) == 0 && !re.test(testName)) {
+              if (testName.indexOf(testFilter) == 0) {
                 limitedList.push(testName);
               }
             }
@@ -580,14 +586,20 @@ windmill.jsTest = new function () {
           // Parse back up the namespace chain, looking for teardowns
           // For namespace filters, start at the very bottom of the chain,
           // for tests, ignore the bottom item
-          limit = pathArray.length - 1; if (isNamespace) { limit++ }
+          // FIXME: It would be much faster to reparse the objs
+          // rather than scanning through the entire list of tests
+          // like this
+          limit = pathArray.length - 2; if (isNamespace) { limit++ }
           //limit = isNamespace ? pathArray.length - 1 : pathArray.length - 2;
           for (var i = limit; i > 0; i--) {
             //objPath = pathArray[i] + '.teardown';
             objBasePath = pathArray.slice(0, i).join('.');
             objPath = objBasePath + '.teardown';
-            if (typeof testListReverseMap[objPath] != 'undefined') {
-              limitedList.push(objPath);
+            for (var j = 0; j < testList.length; j++) {
+              var testName = testList[j];
+              if (testName.indexOf(objPath) == 0) {
+                limitedList.push(testName);
+              }
             }
           }
         }
