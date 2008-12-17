@@ -32,10 +32,19 @@ windmill.jsTest = new function () {
   var testFilter = '';
   var testPhases = '';
   var testListReverseMap = {};
+  var _ieDebugger;
 
   var _log = function (s) {
-    if (_debug && console && console.log) {
-      console.log(s);
+    if (_debug) {
+      if (document.all) {
+        if (!_ieDebugger) {
+          _ieDebugger = window.open();
+        }
+        _ieDebugger.document.body.innerHTML += s + '<br/>';
+      }
+      else if (console && console.log) {
+        console.log(s);
+      }
     }
   };
   var _isTestNamespace = function (o, n) {
@@ -57,6 +66,53 @@ windmill.jsTest = new function () {
     // Nothing to indicate it's a test namespace
     return false;
   };
+  var _testables = {
+    ARR: 'array',
+    FUNC: 'function',
+    OBJ: 'object'
+  };
+  var _getTestableType = function (item) {
+    var testableType;
+    switch (true) {
+      // Functions
+      case typeof item == 'function':
+      case item.toString().indexOf('function') == 0:
+        testableType = _testables.FUNC;
+        break;
+      // Arrays
+      case item instanceof Array:
+      case typeof item.push == 'function':
+      case typeof (item.length != 'undefined' &&
+          item.toString().indexOf('function') == -1):
+        testableType = _testables.ARR;
+        break;
+      // Generic objects
+      default:
+        testableType = _testables.OBJ;
+        break;
+    }
+    // This is a bandaid for the way IE loses type
+    // and other info about an object between window
+    // boundaries
+    // This specific fix is for arrays -- type is
+    // reported simply as 'object', both 'length' and
+    // 'push' properties have values of undefined, but
+    // there are still attributes indexed by number,
+    // e.g., item[0]
+    // Have to squelch errors because doing this test
+    // on generic objects throws
+    if (fleegix.isIE) {
+      try {
+        if (typeof item[0] != 'undefined') {
+          testableType = _testables.ARR;
+        }
+      }
+      // Squelch, throws on plain object
+      catch (e) {}
+    }
+    return testableType;
+  };
+
   function appendScriptTag(win, code) {
     var script = win.document.createElement('script');
     script.type = 'text/javascript';
@@ -612,10 +668,12 @@ windmill.jsTest = new function () {
   this.setTestCodeState = function (state) {
     _log('testCodeState set to ' + state);
     this.testCodeState = state;
+    return true;
   }
   this.verifyTestWindowState = function (callback) {
     _log('checking window state ...');
     var ret = true;
+    _log('testCodeState is ' + this.testCodeState);
     if (this.testCodeState == this.testCodeStates.NOT_LOADED) {
       var f = function () {
         _log('loading test files ...');
@@ -690,8 +748,13 @@ windmill.jsTest = new function () {
       _log('Running test: ' + testName);
 
       if (!_isTestNamespace(testItem)) {
+        var testType = _getTestableType(testItem);
+        //_log('typeof testItem.length: ' + typeof testItem.length);
+        _log('testItem.toString(): ' + testItem.toString());
+        _log('testType: ' + testType);
         // Array-style tests -- array of UI actions or anon functions
-        if (testItem instanceof Array || typeof testItem.push == 'function') {
+        if (testType == _testables.ARR) {
+          _log('testItem.length: ' + testItem.length);
           if (testItem.length > 0) {
             _log('Running array-style test: ' + testName);
             _testItemArrayObj = {
@@ -704,11 +767,11 @@ windmill.jsTest = new function () {
           }
           else {
             // Allow empty stubs
+            _log('Empty stub array test.');
           }
         }
         // Normal test functions
-        else if (typeof testItem == 'function' ||
-          (document.all && testItem.toString().indexOf('function') == 0)) {
+        else if (testType == _testables.FUNC) {
           _log('Running test function: ' + testName);
           this.runSingleTestFunction(testName, testItem, testScope);
         }

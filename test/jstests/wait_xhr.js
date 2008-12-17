@@ -2,6 +2,8 @@ windmill.jsTest.require('shared.js');
 
 // Namespace obj to contain our tests
 windmillMain.test_waitForXHR = new function () {
+  // Navigate to the main page
+  this.setup = windmillMain.shared.test_navMain;
   // Make the async XHR call
   this.test_xhrCall = function () {
     // Callback function -- sets temp flag to 'returned'

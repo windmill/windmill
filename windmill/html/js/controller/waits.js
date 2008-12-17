@@ -91,7 +91,8 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
       if (typeof jsCode == 'string') {
         result = eval(jsCode);
       }
-      else if (typeof jsCode == 'function') {
+      else if (typeof jsCode == 'function' ||
+          (fleegix.isIE && jsCode.toString().indexOf('function') == 0)) {
         result = jsCode();
       }
       else {

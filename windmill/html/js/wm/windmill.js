@@ -249,7 +249,7 @@ var windmill = new function() {
           // test window has gone bye-bye, and we need to wait to
           // re-inject the test code when it comes back
           var jsTest = windmill.jsTest;
-          jsTest.setTestCodeState(jsTest.testCodeStates.CANNOT_LOAD);
+          var waitForIt = jsTest.setTestCodeState(jsTest.testCodeStates.CANNOT_LOAD);
        
           //if we are recording, we just detected a new page load, but only add one.
           //Opera and IE appear to be calling unload multiple times
@@ -346,7 +346,7 @@ var windmill = new function() {
         // test window reloaded so we can re-inject all the test code
         // into test window scope
         var jsTest = windmill.jsTest;
-        jsTest.setTestCodeState(jsTest.testCodeStates.NOT_LOADED);
+        var waitForIt = jsTest.setTestCodeState(jsTest.testCodeStates.NOT_LOADED);
 
         delayed = function() {
           if (windmill.waiting == false) {
