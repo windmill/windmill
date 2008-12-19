@@ -50,6 +50,11 @@ var elementslib = new function(){
     domNode = nodeSearch(nodeByValue, s);
     return returnOrThrow(s);
   };
+  this.Element.LABEL = function(s){
+    locators.labelname = s;
+    domNode = nodeSearch(nodeByLabel, s);
+    return returnOrThrow(s);
+  };
   this.Element.XPATH = function(s){
     locators.xpath = s;
     domNode = nodeSearch(nodeByXPath, s, document);
@@ -218,6 +223,33 @@ var elementslib = new function(){
       return null;
     }
     return node[0];
+  };
+  
+  var nodeByLabel = function (s) { //search nodes by name
+    //sometimes the win object won't have this object
+    var labels = this.document.getElementsByTagName('label');
+    var node = null;
+    var label = null;
+
+    //Find the label from all labels on the page
+    for (i = 0;i < labels.length; i++){
+      if (labels[i].innerHTML.trim() == s.trim()){
+        label = labels[i];
+      }
+    }
+    
+    //If we have a label, use its for attrib to get the id of the input
+    if (label != null){
+      if (windmill.browser.isIE){
+        var iid = label.getAttribute('htmlFor');
+      }
+      else {
+        var iid = label.getAttribute('for');
+      }
+      node = this.document.getElementById(iid);
+    }
+    //either return the found input node, or null
+    return node;
   };
   
   //Lookup with xpath

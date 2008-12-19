@@ -84,7 +84,11 @@ var lookupNode = function (paramObject, throwErr){
     s = 'Looking up tagname '+ paramObject.tagname;
     element = elementslib.Element.TAGNAME(paramObject.tagname);
   }
-  
+  //if name was passed
+  if(typeof paramObject.label != "undefined") {
+    s = 'Looking up label '+ paramObject.label;
+    element = elementslib.Element.LABEL(paramObject.label);
+  }
   //scroll so that the element is in view
   if (element) { 
     element.scrollIntoView(); 
