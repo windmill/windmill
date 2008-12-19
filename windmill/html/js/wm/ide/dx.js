@@ -82,10 +82,7 @@ windmill.ui.domexplorer = new function() {
       }
       else {
          var stringXpath = getXSPath(e.target);
-         console.log(stringXpath);
          var element = elementslib.Element.XPATH(stringXpath);
-         console.log(e.target);
-         console.log(element);
          if (element == e.target){
             $("domExp").innerHTML = 'XPath: ' + stringXpath;
           }

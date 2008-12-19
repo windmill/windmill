@@ -35,13 +35,11 @@ function getXPath(node, path) {
   
   function getXSPath(node){
     var xpArray = getXPath(node);
-    console.log(xpArray);
     var index = null;
     //Find the last id'd node in the path and set that as the index
     for (var i = 0; i < xpArray.length; i++){
       if (xpArray[i].indexOf('[@') != -1 ){
         index = i;
-        console.log(index);
       }
     }
     
