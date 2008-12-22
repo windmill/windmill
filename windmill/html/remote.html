@@ -9,6 +9,7 @@
 	<link rel="stylesheet" type="text/css" href="css/jquery.css"/>
 	<link rel="stylesheet" type="text/css" href="css/superfish.css" media="screen">
 	
+	<script type='text/javascript' src='js/lib/fleegix.js'></script>
 	<script type='text/javascript' src='js/lib/jquery/jquery-1.2.6.pack.js'></script>	
 	<script type="text/javascript" charset="utf-8">
 	  jQuery.noConflict();
@@ -246,7 +247,6 @@
     var scriptsArr = [];
     scriptsArr.push('js/lib/browserdetect.js')
     scriptsArr.push('js/lib/firebug/pi.js')
-    scriptsArr.push('js/lib/fleegix.js')
     scriptsArr.push('js/lib/hash.js')
     scriptsArr.push('js/lib/firebug/firebug-lite.js')
     if (!/Opera[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
@@ -275,17 +275,33 @@
     scriptsArr.push('js/wm/global.js')
     scriptsArr.push('js/wm/jstest.js')
     scriptsArr.push('js/wm/load.js')
-      
+
     //pull down each script file
+    var head = document.getElementsByTagName("head")[0] ||
+      document.documentElement;
     for (var i = 0; i < scriptsArr.length; i++){
       var scriptTag = document.createElement('script');
-      scriptTag.src = scriptsArr[i];
-      document.body.appendChild(scriptTag);
-    }      
+      // In Safari, order-of-loading problems appear if
+      // try to just set the src of the appended script
+      // Use sync XHR to pull down the source and set
+      // it directly as the text in the script node
+      // FIXME: Maybe do the sync XHR call with JQuery so
+      // there's no need for fleegix.js embedded directly
+      // on the page -- I couldn't make it work
+      if (fleegix.ua.isSafari) {
+        var code = fleegix.xhr.get(scriptsArr[i]);
+        scriptTag.appendChild(document.createTextNode(code));
+      }
+      // Other browsers settting src works fine
+      else {
+        scriptTag.src = scriptsArr[i];
+      }
+      head.appendChild(scriptTag);
+    }
   }
   jQuery("#loadMessage").html("Downloading JavaScript Source...");
   incProgressBar();
-  
+
   if (/Opera[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
     noFile();
   }

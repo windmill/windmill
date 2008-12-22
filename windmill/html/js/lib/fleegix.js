@@ -89,43 +89,67 @@ fleegix.clone = function (o) {
   return ret;
 };
 
-// This stuff gets run inline below, props added to
-// base 'fleegix' obj -- namespaced to avoid global refs
-// Some code taken from the Dojo loader
-fleegix.agentSniffing = new function () {
-  var f = fleegix; // Alias the base 'fleegix' obj
-  var n = navigator;
-  var ua = n.userAgent;
-  var av = n.appVersion;
-  // Browsers
-  f.isWebKit= (ua.indexOf("AppleWebKit") > -1);
-  f.isOpera = (ua.indexOf("Opera") > -1);
-  f.isKhtml = (av.indexOf("Konqueror") > -1) ||
-    (av.indexOf("Safari") > -1);
-  f.isChrome = (av.indexOf("Chrome") > -1);
-  f.isSafari = (av.indexOf("Safari") > -1) && !f.isChrome;
-  f.isMoz = ((ua.indexOf('Gecko') > -1) && (!f.isKhtml));
-  f.isFF = false;
-  f.isIE = false;
-  try {
-    if (f.isMoz) {
-      f.isFF = (ua.indexOf('Firefox') > -1) ||
-        (ua.indexOf('Iceweasel') > -1); // 'Freetards'
+fleegix.ua = new function () {
+  var ua = navigator.userAgent;
+  var majorVersion = function (ua, re) {
+    var m = re.exec(ua);
+    if (m && m.length > 1) {
+      m = m[1].substr(0, 1);
+      if (!isNaN(m)) {
+        return parseInt(m);
+      }
+      else {
+        return null;
+      }
     }
-    if (document.all && !f.isOpera) {
-      f.isIE = (ua.indexOf('MSIE ') > -1);
+    return null;
+  };
+  // Layout engines
+  this.isWebKit= ua.indexOf("AppleWebKit") > -1;
+  this.isKHTML = ua.indexOf('KHTML') > -1;
+  this.isGecko = ua.indexOf('Gecko') > -1 &&
+    !this.isWebKit && !this.isKHTML;
+
+  // Browsers
+  this.isOpera = ua.indexOf("Opera") > -1;
+  this.isChrome = ua.indexOf("Chrome") > -1;
+  this.isSafari = ua.indexOf("Safari") > -1 && !this.isChrome;
+  // Firefox, Camino, 'Iceweasel/IceCat' for the freetards
+  this.isFF = ua.indexOf('Firefox') > -1 ||
+    ua.indexOf('Iceweasel') > -1 || ua.indexOf('IceCat') > -1;
+  this.isFirefox = this.isFF; // Alias
+  this.isIE = ua.indexOf('MSIE ') > -1 && !this.isOpera;
+
+  // Mobiles
+  this.isIPhone = ua.indexOf("iPhone") > -1;
+  this.isMobile = this.isIPhone || ua.indexOf("Opera Mini") > -1;
+
+  // OS's
+  this.isMac = ua.indexOf('Mac') > -1;
+  this.isUnix = ua.indexOf('Linux') > -1 ||
+    ua.indexOf('BSD') > -1 || ua.indexOf('SunOS') > -1;
+  this.isLinux = ua.indexOf('Linux') > -1;
+  this.isWindows = ua.indexOf('Windows') > -1 || ua.indexOf('Win');
+
+  // Major ua version
+  this.majorVersion = null;
+  var reList = {
+    FF: /Firefox\/([0-9\.]*)/,
+    Safari: /Version\/([0-9\.]*) /,
+    IE: /MSIE ([0-9\.]*);/,
+    Opera: /Opera\/([0-9\.]*) /,
+    Chrome: /Chrome\/([0-9\.]*)/
+  }
+  for (var p in reList) {
+    if (this['is' + p]) {
+      this.majorVersion = majorVersion(ua, reList[p]);
     }
   }
-  // Squelch
-  catch(e) {}
-  f.isIPhone = (av.indexOf("iPhone") > -1);
-  f.isMobile = f.isIPhone || (ua.indexOf("Opera Mini") > -1);
-  // OS's
-  f.isMac = (ua.indexOf('Mac') > -1);
-  f.isUnix = (ua.indexOf('Linux') > -1) ||
-    (ua.indexOf('BSD') > -1) || (ua.indexOf('SunOS') > -1);
-  f.isLinux = (ua.indexOf('Linux') > -1);
-  f.isWindows = (ua.indexOf('Windows') > -1);
+
+  // Add to base fleegix obj for backward compat
+  for (var p in this) {
+    fleegix[p] = this[p];
+  }
 };
 
 
@@ -456,6 +480,184 @@ fleegix.dom = new function() {
 };
 
 
+
+fleegix.url = new function () {
+  // Private vars
+  var _this = this;
+  var _QS = '\\?|;';
+  var _QS_SIMPLE = new RegExp(_QS);
+  var _QS_CAPTURE = new RegExp('(' + _QS + ')');
+
+  // Private function, used by both getQSParam and setQSParam
+  var _changeQS = function (mode, str, name, val) {
+    var match = _QS_CAPTURE.exec(str);
+    var delim;
+    var base;
+    var query;
+    var obj;
+    var s = '';
+    // If there's a querystring delimiter, save it
+    // for reinsertion into the return value
+    if (match && match.length > 0) {
+      delim = match[0];
+    }
+    // Delimiter -- entire URL, need to decompose
+    if (delim) {
+      base = _this.getBase(str);
+      query = _this.getQS(str);
+    }
+    // Just a querystring passed
+    else {
+      query = str;
+    }
+    obj = _this.qsToObject(query, { arrayizeMulti: true });
+    if (mode == 'set') { obj[name] = val; }
+    else { delete obj[name]; }
+    if (base) {
+      s = base + delim;
+    }
+    s += _this.objectToQS(obj);
+    return s;
+  };
+  /**
+   * Convert the values in a query string (key=val&key=val) to
+   * an Object
+   * @param str -- A querystring
+   * @param o -- JS object of options, current only includes:
+   *   arrayizeMulti: (Boolean) convert mutliple instances of
+   *      the same key into an array of values instead of
+   *      overriding. Defaults to false.
+   * @returns JavaScript key/val object with the values from
+   * the querystring
+   */
+  this.qsToObject = function (str, o) {
+    var opts = o || {};
+    var d = {};
+    var arrayizeMulti = opts.arrayizeMulti || false;
+    if (str) {
+      var arr = str.split('&');
+      for (var i = 0; i < arr.length; i++) {
+        var pair = arr[i].split('=');
+        var name = pair[0];
+        var val = pair[1];
+        // "We've already got one!" -- arrayize if the flag
+        // is set
+        if (typeof d[name] != 'undefined' && arrayizeMulti) {
+          if (typeof d[name] == 'string') {
+            d[name] = [d[name]];
+          }
+          d[name].push(val);
+        }
+        // Otherwise just set the value
+        else {
+          d[name] = val;
+        }
+      }
+    }
+    return d;
+  };
+  /**
+   * Convert a JS Object to querystring (key=val&key=val).
+   * Value in arrays will be added as multiple parameters
+   * @param obj -- an Object containing only scalars and arrays
+   * @returns A querystring containing the values in the
+   * Object
+   */
+  this.objectToQS = function (obj) {
+    var str = '';
+    var val;
+    for (var p in obj) {
+      val = obj[p];
+      if (typeof val == 'string') {
+        str += p + '=' + val + '&';
+      }
+      else if (val.length) {
+        for (var i = 0; i < val.length; i++) {
+          str += p + '=' + val[i] + '&';
+        }
+      }
+    }
+    if (str) {
+      str = str.substr(0, str.length - 1);
+    }
+    return str;
+  };
+  this.objectToQs = this.objectToQS; // Case-insensitive alias
+  /**
+   * Retrieve the value of a parameter from a querystring
+   * @param str -- Either a querystring or an entire URL
+   * @param name -- The param to retrieve the value for
+   * @param o -- JS object of options, current only includes:
+   *   arrayizeMulti: (Boolean) convert mutliple instances of
+   *      the same key into an array of values instead of
+   *      overriding. Defaults to false.
+   * @returns The string value of the specified param from
+   * the querystring
+   */
+  this.getQSParam = function (str, name, o) {
+    var p = null;
+    var q = _QS_SIMPLE.test(str) ? _this.getQS(str) : str;
+    var opts = o || {};
+    if (q) {
+      var h = _this.qsToObject(q, opts);
+      p = h[name];
+    }
+    return p;
+  };
+  this.getQsParam = this.getQSParam; // Case-insensitive alias
+  /**
+   * Set the value of a parameter in a querystring
+   * @param str -- Either a querystring or an entire URL
+   * @param name -- The param to set
+   * @param val -- The value to set the param to
+   * @returns  the URL or querystring, with the new value
+   * set -- if the param was not originally there, it adds it.
+   */
+  this.setQSParam = function (str, name, val) {
+    return _changeQS('set', str, name, val);
+  };
+  this.setQsParam = this.setQSParam; // Case-insensitive alias
+  /**
+   * Remove a parameter in a querystring
+   * @param str -- Either a querystring or an entire URL
+   * @param name -- The param to remove
+   * @returns  the URL or querystring, with the parameter
+   * removed
+   */
+  this.removeQSParam = function (str, name) {
+    return _changeQS('remove', str, name, null);
+  };
+  this.removeQsParam = this.removeQSParam; // Case-insensitive alias
+  this.getQS = function (s) {
+    return s.split(_QS_SIMPLE)[1];
+  };
+  this.getQs = this.getQS; // Case-insensitive alias
+  this.getBase = function (s) {
+    return s.split(_QS_SIMPLE)[0];
+  };
+};
+// Backward-compat shim
+fleegix.uri = new function () {
+  this.getParamHash = fleegix.url.qsToObject;
+  // Params are reversed, and passed-in QS is
+  // optional -- defaults to local HREF for the
+  // page it's defined on
+  this.getParam = function (name, str) {
+    var s = str || fleegix.url.getQS(document.location.href);
+    return fleegix.url.getQSParam(s, name);
+  };
+  // Params are reversed, and passed-in QS is
+  // optional -- defaults to local HREF for the
+  // page it's defined on
+  this.setParam = function (name, val, str) {
+    var s = str || fleegix.url.getQS(document.location.href);
+    return fleegix.url.setQSParam(s, name, val);
+  };
+  this.getQuery = fleegix.url.getQS;
+  this.getBase = fleegix.url.getBase;
+};
+
+
 fleegix.css = new function() {
     this.addClass = function (elem, s) {
       fleegix.css.removeClass(elem, s); // Don't add twice
@@ -583,10 +785,7 @@ fleegix.event = new function () {
         // Try to be a good citizen -- preserve existing listeners
         // Execute with arguments passed, in the right execution context
         if (reg.orig.methCode) {
-          /*breaks in IE occasionally */ 
-          try {
-            reg.orig.methCode.apply(reg.orig.obj, args);
-          } catch(err){}
+          reg.orig.methCode.apply(reg.orig.obj, args);
         }
         // DOM events
         // Normalize the different event models
@@ -597,13 +796,13 @@ fleegix.event = new function () {
           if (!args.length) {
             try {
               switch (true) {
-                case !!(obj.ownerDocument):
+                case !!obj.ownerDocument:
                   ev = obj.ownerDocument.parentWindow.event;
                   break;
-                case !!(obj.documentElement):
+                case !!obj.documentElement:
                   ev = obj.documentElement.ownerDocument.parentWindow.event;
                   break;
-                case !!(obj.event):
+                case !!obj.event:
                   ev = obj.event;
                   break;
                 default:
@@ -672,7 +871,7 @@ fleegix.event = new function () {
           }
         }
 
-      }
+      };
       if (this.compatibilityMode) {
         if (!obj._fleegixEventListenReg) { obj._fleegixEventListenReg = {}; }
         obj._fleegixEventListenReg[meth] = listenReg;
@@ -753,9 +952,7 @@ fleegix.event = new function () {
       var reg = listenerCache[i];
       removeObj = reg.orig.obj;
       removeMethod = reg.orig.methName;
-      //In IE if you destroya window, you will get an exception
-      try{ removeObj[removeMethod] = null; }
-      catch(err){}
+      removeObj[removeMethod] = null;
     }
   };
   this.subscribe = function(subscr, obj, method) {
@@ -870,81 +1067,9 @@ fleegix.event = new function () {
     obj['_' + meth + '_suppressErrors'] = true;
   };
 };
-// Clean up listeners
-fleegix.event.listen(window, 'onunload', fleegix.event, 'flush');
 
 
-fleegix.uri = new function () {
-  var self = this;
 
-  this.params = {};
-
-  this.getParamHash = function (str) {
-    var q = str || self.getQuery();
-    var d = {};
-    if (q) {
-      var arr = q.split('&');
-      for (var i = 0; i < arr.length; i++) {
-        var pair = arr[i].split('=');
-        var name = pair[0];
-        var val = pair[1];
-        if (typeof d[name] == 'undefined') {
-          d[name] = val;
-        }
-        else {
-          if (!(d[name] instanceof Array)) {
-            var t = d[name];
-            d[name] = [];
-            d[name].push(t);
-          }
-          d[name].push(val);
-        }
-      }
-    }
-    return d;
-  };
-  this.getParam = function (name, str) {
-    var p = null;
-    if (str) {
-      var h = this.getParamHash(str);
-      p = h[name];
-    }
-    else {
-      p = this.params[name];
-    }
-    return p;
-  };
-  this.setParam = function (name, val, str) {
-    var ret = null;
-    // If there's a query string, set the param
-    if (str) {
-      var pat = new RegExp('(^|&)(' + name + '=[^\&]*)(&|$)');
-      var arr = str.match(pat);
-      // If it's there, replace it
-      if (arr) {
-        ret = str.replace(arr[0], arr[1] + name + '=' + val + arr[3]);
-      }
-      // Otherwise append it
-      else {
-        ret = str + '&' + name + '=' + val;
-      }
-    }
-    // Otherwise create a query string with just that param
-    else {
-      ret = name + '=' + val;
-    }
-    return ret;
-  };
-  this.getQuery = function (s) {
-    var l = s ? s : location.href;
-    return l.split('?')[1];
-  };
-  this.getBase = function (s) {
-    var l = s ? s : location.href;
-    return l.split('?')[0];
-  };
-  this.params = this.getParamHash();
-};
 
 fleegix.xhr = new function () {
   // Public vars
@@ -1523,31 +1648,37 @@ fleegix.json = new function() {
     var str = '';
     switch (typeof obj) {
       case 'object':
-        // Null
-        if (obj === null) {
-           return 'null';
-        }
-        // Arrays
-        else if (obj instanceof Array) {
-          for (var i = 0; i < obj.length; i++) {
-            if (str) { str += ','; }
-            str += fleegix.json.serialize(obj[i]);
-          }
-          return '[' + str + ']';
-        }
-        // Objects
-        else if (typeof obj.toString != 'undefined') {
-          for (var i in obj) {
-            if (str) { str += ','; }
-            str += '"' + i + '":';
-            if (typeof obj[i] == 'undefined') {
-              str += '"undefined"';
-            }
-            else {
+        switch (true) {
+          // Null
+          case obj === null:
+            return 'null';
+            break;
+          // Arrays
+          case obj instanceof Array: 
+            for (var i = 0; i < obj.length; i++) {
+              if (str) { str += ','; }
               str += fleegix.json.serialize(obj[i]);
             }
-          }
-          return '{' + str + '}';
+            return '[' + str + ']';
+            break;
+          // Exceptions don't serialize correctly in Firefox
+          case (fleegix.isFF && obj instanceof DOMException):
+            str += '"' + obj.toString() + '"';
+            break;
+          // All other generic objects
+          case typeof obj.toString != 'undefined':
+            for (var i in obj) {
+              if (str) { str += ','; }
+              str += '"' + i + '":';
+              if (typeof obj[i] == 'undefined') {
+                str += '"undefined"';
+              }
+              else {
+                str += fleegix.json.serialize(obj[i]);
+              }
+            }
+            return '{' + str + '}';
+            break;
         }
         return str;
       case 'unknown':
@@ -1731,6 +1862,8 @@ fleegix.form = {};
  *     even if elemB has no value: elemA=foo&elemB=&elemC=bar)
  *   pedantic: (Boolean) include the values of elements like
  *      button or image
+ *   deCamelizeParams: (Boolean) change param names from
+ *     camelCase to lowercase_with_underscores
  * @returns query-string style String of variable-value pairs
  */
 fleegix.form.serialize = function (f, o) {
@@ -1775,7 +1908,7 @@ fleegix.form.serialize = function (f, o) {
   }
   // Convert all the camelCase param names to Ruby/Python style
   // lowercase_with_underscores
-  if (opts.deCamelize) {
+  if (opts.deCamelizeParams) {
     if (!fleegix.string) {
       throw new Error(
         'deCamelize option depends on fleegix.string module.');
