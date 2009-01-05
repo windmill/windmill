@@ -37,6 +37,7 @@ initial_forwarding_registry = {}
 forwarding_registry = {}
 exclude_from_retry = []
 first_forward_domains = []
+static_forwards = {}
 
 class IterativeResponse(object):
     def __init__(self, response_instance):
@@ -100,7 +101,13 @@ class WindmillProxyApplication(object):
             test_netloc = urlparse(windmill.settings['FORWARDING_TEST_URL']).netloc
             referer = environ.get('HTTP_REFERER', None)
 
-            if ( url.netloc != test_netloc ):
+            if ( url.netloc in static_forwards.keys() ):
+                host_netloc = static_forwards[url.netloc]
+                forwarding_registry[url.geturl()] = host_netloc
+                environ = change_environ_domain(url.netloc, host_netloc, environ)
+                url = urlparse(url.geturl().replace(url.netloc, host_netloc))
+
+            elif ( url.netloc != test_netloc ):
                 # if the url's network address is not the test URL that has been set we need to return
                 # a forward
                 initial_forwarding_registry[url.geturl().replace(url.netloc, test_netloc, 1)] = url.netloc
