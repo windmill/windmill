@@ -36,6 +36,7 @@ def is_hop_by_hop(header):
 initial_forwarding_registry = {}
 forwarding_registry = {}
 exclude_from_retry = []
+first_forward_domains = []
 
 class IterativeResponse(object):
     def __init__(self, response_instance):
@@ -179,6 +180,7 @@ class WindmillProxyApplication(object):
             # retry the given request against all the hosts the current session has run against
             nhosts = copy.copy(initial_forwarding_registry.values())
             nhosts.reverse()
+            nhosts = first_forward_domains + nhosts
             hosts = [];
             # Can't use set() here because it needs to keep it's original ordering.
             for h in nhosts:
