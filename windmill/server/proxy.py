@@ -146,9 +146,12 @@ class WindmillProxyApplication(object):
 
             # Read in request body if it exists    
             body = None
-            if environ.get('CONTENT_LENGTH'):
+            if environ.has_key('body'):
+                body = environ['body']
+            elif environ.get('CONTENT_LENGTH'):
                 length = int(environ['CONTENT_LENGTH'])
                 body = environ['wsgi.input'].read(length)
+                environ['body'] = body
 
             # Build headers
             headers = {}
