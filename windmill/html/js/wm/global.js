@@ -191,6 +191,13 @@ var openSettings = function() {
 var openFirebug = function(){
   firebug.init();
   firebug.win.minimize();
+  
+  //For some reason if you don't do this in IE
+  //you can't see the firebug window in the IDE
+  if (windmill.browser.isIE){
+    $('tabs').style.height = "90%";
+  }
+  
   try {
     //if firebug has already been injected into the app
     if (!windmill.testWin().firebug){
