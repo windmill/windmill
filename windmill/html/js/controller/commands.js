@@ -64,6 +64,7 @@ windmill.controller.commands.execJS = function(paramObject){
 
 //Dynamically loading an extensions directory
 windmill.controller.commands.loadExtensions = function(paramObject){
+  windmill.pauseLoop();
   var l = paramObject.extensions;
   
   for (var n = 0; n < l.length; n++){
@@ -72,6 +73,7 @@ windmill.controller.commands.loadExtensions = function(paramObject){
   }
   //Send to the server
   sendCommandResult(true, paramObject.uuid, 'true');
+  windmill.continueLoop();
 };
 
 //Give the backend a list of available controller methods
