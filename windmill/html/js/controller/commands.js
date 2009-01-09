@@ -65,20 +65,10 @@ windmill.controller.commands.execJS = function(paramObject){
 //Dynamically loading an extensions directory
 windmill.controller.commands.loadExtensions = function(paramObject){
   var l = paramObject.extensions;
-  var head = document.getElementsByTagName("head")[0] ||
-    document.documentElement;
-    
+  
   for (var n = 0; n < l.length; n++){
-    var scriptTag = document.createElement('script');
-    
-    if (fleegix.ua.isSafari) {
-      var code = fleegix.xhr.get(l[n]);
-      scriptTag.appendChild(document.createTextNode(code));
-    }
-    // Other browsers settting src works fine
-    else { scriptTag.src = l[n]; }
-    //Add to the page
-    head.appendChild(scriptTag);
+    var src = windmill.utilities.getFile(l[n]);
+    eval(src);
   }
   //Send to the server
   sendCommandResult(true, paramObject.uuid, 'true');
