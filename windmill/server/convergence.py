@@ -44,7 +44,7 @@ class ControllerQueue(object):
         if command['params'].get('priority', None):
             priority = command['params'].pop('priority')
         else:
-            priority = 0
+            priority = None
         
         command['type'] = 'command'
             
