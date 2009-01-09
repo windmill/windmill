@@ -156,14 +156,14 @@ def setup():
     
     if windmill.settings['CONTINUE_ON_FAILURE'] is not False:
         shell_objects.jsonrpc_client.add_json_command('{"method": "commands.setOptions", "params": {"stopOnFailure" : false}}')
+        
+    if windmill.settings['EXTENSIONS_DIR'] is not None:
+        shell_objects.load_extensions_dir(windmill.settings['EXTENSIONS_DIR'])
                 
     if windmill.settings['RUN_TEST'] is not None:
         shell_objects.run_test(windmill.settings['RUN_TEST'])
     if windmill.settings['LOAD_TEST'] is not None:
         shell_objects.load_test(windmill.settings['LOAD_TEST'])
-        
-    if windmill.settings['EXTENSIONS_DIR'] is not None:
-        shell_objects.load_extensions_dir(windmill.settings['EXTENSIONS_DIR'])
          
     if windmill.settings['JAVASCRIPT_TEST_DIR']:
         shell_objects.run_js_tests(windmill.settings['JAVASCRIPT_TEST_DIR'], 
