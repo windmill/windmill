@@ -840,6 +840,37 @@ windmill.controller = new function () {
       rwaRecurse(windmill.testWin());
   };
 
+  /**
+  * Re-write the window alert function to instead send it's output to the output tab
+  */
+  this.reWriteConfirm = function(paramObject){
+    
+    try {
+      windmill.testWin().confirm = function(s){
+        return windmill.confirmAnswer;
+      };
+    } catch(err){ windmill.err(err); }
+    
+    rwcRecurse = function(frame){
+      var iframeCount = frame.frames.length;
+      var iframeArray = frame.frames;
+      
+      for (var i=0;i<iframeCount;i++){
+          try{
+  	        iframeArray[i].confirm = function(s){
+        		  return windmill.confirmAnswer;    
+     	      };
+  	        rwaRecurse(iframeArray[i]);
+          }
+          catch(error){             
+           	windmill.err('Could not bind to iframe number '+ iframeCount +' '+error);     
+          }
+        }
+      };
+      rwcRecurse(windmill.testWin());
+  };
+  
+
   this.reWritePopups = function(paramObject){
      if (typeof windmill.testWin().oldOpen == "function"){
        return;
