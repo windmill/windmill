@@ -11,4 +11,3 @@ You can check build status at:
 
   http://windmill.buildbot.pythonesque.org
 
-   
