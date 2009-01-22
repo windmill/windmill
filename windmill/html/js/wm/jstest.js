@@ -74,17 +74,15 @@ windmill.jsTest = new function () {
   var _getTestableType = function (item) {
     var testableType;
     switch (true) {
+      // Arrays
+      case item instanceof Array:
+      case typeof item.push == 'function':
+        testableType = _testables.ARR;
+        break;
       // Functions
       case typeof item == 'function':
       case item.toString().indexOf('function') == 0:
         testableType = _testables.FUNC;
-        break;
-      // Arrays
-      case item instanceof Array:
-      case typeof item.push == 'function':
-      case typeof (item.length != 'undefined' &&
-          item.toString().indexOf('function') == -1):
-        testableType = _testables.ARR;
         break;
       // Generic objects
       default:
