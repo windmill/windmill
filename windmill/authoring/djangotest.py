@@ -5,7 +5,13 @@ import socket
 import threading
 from django.core.handlers.wsgi import WSGIHandler
 from django.core.servers import basehttp
-from django.test.testcases import call_command, TestCase
+from django.test.testcases import call_command
+ 
+# support both django 1.0 and 1.1
+try:
+    from django.test.testcases import TransactionTestCase as TestCase
+except ImportError:
+    from django.test.testcases import TestCase
 
 class StoppableWSGIServer(basehttp.WSGIServer):
     """WSGIServer with short timeout, so that server thread can stop this server."""
@@ -99,3 +105,5 @@ class WindmillDjangoUnitTest(TestCase, unit.WindmillUnitTestCase):
     def tearDown(self):
         unit.WindmillUnitTestCase.tearDown(self)
         self.stop_test_server()
+
+WindmillDjangoTransactionUnitTest = WindmillDjangoUnitTest
