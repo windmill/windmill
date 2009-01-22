@@ -88,6 +88,8 @@ def get_firefox_controller():
         # Disable "do you want to remember this password?"
         "signon.rememberSignons": False,
         "dom.max_script_run_time": 20,
+        # Disable OSCP validation, breaks through proxy.
+        "security.OCSP.enabled":0,
         } )
         
     windmill.settings['MOZILLA_CMD_ARGS'] = [test_url]
