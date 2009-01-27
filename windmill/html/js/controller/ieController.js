@@ -29,7 +29,16 @@ windmill.controller.click = function(paramObject){
   //try {windmill.events.triggerMouseEvent(element, 'mouseup', true); } catch(err){}
   windmill.controller.mouseDown(paramObject);
   windmill.controller.mouseUp(paramObject);
-  try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}
+  
+    if (paramObject.options){
+      var arr = paramObject.options.split(',');
+      arr.unshift(element, 'click', true, null, null);
+      try { windmill.events.triggerMouseEvent.apply(this, arr); } catch(err){}
+    }
+    else { 
+      try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}  
+    }
+  
 };
   
 //there is a problem with checking via click in safari

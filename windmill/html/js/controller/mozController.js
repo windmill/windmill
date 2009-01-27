@@ -35,11 +35,19 @@ windmill.controller.click = function(paramObject){
     element.addEventListener('click', function(evt) {
         savedEvent = evt;
     }, false);
-
+    
     // Trigger the event.
     windmill.events.triggerMouseEvent(element, 'mousedown', true);
     windmill.events.triggerMouseEvent(element, 'mouseup', true);
-    windmill.events.triggerMouseEvent(element, 'click', true);
+    
+    //if click options are attached for keyboard keys
+    if (paramObject.options){
+      var arr = paramObject.options.split(',');
+      arr.unshift(element, 'click', true, null, null);
+      windmill.events.triggerMouseEvent.apply(this, arr);
+    }
+    else { windmill.events.triggerMouseEvent(element, 'click', true); }
+
     try{
       // Perform the link action if preventDefault was set.
       // In chrome URL, the link action is already executed by triggerMouseEvent.

@@ -27,7 +27,17 @@ windmill.controller.click = function(paramObject){
   // And since the DOM order that these actually happen is as follows when a user clicks, we replicate.
   try {windmill.events.triggerMouseEvent(element, 'mousedown', true); } catch(err){}
   try {windmill.events.triggerMouseEvent(element, 'mouseup', true); } catch(err){}
-  try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}
+  
+
+  if (paramObject.options){
+    var arr = paramObject.options.split(',');
+    arr.unshift(element, 'click', true, null, null);
+    try { windmill.events.triggerMouseEvent.apply(this, arr); } catch(err){}
+  }
+  else { 
+    try {windmill.events.triggerMouseEvent(element, 'click', true); } catch(err){}  
+  }
+  
 };
   
 //Sometimes opera requires that you manually toggle it

@@ -44,7 +44,7 @@ windmill.xhr = new function() {
         }
         
         //cleanup, apparently json parsers don't like \"
-        str = str.replace(/\\"/g, "\'")
+        //str = str.replace(/\\"/g, "\'")
         
         //Eval 
         try {
