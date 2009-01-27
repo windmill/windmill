@@ -37,10 +37,15 @@ var windmill = new function() {
     this.popups = true;
     //Overwrite alerts functionality
     this.alerts = true;
+    //storage array for alert strings
+    this.alertStore = [];
+    
     //overwrite the confirms
     this.confirms = true;
     //what to answer by default
     this.confirmAnswer = true;
+    //storage array for confirm strings
+    this.confirmStore = [];
     
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*

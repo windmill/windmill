@@ -817,6 +817,7 @@ windmill.controller = new function () {
     
     try {
       windmill.testWin().alert = function(s){
+        windmill.alertStore.push(s);
         windmill.out("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
       };
     } catch(err){ windmill.err(err); }
@@ -828,6 +829,7 @@ windmill.controller = new function () {
       for (var i=0;i<iframeCount;i++){
           try{
   	        iframeArray[i].alert = function(s){
+        		  windmill.alertStore.push(s);
         		  windmill.out("<br>Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
      	      };
   	        rwaRecurse(iframeArray[i]);
@@ -847,6 +849,7 @@ windmill.controller = new function () {
     
     try {
       windmill.testWin().confirm = function(s){
+        windmill.confirmStore.push(s);
         return windmill.confirmAnswer;
       };
     } catch(err){ windmill.err(err); }
@@ -858,6 +861,7 @@ windmill.controller = new function () {
       for (var i=0;i<iframeCount;i++){
           try{
   	        iframeArray[i].confirm = function(s){
+  	          windmill.confirmStore.push(s);
         		  return windmill.confirmAnswer;    
      	      };
   	        rwaRecurse(iframeArray[i]);
