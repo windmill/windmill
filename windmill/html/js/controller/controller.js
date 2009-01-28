@@ -239,11 +239,12 @@ windmill.controller = new function () {
     //Do the initial move to the drag element position
     windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, dragCoords.left, dragCoords.top);
     windmill.events.triggerMouseEvent(drag, 'mousedown', true, dragCoords.left, dragCoords.top);
-
-     windmill.controller.doRem = function() {
-         windmill.continueLoop();
-     }
-     windmill.controller.doMove = function(attrib, startx, starty) {
+    windmill.events.triggerMouseEvent(drag, 'mouseout', true, dragCoords.left, dragCoords.top);
+    
+    windmill.controller.doRem = function() {
+      windmill.continueLoop();
+    }
+    windmill.controller.doMove = function(attrib, startx, starty) {
        windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, startx, starty); 
 
        windmill.controller.moveCount--;
@@ -305,6 +306,7 @@ windmill.controller = new function () {
 
         windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, left, top);
         windmill.events.triggerMouseEvent(el, 'mousedown', true, left, top);
+        windmill.events.triggerMouseEvent(el, 'mouseout', true, left, top);
         // windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, left+100, top);
         //        windmill.events.triggerMouseEvent(el, 'mouseup', true, left, top);
 
