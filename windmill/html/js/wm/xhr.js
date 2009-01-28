@@ -39,7 +39,7 @@ windmill.xhr = new function() {
     //action callback
     this.actionHandler = function(str) {
         //Process variables but not for the execJS or execIDEJS
-        if ((str.indexOf('execJS') == -1) && (str.indexOf('execIDEJS') == -1)){
+        if ((str.indexOf('execArbTestWinJS') == -1) && (str.indexOf('execIDEJS') == -1)){
           str = windmill.xhr.processVar(str);
         }
         
