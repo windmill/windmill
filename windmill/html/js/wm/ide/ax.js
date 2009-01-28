@@ -23,7 +23,9 @@ windmill.ui.assertexplorer = new function() {
   }
 
   //Reset the border to what it was before the mouse over
-  this.resetBorder = function(e) { e.target.style.border = ''; }
+  this.resetBorder = function(e) { 
+    e.target.style[windmill.ui.hilightProp] = '';
+  }
 
     //Display the id in the remote
     this.setIdInRemote = function(e) {
@@ -79,9 +81,9 @@ windmill.ui.assertexplorer = new function() {
       
        //trying to keep old borders from getting left all over the page
        if (windmill.ui.assertexplorer.currElem){
-         windmill.ui.assertexplorer.currElem.style.border = "";
+         windmill.ui.assertexplorer.currElem.style[windmill.ui.hilightProp] = "";
        }
-       e.target.style.border = windmill.ui.borderHilight;
+       e.target.style[windmill.ui.hilightProp] = windmill.ui.borderHilight;
        windmill.ui.assertexplorer.currElem = e.target;
     }
 

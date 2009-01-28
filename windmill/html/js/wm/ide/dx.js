@@ -17,12 +17,13 @@ Copyright 2006-2007, Open Source Applications Foundation
 //DOM Explorer Functions
 windmill.ui.domexplorer = new function() {
   var exploreState = false;
+  
   this.setExploreState = function() {
     if (this.exploreState == true) { this.domExplorerOn(); }
   }
   //Reset the border to what it was before the mouse over
   this.resetBorder = function(e) { 
-    e.target.style.border = '';
+    e.target.style[windmill.ui.hilightProp] = '';
   }
   
   //Display the id in the remote
@@ -95,11 +96,12 @@ windmill.ui.domexplorer = new function() {
       if (windmill.ui.domexplorer.currElem){
           //sometimes IE doesn't like this
           try{
-            windmill.ui.domexplorer.currElem.style.border = "";
+            windmill.ui.domexplorer.currElem.style[windmill.ui.hilightProp] = "";
           }
           catch(err){}
       }
-       e.target.style.border = windmill.ui.borderHilight;
+      
+      e.target.style[windmill.ui.hilightProp] = windmill.ui.borderHilight;
       windmill.ui.domexplorer.currElem = e.target;
       
       this.explorerUpdate(e);

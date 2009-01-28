@@ -28,6 +28,14 @@ windmill.ui = new function() {
     //global settings for highlight color for explorers
     this.borderHilight = '1px solid #003366';
     
+    //variable to decide whether to use outline or border
+     if (windmill.browser.isIE){
+       this.hilightProp = "border";
+     }
+     else {
+       this.hilightProp = "outline";
+     }
+     
     //keeping track of the recorder state when a new page is loaded and wipes the document
     this.recordSuiteNum = 0;
     this.currentSuite = null;
