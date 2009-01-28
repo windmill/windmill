@@ -191,7 +191,10 @@ windmill.controller.waits.forNotElement = function (paramObj,obj) {
         var node = lookupNode(p);
         return !node; 
       }
-      catch(err){}
+      catch(err){
+        // looking up the node failed, so notElement is "true"
+        return true;
+      }
     };
     p.test = f;
     return windmill.controller.waits.forJS(p, obj);
