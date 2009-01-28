@@ -199,46 +199,53 @@ windmill.controller = new function () {
     windmill.controller.dragElem = drag;
     windmill.controller.destElem = dest;
     
-    function getCoords(obj) {
-    	var curleft = curtop = 0;
-    	if (obj.offsetParent) {
-        do {
-        	curleft += obj.offsetLeft;
-        	curtop += obj.offsetTop;
-        } while (obj = obj.offsetParent);
-      }  
-      return {left:curleft,top:curtop};
-    }
+    //get the bounding objects we want for starting and ending places
+    //for the drag
+    function getBounding(elem){
+      //backup way to get the coords
+      function getCoords(obj) {
+      	var curleft = curtop = 0;
+      	if (obj.offsetParent) {
+          do {
+          	curleft += obj.offsetLeft;
+          	curtop += obj.offsetTop;
+          } while (obj = obj.offsetParent);
+        }  
+        return {left:curleft,top:curtop};
+      }
+      
+      //get the coords and divide to find the middle
+      if ( windmill.browser.isIE || windmill.browser.isGecko ) {
+        var bound = elem.getBoundingClientRect();
+        bound = {left:parseInt((bound.left+bound.right)/
+        2),top:parseInt((bound.top+bound.bottom)/2)};
+      }
+      else {
+        var bound = getCoords(elem);
+        bound =  {left:parseInt(bound.left+elem.offsetWidth/
+        2),top:parseInt(bound.top+elem.offsetHeight/2)}
+      }
+      return bound;
+    };
+
     
     var dragCoords = null;
     var destCoords = null;
-    
-    //in IE and Mozilla we can use the getBoundingClientRect()
-    if ( windmill.browser.isIE || windmill.browser.isGecko) {
-      dragCoords = drag.getBoundingClientRect();
-      destCoords = dest.getBoundingClientRect();
-    }
-    else {
-      dragCoords = getCoords(drag);
-      destCoords = getCoords(dest);
-    }
+
+    dragCoords = getBounding(drag);
+    destCoords = getBounding(dest);
+
     
     //Do the initial move to the drag element position
     windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, dragCoords.left, dragCoords.top);
-    windmill.events.triggerMouseEvent(drag, 'mousedown', true, dragCoords.left, dragCoords.top); //do the mousedown
-    //windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, destCoords.left, destCoords.top); //do the move
-    //windmill.events.triggerMouseEvent(dest, 'mouseup', true, destCoords.left, destCoords.top);
-    //IE doesn't appear to expect a click to complete the simulation
-    // if (!windmill.browser.isIE){
-    //   windmill.events.triggerMouseEvent(dest, 'click', true, destCoords.left, destCoords.top);
-    // }
+    windmill.events.triggerMouseEvent(drag, 'mousedown', true, dragCoords.left, dragCoords.top);
 
      windmill.controller.doRem = function() {
          windmill.continueLoop();
      }
      windmill.controller.doMove = function(attrib, startx, starty) {
        windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, startx, starty); 
-   
+
        windmill.controller.moveCount--;
        if (windmill.controller.moveCount == 0){
          windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true, startx, starty);
@@ -263,8 +270,8 @@ windmill.controller = new function () {
        windmill.controller.moveCount++;
        delay = delay + 5;      
      }
-       //move the y
-      //var delay = 0;
+    
+     //move the y
      while (starty != endy){
        if (starty < endy){ starty++; }
        else{ starty--; }
