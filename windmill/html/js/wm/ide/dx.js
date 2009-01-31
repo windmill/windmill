@@ -187,8 +187,10 @@ windmill.ui.domexplorer = new function() {
   
   //Set the listeners for the dom explorer
   this.domExplorerOn = function() {
+    
     //Display the mouse coords in the IDE
     fleegix.event.listen(windmill.testWin().document.body, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
+    
     
     this.exploreState = true;
     try {
@@ -230,11 +232,16 @@ windmill.ui.domexplorer = new function() {
 
   //Recursively bind to all the iframes and frames within
   this.dxRecursiveBind = function(frame) {
+    var exitEvent = "onclick";
+    if (!$('domInspectorExit').checked){
+      exitEvent = "ondblclick";
+    }
+    
     this.dxRecursiveUnBind(frame);
 
     fleegix.event.listen(frame.document, 'onmouseover', this, 'setIdInRemote');
     fleegix.event.listen(frame.document, 'onmouseout', this, 'resetBorder');
-    fleegix.event.listen(frame.document, 'onclick', this, 'explorerClick');
+    fleegix.event.listen(frame.document, exitEvent, this, 'explorerClick');
 
     var iframeCount = frame.window.frames.length;
     var iframeArray = frame.window.frames;
@@ -243,7 +250,7 @@ windmill.ui.domexplorer = new function() {
       try {
         fleegix.event.listen(iframeArray[i].document, 'onmouseover', this, 'setIdInRemote');
         fleegix.event.listen(iframeArray[i].document, 'onmouseout', this, 'resetBorder');
-        fleegix.event.listen(iframeArray[i].document, 'onclick', this, 'explorerClick');
+        fleegix.event.listen(iframeArray[i].document, exitEvent, this, 'explorerClick');
         this.dxRecursiveBind(iframeArray[i]);
       }
       catch(error) {
@@ -253,9 +260,14 @@ windmill.ui.domexplorer = new function() {
   };
 
   this.dxRecursiveUnBind = function(frame) {
+    var exitEvent = "onclick";
+    if (!$('domInspectorExit').checked){
+      exitEvent = "ondblclick";
+    }
+    
     fleegix.event.unlisten(frame.document, 'onmouseover', this, 'setIdInRemote');
     fleegix.event.unlisten(frame.document, 'onmouseout', this, 'resetBorder');
-    fleegix.event.unlisten(frame.document, 'onclick', this, 'explorerClick');
+    fleegix.event.unlisten(frame.document, exitEvent, this, 'explorerClick');
 
     var iframeCount = frame.window.frames.length;
     var iframeArray = frame.window.frames;
@@ -264,7 +276,7 @@ windmill.ui.domexplorer = new function() {
       try {
         fleegix.event.unlisten(iframeArray[i].document, 'onmouseover', this, 'setIdInRemote');
         fleegix.event.unlisten(iframeArray[i].document, 'onmouseout', this, 'resetBorder');
-        fleegix.event.unlisten(iframeArray[i].document, 'onclick', this, 'explorerClick');
+        fleegix.event.unlisten(iframeArray[i].document, exitEvent, this, 'explorerClick');
         this.dxRecursiveUnBind(iframeArray[i]);
       }
       catch(error) {
