@@ -25,6 +25,7 @@ contrib/wxwindmill/wxwindmill/Images/wlogo.png
 contrib/wxwindmill/wxwindmill/Images/wmsplash.png
 contrib/wxwindmill/wxwindmill/bin/wxwindmill_bin.py
 scripts/build_and_release.py
+scripts/clean_run.py
 scripts/mikeals_b_and_r.py
 test/__init__.py
 test/test_django.py
@@ -541,13 +542,15 @@ windmill/html/js/controller/waits.js
 windmill/html/js/extensions/extensions.js
 windmill/html/js/lib/browserdetect.js
 windmill/html/js/lib/elementslib.js
-windmill/html/js/lib/fleegix.js
 windmill/html/js/lib/getXPath.js
-windmill/html/js/lib/hash.js
 windmill/html/js/lib/js-xpath.js
 windmill/html/js/lib/json2.js
 windmill/html/js/lib/firebug/firebug-lite.js
 windmill/html/js/lib/firebug/pi.js
+windmill/html/js/lib/fleegix_js/fleegix.js
+windmill/html/js/lib/fleegix_js/fleegix.js.gz
+windmill/html/js/lib/fleegix_js/fleegix.js.uncompressed.js
+windmill/html/js/lib/fleegix_js/plugins/hash.js
 windmill/html/js/lib/jquery/hoverIntent.js
 windmill/html/js/lib/jquery/jquery-1.2.6.pack.js
 windmill/html/js/lib/jquery/jquery-ui-wm-1.6b.min.js

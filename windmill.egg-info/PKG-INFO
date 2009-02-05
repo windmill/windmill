@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: windmill
-Version: 1.0beta2
+Version: 1.0rc1
 Summary: Web testing framework intended for complete automation of user interface testing, with strong test debugging and recording capabilities.
 Home-page: http://www.getwindmill.com/
 Author: OSAF, Mikeal Rogers, Adam Christian
