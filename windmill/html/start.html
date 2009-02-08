@@ -19,10 +19,18 @@ Copyright 2006-2007, Open Source Applications Foundation
 		<script type="text/javascript" src="js/lib/fleegix_js/fleegix.js"></script>
 		<script type="text/javascript" src="js/wm/wmexec.js"></script>
 		<script type="text/javascript">
+		  var urlSTR = window.location.href.replace("/windmill-serv/start.html","");
+		  //set the url
+		  var json_object = {version:'1.1', method:'set_test_url', params:{url:urlSTR}};
+      var json_string = fleegix.json.serialize(json_object)
+
+      var resp = function(str) { return true; }
+      result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+      resp(result);
+		
 			//Enabling the ability to start out out a page that requires query parameters
 			//By parsing the url they requested and opening it and storing that url
 			//Then when we open write the iframe src we can give it the correct starting src attrib
-			var urlSTR = window.location.href.replace("/windmill-serv/start.html","");
       fleegix.event.listen(window, 'onload', Load);
 		</script>
 	</head>
