@@ -90,6 +90,8 @@ def get_firefox_controller():
         "dom.max_script_run_time": 20,
         # Disable OSCP validation, breaks through proxy.
         "security.OCSP.enabled":0,
+        #Make the firefox IDE stop showing the location bar
+        "dom.disable_window_open_feature.location":False,
         } )
         
     windmill.settings['MOZILLA_CMD_ARGS'] = [test_url]

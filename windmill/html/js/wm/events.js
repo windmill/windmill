@@ -91,12 +91,8 @@ windmill.events = new function() {
 
         canBubble = (typeof(canBubble) == undefined) ? true: canBubble;
         if (element.fireEvent) {
-            //alert(eventType)
             var evt = windmill.events.createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
             element.fireEvent('on' + eventType, evt);
-            //Fix for IE6-- this does work but isn't needed the bug was in the type function
-            //eval("element." + eventType + "();");
-
         }
         else {
             var evt = document.createEvent('HTMLEvents');
