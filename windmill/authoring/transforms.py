@@ -20,6 +20,12 @@ except:
     import simplejson
 import tempfile
 
+from urlparse import urlparse
+
+def get_save_url(suite_name, extension):
+    url = urlparse(windmill.settings['TEST_URL'])
+    return url.scheme+'://'+url.netloc+'/windmill-saves/'+suite_name+'.'+extension
+
 def create_saves_path():
     directory = tempfile.mkdtemp(suffix='.windmill-saves')
     # Mount the fileserver application for tests
@@ -55,7 +61,7 @@ def create_python_test_file(suite_name, tests, location=None):
     f.write(build_test_file(tests, suite_name))
     f.flush()
     f.close()
-    return '%s/windmill-saves/%s' % (windmill.settings['TEST_URL'], suite_name+'.py')
+    return get_save_url(suite_name, 'py')
     
 def create_json_test_file(suite_name, tests, location=None):
     """Transform and create a json test file."""
@@ -69,7 +75,7 @@ def create_json_test_file(suite_name, tests, location=None):
         f.write('\n')
     f.flush()
     f.close()
-    return '%s/windmill-saves/%s' % (windmill.settings['TEST_URL'], suite_name+'.json')
+    return get_save_url(suite_name, 'json')
     
 registry = {'python':create_python_test_file, 'json':create_json_test_file}
 
