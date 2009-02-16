@@ -13,6 +13,7 @@
 #   limitations under the License.
 
 import dev_environment, json_tools, server_tools
+from urlparse import urlparse
 
 def make_xmlrpc_client():
     import windmill
@@ -23,7 +24,9 @@ def make_xmlrpc_client():
     
 def make_jsonrpc_client():
     import windmill
-    proxy = windmill.tools.json_tools.JSONRPCTransport(uri=windmill.settings['TEST_URL']+'/windmill-jsonrpc/', proxy_uri='http://localhost:'+str(windmill.settings['SERVER_HTTP_PORT']))
+    url = urlparse(windmill.settings['TEST_URL'])
+    uri = url.scheme+'://'+url.netloc+'/windmill-jsonrpc/'
+    proxy = windmill.tools.json_tools.JSONRPCTransport(uri=uri, proxy_uri='http://localhost:'+str(windmill.settings['SERVER_HTTP_PORT']))
     jsonrpc_client = windmill.tools.json_tools.ServerProxy(transport=proxy)
     return jsonrpc_client
     
