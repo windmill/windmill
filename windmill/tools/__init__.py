@@ -18,8 +18,10 @@ from urlparse import urlparse
 def make_xmlrpc_client():
     import windmill
     import xmlrpclib
+    url = urlparse(windmill.settings['TEST_URL'])
+    uri = url.scheme+'://'+url.netloc+'/windmill-jsonrpc/'
     proxy = windmill.tools.server_tools.ProxiedTransport('localhost:%s' % str(windmill.settings['SERVER_HTTP_PORT']))
-    xmlrpc_client = xmlrpclib.ServerProxy(windmill.settings['TEST_URL']+'/windmill-xmlrpc/',transport=proxy, allow_none=True)
+    xmlrpc_client = xmlrpclib.ServerProxy(uri, transport=proxy, allow_none=True)
     return xmlrpc_client        
     
 def make_jsonrpc_client():
