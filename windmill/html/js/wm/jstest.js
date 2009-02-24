@@ -376,7 +376,11 @@ windmill.jsTest = new function () {
     jsFilesBasePath = serverBasePath + '/windmill-jstest/';
 
     // Create a ref to the windmill object in the testing app
-    windmill.testWin().windmill = windmill;
+    try {
+      windmill.testWin().windmill = windmill;
+    } catch (err){
+      windmill.testWin().windmill = windmill;
+    }
 
     // Load the asserts into the test window scope
     // as the 'jum' object
@@ -1205,7 +1209,7 @@ windmill.jsTest.actions.loadActions = function () {
   }
 };
 
-fleegix.event.listen(window, 'onload', windmill.jsTest.actions, 'loadActions');
+fleegix.event.listen(window.document.body, 'onload', windmill.jsTest.actions, 'loadActions');
 
 // Alias for use in test actions
 var wm = windmill.jsTest.actions;
