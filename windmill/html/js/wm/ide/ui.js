@@ -182,7 +182,7 @@ windmill.ui.playback = new function() {
                       //If it wasn't a standard UI element
                       if ($(suites[i].childNodes[j].id + 'params') != null) {
                           actionObj.method = $(suites[i].childNodes[j].id + 'method').value;
-                          actionObj.params = eval('(' + $(suites[i].childNodes[j].id + 'params').value + ')');
+                          actionObj.params = eval('(' + escape($(suites[i].childNodes[j].id + 'params').value) + ')');
 
                       }
                       //if its a standard UI element build the params
@@ -195,12 +195,12 @@ windmill.ui.playback = new function() {
 
                           if (windmill.registry.methods[actionObj.method].locator) {
                               var si = $(suites[i].childNodes[j].id + 'locatorType').selectedIndex;
-                              paramsObj[$(suites[i].childNodes[j].id + 'locatorType')[si].value] = $(suites[i].childNodes[j].id + 'locator').value;
+                              paramsObj[$(suites[i].childNodes[j].id + 'locatorType')[si].value] = escape($(suites[i].childNodes[j].id + 'locator').value);
 
                           }
                           if (windmill.registry.methods[actionObj.method].option) {
                               var si = $(suites[i].childNodes[j].id + 'optionType').selectedIndex;
-                              paramsObj[$(suites[i].childNodes[j].id + 'optionType')[si].value] = $(suites[i].childNodes[j].id + 'option').value;
+                              paramsObj[$(suites[i].childNodes[j].id + 'optionType')[si].value] = escape($(suites[i].childNodes[j].id + 'option').value);
                           }
 
                           actionObj.params = paramsObj;
