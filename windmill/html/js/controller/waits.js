@@ -43,7 +43,7 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
   delete paramObj.aid;
   var count = 0;
   var p = paramObj || {};
-  var timeout = 8000;
+  var timeout = windmill.timeout;
   var isJsTest = (p.origin == 'js');
   var jsCode = p.js || p.test;
 
