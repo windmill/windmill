@@ -49,7 +49,7 @@ windmill.xhr = new function() {
         //Eval 
         try {
           if (typeof(JSON) != "undefined"){
-            windmill.xhr.xhrResponse = JSON.parse(str);
+            windmill.xhr.xhrResponse = JSON.parse(unescape(str));
           }
           else {
             windmill.xhr.xhrResponse = eval('(' + str + ')');

@@ -41,7 +41,7 @@ windmill.ui.results = new function() {
           for (i in newParams){
             var propDiv = document.createElement('div');
             propDiv.style.fontSize = "11px";
-            propDiv.innerHTML = "<strong>"+i+"</strong>: "+unescape(newParams[i]);
+            propDiv.innerHTML = "<strong>"+i+"</strong>: "+newParams[i];
             resDiv.appendChild(propDiv);
           }
           //Depending if there are any child nodes yet
@@ -102,7 +102,7 @@ windmill.ui.results = new function() {
       for (i in newParams){
         var propDiv = document.createElement('div');
         propDiv.style.fontSize = "11px";
-        propDiv.innerHTML = "<strong>"+i+"</strong>: "+unescape(newParams[i]);
+        propDiv.innerHTML = "<strong>"+i+"</strong>: "+newParams[i];
         resDiv.appendChild(propDiv);
         props = true;
       }

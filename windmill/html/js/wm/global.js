@@ -37,18 +37,18 @@ var lookupNode = function (paramObject, throwErr){
   var element = null;
   //If a link was passed, lookup as link
   if(typeof paramObject.link != "undefined") {
-    s = 'Looking up link '+ unescape(paramObject.link);
-    element = elementslib.Element.LINK(unescape(paramObject.link));
+    s = 'Looking up link '+ paramObject.link;
+    element = elementslib.Element.LINK(paramObject.link);
   }
   //if xpath was passed, lookup as xpath
   if(typeof paramObject.xpath != "undefined") {
-    s = 'Looking up xpath '+ unescape(paramObject.xpath);        
-    element = elementslib.Element.XPATH(unescape(paramObject.xpath));
+    s = 'Looking up xpath '+ paramObject.xpath;        
+    element = elementslib.Element.XPATH(paramObject.xpath);
   }
   //if id was passed, do as such
   if(typeof paramObject.id != "undefined") {
-    s = 'Looking up id '+ unescape(paramObject.id);
-    element = elementslib.Element.ID(unescape(paramObject.id));
+    s = 'Looking up id '+ paramObject.id;
+    element = elementslib.Element.ID(paramObject.id);
   }
   //if jsid was passed
   if(typeof paramObject.jsid != "undefined") {
@@ -66,28 +66,28 @@ var lookupNode = function (paramObject, throwErr){
   }
   //if name was passed
   if(typeof paramObject.name != "undefined") {
-    s = 'Looking up name '+ unescape(paramObject.name);
-    element = elementslib.Element.NAME(unescape(paramObject.name));
+    s = 'Looking up name '+ paramObject.name;
+    element = elementslib.Element.NAME(paramObject.name);
   }
   //if name was passed
   if(typeof paramObject.value != "undefined") {
     s = 'Looking up value '+ unescape(paramObject.value);
-    element = elementslib.Element.VALUE(unescape(paramObject.value));
+    element = elementslib.Element.VALUE(paramObject.value);
   }
   //if name was passed
   if(typeof paramObject.classname != "undefined") {
-    s = 'Looking up classname '+ unescape(paramObject.classname);
-    element = elementslib.Element.CLASSNAME(unescape(paramObject.classname));
+    s = 'Looking up classname '+ paramObject.classname;
+    element = elementslib.Element.CLASSNAME(paramObject.classname);
   }
   //if name was passed
   if(typeof paramObject.tagname != "undefined") {
-    s = 'Looking up tagname '+ unescape(paramObject.tagname);
-    element = elementslib.Element.TAGNAME(unescape(paramObject.tagname));
+    s = 'Looking up tagname '+ paramObject.tagname;
+    element = elementslib.Element.TAGNAME(paramObject.tagname);
   }
   //if name was passed
   if(typeof paramObject.label != "undefined") {
-    s = 'Looking up label '+ unescape(paramObject.label);
-    element = elementslib.Element.LABEL(unescape(paramObject.label));
+    s = 'Looking up label '+ paramObject.label;
+    element = elementslib.Element.LABEL(paramObject.label);
   }
   //scroll so that the element is in view
   if (element) { 
