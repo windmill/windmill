@@ -45,8 +45,16 @@ class TestServerThread(threading.Thread):
         """Sets up test server and database and loops over handling http requests."""
         try:
             handler = basehttp.AdminMediaHandler(WSGIHandler())
-            server_address = (self.address, self.port)
-            httpd = StoppableWSGIServer(server_address, basehttp.WSGIRequestHandler)
+            httpd = None
+            while httpd is None:
+                try:
+                    server_address = (self.address, self.port)
+                    httpd = StoppableWSGIServer(server_address, basehttp.WSGIRequestHandler)
+                except basehttp.WSGIServerException, e:
+                    if "Address already in use" in str(e):
+                        self.port +=1
+                    else:
+                        raise e
             httpd.set_app(handler)
             self.started.set()
         except basehttp.WSGIServerException, e:
@@ -69,6 +77,7 @@ class TestServerThread(threading.Thread):
         # Loop until we get a stop event.
         while not self._stopevent.isSet():
             httpd.handle_request()
+        httpd.server_close()
 
     def join(self, timeout=None):
         """Stop the thread and wait for it to finish."""
@@ -98,8 +107,8 @@ from windmill.authoring import unit
 class WindmillDjangoUnitTest(TestCase, unit.WindmillUnitTestCase):
     test_port = 8000
     def setUp(self):
-        self.test_url = 'http://localhost:%d' % self.test_port
         self.start_test_server('localhost', self.test_port)
+        self.test_url = 'http://localhost:%d' % self.server_thread.port
         unit.WindmillUnitTestCase.setUp(self)
 
     def tearDown(self):
