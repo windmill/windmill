@@ -186,7 +186,7 @@ windmill.ui.remote = new function() {
     
     //Update all the required DOM to rename the suite
     this.updateSuite = function(suiteName){
-      var newSN = prompt("New Suite Name?");
+      var newSN = prompt("New Suite Name?","");
       if ((!newSN) || (newSN == "")){
         return;
       }
@@ -237,8 +237,8 @@ windmill.ui.remote = new function() {
             else { suite.style.width = "100%"; }
             
             suite.innerHTML = "<table id='"+suiteName+"Header'"+
-            "class='suiteHeader'><tr><td style=\"font-size:13px;\"><div title='"+suiteName+"' style='width:220px;overflow:hidden' id='"+suiteName+"Title' onclick=\"windmill.ui.remote.updateSuite(\'"+suiteName+"\');\"><strong>Suite </strong>" + suiteName + 
-            "</div></td><td VALIGN='top'><span id='"+suiteName+"Links' align=\"right\" style='top:0px;float:right;'>"+
+            "class='suiteHeader'><tr><td style=\"font-size:13px;\"><span title='"+suiteName+"' style='width:220px;overflow:hidden' id='"+suiteName+"Title' onclick=\"windmill.ui.remote.updateSuite(\'"+suiteName+"\');\"><strong>Suite </strong>" + suiteName + 
+            "</span></td><td VALIGN='top'><span id='"+suiteName+"Links' align=\"right\" style='top:0px;float:right;'>"+
             "<a href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
             "\')\">[play]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'" + suiteName + 
             "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'" + suiteName + 
