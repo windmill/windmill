@@ -18,6 +18,9 @@ class WindmillUnitTestCase(unittest.TestCase):
         from windmill.bin.admin_lib import configure_global_settings, setup
         configure_global_settings()
         windmill.settings['TEST_URL'] = self.test_url
+        if hasattr(self,"windmill_settings"):
+            for (setting,value) in self.windmill_settings.iteritems():
+                windmill.settings[setting] = value
         self.windmill_shell_objects = setup()
     
     def testWindmill(self):
