@@ -859,6 +859,7 @@ windmill.controller = new function () {
     try {
       windmill.testWin().confirm = function(s){
         windmill.confirmStore.push(s);
+        windmill.out("<br>Confirm: <b><font color=\"#fff32c\">" + s + "</font></b> -"+windmill.confirmAnswer);
         return windmill.confirmAnswer;
       };
     } catch(err){ windmill.err(err); }
@@ -871,6 +872,7 @@ windmill.controller = new function () {
           try{
   	        iframeArray[i].confirm = function(s){
   	          windmill.confirmStore.push(s);
+  	          windmill.out("<br>Confirm: <b><font color=\"#fff32c\">" + s + "</font></b> -"+windmill.confirmAnswer);
         		  return windmill.confirmAnswer;    
      	      };
   	        rwaRecurse(iframeArray[i]);
@@ -883,7 +885,40 @@ windmill.controller = new function () {
       rwcRecurse(windmill.testWin());
   };
   
+  /**
+   * Re-write the window prompt function to instead send it's output to the output tab
+   */
+   this.reWritePrompt = function(paramObject){
 
+     try {
+       windmill.testWin().prompt = function(s, d){
+         windmill.promptStore.push(s);
+         windmill.out("<br>Prompt: <b><font color=\"#fff32c\">" + s + "</font></b> -"+windmill.promptAnswer);
+         return windmill.promptAnswer;      
+       };
+     } catch(err){ windmill.err(err); }
+
+     rwaRecurse = function(frame){
+       var iframeCount = frame.frames.length;
+       var iframeArray = frame.frames;
+
+       for (var i=0;i<iframeCount;i++){
+           try{
+   	         iframeArray[i].prompt = function(s, d){
+         		   windmill.promptStore.push(s);
+               windmill.out("<br>Prompt: <b><font color=\"#fff32c\">" + s + "</font></b> -"+windmill.promptAnswer);
+               return windmill.promptAnswer;          
+      	      };
+   	        rwaRecurse(iframeArray[i]);
+           }
+           catch(error){             
+            	windmill.err('Could not bind to iframe number '+ iframeCount +' '+error);     
+           }
+         }
+       };
+       rwaRecurse(windmill.testWin());
+   };
+  
   this.reWritePopups = function(paramObject){
      if (typeof windmill.testWin().oldOpen == "function"){
        return;
@@ -930,6 +965,15 @@ windmill.controller = new function () {
        windmill.windowReg.push(newWindow);
      };
    };
+
+   this.setPromptDefault = function(paramObject){
+     if (paramObject.val){
+       windmill.promptAnswer = paramObject.val;
+     } else {
+       windmill.promptAnswer = "Windmill is great!";
+     }
+     
+   }
 
   /**
   * Update the windmill.testWindow reference to point to a different window

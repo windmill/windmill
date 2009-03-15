@@ -47,6 +47,13 @@ var windmill = new function() {
     //storage array for confirm strings
     this.confirmStore = [];
     
+    //overwrite the confirms
+    this.prompts = true;
+    //what to answer by default
+    this.promptAnswer = "Windmill is great!";
+    //storage array for confirm strings
+    this.promptStore = [];
+    
     //Whether or not the IDE is in a waiting state
     //Is set to true when we run into any waits.*
     this.waiting = false;
@@ -332,6 +339,14 @@ var windmill = new function() {
             windmill.testWin().oldConfirm = windmill.testWin().confirm;
           } catch(err){}
           windmill.controller.reWriteConfirm();
+        }
+        //re-write the confirm dialogs
+        if (windmill.prompts){
+          //Sometimes we can't access it yet
+          try {
+            windmill.testWin().oldPrompt = windmill.testWin().prompt;
+          } catch(err){}
+          windmill.controller.reWritePrompt();
         }
         //if popup support is enabled
         if (windmill.popups){
