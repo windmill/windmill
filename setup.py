@@ -16,7 +16,7 @@ from setuptools import setup, find_packages
 import os, sys
 
 PACKAGE_NAME = "windmill"
-PACKAGE_VERSION = "1.0rc1"
+PACKAGE_VERSION = "1.0rc2"
 
 SUMMARY = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging and recording capabilities.'
 
@@ -34,7 +34,7 @@ dependencies =  ['CherryPy >= 3.0.2',
                  'wsgi_xmlrpc >= 0.2.3',
                  'wsgi_fileserver >= 0.2.3',
                  'functest >= 0.7.1',
-                 'mozrunner',
+                 'mozrunner <= 1.9.9',
                  'simplesettings',
                  ]
 
