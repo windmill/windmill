@@ -633,6 +633,7 @@ var firebug = {
       }
     },
     newWindow: function() {
+      return;
       var interval,scripts,script,scriptPath,
           fe=firebug.env;
 

@@ -39,6 +39,7 @@ windmill.xhr = new function() {
     //action callback
     this.actionHandler = function(str) {
         //Process variables but not for the execJS or execIDEJS
+        str = unescape(str);
         if ((str.indexOf('execArbTestWinJS') == -1) && (str.indexOf('execIDEJS') == -1)){
           str = windmill.xhr.processVar(str);
         }
@@ -49,7 +50,7 @@ windmill.xhr = new function() {
         //Eval 
         try {
           if (typeof(JSON) != "undefined"){
-            windmill.xhr.xhrResponse = JSON.parse(unescape(str));
+            windmill.xhr.xhrResponse = JSON.parse(str);
           }
           else {
             windmill.xhr.xhrResponse = eval('(' + str + ')');
@@ -70,12 +71,12 @@ windmill.xhr = new function() {
             resp.error + "'");
         }
         else {
-            if (method != 'defer') {
+            if (method != 'defer') {           
                 windmill.serviceDelay = windmill.serviceDelayRunning;
                 windmill.stat("Running " + method + "...");
                 windmill.ui.playback.setPlaying();
             }
-            else {
+            else {          
                 windmill.serviceDelay = windmill.serviceDelayDefer;
                 windmill.ui.playback.resetPlayBack();
                 windmill.stat("Ready, Waiting for tests...");
