@@ -245,15 +245,16 @@ var windmill = new function() {
     };
     
     this.attachUnload = function(w){
-      // if (windmill.browser.isIE){
-      //     //w.document.body.onunload = function(){ windmill.unloaded(); };   
+       if (!windmill.browser.isIE){
           fleegix.event.unlisten(windmill.testWin(), 'onunload', windmill, 'unloaded');
           fleegix.event.listen(windmill.testWin(), 'onunload', windmill, 'unloaded');
-         //   }
-      //   else{
-        //jQuery(w).unbind("unload", windmill.unloaded); 
-        //jQuery(w).unload(windmill.unloaded); 
-      //}
+        }
+      else {
+        try {
+          w.detachEvent("onunload", windmill.unloaded);
+        } catch(err){}
+        w.attachEvent("onunload", windmill.unloaded)
+      }
     };
     
     //When the page is unloaded turn off the loop until it loads the new one
