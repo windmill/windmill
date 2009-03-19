@@ -87,7 +87,7 @@ windmill.controller = new function () {
     paramObject.name = arr[0];
     paramObject.js = arr[1];
     
-    paramObject.value = eval.call(windmill.testWin(), paramObject.js);
+    paramObject.value = windmill.testWin().eval(paramObject.js);
 
     //if the code evaled and returned a value add it
     if (windmill.varRegistry.hasKey('{$'+paramObject.name +'}')){

@@ -229,48 +229,25 @@ windmill.ui.remote = new function() {
             suite.className = "suite";
             suite.id = suiteName;
             
-            if (windmill.browser.isIE) {
-              //var vWidth = fleegix.dom.getViewportWidth();
-              //suite.style.width = (vWidth - 22) + 'px';
-              suite.style.width = "95%";
-            }
-            else { suite.style.width = "100%"; }
-            
             suite.innerHTML = "<table id='"+suiteName+"Header'"+
-            "class='suiteHeader'><tr><td style=\"font-size:13px;\"><span title='"+suiteName+"' style='width:220px;overflow:hidden' id='"+suiteName+"Title' onclick=\"windmill.ui.remote.updateSuite(\'"+suiteName+"\');\"><strong>Suite </strong>" + suiteName + 
-            "</span></td><td VALIGN='top'><span id='"+suiteName+"Links' align=\"right\" style='top:0px;float:right;'>"+
+            "class='suiteHeader'><tr><td style=\"font-size:13px;\"><div class='suiteTitleDiv' title='"+suiteName+"' style='cursor:pointer;width:220px;overflow:hidden' id='"+suiteName+"Title' onclick=\"windmill.ui.remote.updateSuite(\'"+suiteName+"\');\"><strong>Suite </strong>" + suiteName + 
+            "</div></td><td VALIGN='top'><span id='"+suiteName+"Links' align=\"right\" style='top:0px;float:right;paddingRight:8px;'>"+
             "<a href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
             "\')\">[play]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'" + suiteName + 
             "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'" + suiteName + 
             "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.ui.toggleCollapse(\'" + suiteName + 
-            "\')\">[hide/show]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.currentSuite=\'"+suiteName+"\'\">[select]</a></span></td></tr></table>";
+            "\')\">[toggle]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.currentSuite=\'"+suiteName+"\'\">[select]</a></span>&nbsp;&nbsp;</td></tr></table>";
 
             //Append the new suite to the IDE
             $('ideForm').appendChild(suite);
             
             //Make the suites and actions draggable
             //draggability is broken in safari :-(
-            if (!windmill.browser.isSafari){
-              jQuery(suite).sortable({items: "div", axis: "y"});
+            //if (!windmill.browser.isSafari){
+              jQuery(suite).sortable({items: "div", axis: "y", cancel: '.suiteTitleDiv', cancel: 'input', cancel: 'select', cancel: 'option'});
               jQuery($('ideForm')).sortable({});
-                          
-              // jQuery('a').bind("mousedown", function(e){
-              //   jQuery($('ideForm')).sortable("disable");
-              //   jQuery(".suite").sortable("disable");
-              // });
-              // jQuery('a').bind("mouseup", function(e){
-              //   jQuery($('ideForm')).sortable("enable");
-              //   jQuery(".suite").sortable("enable");
-              // });
-              // jQuery(':image').bind("mousedown", function(e){
-              //   jQuery($('ideForm')).sortable("disable");
-              //   jQuery(".suite").sortable("disable");
-              // });
-              // jQuery(':image').bind("mouseup", function(e){
-              //   jQuery($('ideForm')).sortable("enable");
-              //   jQuery(".suite").sortable("enable");
-              // });
-            }
+              
+            //}
             
             //minimize the last suite
             try {
@@ -368,6 +345,17 @@ windmill.ui.remote = new function() {
         }
     };
 
+    this.buildActionButtons = function(id){
+      var htmlStr = '<a alt="Start Playback" href="#">\
+      <img onclick="windmill.ui.playback.sendPlayBack(\'' + id + 
+      '\')" src="img/play.png"></a>&nbsp;<a alt="Delete Action" href="#">' + 
+      '<img onclick="windmill.ui.remote.deleteAction(\'' + id + '\')"  ' + 
+      'src="img/trash.png"></a>&nbsp;<a onclick="windmill.ui.remote.addActionAbove(\'' + id + 
+      '\')" href="#"><img src="img/addup.png"></a>&nbsp;<a onclick="windmill.ui.remote.addActionBelow(\'' + id + 
+      '\')" href="#"><img src="img/adddown.png"></a>';
+      return htmlStr;
+    }
+
     //This function takes a method and it's params and returns a DOM
     //Element representing that action for the UI
     this.buildAction = function(method, params) {
@@ -384,7 +372,13 @@ windmill.ui.remote = new function() {
 
         //var action = this.constructAction(method,'','',windmill.registry.methods[method].option,parms[windmill.registry.methods[method].option]);
         var action = document.createElement('div');
-        action.className = "action";
+        action.className = "ui-state-highlight ui-corner-all action";
+        if (!windmill.browser.isIE){
+          action.style.border = "1px solid lightgray";
+        }
+        else {
+          action.style.border = "1px solid #aaa";
+        }
         
         //if the user turns on the option to run actions by hitting enter
         var catchEnter = function(e){
@@ -425,14 +419,8 @@ windmill.ui.remote = new function() {
             i0.setAttribute('value', method);
             c.appendChild(i0);
 
-            c.innerHTML += '&nbsp&nbsp&nbsp&nbsp<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\'' + action.id + 
-            '\')" style="height:18px;width:18px;" src="img/play.png"></a><a alt="Delete Action" href="#">' + 
-            '<img border=0 onclick="windmill.ui.remote.deleteAction(\'' + action.id + '\')" style="height:18px;width:18px;" ' + 
-            'src="img/trash.png"></a>';
+            c.innerHTML = this.buildActionButtons(action.id);
 
-            c.innerHTML += '<a onclick="windmill.ui.remote.addActionAbove(\'' + action.id + 
-            '\')" href="#"><img border=0 src="img/addup.png"></a><a onclick="windmill.ui.remote.addActionBelow(\'' + action.id + 
-            '\')" href="#"><img border=0 src="img/adddown.png"></a>';
             r.appendChild(c);
 
             //This makes it look better in IE
@@ -463,8 +451,8 @@ windmill.ui.remote = new function() {
 
 
         var r = document.createElement("tr");
+        r.style.fontWeight = "bold";
         var c = document.createElement("td");
-
         c.innerHTML += 'Method: ';
         r.appendChild(c);
         //Setup the method drop down
@@ -490,17 +478,14 @@ windmill.ui.remote = new function() {
             s.appendChild(o);
         }
         s.setAttribute("onchange", "windmill.ui.remote.methodChange('" + action.id + "');");
-
+        
         var c = document.createElement("td");
-        c.colSpan = "2";
         c.appendChild(s);
-
-        c.innerHTML += '&nbsp&nbsp&nbsp&nbsp&nbsp<a alt="Start Playback" href="#"><img border=0 onclick="windmill.ui.playback.sendPlayBack(\'' + action.id + 
-        '\')" style="height:18px;width:18px;" src="img/play.png"></a><a alt="Delete Action" href="#">' + 
-        '<img border=0 onclick="windmill.ui.remote.deleteAction(\'' + action.id + '\')" style="height:18px;width:18px;" ' + 
-        'src="img/trash.png"></a><a onclick="windmill.ui.remote.addActionAbove(\'' + action.id + 
-        '\')" href="#"><img border=0  src="img/addup.png"></a><a onclick="windmill.ui.remote.addActionBelow(\'' + action.id + 
-        '\')" href="#"><img border=0  src="img/adddown.png"></a>';
+        r.appendChild(c);
+        
+        var c = document.createElement("td");
+        c.style.textAlign = "center";
+        c.innerHTML = this.buildActionButtons(action.id);
 
         r.appendChild(c);
         t.appendChild(r);
@@ -513,6 +498,7 @@ windmill.ui.remote = new function() {
             var r = document.createElement("tr");
             r.id = action.id + 'locatorRow';
             var c = document.createElement("td");
+            c.style.fontWeight = "bold";
             c.innerHTML += 'Locater: ';
             r.appendChild(c);
 
@@ -578,6 +564,8 @@ windmill.ui.remote = new function() {
             var r = document.createElement("tr");
             r.id = action.id + 'optionRow';
             var c = document.createElement("td");
+            c.style.fontWeight = "bold";
+            
             if (windmill.browser.isIE) {
                 c.innerHTML += '<br>Option: ';
             }
@@ -700,6 +688,7 @@ windmill.ui.remote = new function() {
               }
             });
         }
+        
         //stick the action in the IDE
         action.appendChild(t);
         if (windmill.browser.isIE) {

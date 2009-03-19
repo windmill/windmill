@@ -158,16 +158,16 @@ var windmill = new function() {
         var sel = e.target.id;
         switch(sel){
           case 'addSuite':
-            jQuery('#tabs ul').tabs("select", 0);
+            jQuery('#tabs').tabs("select", 0);
             windmill.ui.incRecSuite();
             windmill.ui.remote.getSuite(null, true);
           break;
           case 'addAction':
-            jQuery('#tabs ul').tabs("select", 0);
+            jQuery('#tabs').tabs("select", 0);
             windmill.ui.remote.addAction();
           break;
           case 'clearIDE':
-            jQuery('#tabs ul').tabs("select", 0);
+            jQuery('#tabs').tabs("select", 0);
             windmill.ui.remote.clearIDE();
           break;
           default:
@@ -245,15 +245,15 @@ var windmill = new function() {
     };
     
     this.attachUnload = function(w){
-      if (windmill.browser.isIE){
-        //w.document.body.onunload = function(){ windmill.unloaded(); };   
-        fleegix.event.unlisten(windmill.testWin().document.body, 'onunload', windmill, 'unloaded');
-        fleegix.event.listen(windmill.testWin().document.body, 'onunload', windmill, 'unloaded');
-      }
-      else{
-        jQuery(w).unbind("unload", windmill.unloaded); 
-        jQuery(w).unload(windmill.unloaded); 
-      }
+      // if (windmill.browser.isIE){
+      //     //w.document.body.onunload = function(){ windmill.unloaded(); };   
+          fleegix.event.unlisten(windmill.testWin(), 'onunload', windmill, 'unloaded');
+          fleegix.event.listen(windmill.testWin(), 'onunload', windmill, 'unloaded');
+         //   }
+      //   else{
+        //jQuery(w).unbind("unload", windmill.unloaded); 
+        //jQuery(w).unload(windmill.unloaded); 
+      //}
     };
     
     //When the page is unloaded turn off the loop until it loads the new one

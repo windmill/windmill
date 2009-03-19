@@ -137,7 +137,7 @@ windmill.controller.asserts.assertValue = function (paramObject) {
   var validator = paramObject.validator;
 
   if (n.value.indexOf(validator) == -1){
-    throw "Value not found, "+ n.value + "not equal to "+ validator;
+    throw "Value not found, \""+ n.value + "\" is not equal to \""+ validator+"\"";
   }
   
 };

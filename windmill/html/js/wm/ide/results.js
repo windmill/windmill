@@ -31,11 +31,11 @@ windmill.ui.results = new function() {
           
           var resultsDiv = $("perfOut");
           var resDiv = document.createElement('div');
-          resDiv.className = "outputEntry";
-          resDiv.style.height = "14px";
-          if (windmill.browser.isIE){
-            resDiv.style.width = "95%";
-          }
+          resDiv.className = "ui-state-highlight ui-corner-all outputEntry";
+          resDiv.style.height = "13px";
+          // if (windmill.browser.isIE){
+          //   resDiv.style.width = "95%";
+          // }
        
           resDiv.innerHTML = "<strong>"+timeObj.identifier + "</strong>&nbsp;<a href='#'>+</a>";
           for (i in newParams){
@@ -52,12 +52,12 @@ windmill.ui.results = new function() {
             resultsDiv.insertBefore(resDiv, jQuery(resultsDiv).children()[0]);
           }
           jQuery(resDiv).click(function() {
-              if (resDiv.style.height == "14px"){
+              if (resDiv.style.height == "13px"){
                 resDiv.style.height = "";
                 jQuery(resDiv).html(jQuery(resDiv).html().replace('+','-'));
               }
               else {
-                resDiv.style.height = "14px";
+                resDiv.style.height = "13px";
                 jQuery(resDiv).html(jQuery(resDiv).html().replace('-','+'));
               }
           });
@@ -88,15 +88,21 @@ windmill.ui.results = new function() {
       if (params.aid){
         resDiv.id = params.aid+"result";
       }
-      resDiv.className = "outputEntry";
-      resDiv.style.height = "14px";
-      if (windmill.browser.isIE){
-        resDiv.style.width = "95%";
-      }
+      // resDiv.className = "outputEntry";
+      // resDiv.style.height = "14px";
+      // if (windmill.browser.isIE){
+      //   resDiv.style.width = "95%";
+      // }
+      resDiv.style.height = "13px";
       if (result){
+        resDiv.className = "ui-state-highlight ui-corner-all outputEntry";
+        resDiv.style.border = "1px solid darkgreen";
         resDiv.style.background = "#C7FFCC";
+        
       }
-      else { resDiv.style.background = "#FF9692"; }
+      else { 
+        resDiv.className = "ui-state-error ui-corner-all outputEntry";
+      }
 
       var props = false;
       for (i in newParams){
@@ -123,12 +129,12 @@ windmill.ui.results = new function() {
       }
       
       jQuery(resDiv).click(function() {
-          if (resDiv.style.height == "14px"){
+          if (resDiv.style.height == "13px"){
             resDiv.style.height = "";
             jQuery(resDiv).html(jQuery(resDiv).html().replace('+','-'));
           }
           else {
-            resDiv.style.height = "14px";
+            resDiv.style.height = "13px";
             jQuery(resDiv).html(jQuery(resDiv).html().replace('-','+'));
           }
       });

@@ -6,32 +6,48 @@
 	<title>Windmill IDE</title>
 	
 	<link rel="stylesheet" type="text/css" href="css/windmill.css"/>
-	<link rel="stylesheet" type="text/css" href="css/jquery.css"/>
 	<link rel="stylesheet" type="text/css" href="css/superfish.css" media="screen">
+	<link type="text/css" href="css/smoothness/jquery-ui-1.7.custom.css" rel="stylesheet" />	
 	
-	<script type='text/javascript' src='js/lib/fleegix_js/fleegix.js'></script>
-	<script type='text/javascript' src='js/lib/jquery/jquery-1.2.6.pack.js'></script>	
+	<script type='text/javascript' src="js/lib/fleegix_js/fleegix.js"></script>
+	<script type="text/javascript" src="js/lib/jquery/jquery-1.3.2.min.js"></script>
 	<script type="text/javascript" charset="utf-8">
 	  jQuery.noConflict();
 	</script>
-	<script type='text/javascript' src='js/lib/jquery/jquery-ui-wm-1.6b.min.js'></script>
-	<script type='text/javascript' src='js/lib/jquery/ui.progressbar.js'></script>
+	<script type='text/javascript' src="js/lib/jquery/jquery-ui-1.7.custom.min.js"></script>
+	<script type='text/javascript' src="js/lib/jquery/ui.progressbar.js"></script>
 	<script type="text/javascript" src="js/lib/jquery/hoverIntent.js"></script>
 	<script type="text/javascript" src="js/lib/jquery/superfish.js"></script>
 	
 		<script type="text/javascript">
 			jQuery(function(){
 			  //tabs
-        jQuery('#tabs ul').tabs();
-        jQuery("#dialog").dialog({ autoOpen: false });
-        jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
-        ui.panel.style.height = "95%";
-        jQuery('ul.sf-menu').superfish({
-          speed: 'fast',
-          autoArrows:  false,                     
-          dropShadows: false
+        jQuery('#tabs').tabs();
+        jQuery("#dialog").dialog({
+          height: 460,
+          width: 410,
+          modal:true,
+          autoOpen: false,
+          overlay: { 
+              opacity: 0.5, 
+              background: "black" 
+          },
+          buttons: { 
+           "Ok": function() { 
+               jQuery(this).dialog("close"); 
+           } 
+          }
         });
-      });
+        
+        
+        jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
+          ui.panel.style.height = "95%";
+          jQuery('ul.sf-menu').superfish({
+            speed: 'fast',
+            autoArrows:  false,                     
+            dropShadows: false
+          });
+        });
     });
 	</script>
 </head>
@@ -322,16 +338,16 @@
   var reFlow = function(){
     if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
       //document.getElementById('ide').style.height = document.body.clientHeight -70 + "px";
-      document.getElementById('ideForm').style.height = document.body.clientHeight -70 + "px";
-      document.getElementById('resOut').style.height = document.body.clientHeight -70 + "px";
-      document.getElementById('perfOut').style.height = document.body.clientHeight -70 + "px";
+      document.getElementById('ideForm').style.height = document.body.clientHeight -80 + "px";
+      document.getElementById('resOut').style.height = document.body.clientHeight -80 + "px";
+      document.getElementById('perfOut').style.height = document.body.clientHeight -80 + "px";
 
     }
     else {
       //document.getElementById('ide').style.height = window.innerHeight -70 + "px";
-      document.getElementById('ideForm').style.height = window.innerHeight -70 + "px";
-      document.getElementById('resOut').style.height = window.innerHeight -70 + "px";
-      document.getElementById('perfOut').style.height = window.innerHeight -70 + "px";
+      document.getElementById('ideForm').style.height = window.innerHeight -80 + "px";
+      document.getElementById('resOut').style.height = window.innerHeight -80 + "px";
+      document.getElementById('perfOut').style.height = window.innerHeight -80 + "px";
     }
   }
   jQuery(document).ready(reFlow);

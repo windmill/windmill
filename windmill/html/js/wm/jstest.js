@@ -238,7 +238,7 @@ windmill.jsTest = new function () {
     //clean up output tab for test run
     $('resOut').innerHTML = "";
     //Select the output tab
-    jQuery('#tabs ul').tabs("select", 1);
+    jQuery('#tabs').tabs("select", 1);
   };
   // Main function to run a directory of JS tests
   this.run = function (paramObj) {

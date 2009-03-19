@@ -176,20 +176,7 @@ var openSettings = function() {
     windmill.ui.assertexplorer.assertExplorerOff();
 
     //$(id).style.display = 'block';
-    jQuery("#dialog").dialog({
-      height: 450,
-      width: 400,
-      modal:true,
-      overlay: { 
-          opacity: 0.5, 
-          background: "black" 
-      },
-      buttons: { 
-       "Ok": function() { 
-           jQuery(this).dialog("close"); 
-       } 
-      }
-    });
+    jQuery("#dialog").dialog('open');
     // $('ide').style.display = 'none';
     // $('actionDD').style.visibility = "hidden";
 };
