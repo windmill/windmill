@@ -79,7 +79,6 @@ var elementslib = new function(){
   //takes the function for resolving nodes and the string
   var nodeSearch = function(func, s, doc){
     var e = null;
-
     //inline function to recursively find the element in the DOM, cross frame.
     var recurse = function(w, func, s, doc){
      //do the lookup in the current window
@@ -195,6 +194,18 @@ var elementslib = new function(){
     else{
       var cn = s;
       var idx = 0;
+    }
+    if (!this.document.getElementsByClassName){
+      this.document.getElementsByClassName = function(cl) {
+        var retnode = [];
+        var myclass = new RegExp('\\b'+cl+'\\b');
+        var elem = this.getElementsByTagName('*');
+        for (var i = 0; i < elem.length; i++) {
+        var classes = elem[i].className;
+        if (myclass.test(classes)) retnode.push(elem[i]);
+        }
+        return retnode;
+      };
     }
     return this.document.getElementsByClassName(cn)[idx];
   };
