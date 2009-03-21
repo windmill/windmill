@@ -91,7 +91,7 @@ class TestResolutionSuite(object):
         self.resolved = {}
         self.current_suite = None
 
-    def resolve(self, result, uuid, starttime, endtime, debug=None):
+    def resolve(self, result, uuid, starttime, endtime, debug=None, output=None):
         """Resolve test by uuid"""
         test = self.unresolved.pop(uuid)
         if debug:
@@ -99,6 +99,7 @@ class TestResolutionSuite(object):
         test['result'] = result
         test['starttime'] = starttime
         test['endtime'] = endtime
+        test['output'] = output
         self.resolved[uuid] = test
                 
         if result is False:
@@ -112,9 +113,9 @@ class TestResolutionSuite(object):
             elif result is True:
                 self.result_processor.success(test, debug=debug)
     
-    def report_without_resolve(self, result, uuid, starttime, endtime, suite_name, debug=None):
+    def report_without_resolve(self, result, uuid, starttime, endtime, suite_name, debug=None, output=None):
         test = {'result':result, 'uuid':uuid, 'starttime':starttime, 'endtime':endtime, 
-                'suite_name':suite_name, 'debug':debug}
+                'suite_name':suite_name, 'debug':debug, 'output':output}
         if result is False:
             test_results_logger.error('Test Failure in test %s' % repr(test))
         elif result is True:
@@ -293,13 +294,13 @@ class JSONRPCMethods(RPCMethods):
             action.update({'method':'defer'})
             return action
             
-    def report(self, uuid, result, starttime, endtime, debug=None):
+    def report(self, uuid, result, starttime, endtime, debug=None, output=None):
         """Report fass/fail for a test"""
-        self._test_resolution_suite.resolve(result, uuid, starttime, endtime, debug)
+        self._test_resolution_suite.resolve(result, uuid, starttime, endtime, debug, output)
         return 200
         
-    def report_without_resolve(self, uuid, result, starttime, endtime, suite_name, debug=None):
-        self._test_resolution_suite.report_without_resolve(result, uuid, starttime, endtime, suite_name, debug)
+    def report_without_resolve(self, uuid, result, starttime, endtime, suite_name, debug=None, output=None):
+        self._test_resolution_suite.report_without_resolve(result, uuid, starttime, endtime, suite_name, debug, output)
         return 200
         
     def command_result(self, status, uuid, result):

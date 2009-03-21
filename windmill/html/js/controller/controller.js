@@ -1026,7 +1026,7 @@ windmill.controller = new function () {
   */
   this.execArbTestWinJS = function(paramObject){
     var js = paramObject.js;
-    eval.call(windmill.testWin(), js);
+    return eval.call(windmill.testWin(), js);
   };
   
   /**
@@ -1035,7 +1035,7 @@ windmill.controller = new function () {
   */
   this.execIDEJS = function(paramObject){
     var js = paramObject.js;
-    eval.call(window, js);
+    return eval.call(window, js);
   };
 };
 

@@ -102,6 +102,7 @@ windmill.xhr = new function() {
                 //default to true
                 var result = true;
                 var info = null;
+                var output;
                 
                 //Forgotten case; If the windmill.runTests is false, but we are trying to change it back to true with a command
                 //This fix runs all commands regardless  
@@ -126,7 +127,8 @@ windmill.xhr = new function() {
                             if (method.indexOf('asserts.assertNot') != -1) {
                                 var m = mArray[1].replace('Not', '');
                                   try { 
-                                    windmill.controller[mArray[0]][m](params);
+                                    //windmill.controller[mArray[0]][m](params);
+                                    output = windmill.controller[mArray[0]][m](params);
                                   } catch(err){
                                     var assertNotErr = true;
                                   }
@@ -137,11 +139,12 @@ windmill.xhr = new function() {
                             }
                             //Normal asserts and waits
                             else {
-                                windmill.controller[mArray[0]][mArray[1]](params, resp.result);
+                                //windmill.controller[mArray[0]][mArray[1]](params, resp.result);
+                                output = windmill.controller[mArray[0]][mArray[1]](params, resp.result);
                             }
                         }                        
                         //Every other action that isn't namespaced
-                        else { windmill.controller[method](params); }
+                        else { output = windmill.controller[method](params); }
                         
                         //End the timer
                         windmill.xhr.action_timer.endTime();
@@ -198,7 +201,8 @@ windmill.xhr = new function() {
                     delete newParams.uuid;
                     //End timer and store
                     //windmill.xhr.action_timer.endTime();
-                    windmill.xhr.sendReport(method, result, windmill.xhr.action_timer, info);
+                    //windmill.xhr.sendReport(method, result, windmill.xhr.action_timer, info);
+                    windmill.xhr.sendReport(method, result, windmill.xhr.action_timer, info, output);
                     windmill.xhr.setActionBackground(action, result, resp.result);
                     //Do the timer write
                     windmill.xhr.action_timer.write(newParams);
@@ -211,7 +215,7 @@ windmill.xhr = new function() {
     };
 
     //Send the report
-    this.sendReport = function(method, result, timer, info) {
+    this.sendReport = function(method, result, timer, info, output) {
         //if no info was specified
         if (typeof(info) == "undefined"){
           var info = "";
@@ -228,6 +232,7 @@ windmill.xhr = new function() {
         var result_string = fleegix.json.serialize(windmill.xhr.xhrResponse.result);
         var test_obj = {
             "result": result,
+            "output": escape(output),
             "debug": escape(info),
             "uuid": windmill.xhr.xhrResponse.result.params.uuid,
             "starttime": timer.getStart(),
@@ -384,7 +389,8 @@ windmill.xhr = new function() {
         windmill.xhr.xhrResponse.result = obj;
         //Don't report if we are running js tests
         if (obj.params.orig != 'js'){
-          windmill.xhr.sendReport(obj.method, result, windmill.xhr.action_timer);
+          //windmill.xhr.sendReport(obj.method, result, windmill.xhr.action_timer);
+          windmill.xhr.sendReport(obj.method, result, windmill.xhr.action_timer, undefined);
         }
         windmill.xhr.action_timer.write(obj.params);
     };
