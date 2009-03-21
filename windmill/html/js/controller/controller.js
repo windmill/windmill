@@ -1024,10 +1024,11 @@ windmill.controller = new function () {
   * Execute some arbitrary JS in the testing app window
   * @param {Object} paramObject The JavaScript object providing: js
   */
-  this.execArbTestWinJS = function(paramObject){
+  this.execJsInTestWindow = function(paramObject){
     var js = paramObject.js;
     return eval.call(windmill.testWin(), js);
   };
+  this.execArbTestWinJS = this.execJsInTestWindow;
   
   /**
   * Execute some arbitrary JS
