@@ -1062,7 +1062,7 @@ windmill.jsTest = new function () {
   this.handleSuccess = function (testName) {
     _currentTestTimer.endTime();
     if (windmill.chatty){
-    windmill.out("<br><b>Test:</b> " + testName +
+    windmill.out("<b>Test:</b> " + testName +
       "<br>Test Result: <font color=\"#61d91f\"><b>" + true + "</b></font>");
     }
     windmill.actOut(testName, {}, true);

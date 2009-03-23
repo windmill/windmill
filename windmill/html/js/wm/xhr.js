@@ -53,12 +53,14 @@ windmill.xhr = new function() {
             windmill.xhr.xhrResponse = JSON.parse(str);
           }
           else {
-            windmill.xhr.xhrResponse = eval('(' + str + ')');
+            windmill.xhr.xhrResponse = fleegix.json.parse(str);
           }
-        } catch (err){
-          windmill.err(err);
-          windmill.xhr.getNext();
-          return;
+        } catch (err){          
+            windmill.out("<span style='color:red;'>\""+err + "\". (Did you escape all double quotes?)</span>")
+            jQuery('#tabs').tabs("select", 1);
+            windmill.err(err);
+            windmill.xhr.getNext();
+            return;
         }
         
         var resp = windmill.xhr.xhrResponse;

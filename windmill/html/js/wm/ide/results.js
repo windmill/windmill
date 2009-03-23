@@ -76,7 +76,8 @@ windmill.ui.results = new function() {
     //Writing to the results tab
     this.writeResult = function(str) {
         var resultsDiv = $("resOut");
-        resultsDiv.innerHTML = str + "<br>" + resultsDiv.innerHTML;
+        var blk = "<div class='ui-state-highlight ui-corner-all outputEntry'>"+ str + "</div>";
+        resultsDiv.innerHTML = blk + resultsDiv.innerHTML;
     }
     
     this.writeAction = function(method, params, result){
