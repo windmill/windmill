@@ -115,7 +115,7 @@ windmill.ui.results = new function() {
       }
       
       if (props){
-        resDiv.innerHTML = "<strong>"+method + "</strong>&nbsp;<a href='#'>+</a>" + resDiv.innerHTML;
+        resDiv.innerHTML = "<strong>"+method + "</strong>&nbsp;+" + resDiv.innerHTML;
       }
       else {
         resDiv.innerHTML = "<strong>"+method + "</strong>" + resDiv.innerHTML;
@@ -131,12 +131,12 @@ windmill.ui.results = new function() {
       
       jQuery(resDiv).click(function() {
           if (resDiv.style.height == "13px"){
-            resDiv.style.height = "";
-            jQuery(resDiv).html(jQuery(resDiv).html().replace('+','-'));
+            this.style.height = "";
+            jQuery(this).html(jQuery(this).html().replace('+','-'));
           }
           else {
-            resDiv.style.height = "13px";
-            jQuery(resDiv).html(jQuery(resDiv).html().replace('-','+'));
+            this.style.height = "13px";
+            jQuery(this).html(jQuery(this).html().replace('-','+'));
           }
       });
     }
