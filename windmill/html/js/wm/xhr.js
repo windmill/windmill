@@ -218,10 +218,7 @@ windmill.xhr = new function() {
 
     //Send the report
     this.sendReport = function(method, result, timer, info, output) {
-        //if no info was specified
-        if (typeof(info) == "undefined"){
-          var info = "";
-        }
+      
         //handle the response
         var reportHandler = function(str) {
             response = eval('(' + str + ')');
