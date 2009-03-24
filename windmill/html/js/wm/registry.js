@@ -78,6 +78,7 @@ windmill.registry.methods['setDocDomain']           = {'locator': false, 'option
 windmill.registry.methods['setOptions']         = {'locator': false, 'option':'stopOnFailure'};
 windmill.registry.methods['storeURL']           = {'locator': true, 'option': false };
 windmill.registry.methods['storeVarFromJS']     = {'locator': false, 'option': 'options' };
+windmill.registry.methods['storeVarFromIDEJS']     = {'locator': false, 'option': 'options' };
 windmill.registry.methods['storeVarFromLocAttrib']     = {'locator': true, 'option': 'options' };
 windmill.registry.methods['-- Asserts --']        = {'locator': false, 'option': false, 'section': true};
 windmill.registry.methods['asserts.assertJS']    = {'locator': false, 'option': 'js' };

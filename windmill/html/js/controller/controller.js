@@ -98,7 +98,29 @@ windmill.controller = new function () {
       windmill.varRegistry.addItem('{$'+paramObject.name +'}',paramObject.value);
     }
   };
+  
+  /**
+  * Creates a windmill variable antry from evaluated JavaScript
+  * @param {Object} paramObject The JavaScript providing the necessary options
+  * @throws SyntaxError JavaScript eval exception 
+  */
+  this.storeVarFromIDEJS = function (paramObject) {
+    //extract the options
+    var arr = paramObject.options.split('|');
+    paramObject.name = arr[0];
+    paramObject.js = arr[1];
+    
+    paramObject.value = eval(paramObject.js);
 
+    //if the code evaled and returned a value add it
+    if (windmill.varRegistry.hasKey('{$'+paramObject.name +'}')){
+      windmill.varRegistry.removeItem('{$'+paramObject.name +'}');
+      windmill.varRegistry.addItem('{$'+paramObject.name +'}',paramObject.value);
+    }
+    else{
+      windmill.varRegistry.addItem('{$'+paramObject.name +'}',paramObject.value);
+    }
+  };
   /**
   * Navigates the Windmill testing applicatoin to the provided url
   * @param {Object} paramObject The JavaScript object used to provide the necessary options
