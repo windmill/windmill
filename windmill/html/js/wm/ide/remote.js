@@ -243,7 +243,7 @@ windmill.ui.remote = new function() {
             
             //Make the suites and actions draggable
             jQuery(suite).sortable({items: "div", axis: "y", cancel: '.suiteTitleDiv,input,select,option,img'});
-            jQuery($('ideForm')).sortable({items:"div", axis: "y", cancel: '.action,.suiteTitleDiv,input,select,option,a,img'});
+            jQuery($('ideForm')).sortable({items:".suite", axis: "y", cancel: '.action,.suiteTitleDiv,input,select,option,a,img'});
  
             //minimize the last suite
             try {
