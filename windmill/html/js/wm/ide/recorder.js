@@ -28,18 +28,18 @@ if (typeof windmill.ui == 'undefined') { windmill.ui = {}; }
 //Recorder Functionality
 //*********************************/
 windmill.ui.recorder = new function() {
-    var recordState = false;
+    this.recordState = false;
     var lastLocValue = null;
     var lastLocator = null;
     
     this.setRecState = function() {
-        if (this.recordState == true) {
+        if (windmill.ui.recorder.recordState == true) {
             this.recordOn();
         }
     }
     //write json to the remote from the click events
     this.writeJsonClicks = function(e) {
-        if (this.recordState == false) { return; }
+        if (windmill.ui.recorder.recordState == false) { return; }
 
         var locator = '';
         var locValue = '';
@@ -161,7 +161,7 @@ windmill.ui.recorder = new function() {
 
     //Writing json to the remote for the change events
     this.writeJsonChange = function(e) {
-        if (this.recordState == false) {
+        if (windmill.ui.recorder.recordState == false) {
             return;
         }
         var locator = '';
@@ -229,7 +229,7 @@ windmill.ui.recorder = new function() {
         //Turn off the listeners so that we don't have multiple attached listeners for the same event
         this.recordOff();
         //keep track of the recorder state, for page refreshes
-        this.recordState = true;
+        windmill.ui.recorder.recordState = true;
         $('record').src = 'img/stoprecord.png';
 
         windmill.ui.remote.getSuite();
@@ -242,7 +242,7 @@ windmill.ui.recorder = new function() {
     }
 
     this.recordOff = function() {      
-        this.recordState = false;
+        windmill.ui.recorder.recordState = false;
         $('record').src = 'img/record.png';
 
         try {
