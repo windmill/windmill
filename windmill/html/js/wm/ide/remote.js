@@ -242,13 +242,9 @@ windmill.ui.remote = new function() {
             $('ideForm').appendChild(suite);
             
             //Make the suites and actions draggable
-            //draggability is broken in safari :-(
-            //if (!windmill.browser.isSafari){
-              jQuery(suite).sortable({items: "div", axis: "y", cancel: '.suiteTitleDiv', cancel: 'input', cancel: 'select', cancel: 'option'});
-              jQuery($('ideForm')).sortable({});
-              
-            //}
-            
+            jQuery(suite).sortable({items: "div", axis: "y", cancel: '.suiteTitleDiv,input,select,option,img'});
+            jQuery($('ideForm')).sortable({items:"div", axis: "y", cancel: '.action,.suiteTitleDiv,input,select,option,a,img'});
+ 
             //minimize the last suite
             try {
               var h = $(suite.id).previousSibling.style.height;
@@ -549,7 +545,7 @@ windmill.ui.remote = new function() {
             //but this seems to fix it. 
             if (!windmill.browser.isIE6x) {
                 i0.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElem(\'' + i0.id + '\')');
-                i0.setAttribute('onClick', '$(\'' + i0.id + '\').focus();');
+                //i0.setAttribute('onClick', '$(\'' + i0.id + '\').focus();');
             }
         
             c.appendChild(i0);
@@ -665,28 +661,11 @@ windmill.ui.remote = new function() {
             i1.id = action.id + 'option';
             if (!windmill.browser.isIE6x) {
                 i1.setAttribute('onFocus', 'windmill.ui.remote.setRemoteElemOption(\'' + i1.id + '\')');
-                i1.setAttribute('onClick', '$(\'' + i1.id + '\').focus();');                
+                //i1.setAttribute('onClick', '$(\'' + i1.id + '\').focus();');                
             }
             c.appendChild(i1);
             r.appendChild(c);
             t.appendChild(r);
-        }
-        
-        //Fixing annoying bug in FF when you are dragging the scroll bar
-        //for the drop downs it moves the action
-        if (windmill.browser.isGecko){
-           jQuery(action).bind("mousedown", function(e){
-              if (e.target.tagName == "SELECT"){
-                jQuery(".suite").sortable("disable");
-                jQuery($('ideForm')).sortable("disable");
-              }
-            });
-            jQuery(action).bind("mouseup", function(e){
-              if (e.target.tagName == "SELECT"){
-                jQuery(".suite").sortable("enable");
-                jQuery($('ideForm')).sortable("enable");
-              }
-            });
         }
         
         //stick the action in the IDE
