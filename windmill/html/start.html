@@ -21,11 +21,11 @@ Copyright 2006-2007, Open Source Applications Foundation
 		<script type="text/javascript">
 		  var urlSTR = window.location.href.replace("/windmill-serv/start.html","");
 		  //set the url
-		  var json_object = {version:'1.1', method:'set_test_url', params:{url:urlSTR}};
-      var json_string = fleegix.json.serialize(json_object)
+		  var jsonObject = {version:'1.1', method:'set_test_url', params:{url:urlSTR}};
+      var jsonString = fleegix.json.serialize(jsonObject)
 
       var resp = function(str) { return true; }
-      result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+      result = fleegix.xhr.doPost('/windmill-jsonrpc/', jsonString);
       resp(result);
 		
 			//Enabling the ability to start out out a page that requires query parameters

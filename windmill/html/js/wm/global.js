@@ -125,14 +125,14 @@ var handleVariable = function (val){
 
 var sendCommandResult = function(status, uuid, result){
   //Send to the server
-	var json_object = new json_call('1.1', 'command_result');
+	var jsonObject = new json_call('1.1', 'command_result');
 	var params_obj = {"status":status, "uuid":uuid, "result":result};
-	json_object.params = params_obj;
-	var json_string = fleegix.json.serialize(json_object)
+	jsonObject.params = params_obj;
+	var jsonString = fleegix.json.serialize(jsonObject)
 
 	var resp = function(str){ return true; }
     
-	result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+	result = fleegix.xhr.doPost('/windmill-jsonrpc/', jsonString);
 	resp(result);
 }
 

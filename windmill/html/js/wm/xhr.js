@@ -237,11 +237,11 @@ windmill.xhr = new function() {
             "starttime": timer.getStart(),
             "endtime": timer.getEnd()
         };
-        var json_object = new json_call('1.1', 'report');
-        json_object.params = test_obj;
-        var json_string = fleegix.json.serialize(json_object);
+        var jsonObject = new json_call('1.1', 'report');
+        jsonObject.params = test_obj;
+        var jsonString = fleegix.json.serialize(jsonObject);
         //Actually send the report
-        fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', json_string);
+        fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', jsonString);
     };
 
     //Get the next action from the server
@@ -282,10 +282,10 @@ windmill.xhr = new function() {
             windmill.out('Cleared backend queue, ' + str);
         }
         var test_obj = {};
-        var json_object = new json_call('1.1', 'clear_queue');
-        var json_string = fleegix.json.serialize(json_object);
+        var jsonObject = new json_call('1.1', 'clear_queue');
+        var jsonString = fleegix.json.serialize(jsonObject);
         //Actually send the report
-        fleegix.xhr.doPost(h, '/windmill-jsonrpc/', json_string);
+        fleegix.xhr.doPost(h, '/windmill-jsonrpc/', jsonString);
 
     };
 

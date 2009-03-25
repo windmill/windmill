@@ -237,16 +237,16 @@ windmill.ui.playback = new function() {
           return true;
       }
 
-      var json_object = new json_call('1.1', 'restart_test_run');
+      var jsonObject = new json_call('1.1', 'restart_test_run');
       var params_obj = {};
       params_obj.tests = testArray;
-      json_object.params = params_obj;
+      jsonObject.params = params_obj;
       
       //Serialize
-      var json_string = fleegix.json.serialize(json_object);
+      var jsonString = fleegix.json.serialize(jsonObject);
       
       doCall = function() {
-        var z = fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
+        var z = fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', jsonString);
       }
 
       setTimeout('doCall()', 100);

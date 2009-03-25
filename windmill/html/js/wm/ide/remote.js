@@ -320,20 +320,20 @@ windmill.ui.remote = new function() {
             var langSI = $('suiteSaveFormat').selectedIndex;
             var lang = $('suiteSaveFormat')[langSI].value;
 
-            var json_object = new json_call('1.1', 'create_save_file');
+            var jsonObject = new json_call('1.1', 'create_save_file');
             var params_obj = {};
             params_obj.transformer = lang;
             params_obj.suite_name = id;
             params_obj.tests = testArray;
-            json_object.params = params_obj;
+            jsonObject.params = params_obj;
 
             if (windmill.browser.isOpera){
-              var json_string = fleegix.json.serialize(json_object)
+              var jsonString = fleegix.json.serialize(jsonObject)
             }
             else {
-              var json_string = JSON.stringify(json_object);
+              var jsonString = JSON.stringify(jsonObject);
             }
-            fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', json_string);
+            fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', jsonString);
 
         }
         else {

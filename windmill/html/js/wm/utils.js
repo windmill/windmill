@@ -41,30 +41,30 @@ windmill.service = new function() {
     //Set the URL we are starting out testing
     this.setStartURL = function() {
         windmill.locationObj = windmill.testWin().location;
-        var json_object = new json_call('1.1', 'set_test_url');
+        var jsonObject = new json_call('1.1', 'set_test_url');
         var params_obj = {};
         var loc = window.location;
         params_obj.url = windmill.service.getParsedLocation(loc);
-        json_object.params = params_obj;
-        var json_string = fleegix.json.serialize(json_object)
+        jsonObject.params = params_obj;
+        var jsonString = fleegix.json.serialize(jsonObject)
 
         var resp = function(str) { return true; }
-        result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+        result = fleegix.xhr.doPost('/windmill-jsonrpc/', jsonString);
         resp(result);
     };
 
     //Set the URL we are testing in the python service
     this.setTestURL = function(url) {
         try {
-            var json_object = new json_call('1.1', 'set_test_url');
+            var jsonObject = new json_call('1.1', 'set_test_url');
             var params_obj = {};
             
             params_obj.url = url;
-            json_object.params = params_obj;
-            var json_string = fleegix.json.serialize(json_object)
+            jsonObject.params = params_obj;
+            var jsonString = fleegix.json.serialize(jsonObject)
 
             var resp = function(str) { return true; }
-            result = fleegix.xhr.doPost('/windmill-jsonrpc/', json_string);
+            result = fleegix.xhr.doPost('/windmill-jsonrpc/', jsonString);
             resp(result);
         }
         catch(er) {}
