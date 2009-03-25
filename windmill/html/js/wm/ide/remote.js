@@ -230,13 +230,16 @@ windmill.ui.remote = new function() {
             suite.id = suiteName;
             
             suite.innerHTML = "<table id='"+suiteName+"Header'"+
-            "class='suiteHeader'><tr><td style=\"font-size:13px;\"><div class='suiteTitleDiv' title='"+suiteName+"' style='cursor:pointer;width:220px;overflow:hidden' id='"+suiteName+"Title' onclick=\"windmill.ui.remote.updateSuite(\'"+suiteName+"\');\"><strong>Suite </strong>" + suiteName + 
+            "class='suiteHeader'><tr><td style=\"font-size:13px;\"><div class='suiteTitleDiv' title='"+suiteName+
+            "' style='cursor:pointer;width:220px;overflow:hidden' id='"+suiteName+"Title' onclick=\"windmill.ui.remote.updateSuite(\'"+
+            suiteName+"\');\"><strong>Suite </strong>" + suiteName + 
             "</div></td><td VALIGN='top'><span id='"+suiteName+"Links' align=\"right\" style='top:0px;float:right;paddingRight:8px;'>"+
-            "<a href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
-            "\')\">[play]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'" + suiteName + 
-            "\')\">[save]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'" + suiteName + 
-            "\')\">[delete]</a>&nbsp<a href=\"#\" onclick=\"javascript:windmill.ui.toggleCollapse(\'" + suiteName + 
-            "\')\">[toggle]</a>&nbsp<a href=\"#\" onclick=\"windmill.ui.currentSuite=\'"+suiteName+"\'\">[select]</a></span>&nbsp;&nbsp;</td></tr></table>";
+            "<a class='ui-state-default ui-corner-all suiteButton' href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
+            "\')\">play</a>&nbsp<a class='ui-state-default ui-corner-all suiteButton' href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'" + suiteName + 
+            "\')\">save</a>&nbsp<a class='ui-state-default ui-corner-all suiteButton' href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'" + suiteName + 
+            "\')\">delete</a>&nbsp<a class='ui-state-default ui-corner-all suiteButton' href=\"#\" onclick=\"javascript:windmill.ui.toggleCollapse(\'" + suiteName + 
+            "\')\">toggle</a>&nbsp<a class='ui-state-default ui-corner-all suiteButton' href=\"#\" onclick=\"windmill.ui.currentSuite=\'"+suiteName+
+            "\'\">select</a></span>&nbsp;&nbsp;</td></tr></table>";
 
             //Append the new suite to the IDE
             $('ideForm').appendChild(suite);
