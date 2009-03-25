@@ -59,12 +59,12 @@ windmill.xhr = new function() {
         } catch (err){
             //if the escaped string breaks everything, use the unescaped string
             try {
-                if (typeof(JSON) != "undefined"){
-                  windmill.xhr.xhrResponse = JSON.parse(origStr);
-                }
-                else {
-                  windmill.xhr.xhrResponse = fleegix.json.parse(origStr);
-                }
+              if (typeof(JSON) != "undefined"){
+                windmill.xhr.xhrResponse = JSON.parse(origStr);
+              }
+              else {
+                windmill.xhr.xhrResponse = fleegix.json.parse(origStr);
+              }
             //if we can't get an object, bail
             } catch(err){
               windmill.out("<span style='color:red;'>\""+err + "\". (Did you escape all double quotes?)</span>")

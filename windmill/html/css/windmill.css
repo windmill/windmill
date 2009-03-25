@@ -37,6 +37,12 @@ img {
   font-size:10px;
 }
 
+.suiteTitleDiv {
+  cursor:pointer;
+  width:220px;
+  overflow:hidden
+}
+
 .suiteButton {
   padding-left:4px;
   padding-right:4px;
