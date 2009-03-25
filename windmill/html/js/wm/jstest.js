@@ -305,7 +305,7 @@ windmill.jsTest = new function () {
     }
     _this.testResults = testResults;
 
-    var jsonObj = new json_call('1.1', 'teardown');
+    var jsonObj = new jsonCall('1.1', 'teardown');
     jsonObj.params = { tests: testResults };
     var jsonStr = fleegix.json.serialize(jsonObj);
     fleegix.xhr.doPost('/windmill-jsonrpc/', jsonStr);
@@ -1144,7 +1144,7 @@ windmill.jsTest.sendJSReport = function (testName, result, error, timer) {
       windmill.err('Error: Report receiving non 200 response.');
     }
   };
-  var jsonObj = new json_call('1.1', 'report_without_resolve');
+  var jsonObj = new jsonCall('1.1', 'report_without_resolve');
   var jsonStr = '';
   var uuid = new Date().getTime();
   var debug;

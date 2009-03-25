@@ -19,8 +19,8 @@ if (!opener) {
     document.location = '/windmill-serv/start.html';
 }
 
-//json_call
-var json_call = function(version, method, params) {
+//jsonCall
+var jsonCall = function(version, method, params) {
     this.version = version || null;
     this.method = method || null;
     this.params = params || [];
@@ -125,7 +125,7 @@ var handleVariable = function (val){
 
 var sendCommandResult = function(status, uuid, result){
   //Send to the server
-	var jsonObject = new json_call('1.1', 'command_result');
+	var jsonObject = new jsonCall('1.1', 'command_result');
 	var params_obj = {"status":status, "uuid":uuid, "result":result};
 	jsonObject.params = params_obj;
 	var jsonString = fleegix.json.serialize(jsonObject)

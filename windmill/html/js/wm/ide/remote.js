@@ -323,7 +323,7 @@ windmill.ui.remote = new function() {
             var langSI = $('suiteSaveFormat').selectedIndex;
             var lang = $('suiteSaveFormat')[langSI].value;
 
-            var jsonObject = new json_call('1.1', 'create_save_file');
+            var jsonObject = new jsonCall('1.1', 'create_save_file');
             var params_obj = {};
             params_obj.transformer = lang;
             params_obj.suite_name = id;

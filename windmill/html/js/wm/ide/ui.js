@@ -237,7 +237,7 @@ windmill.ui.playback = new function() {
           return true;
       }
 
-      var jsonObject = new json_call('1.1', 'restart_test_run');
+      var jsonObject = new jsonCall('1.1', 'restart_test_run');
       var params_obj = {};
       params_obj.tests = testArray;
       jsonObject.params = params_obj;
