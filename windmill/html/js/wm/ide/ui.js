@@ -46,12 +46,12 @@ windmill.ui = new function() {
     }
 
     this.toggleCollapse = function(id) {
-        if ($(id).style.height == '24px') {
+        if ($(id).style.height == '22px') {
             $(id).style.height = '';
             $(id).style.borderBottom = "";
         }
         else {
-            $(id).style.height = '24px';
+            $(id).style.height = '22px';
             $(id).style.borderBottom = "1px solid #aaa";
         }
     };

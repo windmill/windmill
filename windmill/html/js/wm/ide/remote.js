@@ -252,7 +252,7 @@ windmill.ui.remote = new function() {
             try {
               var h = $(suite.id).previousSibling.style.height;
               //If the last suite is expanded, collapse it
-              if (h != '24px') { 
+              if (h != '22px') { 
                 windmill.ui.toggleCollapse($(suite.id).previousSibling.id); 
               }
             } catch(err) { }
