@@ -226,14 +226,18 @@
        				<td>DOM Explorer exists on single click (vs double):</td>
        				<td> <INPUT TYPE=checkbox CHECKED ID='domInspectorExit'></td>
        			</tr>
-       		</table>
-       		<center> <a id="loopLink" href = "#" onclick="javascript:toggleLoop();">
-       		    Toggle Service Loop
-       		  </a> &nbsp | &nbsp
-       		<a href='#' onclick="windmill.testWin().document.location.reload()">
-       		  Reload Testing Application
-       		</a>
-       		</center>
+       		</table><br>
+          <center>
+         		<a id="loopLink" class="ui-state-default ui-corner-all" href="#" style="padding:2px" onclick="toggleLoop();">
+         		    Toggle Service Loop
+         		</a>&nbsp;
+         		<a href="#" class="ui-state-default ui-corner-all" style="padding:2px" onclick="windmill.testWin().document.location.reload()">
+         		  Reload Testing Application
+         		</a><br><br>
+         		<a href="#" class="ui-state-default ui-corner-all" style="padding:2px" onclick="dumpOutput();">
+         		  Dump Error Log To Output Tab
+         		</a>
+         	</center>
        	</form>
        </div>
       

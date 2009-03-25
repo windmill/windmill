@@ -316,15 +316,22 @@ var scroll = function() {
     if (Math.abs(c) < 4) { $('autoScroll').checked = true; }
     //If not we keep auto scroll off
     else { $('autoScroll').checked = false; }
-}
+};
 
 var doSubmit = function() {
     return false;
-}
+};
 
+var dumpOutput = function(){
+  for (var i = 0; i < windmill.errorArr.length; i++){
+    windmill.out(windmill.errorArr[i]);
+  }
+  jQuery("#dialog").dialog('close');
+  jQuery('#tabs').tabs("select", 1);
+};
 
 var $ = function(id) {
-		  return document.getElementById(id);
+	return document.getElementById(id);
 };
 
 var copyObj = function(obj){
@@ -333,7 +340,7 @@ var copyObj = function(obj){
       n[i] = obj[i];
     }
   return n;
-}
+};
 
 var PatternMatcher = function(pattern) {
     this.selectStrategy(pattern);
