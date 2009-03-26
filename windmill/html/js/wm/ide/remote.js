@@ -233,7 +233,7 @@ windmill.ui.remote = new function() {
             "class='suiteHeader'><tr><td style=\"font-size:13px;\"><strong style='cursor:all-scroll'>Suite </strong><span class='suiteTitleDiv' title='"+suiteName+
             "' id='"+suiteName+"Title' onclick=\"windmill.ui.remote.updateSuite(\'"+
             suiteName+"\');\">" + suiteName + 
-            "</span></td><td VALIGN='top'><span id='"+suiteName+"Links' align=\"right\" style='top:0px;float:right;paddingRight:8px;'>"+
+            "</span></td><td VALIGN='top'><span id='"+suiteName+"Links' align=\"right\" style='top:0px;float:right;'>"+
             "<a class='ui-state-default ui-corner-all suiteButton' href=\"#\" onclick=\"windmill.ui.playback.sendPlayBack(null,\'" + suiteName + 
             "\')\">play</a>&nbsp<a class='ui-state-default ui-corner-all suiteButton' href=\"#\" onclick=\"windmill.ui.remote.saveSuite(\'" + suiteName + 
             "\')\">save</a>&nbsp<a class='ui-state-default ui-corner-all suiteButton' href=\"#\" onclick=\"windmill.ui.remote.deleteAction(\'" + suiteName + 
