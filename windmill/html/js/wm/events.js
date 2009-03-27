@@ -90,7 +90,7 @@ windmill.events = new function() {
     this.triggerEvent = function(element, eventType, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
 
         canBubble = (typeof(canBubble) == undefined) ? true: canBubble;
-        if (element.fireEvent) {
+        if (element.fireEvent && windmill.browser.isIE) {
             var evt = windmill.events.createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
             element.fireEvent('on' + eventType, evt);
         }
@@ -134,7 +134,8 @@ windmill.events = new function() {
     this.triggerKeyEvent = function(element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
         var keycode = windmill.events.getKeyCodeFromKeySequence(keySequence);
         canBubble = (typeof(canBubble) == undefined) ? true: canBubble;
-        if (element.fireEvent) {
+        //Make sure we don't call fireEvent otuside of IE, mootools adds this to the prototype
+        if (element.fireEvent && windmill.browser.isIE) {
             var keyEvent = windmill.events.createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
             keyEvent.keyCode = keycode;
             element.fireEvent('on' + eventType, keyEvent);
@@ -173,7 +174,7 @@ windmill.events = new function() {
 
         canBubble = (typeof(canBubble) == undefined) ? true: canBubble;
 
-        if (element.fireEvent) {
+        if (element.fireEvent && windmill.browser.isIE) {
             //LOG.info("element has fireEvent");
             var evt = windmill.events.createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
             evt.detail = 0;
