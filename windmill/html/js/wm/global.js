@@ -54,39 +54,34 @@ var lookupNode = function (paramObject, throwErr){
   if(typeof paramObject.jsid != "undefined") {
     //Here if the user hasn't specified the test window scope
     //we use the default and prepend it, else we eval whatever js they passed
-    var jsid; 
-    if ((paramObject.jsid.indexOf('windmill.testWindow') != -1) || (paramObject.jsid.indexOf('_w') != -1)){
-      eval ("jsid=" + paramObject.jsid + ";");
-    }
-    else{
-      eval ("jsid=" + this._getWindowStr() + '.' +paramObject.jsid + ";");
-    }
-      s = 'Looking up jsid '+ jsid;
-      element = elementslib.Element.ID(paramObject.id);
+    var jsid = windmill.testWin().eval(paramObject.jsid);
+    //eval("jsid=" + paramObject.jsid + ";");
+    s = 'Looking up jsid '+ jsid;
+    element = elementslib.Element.ID(jsid);
   }
   //if name was passed
   if(typeof paramObject.name != "undefined") {
-    s = 'Looking up name '+ paramObject.name;
+    s = 'Looking up name '+ unescape(paramObject.name);
     element = elementslib.Element.NAME(paramObject.name);
   }
-  //if name was passed
+  //if value was passed
   if(typeof paramObject.value != "undefined") {
     s = 'Looking up value '+ unescape(paramObject.value);
     element = elementslib.Element.VALUE(paramObject.value);
   }
-  //if name was passed
+  //if classname was passed
   if(typeof paramObject.classname != "undefined") {
-    s = 'Looking up classname '+ paramObject.classname;
+    s = 'Looking up classname '+ unescape(paramObject.classname);
     element = elementslib.Element.CLASSNAME(paramObject.classname);
   }
-  //if name was passed
+  //if tagname was passed
   if(typeof paramObject.tagname != "undefined") {
-    s = 'Looking up tagname '+ paramObject.tagname;
+    s = 'Looking up tagname '+ unescape(paramObject.tagname);
     element = elementslib.Element.TAGNAME(paramObject.tagname);
   }
-  //if name was passed
+  //if label was passed
   if(typeof paramObject.label != "undefined") {
-    s = 'Looking up label '+ paramObject.label;
+    s = 'Looking up label '+ unescape(paramObject.label);
     element = elementslib.Element.LABEL(paramObject.label);
   }
   //scroll so that the element is in view
