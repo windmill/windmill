@@ -433,6 +433,7 @@ windmill.egg-info/top_level.txt
 windmill/authoring/__init__.py
 windmill/authoring/djangotest.py
 windmill/authoring/frame.py
+windmill/authoring/nose_plugin.py
 windmill/authoring/transforms.py
 windmill/authoring/unit.py
 windmill/bin/__init__.py

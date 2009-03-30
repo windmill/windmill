@@ -57,10 +57,18 @@ setup(name=PACKAGE_NAME,
       package_data = {'': ['*.js', '*.css', '*.html', '*.txt', '*.xpi' ],},
       platforms =['Any'],
       install_requires = dependencies,
-      entry_points="""
-        [console_scripts]
-        windmill = windmill.bin.windmill_bin:main
-      """,
+      entry_points = {
+                'nose.plugins.0.10': [
+                    'windmill = windmill.authoring.nose_plugin:WindmillNosePlugin'
+                    ],
+                'console_scripts': [
+                    'windmill = windmill.bin.windmill_bin:main'
+                    ]
+                },      
+      # entry_points="""
+      #   [console_scripts]
+      #   windmill = windmill.bin.windmill_bin:main
+      # """,
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Console',
                    'Intended Audience :: Developers',
