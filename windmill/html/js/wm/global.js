@@ -61,27 +61,27 @@ var lookupNode = function (paramObject, throwErr){
   }
   //if name was passed
   if(typeof paramObject.name != "undefined") {
-    s = 'Looking up name '+ unescape(paramObject.name);
+    s = 'Looking up name '+ paramObject.name;
     element = elementslib.Element.NAME(paramObject.name);
   }
   //if value was passed
   if(typeof paramObject.value != "undefined") {
-    s = 'Looking up value '+ unescape(paramObject.value);
+    s = 'Looking up value '+ paramObject.value;
     element = elementslib.Element.VALUE(paramObject.value);
   }
   //if classname was passed
   if(typeof paramObject.classname != "undefined") {
-    s = 'Looking up classname '+ unescape(paramObject.classname);
+    s = 'Looking up classname '+ paramObject.classname;
     element = elementslib.Element.CLASSNAME(paramObject.classname);
   }
   //if tagname was passed
   if(typeof paramObject.tagname != "undefined") {
-    s = 'Looking up tagname '+ unescape(paramObject.tagname);
+    s = 'Looking up tagname '+ paramObject.tagname;
     element = elementslib.Element.TAGNAME(paramObject.tagname);
   }
   //if label was passed
   if(typeof paramObject.label != "undefined") {
-    s = 'Looking up label '+ unescape(paramObject.label);
+    s = 'Looking up label '+ paramObject.label;
     element = elementslib.Element.LABEL(paramObject.label);
   }
   //scroll so that the element is in view

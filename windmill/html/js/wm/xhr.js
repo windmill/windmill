@@ -39,8 +39,6 @@ windmill.xhr = new function() {
     //action callback
     this.actionHandler = function(str) {
         //Process variables but not for the execJS or execIDEJS
-        var origStr = str;
-        str = unescape(str);
         if ((str.indexOf('execJsInTestWindow') == -1) && (str.indexOf('execArbTestWinJS') == -1) && (str.indexOf('execIDEJS') == -1)){
           str = windmill.xhr.processVar(str);
         }
@@ -56,24 +54,7 @@ windmill.xhr = new function() {
           else {
             windmill.xhr.xhrResponse = fleegix.json.parse(str);
           }
-        } catch (err){
-            //if the escaped string breaks everything, use the unescaped string
-            try {
-              if (typeof(JSON) != "undefined"){
-                windmill.xhr.xhrResponse = JSON.parse(origStr);
-              }
-              else {
-                windmill.xhr.xhrResponse = fleegix.json.parse(origStr);
-              }
-            //if we can't get an object, bail
-            } catch(err){
-              windmill.out("<span style='color:red;'>\""+err + "\". (Did you escape all double quotes?)</span>")
-              jQuery('#tabs').tabs("select", 1);
-              windmill.err(err);
-              windmill.xhr.getNext();
-              return; 
-            }
-        }
+        } catch (err){}
         
         var resp = windmill.xhr.xhrResponse;
         var method = resp.result.method;
