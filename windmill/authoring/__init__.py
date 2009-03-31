@@ -37,7 +37,7 @@ def setup_module(module):
     
     import windmill
     if not hasattr(windmill, 'settings'):
-        admin_lib.configure_global_settings()
+        admin_lib.configure_global_settings(logging_on=False)
     
     if functest.registry.get('url', False):
         windmill.settings['TEST_URL'] = functest.registry['url']

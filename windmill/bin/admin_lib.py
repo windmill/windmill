@@ -85,15 +85,16 @@ def setup_servers(console_level=logging.INFO):
     """Setup the server and return httpd and loggers"""
     windmill.is_active = True
     windmill.ide_is_awake = False
-    console_handler = logging.getLogger().handlers[0]
-    console_handler.setLevel(console_level)
+    if len(logging.getLogger().handlers) > 0:
+        console_handler = logging.getLogger().handlers[0]
+        console_handler.setLevel(console_level)
     httpd = windmill.server.wsgi.make_windmill_server()
-    return httpd, console_handler
+    return httpd
 
 def run_threaded(console_level=logging.INFO):
     """Run the server threaded."""
 
-    httpd, console_handler = setup_servers(console_level)
+    httpd = setup_servers(console_level)
     
     httpd_thread = Thread(target=httpd.start)
     getattr(httpd_thread, 'setDaemon', lambda x: x)(True)
@@ -101,19 +102,21 @@ def run_threaded(console_level=logging.INFO):
     while not httpd.ready:
         sleep(.25)
     
-    return httpd, httpd_thread, console_handler
+    return httpd, httpd_thread
 
-def configure_global_settings():
+def configure_global_settings(logging_on=True):
     """Configure that global settings for the current run"""
     
     # This logging stuff probably shouldn't be here, it should probably be abstracted
-    logging.getLogger().setLevel(0)
     
-    console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
-    console.setFormatter(formatter)
-    logging.getLogger().addHandler(console)
+    if logging_on:
+        logging.getLogger().setLevel(0)
+    
+        console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+        console.setFormatter(formatter) 
+        logging.getLogger().addHandler(console)
 
     if os.environ.has_key('WINDMILL_CONFIG_FILE'):
         local_settings = os.environ['WINDMILL_CONFIG_FILE']
@@ -147,7 +150,7 @@ def setup():
     windmill.settings['shell_objects'] = shell_objects_dict
     assert not windmill.settings.get('setup_has_run', False)
 
-    httpd, httpd_thread, console_log_handler = run_threaded(windmill.settings['CONSOLE_LOG_LEVEL'])
+    httpd, httpd_thread = run_threaded(windmill.settings['CONSOLE_LOG_LEVEL'])
 
     shell_objects_dict['httpd'] = httpd
     shell_objects_dict['httpd_thread'] = httpd_thread

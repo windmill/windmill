@@ -20,7 +20,7 @@ def _load(globalName='global_settings.py', localSettings=None):
     Helper function to load and return globalSettings and localSettings
     Used to allow the merge routine to be called from a test setup.
     """
-    globalSettings = local_settings.loadSettings(os.path.dirname(__file__), globalName)
+    from windmill.conf import global_settings as globalSettings
 
     if localSettings is not None:
         localPath = os.path.dirname(localSettings)
@@ -98,6 +98,7 @@ def configure_settings(localSettings=None, windmill_settings={}):
     Override global settings with any locals and configure the windmill_settings dict.
     """
 
+    
     globalSettings, localSettings = _load(localSettings=localSettings)
 
     mergeSettings(windmill_settings, globalSettings, localSettings)
