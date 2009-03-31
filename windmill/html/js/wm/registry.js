@@ -90,3 +90,4 @@ windmill.registry.methods['asserts.assertChecked']  = {'locator': true, 'option'
 windmill.registry.methods['asserts.assertSelected'] = {'locator': true, 'option': 'validator' } ;
 windmill.registry.methods['asserts.assertNode']     = {'locator': true, 'option': false };
 windmill.registry.methods['asserts.assertImageLoaded']  = {'locator': true, 'option': false };
+windmill.registry.methods['asserts.assertNotChecked']  = {'locator': true, 'option': false };
