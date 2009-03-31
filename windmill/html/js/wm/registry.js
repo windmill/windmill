@@ -65,6 +65,7 @@ windmill.registry.methods['waits.forJS']        = {'locator': false, 'option': '
 windmill.registry.methods['waits.forElementProperty']    = {'locator': true, 'option': 'option' };
 windmill.registry.methods['waits.forPageLoad']    = {'locator': false, 'option': 'timeout' };
 windmill.registry.methods['-- Other --']        = {'locator': false, 'option': false, 'section': true};
+windmill.registry.methods['triggerEvent']    = {'locator': true, 'option': 'option' };
 windmill.registry.methods['closeWindow']   = {'locator': false, 'option': false};
 windmill.registry.methods['complex']            = {'locator': false, 'option': false };
 windmill.registry.methods['execJsInTestWindow']   = {'locator': false, 'option': 'js' };

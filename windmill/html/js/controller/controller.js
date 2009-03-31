@@ -1060,5 +1060,9 @@ windmill.controller = new function () {
     var js = paramObject.js;
     return eval.call(window, js);
   };
+  
+  this.triggerEvent = function(paramObject){
+    var element = lookupNode(paramObject);
+    windmill.events.triggerEvent(element, paramObject.option, true);
+  };
 };
-
