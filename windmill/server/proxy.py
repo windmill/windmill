@@ -18,7 +18,7 @@ from httplib import HTTPConnection
 from urlparse import urlparse
 import copy
 import logging
-
+import urllib
 logger = logging.getLogger(__name__)
 
 # Note that hoppish conntains proxy-connection, which is pre-HTTP-1.1 and is somewhat nebulous
@@ -69,6 +69,23 @@ def conditions_pass(e):
             return False
     return True
 
+def proxy_post_redirect_form(environ, action):
+    body = environ['wsgi.input'].read(int(environ['CONTENT_LENGTH']))
+    parameters = body.split('&')
+    inputs = []
+    for parameter in parameters:
+        parts = parameter.split('=', 1)
+        if len(parts) == 1:
+            continue
+        parts = tuple(urllib.unquote(part) for part in parts)
+        inputs.append('<input type="hidden" name="%s" value="%s" />' % parts)
+    form = """<html><head><title>There is no spoon.</title></head>
+<body onload="document.getElementById('redirect').submit();"
+      style="text-align: center;">
+  <form id="redirect" action="%s" method="POST">%s</form>
+</body></html>""" % (action, '\n'.join(inputs))
+    return form
+
 class WindmillProxyApplication(object):
     """Application to handle requests that need to be proxied"""
 
@@ -110,13 +127,21 @@ class WindmillProxyApplication(object):
             elif ( url.netloc != test_netloc ):
                 # if the url's network address is not the test URL that has been set we need to return
                 # a forward
-                initial_forwarding_registry[url.geturl().replace(url.netloc, test_netloc, 1)] = url.netloc
-                response = 'Windmill is forwarding you to a new url at the proper test domain'
-                start_response("302 Found", [('Content-Type', 'text/plain',), 
-                                             ('Content-Length', str(len(response)),),
-                                             ('Location', url.geturl().replace(url.netloc, test_netloc,), 
-                                             )])
-                logger.debug('New domain request, forwarded to '+url.geturl().replace(url.netloc, test_netloc))
+                redirect_url = url.geturl().replace(url.netloc, test_netloc, 1)
+                initial_forwarding_registry[redirect_url] = url.netloc
+                if environ['REQUEST_METHOD'] == 'POST':
+                    response = proxy_post_redirect_form(environ, redirect_url)
+                    start_response("200 Ok", [('Content-Type', 'text/html',), 
+                                              ('Content-Length', str(len(response)),),
+                                              ])
+                    logger.debug('New POST domain request, forwarded to ' + redirect_url)
+                else:
+                    response = 'Windmill is forwarding you to a new url at the proper test domain'
+                    start_response("302 Found", [('Content-Type', 'text/plain',), 
+                                                 ('Content-Length', str(len(response)),),
+                                                 ('Location', redirect_url,)
+                                                 ])
+                    logger.debug('New domain request, forwarded to ' + redirect_url)
                 return [response]
         
             elif ( url.geturl() in initial_forwarding_registry.keys() ):
