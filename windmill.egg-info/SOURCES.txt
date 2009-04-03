@@ -597,6 +597,9 @@ windmill/html/js/wm/ide/ui.js
 windmill/html/jstest/data.json
 windmill/html/jstest/form.html
 windmill/html/jstest/main.html
+windmill/management/__init__.py
+windmill/management/commands/__init__.py
+windmill/management/commands/test_windmill.py
 windmill/server/__init__.py
 windmill/server/convergence.py
 windmill/server/jsmin.py

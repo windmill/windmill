@@ -49,23 +49,19 @@ windmill.controller.click = function(paramObject){
     else { windmill.events.triggerMouseEvent(element, 'click', true); }
 
     try {
-      //if there is an element.onclick function defined, the likelyhood
-      //is that the user doesn't want to open that elements href
-      if (typeof element.onclick == "function"){
-        return;
-      }
-      
       // Perform the link action if preventDefault was set.
       // In chrome URL, the link action is already executed by triggerMouseEvent.
       if (!browser.isChrome && savedEvent != null && !savedEvent.getPreventDefault()) {
-          if (element.href) {
-              windmill.controller.open({"url": element.href, 'reset':false});
+          if ((element.href) && (element.href != "#")) {
+              //windmill.controller.open({"url": element.href, 'reset':false});
+              getParentWindow(element).location = element.href;
           } 
           else {
               var itrElement = element;
               while (itrElement != null) {
-                if (itrElement.href) {
-                  windmill.controller.open({"url": itrElement.href, 'reset':false});
+                if ((itrElement.href) && (itrElement.href != "#")) {
+                  getParentWindow(element).location = element.href;
+                  //windmill.controller.open({"url": itrElement.href, 'reset':false});
                   break;
                 }
                 itrElement = itrElement.parentNode;

@@ -606,4 +606,20 @@ function removeHTMLTags(str){
  		var strTagStrippedText = str.replace(/<\/?[^>]+(>|$)/g, "");
  		strTagStrippedText = strTagStrippedText.replace(/&nbsp;/g,"");
 	return strTagStrippedText;
-}
+};
+
+var getParentWindow = function(node){
+  var ownerDoc = node.ownerDocument;
+  var win = null;
+  if (ownerDoc.defaultView){
+    win = ownerDoc.defaultView;
+  }
+  else {
+    win = ownerDoc.parentWindow;
+  }
+  if (win == null){
+    win = windmill.testWin();
+  }
+  
+  return win;
+};
