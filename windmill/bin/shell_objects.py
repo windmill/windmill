@@ -105,13 +105,15 @@ def do_test(filename, load=False, threaded=True):
     def run_functest():
         if load:
             functest.registry['browser_debugging'] = "True"
-            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':False, 'priority':'normal'}})
+            xmlrpc_client.add_command({'method':'commands.setOptions', 
+                                       'params':{'runTests':False, 'priority':'normal'}})
         functest.global_settings.test_filter = filter_string
         from windmill.authoring import WindmillFunctestRunner, post_collector
         functest.collector.Collector.post_collection_functions.append(post_collector)
         functest.run_framework(test_args=[module_name], test_runner=WindmillFunctestRunner())
         if load:
-            xmlrpc_client.add_command({'method':'commands.setOptions', 'params':{'runTests':True, 'priority':'normal'}})
+            xmlrpc_client.add_command({'method':'commands.setOptions', 
+                                       'params':{'runTests':True, 'priority':'normal'}})
         windmill.block_exit = False
     
     if module_name is not None and threaded:    
