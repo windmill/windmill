@@ -70,7 +70,8 @@ class Command(BaseCommand):
         for (ttype, mod,) in tests:
             if ttype == 'tests':
                 for ucls in [getattr(mod, x) for x in dir(mod) 
-                             if getattr(mod, x, None).__class__ is type and 
+                             if ( type(getattr(mod, x, None)) in (types.ClassType, 
+                                                               types.TypeType) ) and 
                              issubclass(getattr(mod, x), WindmillDjangoUnitTest)
                              ]:
                     wmtests.append(ucls.test_dir)
