@@ -1048,7 +1048,7 @@ windmill.controller = new function () {
   */
   this.execJsInTestWindow = function(paramObject){
     var js = paramObject.js;
-    return eval.call(windmill.testWin(), js);
+    return windmill.testWin().eval(js);
   };
   this.execArbTestWinJS = this.execJsInTestWindow;
   
