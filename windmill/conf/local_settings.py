@@ -53,7 +53,7 @@ def locateSettings(dirName='windmill'):
     settingsDir = None
     dataDir     = None
 
-    if os.name == 'nt':
+    if sys.platform == 'win32':
         if os.environ.has_key('APPDATA'):
             dataDir = os.environ['APPDATA']
         elif os.environ.has_key('USERPROFILE'):

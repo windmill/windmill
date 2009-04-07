@@ -61,7 +61,7 @@ class Chrome(safari.Safari):
 	    """Start Chrome"""
         # if sys.platform == 'darwin':
         #     self.set_proxy_mac()
-	    if os.name == 'nt' or sys.platform == 'cygwin':
+	    if sys.platform in ('cygwin', 'win32'):
 	        self.set_proxy_windows()
 	    
 	    kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
@@ -74,7 +74,7 @@ class Chrome(safari.Safari):
 	    if not sys.version.startswith('2.6'):
 	        raise Exception("Kill doesn't work for Chrome on Python version pre-2.6")
 	    
-	    if os.name == 'nt' or sys.platform == 'cygwin':
+	    if sys.platform in ('cygwin', 'win32'):
 	        self.unset_proxy_windows()
 	        
 	    try:

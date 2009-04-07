@@ -4,8 +4,10 @@ import os, sys, shutil, time, signal
 import killableprocess
 import logging
 
-if sys.platform == "win32" or sys.platform == "cygwin":
+if sys.platform == "win32":
     import _winreg as wreg
+if sys.platform == "cygwin":
+    import cygwinreg as wreg
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +69,7 @@ class InternetExplorer(object):
         try:
             self.p_handle.kill(group=True)
         except:
-            logger.error('Cannot kill firefox')
+            logger.error('Cannot kill Internet Explorer')
                 
     def is_alive(self):
 

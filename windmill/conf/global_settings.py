@@ -19,7 +19,7 @@ def findInPath(fileName, path=os.environ['PATH']):
     for dir in dirs:
         if os.path.isfile(os.path.join(dir, fileName)):
             return os.path.join(dir, fileName)
-        if os.name == 'nt' or sys.platform == 'cygwin':
+        if sys.platform in ('cygwin', 'win32'):
             if os.path.isfile(os.path.join(dir, fileName + ".exe")):
                 return os.path.join(dir, fileName + ".exe")
     return None
@@ -104,8 +104,11 @@ if PLATFORM == 'darwin':
 #         if os.path.isdir(path):
 #             MOZILLA_DEFAULT_PROFILE = path
 
-elif os.name == 'nt' or sys.platform == 'cygwin':
-    program_files = os.environ['ProgramFiles']
+elif sys.platform in ('cygwin', 'win32'):
+    if sys.platform == 'cygwin':
+        program_files = os.environ['PROGRAMFILES']
+    else:
+        program_files = os.environ['ProgramFiles']
     IE_BINARY  = os.path.join(program_files, 'Internet Explorer', 'iexplore.exe')
     
     if os.path.isfile(os.path.join(program_files, 'Safari', 'Safari.exe')):

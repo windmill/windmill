@@ -102,7 +102,7 @@ def run_command(cmd, env=None):
 
 def get_pids(name, minimun_pid=0):
     """Get all the pids matching name, exclude any pids below minimum_pid."""
-    if os.name == 'nt' or sys.platform == 'cygwin':
+    if sys.platform == 'win32':
         import win32api, win32pdhutil, win32con
         #win32pdhutil.ShowAllProcesses()  #uncomment for testing
         pids = win32pdhutil.FindPerformanceAttributesByName(name)
@@ -122,7 +122,7 @@ def kill_process_by_name(name):
     
     pids = get_pids(name)
     
-    if os.name == 'nt' or sys.platform == 'cygwin':
+    if sys.platform == 'win32':
         for p in pids:
             handle = win32api.OpenProcess(win32con.PROCESS_TERMINATE, 0, p) #get process handle
             win32api.TerminateProcess(handle,0) #kill by handle

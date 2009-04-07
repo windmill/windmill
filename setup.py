@@ -43,6 +43,9 @@ two_five_dependencies = [ 'simplejson >= 1.7.1',
 
 if not sys.version.startswith('2.6'):
     dependencies.extend(two_five_dependencies)
+    
+if sys.platform == 'cygwin':
+    dependencies.append('cygwinreg')
 
 setup(name=PACKAGE_NAME,
       version=PACKAGE_VERSION,

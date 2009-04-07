@@ -118,7 +118,7 @@ class Safari(object):
 	    """Start Safari"""
 	    if sys.platform == 'darwin':
 	        self.set_proxy_mac()
-	    elif os.name == 'nt' or sys.platform == 'cygwin':
+	    elif sys.platform in ('cygwin', 'win32'):
 	        self.set_proxy_windows()
 	    
 	    kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
@@ -129,7 +129,7 @@ class Safari(object):
 	    """Stop Safari"""
 	    if sys.platform == 'darwin':
 	        self.unset_proxy_mac()
-	    elif os.name == 'nt' or sys.platform == 'cygwin':
+	    elif sys.platform in ('cygwin', 'win32'):
 	        self.unset_proxy_windows()
 	        
 	    try:
