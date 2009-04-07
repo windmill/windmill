@@ -46,7 +46,7 @@ windmill.service = new function() {
         var loc = window.location;
         params_obj.url = windmill.service.getParsedLocation(loc);
         jsonObject.params = params_obj;
-        var jsonString = fleegix.json.serialize(jsonObject)
+        var jsonString = JSON.stringify(jsonObject)
 
         var resp = function(str) { return true; }
         result = fleegix.xhr.doPost('/windmill-jsonrpc/', jsonString);
@@ -61,7 +61,7 @@ windmill.service = new function() {
             
             params_obj.url = url;
             jsonObject.params = params_obj;
-            var jsonString = fleegix.json.serialize(jsonObject)
+            var jsonString = JSON.stringify(jsonObject)
 
             var resp = function(str) { return true; }
             result = fleegix.xhr.doPost('/windmill-jsonrpc/', jsonString);

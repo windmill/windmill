@@ -243,7 +243,8 @@ windmill.ui.playback = new function() {
       jsonObject.params = params_obj;
       
       //Serialize
-      var jsonString = fleegix.json.serialize(jsonObject);
+      //var jsonString = fleegix.json.serialize(jsonObject);
+      var jsonString = JSON.stringify(jsonObject);
       
       doCall = function() {
         var z = fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', jsonString);

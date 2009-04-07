@@ -123,7 +123,7 @@ var sendCommandResult = function(status, uuid, result){
 	var jsonObject = new jsonCall('1.1', 'command_result');
 	var params_obj = {"status":status, "uuid":uuid, "result":result};
 	jsonObject.params = params_obj;
-	var jsonString = fleegix.json.serialize(jsonObject)
+	var jsonString = JSON.stringify(jsonObject)
 
 	var resp = function(str){ return true; }
     

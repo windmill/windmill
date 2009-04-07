@@ -17,12 +17,13 @@ Copyright 2006-2007, Open Source Applications Foundation
  <html>
 	<head>
 		<script type="text/javascript" src="js/lib/fleegix_js/fleegix.js"></script>
+		<script type="text/javascript" src="js/lib/json2.js"></script>
 		<script type="text/javascript" src="js/wm/wmexec.js"></script>
 		<script type="text/javascript">
 		  var urlSTR = window.location.href.replace("/windmill-serv/start.html","");
 		  //set the url
 		  var jsonObject = {version:'1.1', method:'set_test_url', params:{url:urlSTR}};
-      var jsonString = fleegix.json.serialize(jsonObject)
+      var jsonString = JSON.stringify(jsonObject)
 
       var resp = function(str) { return true; }
       result = fleegix.xhr.doPost('/windmill-jsonrpc/', jsonString);

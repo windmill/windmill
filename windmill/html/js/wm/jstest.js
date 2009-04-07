@@ -307,7 +307,7 @@ windmill.jsTest = new function () {
 
     var jsonObj = new jsonCall('1.1', 'teardown');
     jsonObj.params = { tests: testResults };
-    var jsonStr = fleegix.json.serialize(jsonObj);
+    var jsonStr = JSON.stringify(jsonObj);
     fleegix.xhr.doPost('/windmill-jsonrpc/', jsonStr);
   };
 
@@ -1162,7 +1162,7 @@ windmill.jsTest.sendJSReport = function (testName, result, error, timer) {
     "uuid": uuid,
     "debug": debug
   };
-  jsonStr = fleegix.json.serialize(jsonObj);
+  jsonStr = JSON.stringify(jsonObj);
   fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', jsonStr);
 };
 

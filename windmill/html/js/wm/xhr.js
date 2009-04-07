@@ -43,18 +43,10 @@ windmill.xhr = new function() {
           str = windmill.xhr.processVar(str);
         }
         
-        //cleanup, apparently json parsers don't like \"
-        //str = str.replace(/\\"/g, "\'")
-        
         //Eval 
         try {
-          if (typeof(JSON) != "undefined"){
-            windmill.xhr.xhrResponse = JSON.parse(str);
-          }
-          else {
-            windmill.xhr.xhrResponse = fleegix.json.parse(str);
-          }
-        } catch (err){}
+          windmill.xhr.xhrResponse = JSON.parse(str);
+        } catch (err){ return; }
         
         var resp = windmill.xhr.xhrResponse;
         var method = resp.result.method;
@@ -221,7 +213,7 @@ windmill.xhr = new function() {
         };
         
         //send the report
-        var result_string = fleegix.json.serialize(windmill.xhr.xhrResponse.result);
+        var result_string = JSON.stringify(windmill.xhr.xhrResponse.result);
         var test_obj = {
             "result": result,
             "output": typeof(output) !== "undefined" ? output : null,
@@ -232,7 +224,7 @@ windmill.xhr = new function() {
         };
         var jsonObject = new jsonCall('1.1', 'report');
         jsonObject.params = test_obj;
-        var jsonString = fleegix.json.serialize(jsonObject);
+        var jsonString = JSON.stringify(jsonObject);
         //Actually send the report
         fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', jsonString);
     };
@@ -248,7 +240,7 @@ windmill.xhr = new function() {
         
         if (windmill.xhr.loopState) {
             var jsonObject = new jsonCall('1.1', 'next_action');
-            var jsonString = fleegix.json.serialize(jsonObject);
+            var jsonString = JSON.stringify(jsonObject);
 
             //Execute the post to get the next action
             //Set the xhr timeout to be really high
@@ -276,7 +268,7 @@ windmill.xhr = new function() {
         }
         var test_obj = {};
         var jsonObject = new jsonCall('1.1', 'clear_queue');
-        var jsonString = fleegix.json.serialize(jsonObject);
+        var jsonString = JSON.stringify(jsonObject);
         //Actually send the report
         fleegix.xhr.doPost(h, '/windmill-jsonrpc/', jsonString);
 

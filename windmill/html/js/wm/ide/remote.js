@@ -330,12 +330,7 @@ windmill.ui.remote = new function() {
             params_obj.tests = testArray;
             jsonObject.params = params_obj;
 
-            if (windmill.browser.isOpera){
-              var jsonString = fleegix.json.serialize(jsonObject)
-            }
-            else {
-              var jsonString = JSON.stringify(jsonObject);
-            }
+            var jsonString = JSON.stringify(jsonObject);
             fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', jsonString);
 
         }
@@ -429,8 +424,8 @@ windmill.ui.remote = new function() {
             i.id = action.id + 'params';
             i.className = 'texta';
 
-            if (windmill.browser.isIE) { i.setAttribute('value', fleegix.json.serialize(params)); }
-            else { i.value = fleegix.json.serialize(params); }
+            if (windmill.browser.isIE) { i.setAttribute('value', JSON.stringify(params)); }
+            else { i.value = JSON.stringify(params); }
             
             c.appendChild(i);
             r.appendChild(c);

@@ -2516,4 +2516,4 @@ var firebug = {
 with(firebug){
   //initConsole();
   //lib.util.Init.push(firebug.init);
-}
+};
