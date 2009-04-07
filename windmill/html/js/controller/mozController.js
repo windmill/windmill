@@ -60,7 +60,7 @@ windmill.controller.click = function(paramObject){
               var itrElement = element;
               while (itrElement != null) {
                 if ((itrElement.href) && (itrElement.href != "#")) {
-                  getParentWindow(element).location = element.href;
+                  getParentWindow(itrElement).location = itrElement.href;
                   //windmill.controller.open({"url": itrElement.href, 'reset':false});
                   break;
                 }
