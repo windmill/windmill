@@ -444,7 +444,6 @@ windmill/bin/shell_objects.py
 windmill/bin/windmill_bin.py
 windmill/browser/__init__.py
 windmill/browser/chrome.py
-windmill/browser/firefox.py
 windmill/browser/ie.py
 windmill/browser/killableprocess.py
 windmill/browser/safari.py
