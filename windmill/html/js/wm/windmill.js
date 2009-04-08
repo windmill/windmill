@@ -228,7 +228,8 @@ var windmill = new function() {
         jQuery("#loadMessage").html("Setting URL and Building Asserts..");
         incProgressBar();
       
-        windmill.service.setStartURL();
+        //this should be getting called by start.html
+        //windmill.service.setStartURL();
         windmill.service.buildNotAsserts();
         jQuery("#loadMessage").html("Building UI..");
         incProgressBar();
