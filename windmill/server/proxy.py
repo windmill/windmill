@@ -32,7 +32,10 @@ _hoppish = {
 # Cache stopping headers
 cache_headers = {'Pragma':'no-cache', 'Cache-Control': 'post-check=0, pre-check=0',
                  'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
-                 'Expires': '-1'}.items()
+                 'Expires': '-1'}
+                 
+cache_removal = [k.lower() for k in cache_headers.keys()]
+cache_additions = cache_headers.items()
     
 def is_hop_by_hop(header):
     """check if the given header is hop_by_hop"""
@@ -138,14 +141,14 @@ class WindmillProxyApplication(object):
                     response = proxy_post_redirect_form(environ, redirect_url)
                     start_response("200 Ok", [('Content-Type', 'text/html',), 
                                               ('Content-Length', str(len(response)),),
-                                              ]+cache_headers)
+                                              ]+cache_additions)
                     logger.debug('New POST domain request, forwarded to ' + redirect_url)
                 else:
                     response = 'Windmill is forwarding you to a new url at the proper test domain'
                     start_response("302 Found", [('Content-Type', 'text/plain',), 
                                                  ('Content-Length', str(len(response)),),
                                                  ('Location', redirect_url,)
-                                                 ]+cache_headers)
+                                                 ]+cache_additions)
                     logger.debug('New domain request, forwarded to ' + redirect_url)
                 return [response]
         
@@ -243,7 +246,11 @@ class WindmillProxyApplication(object):
             if new_response is not None: 
                 response = new_response
             else:
-                start_response(*connection.pop(0)+cache_headers)
+                headers = connection.pop(0)
+                for header in copy.copy(headers):
+                    if header[0].lower() in cache_removal:
+                        headers.remove(header)
+                start_response(*headers+cache_additions)
                 return get_wsgi_response(connection.pop(0))
         else:
             response = connection.getresponse()
@@ -260,7 +267,13 @@ class WindmillProxyApplication(object):
         headers = self.parse_headers(response)
         if response.status == 404:
             logger.info('Could not fullfill proxy request to '+url.geturl()+'. '+str(set(initial_forwarding_registry.values())))
-        start_response(response.status.__str__()+' '+response.reason, headers+cache_headers)
+
+        for header in copy.copy(headers):
+            if header[0].lower() in cache_removal:
+                headers.remove(header)
+
+        start_response(response.status.__str__()+' '+response.reason, 
+                       headers+cache_additions)
         return get_wsgi_response(response)
 
     def parse_headers(self, response):
