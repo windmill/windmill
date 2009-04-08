@@ -4,7 +4,7 @@ import commands
 import subprocess
 
 def test_django():
-    test_directory = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'djangoproject')
+    test_directory = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'files', 'djangoproject')
     
     output = commands.getoutput('cd '+test_directory+' && python manage.py test')
     assert 'FAIL: testFail (djangoproject.main.tests.TestProjectWindmillTest)' in output
