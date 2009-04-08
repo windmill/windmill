@@ -3,12 +3,12 @@ from windmill.authoring import WindmillTestClient
 
 def test_google_switch_to_yahoo():
     client = WindmillTestClient(__name__)
-    client.open(url=u"http://www.google.com")
+    client.open(url=u"http://www.google.com/intl/en/")
     client.click(name=u'q')
-    client.type(text=u'yahoo', name=u'q')
+    client.type(text=u'wikipedia', name=u'q')
     client.click(name=u'btnG')
+    client.waits.forElement(xpath=u"//div[@id='res']/div/ol/li/h3[1]/a/em", timeout=u'8000')
+    client.click(xpath=u"//div[@id='res']/div/ol/li/h3[1]/a/em")
     client.waits.forPageLoad(timeout=u'20000')
-    client.waits.forElement(xpath=u"//div[@id='res']/div/ol/li/h3[1]/a/em[1]", timeout=u'8000')
-    client.click(xpath=u"//div[@id='res']/div/ol/li/h3[1]/a/em[1]")
-    client.waits.forPageLoad(timeout=u'20000')
-    client.asserts.assertJS(js=u"windmill.testWin().document.title == 'Yahoo!'")
+    client.asserts.assertJS(js=u"windmill.testWin().document.title == 'Wikipedia'")
+    

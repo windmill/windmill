@@ -1,3 +1,8 @@
+# This test directory is for tests that _must_ test external domains
+
+# Stay away from google.com and yahool.com without specifying localization becuase you'll 
+# hit a forward
+
 from windmill.bin import admin_lib
 import windmill
 import os, sys
