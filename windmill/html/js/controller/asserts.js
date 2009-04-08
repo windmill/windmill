@@ -145,6 +145,15 @@ windmill.controller.asserts.assertValue = function (paramObject) {
 //Assert that a provided value is selected in a select element
 windmill.controller.asserts.assertJS = function (paramObject) {
   var js = paramObject.js;
+  var result = windmill.testWin().eval(js);
+  if (result != true){
+    throw "JavaScript did not return true."
+  }
+};
+
+//Assert that a provided value is selected in a select element
+windmill.controller.asserts.assertIDEJS = function (paramObject) {
+  var js = paramObject.js;
   var result = eval(js);
   if (result != true){
     throw "JavaScript did not return true."
