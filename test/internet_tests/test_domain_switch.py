@@ -11,4 +11,4 @@ def test_google_switch_to_yahoo():
     client.waits.forElement(xpath=u"//div[@id='res']/div/ol/li/h3[1]/a/em[1]", timeout=u'8000')
     client.click(xpath=u"//div[@id='res']/div/ol/li/h3[1]/a/em[1]")
     client.waits.forPageLoad(timeout=u'20000')
-    client.asserts.assertJS(js=u"window.document.title == 'Yahoo!'")
+    client.asserts.assertJS(js=u"windmill.testWin().document.title == 'Yahoo!'")
