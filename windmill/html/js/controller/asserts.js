@@ -189,15 +189,6 @@ windmill.controller.asserts.assertChecked = function (paramObject) {
   }
 };
 
-//Assert that a provided checkbox is checked
-windmill.controller.asserts.assertNotChecked = function (paramObject) {
-  var n = lookupNode(paramObject);
-
-  if (n.checked){
-    throw "Checked property true";
-  }
-};
-
 // Assert that a an element's property is a particular value
 windmill.controller.asserts.assertProperty = function (paramObject) {
   var element = lookupNode(paramObject);
