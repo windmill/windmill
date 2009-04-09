@@ -4,6 +4,7 @@ from windmill.authoring import WindmillTestClient
 def test_google_switch_to_yahoo():
     client = WindmillTestClient(__name__)
     client.open(url=u"http://www.google.com/intl/en/")
+    client.waits.forElement(name=u'q')
     client.click(name=u'q')
     client.type(text=u'wikipedia', name=u'q')
     client.click(name=u'btnG')

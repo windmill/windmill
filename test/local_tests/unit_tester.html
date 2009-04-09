@@ -33,9 +33,14 @@
 			setTimeout('docreate()', 15000);
 		}
 
+    var jsNode = function(){
+      return "lookupByJsId";
+    }
 	</script>
 </head>
 <body>
+  <img src="wm_logo_round.png" id="headerImg">
+  <img src="wm_broken.png" id="imgNotLoaded">
   <a href="http://www.awesome.com">AwesomeLink</a>
 <form id="frmfrm" action="#" onSubmit="return false;">
 	<input type="text" name="junkfield" value="" id="junkfield"><BR>
@@ -77,7 +82,27 @@
 
 
 <div id="amIhere" style="width:200px;height:50px;border:1px solid black;"></div><br>
+<div id="stuffInside" style="width:200px;height:50px;border:1px solid black;">Stuff in here</div><br>
+
+<input type="text" name="assertVal" value="assert this value" id="assertVal">
+<INPUT name="boxchecked" id="boxchecked" type="checkbox" checked>
+<INPUT name="boxnotchecked" id="boxnotchecked" type="checkbox">
+  <SELECT NAME="assertSelected" id="assertSelected">
+    <OPTION VALUE="Rock" SELECTED>Rock
+    <OPTION VALUE=b>Strawberry
+    <OPTION VALUE=c>Rum and Raisin
+    <OPTION VALUE=d>Peach and Orange
+  </SELECT>
+
+<input type="text" value="lookupByValue">
+<div class="lookupByClassname" style="width:200px;height:50px;border:1px solid black;"></div><br>
+<div label="lookupByLabel" style="width:200px;height:50px;border:1px solid black;"></div><br>
+<div name="lookupByName" style="width:200px;height:50px;border:1px solid black;"></div><br>
+<div id="lookupById" style="width:200px;height:50px;border:1px solid black;"></div><br>
+<div id="lookupByJsId" style="width:200px;height:50px;border:1px solid black;"></div><br>
+<hr style="width:100%">
 
 <div id="jsidTeset" style="width:200px;height:50px;border:1px solid orange;"></div>
+
 </body>
 </html>

@@ -22,7 +22,7 @@ from windmill.authoring import WindmillTestClient
 
 def test_wmunti1():
     client = WindmillTestClient(__name__, assertions=False)
-
+    
     assert client.open(url=u'http://tutorial.getwindmill.com/windmill-unittests/unit_tester.html')['result']
     assert client.click(id=u'subBtn')['result']
     
@@ -94,3 +94,9 @@ def test_wmunti1():
     assert client.click(id=u'wfeBtn')['result']
     assert client.waits.forElement(id=u'created', timeout=u'40000')['result']
     assert client.asserts.assertNode(id=u'created')['result']
+    assert client.asserts.assertJS(js=u'window.document.title == "windmill_js_unit"')
+    assert client.asserts.assertIDEJS(js=u'window.document.title == "Windmill IDE"')
+    assert client.execJS(js=u'window.awesome = true;')
+    assert client.asserts.assertJS(js=u'window.awesome == true;')
+    assert client.execIDEJS(js=u'window.awesome = false;')
+    assert client.asserts.assertIDEJS(js=u'window.awesome == false;')
