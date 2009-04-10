@@ -235,6 +235,7 @@ windmill.xhr = new function() {
         //write to the output tab what is going on
         var handleTimeout = function() {
             windmill.err('One of the XHR requests to the server timed out.');
+            setTimeout("windmill.xhr.getNext()", windmill.serviceDelay);
         }
         //var handleErr = function(){ setTimeout("windmill.xhr.getNext()", windmill.serviceDelay); }
         
