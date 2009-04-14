@@ -42,6 +42,9 @@ test/framework_tests/files/djangoproject/main/views.py
 test/framework_tests/files/djangoproject/main/windmilltests/__init__.py
 test/framework_tests/files/functest_tests/__init__.py
 test/framework_tests/files/functest_tests/test_google.py
+test/internet_tests/__init__.py
+test/internet_tests/test_domain_switch.py
+test/internet_tests/test_open_foreign_domain.py
 test/javascript_tests/failures.js
 test/javascript_tests/form_basics.js
 test/javascript_tests/initialize.js
@@ -52,9 +55,12 @@ test/javascript_tests/shared.js
 test/javascript_tests/test_main.js
 test/javascript_tests/wait_xhr.js
 test/local_tests/__init__.py
+test/local_tests/test_assert.py
 test/local_tests/test_dragdropunit.py
+test/local_tests/test_lookups.py
 test/local_tests/test_unit.py
 test/local_tests/unit_tester.html
+test/local_tests/wm_logo_round.png
 test/local_tests/jqueryui152/GPL-LICENSE.txt
 test/local_tests/jqueryui152/MIT-LICENSE.txt
 test/local_tests/jqueryui152/jquery-1.2.6.js
