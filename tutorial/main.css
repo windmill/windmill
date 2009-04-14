@@ -1,0 +1,198 @@
+* {
+  font-family: "Arial", "Helvetica", sans-serif;
+  color: #000;
+}
+html,body {
+  height: 100%;
+  text-align:center;
+  font-size: 13px;
+  margin: 0px;
+  padding: 0px;
+}
+body {
+  background-image: url(images/windmill_bg.png);
+  background-repeat: repeat-x;
+  background-color: #90bfcb;
+}
+img {
+  border: 0px;
+}
+a {
+  font-weight: bold;
+  color: #9a3527;
+  text-decoration: none;
+  border-bottom: 1px dotted;
+}
+a:hover {
+  color: #fff;
+  background-color: #90bfcb;
+}
+p { 
+  margin-top: 0px;
+  padding: 0px;
+}
+h1 { 
+    font-size: 30px;
+    color: #25444e;
+}
+h2 { font-size: 16px; }
+h3 { font-size: 14px; }
+table {
+  border-collapse: collapse;
+}
+
+#intro {
+  text-align:left;
+  margin: auto;
+  width: 550px;
+}
+
+#messages {
+    position:absolute;
+    top: 20px;
+    left: 450px;
+    height:50px;
+    width:150px;
+    float:right;
+    color: #fff;
+    font: 14pt bold;
+    font-family: "Arial", "Helvetica", sans-serif;
+
+}
+
+#recordedClickId {
+    border: 1px solid black;
+    background: yellow;
+    height: 45px;
+    width: 150px;
+    text-align: center;
+}
+
+#container {
+  position: absolute;
+  left: 2px;
+  margin: auto;
+  width: 550px;
+  min-height: 100%;
+  text-align: left;
+  background: transparent;
+}
+#wSideContainer {
+  position: absolute;
+  top: 0px; 
+  left: 0px;
+  width: 100%;
+  text-align: center;
+}
+#wSideImg {
+  background-image: url(images/windmill_w_side.png);
+  margin: auto;
+  width: 804px;
+  height: 291px;
+}
+#header {
+  width: 632px;
+  height: 267px;
+  background: url(images/windmill_header.png);
+  margin: auto;
+  text-align: left;
+}
+#logoContainer {
+  position: absolute;
+  top: 57px;
+  left: 18px;
+  width: 317px;
+  height: 68px;
+}
+#mottoImgBegin {
+  position: absolute;
+  top: 0px;
+  left: 250px;
+}
+#mottoImgEnd {
+  position: absolute;
+  top: 225px;
+  left: 198px;
+}
+#bulletListContainer {
+  position: absolute;
+  top: 52px;
+  left: 312px;
+  width: 256px;
+  height: 180px;
+  display: none;
+}
+#bulletListContainer li {
+  font-size: 14px;
+  line-height: 16px;
+  margin-top: 6px;
+  color: #444;
+}
+#main {
+  border-left: 9px solid #25444e;
+  border-right: 9px solid #25444e;
+  width: 614px;
+  overflow: auto;
+  background-image: url(images/windmill_section_bg.png);
+  background-repeat: repeat-x;
+  background-color: #e4f0f3;
+}
+#leftCol {
+  width: 60%;
+  vertical-align: top;
+  border-right: 1px solid #25444e;
+}
+#rightCol {
+  width: 40%;
+  vertical-align: top;
+}
+#bottom {
+  border-bottom: 1px solid #25444e;
+  width: 632px;
+  height: 0px;
+  background-color: #e4f0f3;
+}
+#footer {
+  position: relative;
+  margin-top: -24px;
+  width: 100%;
+  font-size: 14px;
+  text-align: center;
+}
+#spacer {
+  height: 32px;
+}
+#moreInfoList {
+  margin: 0px;
+  padding-left: 12px;
+}
+#moreInfoList li {
+  margin-top: 6px;
+}
+.sectionHeader {
+  font-family: "Courier New", "Courier", serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #222;
+  height: 36px;
+  background-image: url(images/windmill_heading_bg.png);
+  background-repeat: repeat-x;
+  line-height: 36px;
+  text-align: center;
+  vertical-align: middle;
+}
+.sectionBody {
+  position: relative;
+  text-align: left;
+  padding: 12px;
+}
+.floatLeft {
+  float: left;
+}
+.floatRight {
+  float: right;
+}
+.clearBoth {
+  clear: both;
+  font-size: 0px;
+}

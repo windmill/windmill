@@ -1,0 +1,362 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+	<title>Windmill IDE</title>
+	
+	<link rel="stylesheet" type="text/css" href="css/windmill.css"/>
+	<link rel="stylesheet" type="text/css" href="css/superfish.css" media="screen">
+	<link type="text/css" href="css/smoothness/jquery-ui-1.7.custom.css" rel="stylesheet" />	
+	
+	<script type='text/javascript' src="js/lib/fleegix_js/fleegix.js"></script>
+	<script type="text/javascript" src="js/lib/jquery/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" charset="utf-8">
+	  jQuery.noConflict();
+	</script>
+	<script type='text/javascript' src="js/lib/jquery/jquery-ui-1.7.1.custom.min.js"></script>
+	<script type='text/javascript' src="js/lib/jquery/ui.progressbar.js"></script>
+	<script type="text/javascript" src="js/lib/jquery/hoverIntent.js"></script>
+	<script type="text/javascript" src="js/lib/jquery/superfish.js"></script>
+	
+		<script type="text/javascript">
+			jQuery(function(){
+			  //tabs
+        jQuery('#tabs').tabs();
+        jQuery("#dialog").dialog({
+          height: 460,
+          width: 410,
+          modal:true,
+          autoOpen: false,
+          overlay: { 
+              opacity: 0.5, 
+              background: "black" 
+          },
+          buttons: { 
+           "Ok": function() { 
+               jQuery(this).dialog("close"); 
+           } 
+          }
+        });
+        
+        
+        jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
+          ui.panel.style.height = "95%";
+          jQuery('ul.sf-menu').superfish({
+            speed: 'fast',
+            autoArrows:  false,                     
+            dropShadows: false
+          });
+        });
+    });
+	</script>
+</head>
+<body>
+  <img style="position:absolute;" id="icon" src="img/wmIcon.png" alt="Welcome to Windmill!">
+  
+  <div id="menu" style="position:relative;height:20px;z-index:99;">
+    <ul class="sf-menu" style="float:right;">
+     			<li class="current">
+     				<a href="#a">Test Building</a>
+     				<ul id="actionDD">
+     					<li>
+     						<a id="addSuite" href="#aa">New Suite</a>
+     					</li>
+     					<li>
+     						<a id="addAction" href="#ab">New Action</a>
+     					</li>
+     					<li>
+     						<a id="clearIDE" href="#">Clear IDE</a>
+     					</li>
+     				</ul>
+     			</li>
+     			<li>
+     				<a href="#">Tools</a>
+     				<ul>
+     					<li>
+     					  <a href="#" onclick="javascript:openFirebug()">Firebug Lite</a>
+     					</li>
+     					<li>
+     						<a href="#" onclick="javascript:openSettings()">Settings</a>
+     					</li>
+     				</ul>
+     			</li>
+     			<li>
+     				<a href="#">Information</a>
+     				<ul>
+     					<li>
+     						<a target="_blank" href="http://www.getwindmill.com">Homepage</a>
+     					</li>
+     					<li>
+     						<a target="_blank" href="http://trac.getwindmill.com/wiki">Wiki</a>
+     					</li>
+     					<li>
+     						<a target="_blank" href="http://trac.getwindmill.com/report">Tickets</a>
+     					</li>
+     					<li>
+     						<a target="_blank" href="http://trac.getwindmill.com/browser">Source</a>
+     					</li>
+     					<li>
+     						<a target="_blank" href="http://www.getwindmill.com/documentation">Docs</a>
+     					</li>
+     				</ul>
+     			</li>
+     		</ul>
+  </div>
+  
+    <div id="runningStatus" align="center">
+      <br><br><br><br><br>
+      <center><h2>Loading, Please Wait...</h2></center>
+      <center><div id="progressbar"></div></center>
+    </div>
+  
+    <div id="cover">
+      <div style="position:absolute;top:40%;left:20%" id="statusMessage">
+        <center><div style="font-weight:bold;font-size:14px;" id="loadMessage">Starting Up..</div></center><br>
+        <center><img src="img/loading.gif"></center>
+      </div>
+    </div>
+	
+	  <div id="controllers">
+		  <a href="#" title="Toggle Recorder">
+			  <img height="28px" width="28px" alt="Toggle Recorder" name='record' 
+			    id="record" border=no src="img/record.png" onClick="toggleRec();">
+		  </a>
+
+		  <a href="#" title="Play All">
+			  <img height="28px" width="28px" alt="Play All" name ='playback' 
+			    id="playback" border=no src="img/playback.png" onClick="togglePlay();">
+		  </a>
+
+	  	<a href="#" title="Toggle DOM Explorer">
+  			<img height="28px" width="28px" alt="Toggle DOM Explorer" name ='explorer' 
+  			id="explorer" border=no src="img/xon.png" onClick="toggleExplore();">
+  		</a>
+
+  		<a href="#" title="Toggle Assert Explorer">
+  			<img height="28px" width="28px" alt="Toggle Assert Explorer" name ='assertx' 
+  			id="assertx" border=no src="img/axon.png" onClick="toggleAExplore();">
+  		</a>
+  	</div>
+	
+  	<div id="domExp"></div>
+    <div id="tabs">
+      <ul>
+          <li class="ui-tabs-nav-item"><a href="#actionsTab">Actions</a></li>
+          <li class="ui-tabs-nav-item"><a href="#outputTab">Output</a></li>
+          <li class="ui-tabs-nav-item"><a href="#performanceTab">Performance</a></li>
+      </ul>
+      
+      <div id="actionsTab" style="padding:0px;margin:0px;">
+        <div id="ide" class="tab">
+        		<form id="ideForm" name="ideForm" onsubmit="return false;" onscroll="scroll();"></form>
+        	</div>
+      </div>
+      
+      <div id="outputTab" style="padding:0px;margin:0px;">
+        <div class="tab">
+          <form id="resOut" onsubmit="return false;"></form>
+        </div>
+      </div>
+      
+      <div id="performanceTab" style="padding:0px;margin:0px;">
+        <div class="tab">
+          <div id="perfOut"></div>
+        </div>
+      </div>
+
+    </div>
+        
+    <div id="dialog" style="padding-top:0px;margin-top:0px;">
+      <div id="settings" style="font-size:12px;">
+       		<form id='settingsForm' name='settingsForm'>
+       			<h3 style="color:#25444e">Windmill Settings</h3>
+       		  <strong>System</strong><br>
+       		<table>
+       			<tr>
+       				<td>Throw JavaScript errors, full debug:</td>
+       				<td> <INPUT TYPE=checkbox UNCHECKED ID='throwDebug'></td>
+       			</tr>
+       			<tr>
+       				<td>Break on failure:</td>
+       				<td> <INPUT TYPE=checkbox UNCHECKED ID='toggleBreak' onclick="windmill.ui.toggleBreak();"></td>
+       			</tr>
+       			<tr>
+       				<td>Suppress Javascript Alerts:</td><td> <INPUT TYPE=checkbox onclick="windmill.ui.updateAlerts()" CHECKED id='jsAlerts'></td>
+       			</tr>
+       		  <tr>
+       				<td>Suite Save Formatting:</td>
+       				<td> 
+       					<SELECT id="suiteSaveFormat" NAME="suiteSaveFormat">
+       						<OPTION value="python" selected>python</option>
+       						<OPTION value="json">json</option>
+       						<OPTION value="javascript">javascript</option>
+       					</SELECT>
+       				</td>
+       			</tr>
+       		</table><br>
+
+       		<strong>IDE/Recorder</strong>
+       		<table>
+       			<tr>
+       				<td>Auto Scroll IDE to bottom:</td>
+       				<td> <INPUT TYPE=checkbox CHECKED ID='autoScroll'></td>
+       			</tr>
+       			<tr>
+       				<td>Absolute click sensitivity when recording:</td>
+       				<td><INPUT TYPE=checkbox CHECKED ID='clickOn'></td>
+       			</tr>
+       			<tr>
+       				<td>Action play button cascades:</td>
+       				<td> <INPUT TYPE=checkbox UNCHECKED ID='playCascade'></td>
+       			</tr>
+       			<tr>
+       				<td>Use XPath only for explorer/recorder:</td>
+       				<td> <INPUT TYPE=checkbox UNCHECKED ID='useXpath'></td>
+       			</tr>
+       			<tr>
+       				<td>Record only absolute XPath's (vs relative):</td>
+       				<td> <INPUT TYPE=checkbox UNCHECKED ID='absXpaths'></td>
+       			</tr>
+     				<tr>
+       				<td>Play action by hitting 'return/enter':</td>
+       				<td> <INPUT TYPE=checkbox CHECKED ID='playOnReturn'></td>
+       			</tr>
+       			<tr>
+       				<td>DOM Explorer exists on single click (vs double):</td>
+       				<td> <INPUT TYPE=checkbox CHECKED ID='domInspectorExit'></td>
+       			</tr>
+       		</table><br>
+          <center>
+         		<a id="loopLink" class="ui-state-default ui-corner-all" href="#" style="padding:2px" onclick="toggleLoop();">
+         		    Toggle Service Loop
+         		</a>&nbsp;
+         		<a href="#" class="ui-state-default ui-corner-all" style="padding:2px" onclick="windmill.testWin().document.location.reload()">
+         		  Reload Testing Application
+         		</a><br><br>
+         		<a href="#" class="ui-state-default ui-corner-all" style="padding:2px" onclick="dumpOutput();">
+         		  Dump Error Log To Output Tab
+         		</a>
+         	</center>
+       	</form>
+       </div>
+      
+    </div>
+    	<div style="position:absolute;left:85%;top:95%;background:#FFF" id="mouseExp"></div>
+</body>
+<script type="text/javascript">
+  jQuery("#progressbar").progressBar({ width: '120', barImage: '/windmill-serv/img/progressbar/progressbg_black.gif'} );
+	
+  //function to increment the progress bar if we aren't in IE
+  incProgressBar = function(){
+    if (typeof progress == "undefined") {
+      progress = 10;
+    }
+    else { progress = progress + 10; }
+      if (progress <= 100){
+        //Keep it from going over 100%
+        jQuery("#progressbar").progressBar(progress);
+      }
+    }
+  
+  //define the path to try to pull the compressed JS from
+  var path = "/windmill-compressor/windmill.js";
+  
+  //use document.write to include all the non cooked files
+  var noFile = function(s){
+    //Double check to make sure we aren't loading windmill src twice
+    if (typeof(windmill) != "undefined"){ return; }
+    jQuery("#loadMessage").html("Reverting to JavaScript includes..");
+    
+    //Define all the files to be loaded
+    var scriptsArr = [];
+    scriptsArr.push('js/lib/browserdetect.js')
+    scriptsArr.push('js/lib/firebug/pi.js')
+    scriptsArr.push('js/lib/fleegix_js/plugins/hash.js')
+    scriptsArr.push('js/lib/firebug/firebug-lite.js')
+    //if (!/Opera[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
+    scriptsArr.push('js/lib/json2.js')
+    //}
+    scriptsArr.push('js/wm/windmill.js')
+    scriptsArr.push('js/lib/getXPath.js')
+    scriptsArr.push('js/lib/elementslib.js')
+    scriptsArr.push('js/lib/js-xpath.js')  	
+    scriptsArr.push('js/controller/controller.js')
+    scriptsArr.push('js/controller/commands.js')
+    scriptsArr.push('js/controller/asserts.js')
+    scriptsArr.push('js/controller/waits.js')
+    scriptsArr.push('js/extensions/extensions.js')
+    scriptsArr.push('js/wm/registry.js')
+    scriptsArr.push('js/wm/utils.js')
+    scriptsArr.push('js/wm/ide/ui.js')
+    scriptsArr.push('js/wm/ide/recorder.js')
+    scriptsArr.push('js/wm/ide/remote.js')
+    scriptsArr.push('js/wm/ide/dx.js')
+    scriptsArr.push('js/wm/ide/ax.js')
+    scriptsArr.push('js/wm/ide/results.js')
+    scriptsArr.push('js/wm/xhr.js')
+    scriptsArr.push('js/wm/metrics.js')
+    scriptsArr.push('js/wm/events.js')
+    scriptsArr.push('js/wm/global.js')
+    scriptsArr.push('js/wm/jstest.js')
+    scriptsArr.push('js/wm/load.js')
+
+    //pull down each script file
+    var head = document.getElementsByTagName("head")[0] ||
+      document.documentElement;
+    for (var i = 0; i < scriptsArr.length; i++){
+      var scriptTag = document.createElement('script');
+      // In Safari, order-of-loading problems appear if
+      // try to just set the src of the appended script
+      // Use sync XHR to pull down the source and set
+      // it directly as the text in the script node
+      // FIXME: Maybe do the sync XHR call with JQuery so
+      // there's no need for fleegix.js embedded directly
+      // on the page -- I couldn't make it work
+      if (fleegix.ua.isSafari) {
+        var code = fleegix.xhr.get(scriptsArr[i]);
+        scriptTag.appendChild(document.createTextNode(code));
+      }
+      // Other browsers settting src works fine
+      else {
+        scriptTag.src = scriptsArr[i];
+      }
+      head.appendChild(scriptTag);
+    }
+  }
+  jQuery("#loadMessage").html("Downloading JavaScript Source...");
+  incProgressBar();
+
+  if (/Opera[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
+    noFile();
+  }
+  else {
+    jQuery.ajax({
+      type: "GET",
+      url: path,
+      dataType: "script",
+      error: noFile
+    });
+  }
+
+  var reFlow = function(){
+    if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
+      //document.getElementById('ide').style.height = document.body.clientHeight -70 + "px";
+      document.getElementById('ideForm').style.height = document.body.clientHeight -80 + "px";
+      document.getElementById('resOut').style.height = document.body.clientHeight -80 + "px";
+      document.getElementById('perfOut').style.height = document.body.clientHeight -80 + "px";
+
+    }
+    else {
+      //document.getElementById('ide').style.height = window.innerHeight -70 + "px";
+      document.getElementById('ideForm').style.height = window.innerHeight -80 + "px";
+      document.getElementById('resOut').style.height = window.innerHeight -80 + "px";
+      document.getElementById('perfOut').style.height = window.innerHeight -80 + "px";
+    }
+  }
+  jQuery(document).ready(reFlow);
+  jQuery(window).resize(reFlow);
+
+</script>
+
+</html>

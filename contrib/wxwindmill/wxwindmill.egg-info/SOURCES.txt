@@ -1,0 +1,17 @@
+setup.py
+wxwindmill/__init__.py
+wxwindmill.egg-info/PKG-INFO
+wxwindmill.egg-info/SOURCES.txt
+wxwindmill.egg-info/dependency_links.txt
+wxwindmill.egg-info/entry_points.txt
+wxwindmill.egg-info/requires.txt
+wxwindmill.egg-info/top_level.txt
+wxwindmill/Images/firefox.png
+wxwindmill/Images/ie.png
+wxwindmill/Images/opera.png
+wxwindmill/Images/safari.png
+wxwindmill/Images/wico.gif
+wxwindmill/Images/windmill.png
+wxwindmill/Images/wlogo.png
+wxwindmill/Images/wmsplash.png
+wxwindmill/bin/wxwindmill_bin.py
