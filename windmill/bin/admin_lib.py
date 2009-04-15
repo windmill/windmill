@@ -39,41 +39,37 @@ def process_options(argv_list):
     # 12/15/2007 Oh man, I'm going to add a feature to this without refactoring it.
     # The issue with this code remains the same and no standard arg parsing 
     # module can do what we need.
-    for index in range(len(argv_list)):
-        if index <= len(argv_list):
-            # Grab the test url if one is given
-            if argv_list[index].startswith('http://'):
-                windmill.settings['TEST_URL'] = argv_list[index]
-                functest.registry['url'] = argv_list[index]
-            elif not argv_list[index].startswith('-'):
-                # Any argument not starting with - is a regular named option
-                value = None
-                if argv_list[index].find('=') is not -1:
-                    name, value = argv_list[index].split('=')
+    for arg in argv_list:
+        # Grab the test url if one is given
+        if arg.startswith('http://') or arg.startswith('https://'):
+            windmill.settings['TEST_URL'] = arg
+            functest.registry['url'] = arg
+        elif arg.startswith('-'):
+            # Take something like -efg and set the e, f, and g options
+            options = arg.replace('-', '')
+            for option in options:
+                admin_options.flags_dict[option]()
+        else:
+            # Any argument not starting with - is a regular named option
+            value = None
+            if arg.find('=') is not -1:
+                name, value = arg.split('=')
+            else:
+                name = arg
+            
+            if name in admin_options.options_dict:
+                processor = admin_options.options_dict[name]
+                if value is None:
+                    processor()
                 else:
-                    name = argv_list[index]
-                
-                if admin_options.options_dict.has_key(name):    
-                    processor = admin_options.options_dict[name]
-                    if value is None:
-                        processor()
-                    else:
-                        processor(value)
-                elif name in action_mapping.keys():
-                    action = action_mapping[name]
-                else:
-                     print argv_list[index].split('=')[0]+' is not a windmill argument. Sticking in functest registry.'
-                     if argv_list[index].find('=') is not -1:
-                         name, value = argv_list[index].split('=')
-                         functest.registry[name] = value
-                     else:
-                         functest.registry[argv_list[index]] = True
-                            
-            elif argv_list[index].startswith('-'):
-                # Take something like -efg and set the e, f, and g options
-                options = argv_list[index].replace('-', '')
-                for option in options:
-                    admin_options.flags_dict[option]()
+                    processor(value)
+            elif name in action_mapping:
+                action = action_mapping[name]
+            else:
+                 print name, 'is not a windmill argument. Sticking in functest registry.'
+                 if value is None:
+                    value = True
+                 functest.registry[name] = value
     
     if action is None:
         # If an action is not defined we default to running the service in the foreground
@@ -203,17 +199,22 @@ def teardown(shell_objects):
             if os.path.isdir(directory):
                 shutil.rmtree(directory)
 
-        while shell_objects['httpd_thread'].isAlive():
-            try:
-                shell_objects['httpd'].stop()
-            except:
-                pass
-                
-            # Hacking workaround for port locking up on linux.
-            try: 
-                shell_objects['httpd'].socket.shutdown()
-            except:
-                pass
+        # while shell_objects['httpd_thread'].isAlive():
+        #     try:
+        #         shell_objects['httpd'].stop()
+        #     except Exception, e:
+        #         print "Exception occurred while shutting server down:"
+        #         print e
+        #         
+        #     # Hacking workaround for port locking up on linux.
+        #     if sys.platform == 'linux2':
+        #         try:
+        #             shell_objects['httpd'].socket.shutdown(socket.SHUT_RDWR)
+        #             shell_objects['httpd'].socket.close()
+        #         except: pass
+        
+        shell_objects['httpd'].stop()
+        
 
 def runserver_action(shell_objects):
     """Run the server in the foreground with the options given to the command line"""

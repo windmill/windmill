@@ -93,7 +93,16 @@ class JSONRPCTransport:
         connection.request('POST', self.request_path, body=request_body, headers=self.headers)
         self.response = connection.getresponse()
         if self.response.status == 200:
-            return self.response.read()
+            result = self.response.read(1)
+            assert result == '{'
+            open_braces = 1
+            braces = {'{':1, '}':-1}
+            while open_braces > 0:
+                res = self.response.read(1)
+                open_braces += braces.get(res, 0)
+                result += res
+            self.response.close()
+            return result
         else:
             return self.response.status
         

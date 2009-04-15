@@ -98,7 +98,7 @@ def do_test(filename, load=False, threaded=True):
     def directory_test(filename):
         return os.path.abspath(filename), ''
     
-    module_name, filter_string = {'.py' :python_test, 
+    module_name, filter_string = {'py' :python_test, 
                                   'json':json_test}.get(filename.split('.')[-1],
                                                         directory_test)(filename)
     

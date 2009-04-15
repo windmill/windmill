@@ -85,7 +85,7 @@ class WindmillChooserApplication(object):
         sleep(.2)
         reconstruct_url(environ)
 
-        for key in self.namespaces.keys():
+        for key in self.namespaces:
             if environ['PATH_INFO'].find('/'+key+'/') is not -1:
                 logger.debug('dispatching request %s to %s' % (environ['reconstructed_url'], key))
                 return self.namespaces[key](environ, start_response)
@@ -189,17 +189,16 @@ def make_windmill_server(http_port=None, js_path=None, compression_enabled=None)
     windmill_xmlrpc_app.ns = 'windmill-xmlrpc'
     windmill_jsonrpc_app.ns = 'windmill-jsonrpc'
     windmill_compressor_app.ns = 'windmill-compressor'
-    windmill_chooser_app = WindmillChooserApplication(apps=[windmill_serv_app, windmill_jsonrpc_app,
-                                                            windmill_xmlrpc_app, windmill_compressor_app],
-                                                      proxy=windmill_proxy_app)
-    
-    # Make add_namespace available at the module level
     global add_namespace
-    add_namespace = windmill_chooser_app.add_namespace
-    
-    from cherrypy import wsgiserver
-    httpd = wsgiserver.CherryPyWSGIServer(('0.0.0.0', http_port), 
-                       windmill_chooser_app, server_name='windmill-http', numthreads=50)
+    import https
+    import certificate
+    cc = certificate.CertificateCreator()
+    httpd = https.WindmillHTTPServer(('0.0.0.0', http_port),
+                                     https.WindmillHTTPRequestHandler, cc,
+                                     apps=[windmill_serv_app, windmill_jsonrpc_app,
+                                     windmill_xmlrpc_app, windmill_compressor_app],
+                                     proxy=https.WindmillHTTPSProxyApplication())
+    add_namespace = httpd.add_namespace
 
     # Attach some objects to httpd for convenience
     httpd.controller_queue = queue

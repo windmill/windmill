@@ -39,7 +39,7 @@ dependencies =  ['CherryPy >= 3.0.2',
                  ]
 
 two_five_dependencies = [ 'simplejson >= 1.7.1',
-                        ]                
+                        'pyOpenSSL >= 0.8']
 
 if not sys.version.startswith('2.6'):
     dependencies.extend(two_five_dependencies)
@@ -57,7 +57,8 @@ setup(name=PACKAGE_NAME,
       license='http://www.apache.org/licenses/LICENSE-2.0',
       include_package_data = True,
       packages = find_packages(exclude=['test', 'trac-files', 'tutorial', 'test.test_live', 'scripts']),
-      package_data = {'': ['*.js', '*.css', '*.html', '*.txt', '*.xpi' ],},
+      package_data = {'': ['*.js', '*.css', '*.html', '*.txt', '*.xpi',
+                           '*.crt', '*.key', '*.csr', 'cert8.db' ],},
       platforms =['Any'],
       install_requires = dependencies,
       entry_points = {

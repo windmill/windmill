@@ -323,7 +323,9 @@ var windmill = new function() {
         //If the doc domain has changed
         //and we can't get to it, try updating it
         try{ var v = windmill.testWin().document.domain; }
-        catch(err){ document.domain = windmill.docDomain; }
+        catch(err){
+//          document.domain = windmill.docDomain; 
+        }
 
         //Overwrite alerts to keep the browser from getting stuck
         //on by default

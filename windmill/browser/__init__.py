@@ -14,6 +14,7 @@
 
 import windmill
 from urlparse import urlparse
+from pkg_resources import resource_string
 
 import os
 
@@ -55,6 +56,8 @@ def get_firefox_controller():
         # Configure local proxy
         "network.proxy.http": 'localhost',
         "network.proxy.http_port": windmill.settings['SERVER_HTTP_PORT'],
+        "network.proxy.ssl": 'localhost',
+        "network.proxy.ssl_port": windmill.settings['SERVER_HTTP_PORT'],
         "network.proxy.no_proxies_on": "",
         "network.proxy.type": 1,
         #"network.http.proxy.pipelining" : True,
@@ -97,6 +100,11 @@ def get_firefox_controller():
     windmill.settings['MOZILLA_CMD_ARGS'] = [test_url]
     
     controller = mozrunner.get_moz_from_settings(windmill.settings)
+
+    # Override cert8.db with one from windmill which has windmill certificate
+    # in it, that way self-signed certificate warning is suppressed.
+    cert8 = resource_string(__name__, 'cert8.db')
+    open(os.path.join(controller.profile, 'cert8.db'), 'w').write(cert8)
     
     return controller
     
