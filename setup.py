@@ -29,8 +29,7 @@ We welcome any and all interest and contribution, as we work diligently at addin
 Thanks for your interest and participation!
 """
 
-dependencies =  ['CherryPy >= 3.0.2',
-                 'wsgi_jsonrpc >= 0.2.2',
+dependencies =  ['wsgi_jsonrpc >= 0.2.2',
                  'wsgi_xmlrpc >= 0.2.3',
                  'wsgi_fileserver >= 0.2.3',
                  'functest >= 0.7.1',
