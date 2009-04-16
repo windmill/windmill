@@ -44,6 +44,8 @@ class ForwardManager(object):
         if path.startswith('/'):
             path = path.lstrip('/')
         redirect_url = "%s/%s" % (self.base_url, path)
+        if url.query:
+            redirect_url += "?" + url.query
         return urlparse(redirect_url)
 
     def forward_unmap(self, url):
@@ -277,6 +279,11 @@ if __name__ == '__main__':
             query_url = urlparse("https://something/forwarded?foo=bar")
             self.assertEquals(urlparse("http://otherurl/forwarded?foo=bar"),
                               mgr.forward_to(query_url, self.aUrl))
+        def testForwardMapDoesntDropQuery(self):
+            mgr = ForwardManager('http://testurl/')
+            query_url = urlparse("https://something/forwarded?foo=bar")
+            self.assertEquals(urlparse("http://testurl/forwarded?foo=bar"),
+                              mgr.forward_map(query_url))
 
         def testTestSiteWithPathDoesntBreakRedirects(self):
             mgr = ForwardManager('http://testurl/path/')
