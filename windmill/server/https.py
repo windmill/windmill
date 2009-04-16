@@ -285,19 +285,10 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
                 if environ['SERVER_PORT'] != '80':
                     url += ':' + environ['SERVER_PORT']
         url += environ.get('SCRIPT_NAME','')
-        if '://' in environ.get('PATH_INFO',''):
-            url = environ.get('PATH_INFO','')
+        if '://' in self.path:
+            url = self.path
         else:
-            url += environ.get('PATH_INFO','')
-        # Fix ;arg=value in url
-        if url.find('%3B') is not -1:
-            url, arg = url.split('%3B', 1)
-            url = ';'.join([url, arg.replace('%3D', '=')])
-
-        # Stick query string back in
-        if environ.get('QUERY_STRING'):
-            url += '?' + environ['QUERY_STRING']
-        # Stick it in environ for convenience     
+            url += self.path
         environ['reconstructed_url'] = url
         return url
 
