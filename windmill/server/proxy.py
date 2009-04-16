@@ -22,6 +22,9 @@ import urllib
 logger = logging.getLogger(__name__)
 from forwardmanager import ForwardManager
 
+first_forward_domains = []
+exclude_from_retry = []
+
 # Note that hoppish conntains proxy-connection, which is pre-HTTP-1.1 and
 # is somewhat nebulous
 _hoppish = {

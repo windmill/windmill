@@ -1,4 +1,4 @@
-#   Copyright (c) 2006-2007 Open Source Applications Foundation
+#   Copyright (c) 2009 Canonical Ltd.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -11,8 +11,11 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+#
+#   Contributor: Anthony Lenton <anthony.lenton@canonical.com>
 
 from urlparse import urlparse
+import proxy
 
 def normalize(scheme, netloc):
     if scheme == '':
@@ -96,7 +99,18 @@ class ForwardManager(object):
         return newEnv
 
     def known_hosts(self):
-        return list(set(urlparse("%s://%s/" % host) for host in self.forwarded.values()))
+        def split(domain):
+            if not domain.startswith('http'):
+                return 'http', domain
+            else:
+                return tuple(domain.split('://'))
+        first = [split(domain) for domain in proxy.first_forward_domains]
+        exclude = [split(domain) for domain in proxy.exclude_from_retry]
+        forwarded = list(set(self.forwarded.values()))
+        result = list(urlparse("%s://%s/" % host)
+                      for host in first + forwarded
+                      if not host in exclude)
+        return result
 
     def forward_to(self, url, host):
         forwarded_url = "%s://%s%s" % (host.scheme, host.netloc, url.path)
@@ -149,6 +163,8 @@ if __name__ == '__main__':
             self.cUrl = urlparse('https://otherurl/foobar')
             self.dUrl = urlparse('https://otherurl:8000/foobar')
             self.eUrl = urlparse('http://testurl/forwarded')
+            proxy.first_forward_domains = []
+            proxy.exclude_from_retry = []
 
         def testStaticMap(self):
             mgr = ForwardManager('http://testurl/')
@@ -301,8 +317,34 @@ if __name__ == '__main__':
             self.assertTrue(mgr.is_forward_mapped(fwdUrl))
             mgr.clear()
             self.assertFalse(mgr.is_forward_mapped(fwdUrl))
-            
-        
-            
+
+        def testFirstForwardDomains(self):
+            proxy.first_forward_domains.append('goodurl.com')
+            proxy.first_forward_domains.append('https://greaturl.com')
+            mgr = ForwardManager('http://testurl/path/')
+            first = urlparse('http://goodurl.com/')
+            self.assertTrue(first in mgr.known_hosts())
+            second = urlparse('https://greaturl.com/')
+            self.assertTrue(second in mgr.known_hosts())
+            # Check that they're reported in order
+            hosts = mgr.known_hosts()
+            self.assertTrue(hosts.index(first) < hosts.index(second))
+
+        def testExcludeFromRetry(self):
+            proxy.exclude_from_retry.append('badurl.com')
+            mgr = ForwardManager('http://testurl/path/')
+            mgr.forward(self.aUrl, {})
+            mgr.forward(urlparse('http://badurl.com/sarasa'), {})
+            self.assertTrue(len(mgr.known_hosts()) == 1)
+
+        def testExcludeTakesPrecedence(self):
+            """ Test that exclude_from_retry takes precedence over
+                first_forward_domains -- i.e. if a domain is added to both
+                lists, it's *not* reported in known_hosts
+            """
+            proxy.first_forward_domains.append('goodurl.com')
+            proxy.exclude_from_retry.append('goodurl.com')
+            mgr = ForwardManager('http://testurl/path/')
+            self.assertTrue(len(mgr.known_hosts()) == 0)
     unittest.main()
 
