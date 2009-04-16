@@ -81,14 +81,14 @@ def proxy_post_redirect_form(environ, action):
         parts = parameter.split('=', 1)
         if len(parts) == 1:
             continue
-        parts = tuple(urllib.unquote(part) for part in parts)
+        parts = tuple(unicode(urllib.unquote(part), 'utf-8') for part in parts)
         inputs.append('<input type="hidden" name="%s" value="%s" />' % parts)
     form = """<html><head><title>There is no spoon.</title></head>
 <body onload="document.getElementById('redirect').submit();"
       style="text-align: center;">
   <form id="redirect" action="%s" method="POST">%s</form>
 </body></html>""" % (action, '\n'.join(inputs))
-    return form
+    return form.encode('utf-8')
 
 class WindmillProxyApplication(object):
     """Application to handle requests that need to be proxied"""
