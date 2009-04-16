@@ -12,6 +12,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+has_ssl = True
+try:
+    import OpenSSL
+except ImportError:
+    print "*" * 60
+    print "*** HTTPS Support is disabled, as PyOpenSSL was not found."
+    print "*** Please install PyOpenSSL."
+    print "*" * 60
+    has_ssl = False
+
 import authoring, bin, browser, server, conf, tools
 from urlparse import urlparse
 

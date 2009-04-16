@@ -29,18 +29,19 @@ from proxy import WindmillProxyApplication
 from httplib import HTTPConnection, HTTPException
 import traceback
 import sys
+import windmill
 
 import logging
 logger = logging.getLogger(__name__)
 
- 
 try:
     import ssl # python 2.6
     _ssl_wrap_socket = ssl.wrap_socket
     _socket_create_connection = socket.create_connection
 except ImportError:
     # python 2.5
-    from OpenSSL import SSL
+    if windmill.has_ssl:
+        from OpenSSL import SSL
     from httplib import FakeSocket
     
     class BetterFakeSocket(FakeSocket):
@@ -140,6 +141,8 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
                              ' 200 Connection established\r\n')
             self.wfile.write('Proxy-agent: %s\r\n' % self.version_string())
             self.wfile.write('\r\n')
+            if not windmill.has_ssl:
+                return
             request = self.connection
             connstream = _ssl_wrap_socket(self.connection,
                            server_side=True,

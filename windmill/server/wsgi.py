@@ -191,8 +191,11 @@ def make_windmill_server(http_port=None, js_path=None, compression_enabled=None)
     windmill_compressor_app.ns = 'windmill-compressor'
     global add_namespace
     import https
-    import certificate
-    cc = certificate.CertificateCreator()
+    if windmill.has_ssl:
+        import certificate
+        cc = certificate.CertificateCreator()
+    else:
+        cc = None
     httpd = https.WindmillHTTPServer(('0.0.0.0', http_port),
                                      https.WindmillHTTPRequestHandler, cc,
                                      apps=[windmill_serv_app, windmill_jsonrpc_app,
