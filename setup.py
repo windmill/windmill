@@ -35,7 +35,6 @@ dependencies =  ['wsgi_jsonrpc >= 0.2.2',
                  'functest >= 0.7.1',
                  'mozrunner <= 1.9.9',
                  'simplesettings',
-                 'pyOpenSSL >= 0.8',
                  ]
 
 two_five_dependencies = [ 'simplejson >= 1.7.1',
