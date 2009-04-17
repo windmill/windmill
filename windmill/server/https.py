@@ -350,9 +350,7 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
         print '-' * 40
         print 'Exception happened during processing of request from',
         print client_address
-        print 'Remember test.pem needs to be in your working directory'
-        print '     (yes, this needs to be improved)'
-        print traceback.print_exc()
+        traceback.print_exc()
         print '-' * 40
 
 class WindmillConnection(HTTPConnection):

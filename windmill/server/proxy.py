@@ -105,7 +105,7 @@ class WindmillProxyApplication(object):
     def handler(self, environ, start_response):
         """Proxy for requests to the actual http server"""
         url = urlparse(environ['reconstructed_url'])
-
+        referer = None
         # Once FORWARDING_TEST_URL is set we should check for cross-domain
         # forward but we must disable for localhost as redirects to localhost
         # will cause the browser to error.
@@ -241,7 +241,7 @@ class WindmillProxyApplication(object):
             response = connection.getresponse()
             response.url = connection.url
         if not isinstance(connection, HTTPConnection) or \
-            response.status in [404, 500]:
+            response.status in [403, 404, 500]:
             # if it's not an HTTPConnection object then the request failed
             if (not self.fmgr.is_forward_mapped(url) and
                referer is not None and
@@ -254,11 +254,11 @@ class WindmillProxyApplication(object):
                 if isinstance(connection, HTTPConnection):
                     response = connection.getresponse()
                     response.url = connection.url
-                    if response.status not in [404, 500]:
+                    if response.status not in [403, 404, 500]:
                         url = new_url
                         environ = new_environ
             if not isinstance(connection, HTTPConnection) or \
-               response.status in [404, 500]:
+               response.status in [403, 404, 500]:
                 # now yes, we should retry
                 new_response = retry_known_hosts(url, environ)
                 if new_response is not None: 
