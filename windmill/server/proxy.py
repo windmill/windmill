@@ -248,9 +248,13 @@ class WindmillProxyApplication(object):
             else:
                 headers = connection.pop(0)
                 for header in copy.copy(headers):
-                    if header[0].lower() in cache_removal:
-                        headers.remove(header)
-                start_response(*headers+cache_additions)
+                    if len(header) == 1:
+                        h = header[0]
+                    else:
+                        h = header
+                    if h[0].lower() in cache_removal:
+                        headers.remove(h)
+                start_response(headers[0], list(headers[1:])+cache_additions)
                 return get_wsgi_response(connection.pop(0))
         else:
             response = connection.getresponse()
