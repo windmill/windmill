@@ -54,7 +54,12 @@ windmill.controller.click = function(paramObject){
       if (!browser.isChrome && savedEvent != null && !savedEvent.getPreventDefault()) {
           if ((element.href) && (element.href != "#")) {
               //windmill.controller.open({"url": element.href, 'reset':false});
-              getParentWindow(element).location = element.href;
+              if (element.target.length > 0) {
+                  getParentWindow(element).open(element.href, element.target);
+              }
+              else {
+                  getParentWindow(element).location = element.href;
+              }
           } 
           else {
               var itrElement = element;
