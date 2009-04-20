@@ -157,7 +157,12 @@ class Popen(subprocess.Popen):
                 winprocess.TerminateProcess(self._handle, 127)
             self.returncode = 127    
         else:
-            if group:
+            if sys.platform == 'cygwin':
+                cmd = "taskkill /f /pid " + str(self.pid)
+                if group:
+                    cmd += " /t"
+                os.system(cmd)
+            elif group:    
                 os.killpg(self.pid, signal.SIGKILL)
             else:
                 os.kill(self.pid, signal.SIGKILL)
