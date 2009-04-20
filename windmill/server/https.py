@@ -177,8 +177,9 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
         namespaces = self.server.namespaces
         proxy = self.server.proxy
         found = None
+        path = self.path.split('?', 1)[0]
         for key in namespaces:
-            if self.path.find('/'+key+'/') is not -1:
+            if path.find('/'+key+'/') is not -1:
                 found = key
                 environ = self.get_environ()
                 result = namespaces[found](environ, self.start_response)
