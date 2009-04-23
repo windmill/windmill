@@ -153,7 +153,16 @@ class WindmillProxyApplication(object):
                 environ = self.fmgr.change_environ_domain(url, orig_url,
                                                           environ)
                 url = orig_url
-        
+            elif (not self.fmgr.is_forward_mapped(url) and
+               referer is not None and
+               self.fmgr.is_forward_mapped(urlparse(referer))):
+                # This handles the case that the referer is a url we've already
+                # done a cross-domain request for 
+                orig_referer = self.fmgr.forward_unmap(urlparse(referer))
+                orig_url = self.fmgr.forward_to(url, orig_referer)
+                environ = self.fmgr.change_environ_domain(url, orig_url, environ)
+                url = orig_url
+
         def make_remote_connection(url, environ):
             # Create connection object
             try:
@@ -241,55 +250,23 @@ class WindmillProxyApplication(object):
             response = connection.getresponse()
             response.url = connection.url
 
-        if isinstance(connection, HTTPConnection) and \
-           response.status in [301, 302]:
-            # For 301 and 302 we want to check that the redirected URL is
-            # going to result in success.
-            headers = [(x.lower(), y) for x, y in [z.split(':', 1) for z in
-                         str(response.msg).splitlines() if ':' in z]]
-            for header in headers:
-                if 'location' in header[0]:
-                    f = urllib.urlopen(header[1].strip())
-                    if f.getcode() == 404:
-                        connection = [("404 Not Found",
-                                      [('Content-Type', 'text/html')],),
-                                      '<H1>I was redirected to nowhere</H1>']
-                    break
-           
         if not isinstance(connection, HTTPConnection) or \
-            response.status in [403, 404, 500]:
+            response.status in [301, 302, 403, 404, 500]:
             # if it's not an HTTPConnection object then the request failed
-            if (not self.fmgr.is_forward_mapped(url) and
-               referer is not None and
-               self.fmgr.is_forward_mapped(urlparse(referer))):
-                # This handles the case that the referer is a url we've already
-                # done a cross-domain request for 
-                orig_referer = self.fmgr.forward_unmap(urlparse(referer))
-                orig_url = self.fmgr.forward_to(url, orig_referer)
-                new_environ = self.fmgr.change_environ_domain(
-                                        url, orig_url, environ)
-                connection = make_remote_connection(orig_url, new_environ)
-                if isinstance(connection, HTTPConnection):
-                    response = connection.getresponse()
-                    response.url = connection.url
-                    if response.status not in [403, 404, 500]:
-                        url = orig_url
-                        environ = new_environ
-            if not isinstance(connection, HTTPConnection) or \
-               response.status in [403, 404, 500]:
-                # now yes, we should retry
-                new_response = retry_known_hosts(url, environ)
-                if new_response is not None: 
-                    response = new_response
-                elif not isinstance(connection, HTTPConnection):
-                    status = connection[0][0]
-                    headers = connection[0][1]
-                    body = connection[1]
-                    for header in copy.copy(headers):
-                        if header[0].lower() in cache_removal:
-                            headers.remove(header)
-                    start_response(status, headers+cache_additions)
-                    return get_wsgi_response(body)
+            # so we should retry
+            new_response = retry_known_hosts(url, environ)
+            if new_response is not None: 
+                response = new_response
+                logger.info('Found after retry: %s' % (url.geturl(),))
+            elif not isinstance(connection, HTTPConnection):
+                status = connection[0][0]
+                headers = connection[0][1]
+                body = connection[1]
+                for header in copy.copy(headers):
+                    if header[0].lower() in cache_removal:
+                        headers.remove(header)
+                start_response(status, headers+cache_additions)
+                return get_wsgi_response(body)
 
         # Remove hop by hop headers
         headers = self.parse_headers(response)
