@@ -165,6 +165,13 @@ class NoCompress(GeneralBoolSettingToTrue):
     option_names = (None, 'nocompress')
     setting = "DISABLE_JS_COMPRESS"
     
+class NoSSL(object):
+    """Disable SSL support."""
+    option_names = (None, 'nossl')
+    def __call__(self, value=None):
+        import windmill
+        windmill.has_ssl = False
+    
 class Port(object):
     """Set port for windmill to run. Default is 4444."""
     option_names = (None, 'port')
