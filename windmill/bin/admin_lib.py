@@ -195,6 +195,9 @@ def teardown(shell_objects):
             controller.stop()
             del(controller)
         
+        if windmill.settings['START_FIREFOX'] and windmill.settings['MOZILLA_CREATE_NEW_PROFILE']:
+            shutil.rmtree(settings['MOZILLA_PROFILE'])
+        
         for directory in windmill.teardown_directories:
             if os.path.isdir(directory):
                 shutil.rmtree(directory)
