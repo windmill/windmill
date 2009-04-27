@@ -105,7 +105,7 @@ def get_firefox_controller():
     # in it, that way self-signed certificate warning is suppressed.
     cert8 = resource_string(__name__, 'cert8.db')
     open(os.path.join(controller.profile, 'cert8.db'), 'w').write(cert8)
-    
+    windmill.settings['MOZILLA_PROFILE'] = mozrunner.settings['MOZILLA_PROFILE']
     return controller
     
 def get_ie_controller():
