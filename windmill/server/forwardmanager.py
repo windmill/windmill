@@ -108,8 +108,18 @@ class ForwardManager(object):
                 return 'http', domain
             else:
                 return tuple(domain.split('://'))
-        first = [split(domain) for domain in proxy.first_forward_domains]
-        exclude = [split(domain) for domain in proxy.exclude_from_retry]
+                
+        def getDomains(domain_list):
+            result = []
+            for domain in domain_list:
+                if not domain.startswith('http'):
+                    result.append(('http', domain,))
+                    result.append(('https', domain,))
+                else:
+                    result.append(tuple(domain.split('://')))
+            return result
+        first = getDomains(proxy.first_forward_domains)
+        exclude = getDomains(proxy.exclude_from_retry)
         forwarded = list(set(self.forwarded.values()))
         result = list(urlparse("%s://%s/" % host)
                       for host in first + forwarded

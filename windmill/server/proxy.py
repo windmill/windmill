@@ -23,7 +23,10 @@ logger = logging.getLogger(__name__)
 from forwardmanager import ForwardManager
 
 first_forward_domains = []
-exclude_from_retry = []
+exclude_from_retry = ['http://sb-ssl.google.com',
+                      'https://sb-ssl.google.com', 
+                      'http://en-us.fxfeeds.mozilla.com',
+                      ]
 
 # Note that hoppish conntains proxy-connection, which is pre-HTTP-1.1 and
 # is somewhat nebulous
@@ -109,7 +112,7 @@ class WindmillProxyApplication(object):
         url = urlparse(environ['reconstructed_url'])
         referer = environ.get('HTTP_REFERER', None)
         test_url = windmill.settings['FORWARDING_TEST_URL']
-        if self.fmgr is None:
+        if self.fmgr is None and windmill.settings['FORWARDING_TEST_URL'] is not None:
             # Be lazy at creating the forward manager to give
             # FORWARDING_TEST_URL a chance to be set
             self.fmgr = ForwardManager(test_url)
