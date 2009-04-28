@@ -16,6 +16,7 @@
 
 from urlparse import urlparse
 import proxy
+import time
 
 def normalize(scheme, netloc):
     if scheme == '':
@@ -37,9 +38,9 @@ class ForwardManager(object):
     def __init__(self, base_url):
         self.forwarded = {} # Maps str->tuple(str,str) forwarded URL-> original scheme, netloc
         self.static = {} # Maps str->tuple(str,str)
-        self.cookies = {}
         parsed_url = urlparse(base_url)
         self.base_url = "%s://%s" % (parsed_url.scheme, parsed_url.netloc)
+        self.cookies = {parsed_url.netloc: {}}
 
     def forward_map(self, url):
         """ Return a ParseResult useful after forwarding """
@@ -75,16 +76,19 @@ class ForwardManager(object):
         newEnv = environ.copy()
         dst_host = "%s://%s" % (dstUrl.scheme, dstUrl.netloc)
         src_host = "%s://%s" % (srcUrl.scheme, srcUrl.netloc)
+        if 'HTTP_COOKIE' in newEnv:
+            del newEnv['HTTP_COOKIE']
         for key in newEnv:
             if type(newEnv[key]) is str:
-                if key == 'HTTP_COOKIE':
-                    newEnv[key] = self.cookies_for(dstUrl.netloc)
-                elif src_host in newEnv[key]:
+                if src_host in newEnv[key]:
                     newEnv[key] = newEnv[key].replace(src_host, dst_host)
                 elif srcUrl.netloc in newEnv[key]:
                     newEnv[key] = newEnv[key].replace(srcUrl.netloc, dstUrl.netloc)
                 elif srcUrl.scheme in ['http', 'https'] and srcUrl.scheme == newEnv[key]:
                     newEnv[key] = dstUrl.scheme
+        cookies = self.cookies_for(dstUrl.netloc)
+        if len(cookies) > 0:
+            newEnv['HTTP_COOKIE'] = cookies
         return newEnv
 
     def forward(self, url, environ):
@@ -120,11 +124,17 @@ class ForwardManager(object):
 
     def parse_headers(self, headers, domain):
         """ For now, just keep all cookies forever """
-        for key, value in headers:
+        if domain not in self.cookies:
+            self.cookies[domain] = {}
+        remove_headers = []
+        for header in headers:
+            key, value = header
             if key == 'set-cookie':
                 cookiekey = None
                 cookieval = None
                 parts = value.split(';')
+                expired = False
+                dom = domain
                 for part in parts:
                     token = [p.strip() for p in part.split('=', 1)]
                     if len(token) == 1:
@@ -134,20 +144,37 @@ class ForwardManager(object):
                         cookiekey = k
                         cookieval = v
                     elif k.lower() == 'domain':
-                        domain = v
-                if not domain in self.cookies:
-                    self.cookies[domain] = {}
-                self.cookies[domain][cookiekey] = cookieval
+                        dom = v
+                    elif k.lower() == 'expires':
+                        now = time.time()
+                        try:
+                            expires = time.strptime(v, '%a, %d-%b-%Y %H:%M:%S GMT')
+                        except ValueError:
+                            # No dashes?
+                            try:
+                                expires = time.strptime(v, '%a, %d %b %Y %H:%M:%S GMT')
+                            except ValueError:
+                                continue # Meh, give up
+                        
+                        if time.time() > time.mktime(expires):
+                            expired = True
+                if not dom in self.cookies:
+                    self.cookies[dom] = {}
+                if expired:
+                    if cookiekey in self.cookies[dom]:
+                        del self.cookies[dom][cookiekey]
+                else:
+                    self.cookies[dom][cookiekey] = cookieval
+                    remove_headers.append(header)
+        for header in remove_headers:
+            headers.remove(header)
 
     def cookies_for(self, domain):
-        best = ''
-        result = ''
+        cookies = []
         for d in self.cookies:
-            if domain.endswith(d.lstrip('.')) and len(d) > len(best):
-                best = d
-        if len(best) > 0:
-            cookies = ["%s=%s" % c for c in self.cookies[best].items()]
-            result = '; '.join(cookies)
+            if domain.endswith(d):
+                cookies += ["%s=%s" % c for c in self.cookies[d].items()]
+        result = '; '.join(cookies)
         return result
 
     def clear(self):
@@ -346,5 +373,28 @@ if __name__ == '__main__':
             proxy.exclude_from_retry.append('goodurl.com')
             mgr = ForwardManager('http://testurl/path/')
             self.assertTrue(len(mgr.known_hosts()) == 0)
+
+        def testParseCookies(self):
+            headers = [('server', ' '), ('cache-control', ' no-cache'),
+                       ('content-encoding', ' gzip'),
+                       ('set-cookie', ' a=42; path=/; secure'),
+                       ('set-cookie', ' b=test; path=/; secure'),
+                       ('set-cookie', ' c=1; domain=.b.c; path=/'),
+                       ('set-cookie', ' e=1; path=/'),
+                       ('set-cookie', ' f=0; path=/; secure'),
+                       ('set-cookie', ' g=Nj; domain=.c; path=/;'),
+                       ('content-type', ' text/html'),
+                       ('content-length', ' 510'),
+                       ('date', ' sarasa')]
+            mgr = ForwardManager('http://testurl/path/')
+            mgr.parse_headers(headers, 'a.b.c')
+            self.assertEquals('g=Nj; a=42; b=test; e=1; f=0; c=1',
+                              mgr.cookies_for('a.b.c'))
+            headers = [('set-cookie', 'e=; expires=Thu, 01-Dec-1994 16:00:00 GMT'),
+                       ('set-cookie', 'a=; expires=Thu, 01 Dec 1994 16:00:00 GMT'),
+                      ]
+            mgr.parse_headers(headers, 'a.b.c')
+            self.assertEquals('g=Nj; b=test; f=0; c=1',
+                              mgr.cookies_for('a.b.c'))
     unittest.main()
 
