@@ -3,8 +3,11 @@ import tempfile
 import logging
 import signal
 import killableprocess
+import subprocess
 import sys, os
 import urlparse
+
+from StringIO import StringIO
 
 import windmill	
 
@@ -43,13 +46,24 @@ html_redirection = """
   </body>
 <html>"""
 
+def getoutput(l):
+    tmp = tempfile.mktemp()
+    x = open(tmp, 'w')
+    subprocess.call(l, stdout=x, stderr=x)
+    x.close(); x = open(tmp, 'r')
+    r = x.read() ; x.close()
+    os.remove(tmp)
+    return r
+    
 
 def find_default_interface_name():
     if windmill.settings['NETWORK_INTERFACE_NAME'] is not None:
         return windmill.settings['NETWORK_INTERFACE_NAME']
     target_host = urlparse.urlparse(windmill.settings['TEST_URL']).hostname
-    interface_id = commands.getoutput('route get '+target_host).split('interface:')[1].split('\n')[:1][0].replace(' ', '')
-    all_inet = commands.getoutput(windmill.settings['NETWORKSETUP_BINARY']+' -listallhardwareports').split('\n\n')
+    x = ['/sbin/route', 'get', target_host]
+    interface_id = getoutput(x).split('interface:')[1]
+    interface_id = interface_id.split('\n')[:1][0].replace(' ', '')
+    all_inet = getoutput([windmill.settings['NETWORKSETUP_BINARY'], '-listallhardwareports']).split('\n\n')
     try:
         interface_name = [ l for l in all_inet if l.find(interface_id) is not -1 ][0].split('\n')[0].split(' ')[-1]
     except IndexError:
@@ -58,7 +72,7 @@ def find_default_interface_name():
         admin_lib.teardown(admin_lib.shell_objects_dict)
         sys.exit()
     
-    # interfaces = commands.getoutput().split('\n\n')
+    # interfaces = getoutput().split('\n\n')
     # print 'interfaces::\n', '\n'.join(interfaces)
     # for line in interfaces:
     #     if not line.startswith('(') and line.find('(1)') is not -1:
@@ -86,24 +100,33 @@ class Safari(object):
 	    self.netsetup_binary = windmill.settings['NETWORKSETUP_BINARY']
 	    interface_name = find_default_interface_name()
 	    uri = urlparse.urlparse(self.test_url)
-	    set_proxy_command = ' '.join([ self.netsetup_binary, 
-	                                   '-setwebproxy', 
-	                                   '"'+interface_name+'"', 
-	                                   'localhost', 
-	                                   str(windmill.settings['SERVER_HTTP_PORT'])
-	                                 ])
-	    commands.getoutput(set_proxy_command)
-	    enable_proxy_command = ' '.join([ self.netsetup_binary,
-	                                      '-setwebproxystate',
-	                                      '"'+interface_name+'"',
-	                                      'on'
-	                                    ])
-	    commands.getoutput(enable_proxy_command)	    
+	    set_proxy_command = [ self.netsetup_binary, '-setwebproxy', 
+	                          interface_name, 'localhost', 
+	                          str(windmill.settings['SERVER_HTTP_PORT'])
+	                        ]
+	    getoutput(set_proxy_command)
+	    enable_proxy_command = [ self.netsetup_binary, '-setwebproxystate',
+	                             interface_name, 'on'
+	                           ]
+	    getoutput(enable_proxy_command)	
+	    if windmill.has_ssl:
+	        set_ssl_proxy_command = [ self.netsetup_binary, '-setsecurewebproxy', 
+    	                              interface_name, 'localhost', 
+    	                              str(windmill.settings['SERVER_HTTP_PORT'])
+    	                            ]
+    	    getoutput(set_proxy_command)
+    	    enable_ssl_proxy_command = [ self.netsetup_binary, '-setsecurewebproxystate',
+    	                                 interface_name, 'on'
+    	                               ]
+    	    getoutput(enable_proxy_command)
+	    
+	        
 	    self.create_redirect()
 	    self.interface_name = interface_name
 	
 	def unset_proxy_mac(self):
-	    commands.getoutput(' '.join([self.netsetup_binary, '-setwebproxystate', '"'+self.interface_name+'"', 'off']))
+	    getoutput([self.netsetup_binary, '-setwebproxystate', self.interface_name, 'off'])
+	    getoutput([self.netsetup_binary, '-setsecurewebproxystate', self.interface_name, 'off'])
 	
 	def set_proxy_windows(self):
 	    self.create_redirect()
