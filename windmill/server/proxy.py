@@ -93,6 +93,8 @@ def proxy_post_redirect_form(environ, action):
 </body></html>""" % (action, '\n'.join(inputs))
     return form.encode('utf-8')
 
+forward_forms = {}
+
 class WindmillProxyApplication(object):
     """Application to handle requests that need to be proxied"""
 
@@ -105,7 +107,12 @@ class WindmillProxyApplication(object):
     def handler(self, environ, start_response):
         """Proxy for requests to the actual http server"""
         url = urlparse(environ['reconstructed_url'])
-        referer = None
+        referer = environ.get('HTTP_REFERER', None)
+        test_url = windmill.settings['FORWARDING_TEST_URL']
+        if self.fmgr is None:
+            # Be lazy at creating the forward manager to give
+            # FORWARDING_TEST_URL a chance to be set
+            self.fmgr = ForwardManager(test_url)
         # Once FORWARDING_TEST_URL is set we should check for cross-domain
         # forward but we must disable for localhost as redirects to localhost
         # will cause the browser to error.
@@ -113,15 +120,9 @@ class WindmillProxyApplication(object):
 #           not url.netloc.startswith('localhost') ) and (
 #           not url.netloc.startswith('127.0.0.1') ) and (
            conditions_pass(environ) ):
-            test_url = windmill.settings['FORWARDING_TEST_URL']
-            if self.fmgr is None:
-                # Be lazy at creating the forward manager to give
-                # FORWARDING_TEST_URL a chance to be set
-                self.fmgr = ForwardManager(test_url)
             # Do our domain change magic
             url = urlparse(environ['reconstructed_url'])
             test_netloc = urlparse(test_url).netloc
-            referer = environ.get('HTTP_REFERER', None)
 
             if (self.fmgr.is_static_forwarded(url)):
                 environ = self.fmgr.forward(url, environ)
@@ -133,21 +134,24 @@ class WindmillProxyApplication(object):
                 environ = self.fmgr.forward(url, environ)
                 redirect_url = self.fmgr.forward_map(url).geturl()
                 if environ['REQUEST_METHOD'] == 'POST':
-                    response = proxy_post_redirect_form(environ, redirect_url)
-                    length = str(len(response))
-                    start_response("200 Ok", [('Content-Type', 'text/html',), 
-                                              ('Content-Length', length,),
+                    form = proxy_post_redirect_form(environ, redirect_url)
+                    forward_forms[redirect_url] = form
+                response = 'Windmill is forwarding you to a new url at the proper test domain'
+                length = str(len(response))
+                start_response("302 Found", [('Content-Type', 'text/plain',), 
+                                             ('Content-Length', length,),
+                                             ('Location', redirect_url), 
                                              ]+cache_additions)
-                else:
-                    response = 'Windmill is forwarding you to a new url at the proper test domain'
-                    length = str(len(response))
-                    start_response("302 Found", [('Content-Type', 'text/plain',), 
-                                                 ('Content-Length', length,),
-                                                 ('Location', redirect_url), 
-                                                 ]+cache_additions)
                 logger.debug('Domain change, forwarded to ' + redirect_url)
                 return [response]
-        
+            elif url.geturl() in forward_forms:
+                response = forward_forms[url.geturl()]
+                length = str(len(response))
+                start_response("200 Ok", [('Content-Type', 'text/html',), 
+                                          ('Content-Length', length,),
+                                         ]+cache_additions)
+                del forward_forms[url.geturl()]
+                return [response]
             elif (self.fmgr.is_forward_mapped(url)):
                 orig_url = self.fmgr.forward_unmap(url)
                 environ = self.fmgr.change_environ_domain(url, orig_url,
@@ -162,7 +166,7 @@ class WindmillProxyApplication(object):
                 orig_url = self.fmgr.forward_to(url, orig_referer)
                 environ = self.fmgr.change_environ_domain(url, orig_url, environ)
                 url = orig_url
-
+                self.fmgr.forward(orig_url, {}) # Take note of the forwarding
         def make_remote_connection(url, environ):
             # Create connection object
             try:
@@ -230,10 +234,10 @@ class WindmillProxyApplication(object):
                 return
             for host in self.fmgr.known_hosts():
                 orig_url = self.fmgr.forward_to(url, host)
-                connection = make_remote_connection(orig_url,
-                                 self.fmgr.change_environ_domain(
+                new_environ = self.fmgr.change_environ_domain(
                                         self.fmgr.forward_map(orig_url),
-                                        orig_url, environ))
+                                        orig_url, environ)
+                connection = make_remote_connection(orig_url, new_environ)
                 if isinstance(connection, HTTPConnection):
                     new_response = connection.getresponse()
                     if new_response.status > 199 and new_response.status < 399:
