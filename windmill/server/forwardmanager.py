@@ -133,7 +133,10 @@ class ForwardManager(object):
         return urlparse(forwarded_url)
 
     def parse_headers(self, headers, domain):
-        """ For now, just keep all cookies forever """
+        """ Store cookies for the given domain, or forget them if they're marked
+            for expiration.  Then remove the cookie header, as it'll be
+            incorrectly stored in the browser as corresponding to the test
+            domain. """
         if domain not in self.cookies:
             self.cookies[domain] = {}
         remove_headers = []
@@ -157,16 +160,21 @@ class ForwardManager(object):
                         dom = v
                     elif k.lower() == 'expires':
                         now = time.time()
-                        try:
-                            expires = time.strptime(v, '%a, %d-%b-%Y %H:%M:%S GMT')
-                        except ValueError:
-                            # No dashes?
+                        formats = ['%a, %d-%b-%Y %H:%M:%S GMT',
+                                   '%a, %d %b %Y %H:%M:%S GMT',
+                                   '%a, %d-%b-%y %H:%M:%S GMT',
+                                   '%a, %d %b %y %H:%M:%S GMT']
+                        found = False
+                        for f in formats:
                             try:
-                                expires = time.strptime(v, '%a, %d %b %Y %H:%M:%S GMT')
+                                expires = time.strptime(v, f)
+                                found = True
+                                break
                             except ValueError:
-                                continue # Meh, give up
-                        
-                        if time.time() > time.mktime(expires):
+                                pass # Continue with next format
+                        else:
+                            print "!!!!! Unable to parse expiration date:", v, "from cookie", value
+                        if found and time.time() > time.mktime(expires):
                             expired = True
                 if not dom in self.cookies:
                     self.cookies[dom] = {}
