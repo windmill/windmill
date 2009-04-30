@@ -76,8 +76,6 @@ class ForwardManager(object):
         newEnv = environ.copy()
         dst_host = "%s://%s" % (dstUrl.scheme, dstUrl.netloc)
         src_host = "%s://%s" % (srcUrl.scheme, srcUrl.netloc)
-        if 'HTTP_COOKIE' in newEnv:
-            del newEnv['HTTP_COOKIE']
         for key in newEnv:
             if type(newEnv[key]) is str:
                 if src_host in newEnv[key]:
@@ -86,9 +84,7 @@ class ForwardManager(object):
                     newEnv[key] = newEnv[key].replace(srcUrl.netloc, dstUrl.netloc)
                 elif srcUrl.scheme in ['http', 'https'] and srcUrl.scheme == newEnv[key]:
                     newEnv[key] = dstUrl.scheme
-        cookies = self.cookies_for(dstUrl.netloc)
-        if len(cookies) > 0:
-            newEnv['HTTP_COOKIE'] = cookies
+        self.set_cookies(dstUrl.netloc, environ)
         return newEnv
 
     def forward(self, url, environ):
@@ -194,6 +190,11 @@ class ForwardManager(object):
                 cookies += ["%s=%s" % c for c in self.cookies[d].items()]
         result = '; '.join(cookies)
         return result
+
+    def set_cookies(self, domain, environ):
+        environ['HTTP_COOKIE'] = self.cookies_for(domain)
+        if len(environ['HTTP_COOKIE']) == 0:
+            del environ['HTTP_COOKIE']
 
     def clear(self):
         self.forwarded = {}
