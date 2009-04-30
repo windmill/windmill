@@ -239,10 +239,13 @@ def runserver_action(shell_objects):
                 sleep(.25)
             
         teardown(shell_objects)
+        if windmill.test_has_failed:
+            sys.exit(1)
+        
 
     except KeyboardInterrupt:
         teardown(shell_objects)
-
+        sys.exit(1)
 
 def shell_action(shell_objects):
     """Start the windmill shell environment"""

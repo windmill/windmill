@@ -54,7 +54,10 @@ def getoutput(l):
     r = x.read() ; x.close()
     os.remove(tmp)
     return r
-    
+
+def dprint(s):
+    if len(s) is not 0:
+        print s.rstrip('\n')
 
 def find_default_interface_name():
     if windmill.settings['NETWORK_INTERFACE_NAME'] is not None:
@@ -104,21 +107,21 @@ class Safari(object):
 	                          interface_name, 'localhost', 
 	                          str(windmill.settings['SERVER_HTTP_PORT'])
 	                        ]
-	    getoutput(set_proxy_command)
+	    dprint(getoutput(set_proxy_command))
 	    enable_proxy_command = [ self.netsetup_binary, '-setwebproxystate',
 	                             interface_name, 'on'
 	                           ]
-	    getoutput(enable_proxy_command)	
+	    dprint(getoutput(enable_proxy_command))
 	    if windmill.has_ssl:
 	        set_ssl_proxy_command = [ self.netsetup_binary, '-setsecurewebproxy', 
     	                              interface_name, 'localhost', 
     	                              str(windmill.settings['SERVER_HTTP_PORT'])
     	                            ]
-    	    getoutput(set_proxy_command)
+    	    dprint(getoutput(set_proxy_command))
     	    enable_ssl_proxy_command = [ self.netsetup_binary, '-setsecurewebproxystate',
     	                                 interface_name, 'on'
     	                               ]
-    	    getoutput(enable_proxy_command)
+    	    dprint(getoutput(enable_proxy_command))
 	    
 	        
 	    self.create_redirect()

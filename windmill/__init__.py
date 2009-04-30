@@ -34,7 +34,7 @@ teardown_directories = []
 is_active = None
 in_shell = False
 block_exit = False
-
+test_has_failed = False
 runserver_running = False
 
 def get_test_url(url):

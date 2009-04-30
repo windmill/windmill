@@ -122,6 +122,7 @@ class WindmillFunctestRunner(functest.runner.FunctestRunnerInterface):
         logger.debug('Functest test passed: '+test.__name__)
     def test_function_failed(self, test):
         logger.error('Functest test failed: '+test.__name__)
+        windmill.test_has_failed = True
 
 class WindmillTestClientException(AssertionError):
     def __init__(self, result):
