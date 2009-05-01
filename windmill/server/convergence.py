@@ -124,6 +124,7 @@ class TestResolutionSuite(object):
         if self.result_processor is not None:
             if result is False:
                 self.result_processor.failure(test, debug=debug)
+                windmill.test_has_failed = True
             elif result is True:
                 self.result_processor.success(test, debug=debug)
             
