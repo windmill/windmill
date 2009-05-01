@@ -37,9 +37,9 @@ def get_firefox_controller():
     
     if windmill.settings['INSTALL_FIREBUG']:
         windmill.settings['MOZILLA_PLUGINS'] = [os.path.join(os.path.dirname(__file__), os.path.pardir, 'xpi', 'firebug-1.2.1-fx.xpi')]
-            
-    windmill.settings['MOZILLA_PREFERENCES'].update( {
-        'extensions.chromebug.openalways' : True,
+    
+    prop_hash = {
+                'extensions.chromebug.openalways' : True,
         'extensions.chromebug.showIntroduction' : False,
         'general.warnOnAboutConfig' : False,
         'extensions.venkman.enableChromeFilter' : False,
@@ -56,20 +56,18 @@ def get_firefox_controller():
         # Configure local proxy
         "network.proxy.http": 'localhost',
         "network.proxy.http_port": windmill.settings['SERVER_HTTP_PORT'],
-        "network.proxy.ssl": 'localhost',
-        "network.proxy.ssl_port": windmill.settings['SERVER_HTTP_PORT'],
         "network.proxy.no_proxies_on": "",
         "network.proxy.type": 1,
         #"network.http.proxy.pipelining" : True,
         "network.http.max-connections": 10,
         "network.http.max-connections-per-server": 8,
-#        "network.http.max-persistent-connections-per-proxy": 2,
-#        "network.http.max-persistent-connections-per-server": 2,
+    #        "network.http.max-persistent-connections-per-proxy": 2,
+    #        "network.http.max-persistent-connections-per-server": 2,
         "network.http.pipelining.maxrequests": 10,
-        
+
         # Turn off favicon requests, no need for even more requests
         "browser.chrome.favicons": False,
-        
+
         "startup.homepage_override_url": test_url,
         "browser.startup.homepage": test_url,
         "startup.homepage_welcome_url": "",
@@ -95,7 +93,13 @@ def get_firefox_controller():
         "security.OCSP.enabled":0,
         #Make the firefox IDE stop showing the location bar
         "dom.disable_window_open_feature.location":False,
-        } )
+    }
+    
+    if windmill.has_ssl:
+         prop_hash["network.proxy.ssl"] = 'localhost'
+         prop_hash["network.proxy.ssl_port"] = windmill.settings['SERVER_HTTP_PORT']
+       
+    windmill.settings['MOZILLA_PREFERENCES'].update(prop_hash)
         
     windmill.settings['MOZILLA_CMD_ARGS'] = [test_url]
     
