@@ -135,7 +135,6 @@ class ForwardManager(object):
             domain. """
         if domain not in self.cookies:
             self.cookies[domain] = {}
-        remove_headers = []
         for header in headers:
             key, value = header
             if key == 'set-cookie':
@@ -179,9 +178,6 @@ class ForwardManager(object):
                         del self.cookies[dom][cookiekey]
                 else:
                     self.cookies[dom][cookiekey] = cookieval
-                    remove_headers.append(header)
-        for header in remove_headers:
-            headers.remove(header)
 
     def cookies_for(self, domain):
         cookies = []
