@@ -64,7 +64,11 @@ class Chrome(safari.Safari):
 	    if sys.platform in ('cygwin', 'win32'):
 	        self.set_proxy_windows()
 	    
-	    kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
+        if not hasattr(sys.stdout, 'fileno'):
+            # Workaround bug in nose
+            kwargs = {'stdout':sys.__stdout__ ,'stderr':sys.__stderr__, 'stdin':sys.stdin}
+        else:
+            kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
 	    command = [self.chrome_binary, '--homepage', self.test_url+'/windmill-serv/start.html', '-disable-popup-blocking']
 	    self.p_handle = subprocess.Popen(command, **kwargs)
 	    logger.info(command)
