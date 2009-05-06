@@ -167,8 +167,6 @@ class ForwardManager(object):
                                 break
                             except ValueError:
                                 pass # Continue with next format
-                        else:
-                            print "!!!!! Unable to parse expiration date:", v, "from cookie", value
                         if found and time.time() > time.mktime(expires):
                             expired = True
                 if not dom in self.cookies:
@@ -188,6 +186,7 @@ class ForwardManager(object):
         return result
 
     def set_cookies(self, domain, environ):
+        return # Remove this line to enable cookie handling
         environ['HTTP_COOKIE'] = self.cookies_for(domain)
         if len(environ['HTTP_COOKIE']) == 0:
             del environ['HTTP_COOKIE']
