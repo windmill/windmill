@@ -59,11 +59,11 @@ class InternetExplorer(object):
         # 
         # wreg.SetValueEx(allow_reg, urlparse(windmill.settings['TEST_URL']).hostname,
         #                 0, wreg.REG_BINARY, None)
-        if not hasattr(sys.stdout, 'fileno'):
-            # Workaround bug in nose
-            kwargs = {'stdout':sys.__stdout__ ,'stderr':sys.__stderr__, 'stdin':sys.stdin}
-        else:
+        #Workaround for but in nose
+        if hasattr(sys.stdout, 'fileno'):
             kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
+        else:
+            kwargs = {'stdout':sys.__stdout__ ,'stderr':__sys.stderr__, 'stdin':sys.stdin}
         
         self.p_handle = killableprocess.Popen(self.cmd, **kwargs)
         

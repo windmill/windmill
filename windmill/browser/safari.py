@@ -146,13 +146,11 @@ class Safari(object):
 	        self.set_proxy_mac()
 	    elif sys.platform in ('cygwin', 'win32'):
 	        self.set_proxy_windows()
-	    
-       if not hasattr(sys.stdout, 'fileno'):
-            # Workaround bug in nose
-            kwargs = {'stdout':sys.__stdout__ ,'stderr':sys.__stderr__, 'stdin':sys.stdin}
-        else:
-            kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}    
-	    
+	    # Workaround for bug in nose
+	    if hasattr(sys.stdout, 'fileno'):
+	        kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
+	    else:
+	        kwargs = {'stdout':sys.__stdout__ ,'stderr':sys.__stderr__, 'stdin':sys.stdin}
 	    self.p_handle = killableprocess.runCommand([self.safari_binary, self.redirection_page], **kwargs)
 	    logger.info([self.safari_binary, self.redirection_page])
 
