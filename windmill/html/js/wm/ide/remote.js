@@ -197,7 +197,10 @@ windmill.ui.remote = new function() {
       
       //change all of the old suite names
       var re = new RegExp(suiteName, "g");
-      jQuery(oldSuite).html(oldSuite.innerHTML.replace(re, newSN));
+      var header = jQuery("#"+oldSuite.id+" > .suiteHeader"); 
+      //jQuery(oldSuite).html(oldSuite.innerHTML.replace(re, newSN));
+      jQuery(header).html(header.html().replace(re, newSN));
+      
       windmill.ui.currentSuite = newSN;
     };
     
