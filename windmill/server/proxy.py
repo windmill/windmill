@@ -248,7 +248,6 @@ class WindmillProxyApplication(object):
                                     host.geturl())
                         new_response.url = connection.url
                         return new_response
-        self.fmgr.set_cookies(url.netloc, environ)
         connection = make_remote_connection(url, environ)
         # This following code is ugly.  It should be refactored in to some
         # elegant way to decide when to retry, and which URLs to retry.
