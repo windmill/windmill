@@ -14,6 +14,7 @@
 
 import windmill
 from urlparse import urlparse
+import sys
 from pkg_resources import resource_string
 
 import os
@@ -108,7 +109,13 @@ def get_firefox_controller():
     # Override cert8.db with one from windmill which has windmill certificate
     # in it, that way self-signed certificate warning is suppressed.
     cert8 = resource_string(__name__, 'cert8.db')
-    open(os.path.join(controller.profile, 'cert8.db'), 'w').write(cert8)
+    if sys.platform not in ('win32', 'cygwin',):
+        f = open(os.path.join(controller.profile, 'cert8.db'), 'w')        
+    else:
+        f = open(os.path.join(controller.profile, 'cert8.db'), 'wb')
+        
+    f.write(cert8)
+    f.close()    
     windmill.settings['MOZILLA_PROFILE'] = mozrunner.settings['MOZILLA_PROFILE']
     return controller
     
