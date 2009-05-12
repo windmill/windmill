@@ -165,12 +165,30 @@ class NoCompress(GeneralBoolSettingToTrue):
     option_names = (None, 'nocompress')
     setting = "DISABLE_JS_COMPRESS"
     
-class NoSSL(object):
-    """Disable SSL support."""
-    option_names = (None, 'nossl')
+class SSL(GeneralBool):
+    """Enable SSL support."""
+    option_names = (None, 'ssl')
     def __call__(self, value=None):
         import windmill
-        windmill.has_ssl = False
+        try:
+            import OpenSSL
+            windmill.has_ssl = True
+        except ImportError:
+            print "*" * 60
+            print "*** HTTPS Support is disabled, as PyOpenSSL was not found."
+            print "*** Please install PyOpenSSL."
+            print "*" * 60
+            windmill.has_ssl = False
+            
+        if 'ie' in sys.argv or 'safari' in sys.argv or 'chrome' in sys.argv:
+            print "*" * 60
+            print "* Windmill cannot automatically install the Certificate Authority."
+            print "* You will need to do this manually, the process is fully documented."
+            if sys.platform in ('win32', 'cygwin'): 
+                print "* http://trac.getwindmill.com/wiki/SSL#InstallingCAonWindows"
+            else:
+                print "* http://trac.getwindmill.com/wiki/SSL#InstallingCAonMacOSX"
+            print "*" * 60
     
 class Port(object):
     """Set port for windmill to run. Default is 4444."""
