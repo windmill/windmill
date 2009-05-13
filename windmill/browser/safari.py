@@ -59,7 +59,7 @@ def dprint(s):
     if len(s) is not 0:
         print s.rstrip('\n')
     if 'Library/Preferences/SystemConfiguration/preferences.plist.old' in s:
-        print "** To remove this error $ chmod -R 777 /Library/Preferences/SystemConfiguration/"
+        print "** To remove this error $ chmod -R 777"
 
 def find_default_interface_name():
     if windmill.settings['NETWORK_INTERFACE_NAME'] is not None:
@@ -67,10 +67,14 @@ def find_default_interface_name():
     target_host = urlparse.urlparse(windmill.settings['TEST_URL']).hostname
     x = ['/sbin/route', 'get', target_host]
     interface_id = getoutput(x).split('interface:')[1]
-    interface_id = interface_id.split('\n')[:1][0].rstrip()
+    interface_id = interface_id.split('\n')[:1][0].replace(' ', '')
     all_inet = getoutput([windmill.settings['NETWORKSETUP_BINARY'], '-listallhardwareports']).split('\n\n')
     try:
-        interface_name = [ l for l in all_inet if l.find(interface_id) is not -1 ][0].split('\n')[0].split(' ')[-1]
+        interface_name = [ l for l in all_inet if l.find(interface_id) is not -1 ][0].split('\n')[0].split(':')[-1]
+        if interface_name[0] == ' ':
+            interface_name = interface_name.strip()
+        if interface_name[-1] == ' ':
+            interface_name = interface_name.rstrip()
     except IndexError:
         print "ERROR: Cannot figure out interface name, please set NETWORK_INTERFACE_NAME in local settings file"
         from windmill.bin import admin_lib
