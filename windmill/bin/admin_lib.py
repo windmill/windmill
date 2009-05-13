@@ -242,7 +242,6 @@ def runserver_action(shell_objects):
         if windmill.test_has_failed:
             sys.exit(1)
         
-
     except KeyboardInterrupt:
         teardown(shell_objects)
         sys.exit(1)
