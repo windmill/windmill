@@ -340,9 +340,14 @@ windmill.xhr = new function() {
         var output = $(aid+"result");
         windmill.xhr.action_timer.endTime();
 
-        if (result != true) {
+        if (!result) {
             if (action != null) { action.style.background = '#FF9692'; }
-            if (output != null) { output.style.background = '#FF9692'; }
+            if (output != null) { //output.style.background = '#FF9692'; 
+              output.removeAttribute('class');
+              output.removeAttribute('style');
+              output.className = "ui-state-error ui-corner-all outputEntry";
+              output.style.height = "13px";
+            }
             
             // windmill.out("<br>Action: <b>" + obj.method + 
             // "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
