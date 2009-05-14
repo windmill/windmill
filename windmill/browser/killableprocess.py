@@ -8,6 +8,7 @@
 # Additions and modifications written by Benjamin Smedberg
 # <benjamin@smedbergs.us> are Copyright (c) 2006 by the Mozilla Foundation
 # <http://www.mozilla.org/>
+#   Copyright (c) 2008-2009 Mikeal Rogers <mikeal.rogers@gmail.com>
 #
 # By obtaining, using, and/or copying this software and/or its
 # associated documentation, you agree that you have read, understood,
