@@ -265,7 +265,7 @@ class WindmillProxyApplication(object):
             response.url = connection.url
 
         if not isinstance(connection, HTTPConnection) or \
-            response.status in [301, 302, 403, 404, 500]:
+            response.status > 200:
             # if it's not an HTTPConnection object then the request failed
             # so we should retry
             new_response = retry_known_hosts(url, environ)
