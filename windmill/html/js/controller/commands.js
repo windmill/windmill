@@ -117,7 +117,7 @@ windmill.controller.commands.getControllerMethods = function (paramObject){
 };
   
 //Keeping the suites running 
-windmill.controller.commands.setOptions = function (paramObject){
+windmill.controller.commands.setOptions = function (paramObject){  
   if(typeof paramObject.stopOnFailure != "undefined") {
     windmill.stopOnFailure = paramObject.stopOnFailure;
   }
@@ -130,7 +130,7 @@ windmill.controller.commands.setOptions = function (paramObject){
     else{ windmill.serviceDelay = 1000; }
   }
   //Send to the server
-  sendCommandResult(res, paramObject.uuid, 'true');
+  sendCommandResult(true, paramObject.uuid, 'true');
   return true;
 };
 

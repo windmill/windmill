@@ -138,7 +138,8 @@ windmill.ui.playback = new function() {
       windmill.ui.recorder.recordOff();
       windmill.ui.domexplorer.domExplorerOff();
       windmill.ui.assertexplorer.assertExplorerOff();
-
+      windmill.runTests = true;
+      
       var appending = false;
       var testArray = [];
 
