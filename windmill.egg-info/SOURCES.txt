@@ -630,4 +630,5 @@ windmill/tools/__init__.py
 windmill/tools/dev_environment.py
 windmill/tools/json_tools.py
 windmill/tools/server_tools.py
+windmill/tools/urlparse_25.py
 windmill/xpi/firebug-1.2.1-fx.xpi

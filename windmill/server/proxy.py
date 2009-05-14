@@ -1,6 +1,7 @@
 #   Copyright (c) 2006-2007 Open Source Applications Foundation
 #   Copyright (c) 2008-2009 Mikeal Rogers <mikeal.rogers@gmail.com>
 #   Copyright (c) 2009 Canonical Ltd.
+#   Copyright (c) 2009 Domen Kozar <domen@dev.si>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -17,12 +18,17 @@
 import windmill
 
 from httplib import HTTPConnection
-from urlparse import urlparse
 import copy
+import sys
 import logging
 import urllib
 logger = logging.getLogger(__name__)
 from forwardmanager import ForwardManager
+if not sys.version.startswith('2.4'):
+    from urlparse import urlparse
+else:
+    # python 2.4
+    from windmill.tools.urlparse_25 import urlparse
 
 first_forward_domains = []
 exclude_from_retry = ['http://sb-ssl.google.com',

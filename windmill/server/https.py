@@ -1,5 +1,6 @@
 #   Copyright (c) 2009 Canonical Ltd.
 #   Copyright (c) 2009 Mikeal Rogers <mikeal.rogers@gmail.com>
+#   Copyright (c) 2009 Domen Kozar <domen@dev.si>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -23,7 +24,6 @@
 import time
 import socket
 import select
-from urlparse import urlparse, urlunparse
 import urllib
 import SocketServer
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
@@ -33,6 +33,12 @@ from httplib import HTTPConnection, HTTPException
 import traceback
 import sys
 import windmill
+if not sys.version.startswith('2.4'):
+    from urlparse import urlparse, urlunparse
+else:
+    # python 2.4
+    from windmill.tools.urlparse_25 import urlparse, urlunparse
+
 
 import logging
 logger = logging.getLogger(__name__)
@@ -139,37 +145,38 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
         """ Handle CONNECT commands.  Just set up SSL and restart. """
         request = None
         try:
-            self.log_request(200)
-            self.wfile.write(self.protocol_version +
-                             ' 200 Connection established\r\n')
-            self.wfile.write('Proxy-agent: %s\r\n' % self.version_string())
-            self.wfile.write('\r\n')
-            if not windmill.has_ssl:
-                return
-            request = self.connection
-            connstream = _ssl_wrap_socket(self.connection,
-                           server_side=True,
-                           certfile=self.server.cert_creator[self.path].certfile)
-
-            self.request = connstream
-            # And here we go again!
-            # setup...
-            self.base_path = 'https://' + self.path
-            if self.base_path.endswith(':443'):
-                self.base_path = self.base_path[:-4]
-            self.connection = self.request
-            self.rfile = socket._fileobject(self.connection, 'rb', self.rbufsize)
-            self.wfile = socket._fileobject(self.connection, 'wb', self.wbufsize)
-            # handle...
             try:
-                self.handle()
-                self.finish()
-            finally:
-                sys.exc_traceback = None    # Help garbage collection
-                #self.connection.close()
-        except socket.error, err:
-            logger.debug("%s while serving (%s) %s" % (err,
-                                              self.command, self.path))
+                self.log_request(200)
+                self.wfile.write(self.protocol_version +
+                                 ' 200 Connection established\r\n')
+                self.wfile.write('Proxy-agent: %s\r\n' % self.version_string())
+                self.wfile.write('\r\n')
+                if not windmill.has_ssl:
+                    return
+                request = self.connection
+                connstream = _ssl_wrap_socket(self.connection,
+                               server_side=True,
+                               certfile=self.server.cert_creator[self.path].certfile)
+
+                self.request = connstream
+                # And here we go again!
+                # setup...
+                self.base_path = 'https://' + self.path
+                if self.base_path.endswith(':443'):
+                    self.base_path = self.base_path[:-4]
+                self.connection = self.request
+                self.rfile = socket._fileobject(self.connection, 'rb', self.rbufsize)
+                self.wfile = socket._fileobject(self.connection, 'wb', self.wbufsize)
+                # handle...
+                try:
+                    self.handle()
+                    self.finish()
+                finally:
+                    sys.exc_traceback = None    # Help garbage collection
+                    #self.connection.close()
+            except socket.error, err:
+                logger.debug("%s while serving (%s) %s" % (err,
+                                                  self.command, self.path))
         finally:
             if request is not None:
                 request.close()

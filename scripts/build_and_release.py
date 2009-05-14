@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 #   Copyright (c) 2007 Mikeal Rogers
+#   Copyright (c) 2009 Domen Kozar <domen@dev.si>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -96,18 +97,19 @@ def main():
     passed = False
     remove_old()
     try:
-        print "building...."
-        build()
-        print "testing install...."
-        test_install()
-        print "uploading to cheeseshop...."
-        upload_new_version()
-        print "rolling version to next...."
-        roll_version(is_release=False)
-        passed = True
-    except:
-        print 'exception'
-        passed = False
+        try:
+            print "building...."
+            build()
+            print "testing install...."
+            test_install()
+            print "uploading to cheeseshop...."
+            upload_new_version()
+            print "rolling version to next...."
+            roll_version(is_release=False)
+            passed = True
+        except:
+            print 'exception'
+            passed = False
     finally:
         remove_old()
         if rolled_release_version:

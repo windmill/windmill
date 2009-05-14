@@ -1,5 +1,6 @@
 #   Copyright (c) 2006-2007 Open Source Applications Foundation
 #   Copyright (c) 2008-2009 Mikeal Rogers <mikeal.rogers@gmail.com>
+#   Copyright (c) 2009 Domen Kozar <domen@dev.si>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,12 +16,17 @@
 
 import time
 import httplib, urllib, copy
-from urlparse import urlparse
 import xmlrpclib
+import sys
 try:
     import json as simplejson
 except:
     import simplejson
+if not sys.version.startswith('2.4'):
+    from urlparse import urlparse
+else:
+    # python 2.4
+    from windmill.tools.urlparse_25 import urlparse
 import logging
 
 __version__ = str(0.1)

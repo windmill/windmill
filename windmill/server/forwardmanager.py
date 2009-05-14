@@ -1,5 +1,6 @@
 #   Copyright (c) 2009 Canonical Ltd.
 #   Copyright (c) 2009 Mikeal Rogers <mikeal.rogers@gmail.com>
+#   Copyright (c) 2009 Domen Kozar <domen@dev.si>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,9 +16,14 @@
 #
 #   Contributor: Anthony Lenton <anthony.lenton@canonical.com>
 
-from urlparse import urlparse
 import proxy
 import time
+import sys
+if not sys.version.startswith('2.4'):
+    from urlparse import urlparse
+else:
+    # python 2.4
+    from windmill.tools.urlparse_25 import urlparse
 
 def normalize(scheme, netloc):
     if scheme == '':

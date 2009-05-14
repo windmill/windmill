@@ -1,5 +1,6 @@
 #   Copyright (c) 2006-2007 Open Source Applications Foundation
 #   Copyright (c) 2008-2009 Mikeal Rogers <mikeal.rogers@gmail.com> 
+#   Copyright (c) 2009 Domen Kozar <domen@dev.si>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,8 +14,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import authoring, bin, browser, server, conf, tools
-from urlparse import urlparse
+import authoring, bin, browser, server, conf, tools, sys
+if not sys.version.startswith('2.4'):
+    from urlparse import urlparse
+else:
+    # python 2.4
+    from windmill.tools.urlparse_25 import urlparse
 
 # This is for some event driven framework code latched on to windmill
 TESTS_COMPLETED = False

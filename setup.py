@@ -1,4 +1,6 @@
 #   Copyright (c) 2006-2007 Open Source Applications Foundation
+#   Copyright (c) 2008-2009 Mikeal Rogers <mikeal.rogers@gmail.com>
+#   Copyright (c) 2009 Domen Kozar <domen@dev.si>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -39,9 +41,13 @@ dependencies =  ['wsgi_jsonrpc >= 0.2.2',
 
 two_five_dependencies = [ 'simplejson >= 1.7.1',
                         ]
+two_four_dependencies = ['uuid']
 
 if not sys.version.startswith('2.6'):
     dependencies.extend(two_five_dependencies)
+
+if sys.version.startswith('2.4'):
+    dependencies.extend(two_four_dependencies)
     
 if sys.platform == 'cygwin':
     dependencies.append('cygwinreg')
@@ -67,7 +73,7 @@ setup(name=PACKAGE_NAME,
                 'console_scripts': [
                     'windmill = windmill.bin.windmill_bin:main'
                     ]
-                },      
+                },
       # entry_points="""
       #   [console_scripts]
       #   windmill = windmill.bin.windmill_bin:main
