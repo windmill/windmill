@@ -128,9 +128,9 @@ class WindmillProxyApplication(object):
         # forward but we must disable for localhost as redirects to localhost
         # will cause the browser to error.
         if windmill.settings['FORWARDING_TEST_URL'] is not None and (
-#           not url.netloc.startswith('localhost') ) and (
-#           not url.netloc.startswith('127.0.0.1') ) and (
-           conditions_pass(environ) ):
+                       not url.netloc.startswith('localhost') ) and (
+                       not url.netloc.startswith('127.0.0.1') ) and (
+                       conditions_pass(environ) ):
             # Do our domain change magic
             url = urlparse(environ['reconstructed_url'])
             test_netloc = urlparse(test_url).netloc
