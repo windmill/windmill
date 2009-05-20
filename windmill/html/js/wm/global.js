@@ -107,11 +107,11 @@ var handleVariable = function (val){
     for (var i = 0; i < matches.length; i++){
       var m = matches[i];
       if (windmill.varRegistry.hasKey(m)){
-        ret = windmill.helpers.replaceAll(val, m, windmill.varRegistry.getByKey(m));
+        ret = windmill.helpers.replaceAll(ret, m, windmill.varRegistry.getByKey(m));
       }
       //if it doesn't exist and contains the string random we create it (username or pass etc)
       else if (m.indexOf('random') != -1){
-        ret = val.replace(m, windmill.varRegistry.addItemCreateValue(m));
+        ret = ret.replace(m, windmill.varRegistry.addItemCreateValue(m));
       }
     }
   }
