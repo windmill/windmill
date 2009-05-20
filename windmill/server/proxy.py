@@ -263,9 +263,14 @@ class WindmillProxyApplication(object):
         if isinstance(connection, HTTPConnection):
             response = connection.getresponse()
             response.url = connection.url
+            
+        if environ['REQUEST_METHOD'] == 'POST':
+            threshold = 399
+        else:
+            threshold = 200 
 
         if not isinstance(connection, HTTPConnection) or \
-            response.status > 200:
+            response.status > threshold:
             # if it's not an HTTPConnection object then the request failed
             # so we should retry
             new_response = retry_known_hosts(url, environ)

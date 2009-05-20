@@ -8,7 +8,7 @@ def test_google_switch_to_yahoo():
     client.click(name=u'q')
     client.type(text=u'wikipedia', name=u'q')
     client.click(name=u'btnG')
-    client.waits.forElement(xpath=u"//div[@id='res']/div/ol/li/h3[1]/a/em", timeout=u'8000')
+    client.waits.forElement(xpath=u"//ol[@id='rso']/li/h3[1]/a/em", timeout=u'8000')
     client.click(xpath=u"//div[@id='res']/div/ol/li/h3[1]/a/em")
     client.waits.forPageLoad(timeout=u'20000')
     client.asserts.assertJS(js=u"windmill.testWin().document.title == 'Wikipedia'")
