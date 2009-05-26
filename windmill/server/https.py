@@ -354,6 +354,12 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
     def stop(self):
         self.xmlrpc_methods_instance.stop_runserver()
         WindmillHTTPServer.ready = False
+        try:
+            s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            s.connect(self.server_address)
+            s.send("\n")
+        except socket.error:
+            pass
 
     def handle_error(self, request, client_address):
         print '-' * 40
