@@ -306,16 +306,21 @@
       document.documentElement;
     for (var i = 0; i < scriptsArr.length; i++){
       var scriptTag = document.createElement('script');
-      // In Safari, order-of-loading problems appear if
+      // In Safari and IE, order-of-loading problems appear if
       // try to just set the src of the appended script
       // Use sync XHR to pull down the source and set
       // it directly as the text in the script node
       // FIXME: Maybe do the sync XHR call with JQuery so
       // there's no need for fleegix.js embedded directly
       // on the page -- I couldn't make it work
-      if (fleegix.ua.isSafari) {
+      if (fleegix.ua.isSafari || fleegix.ua.isIE) {
         var code = fleegix.xhr.get(scriptsArr[i]);
-        scriptTag.appendChild(document.createTextNode(code));
+        if (fleegix.ua.isSafari) {
+          scriptTag.appendChild(document.createTextNode(code));
+        }
+        else {
+          scriptTag.text = code;
+        }
       }
       // Other browsers settting src works fine
       else {

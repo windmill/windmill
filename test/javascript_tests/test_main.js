@@ -18,4 +18,11 @@ var test_main = new function () {
   }
 };
 
+/*
+var test_foo = function () { alert('this is foo'); }
+var test_bar = function () { alert('this is bar'); }
+var test_baz = function () { alert('this is baz'); }
+var test_qux = function () { alert('this is qux'); }
+*/
+
 
