@@ -33,6 +33,19 @@ windmill.jsTest = new function () {
   var testPhases = '';
   var testListReverseMap = {};
   var _ieDebugger;
+  var _timerCode =
+    '      windmill.jsTest.Timer = function () {' +
+    '        this.startTime = null;' +
+    '        this.endTime = null;' +
+    '        this.time = null;' +
+    '        this.start = function () {' +
+    '          this.startTime = new Date().getTime();' +
+    '        };' +
+    '        this.finish = function () {' +
+    '          this.endTime = new Date().getTime();' +
+    '          this.time = this.endTime - this.startTime;' +
+    '        };' +
+    '      };';
 
   var _log = function (s) {
     if (_debug) {
@@ -319,23 +332,10 @@ windmill.jsTest = new function () {
     testFilter = paramObj.filter || null;
     testPhases = paramObj.phase || null;
 
-    for (var i = 0; i < testFiles.length; i++) {
-      var t = testFiles[i];
-      if (t.indexOf('/register.js') > -1) {
-        regIndex = i;
-      }
-    }
-    // Get any specific test registrations
-    // Exec this file in the remote's window scope
-    // to call registerTests or registerTestNamespace
-    if (typeof regIndex == 'number') {
-      this.regFile = true;
-      var regPath = testFiles[regIndex];
-      testFiles.splice(regIndex, 1);
-      this.doTestRegistration(regPath);
-    }
     // Remove any directories or non-js files returned
+    var t;
     for (var i = 0; i < testFiles.length; i++) {
+      t = testFiles[i];
       if (t.indexOf('\.js') == -1) {
         _this.sendJSReport('(Loading of test code)', false, null, new windmill.TimeObj());
         _this.teardown();
@@ -347,26 +347,6 @@ windmill.jsTest = new function () {
     this.testFiles = testFiles;
     return true;
   };
-  // Grab any ordered list of tests to run if register.js exists
-  this.doTestRegistration = function(path) {
-    var str = this.getFile(path);
-    // Eval in window scope
-    globalEval(path, str, false);
-    return true;
-  };
-  // Can be called from the eval of an register.js file --
-  // registers all the tests to be run, in order
-  this.registerTests = function (arr) {
-    this.testNamespaces = combineLists(this.testNamespaces, arr);
-  };
-  // Can be called from the eval of a register.js file --
-  // parses a JS namespace object for functions that
-  // start with 'test_'. Does not *guarantee* the order of
-  // tests run, but all existing ECMAScript implementations
-  // actually do a for/in in the order properties are added
-  this.registerTestNamespace = function (name) {
-    this.testNamespaces.push(name);
-  };
   // Grab the contents of the test files, and eval
   // them in window scope
   this.loadTestFiles = function () {
@@ -376,17 +356,14 @@ windmill.jsTest = new function () {
     jsFilesBasePath = serverBasePath + '/windmill-jstest/';
 
     // Create a ref to the windmill object in the testing app
-    try {
-      windmill.testWin().windmill = windmill;
-    } catch (err){
-      windmill.testWin().windmill = windmill;
-    }
-
+    windmill.testWin().windmill = windmill;
     // Load the asserts into the test window scope
     // as the 'jum' object
-    if (this.runInTestWindowScope) {
-      windmill.testWin().jum = windmill.controller.asserts;
-    }
+    windmill.testWin().jum = windmill.controller.asserts;
+    // Create the timer object down in the test
+    // window using global eval so IE can
+    // recognize it as a function
+    globalEval('<private var _timerCode string value>', _timerCode, true);
 
     loadedJSCodeFiles = {};
     // The aggregated source code for the tests
