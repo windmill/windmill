@@ -252,9 +252,9 @@ var windmill = new function() {
         }
       else {
         try {
-          w.detachEvent("onunload", windmill.unloaded);
+          w.detachEvent("onbeforeunload", windmill.unloaded);
         } catch(err){}
-        w.attachEvent("onunload", windmill.unloaded)
+        w.attachEvent("onbeforeunload", windmill.unloaded)
       }
     };
     
