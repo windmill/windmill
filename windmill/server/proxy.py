@@ -250,7 +250,10 @@ class WindmillProxyApplication(object):
                                         orig_url, environ)
                 connection = make_remote_connection(orig_url, new_environ)
                 if isinstance(connection, HTTPConnection):
-                    new_response = connection.getresponse()
+                    try:
+                        new_response = connection.getresponse()
+                    except:
+                        return
                     if new_response.status > 199 and new_response.status < 399:
                         logger.info('Retry success, ' + url.geturl() + ' to ' +
                                     host.geturl())
