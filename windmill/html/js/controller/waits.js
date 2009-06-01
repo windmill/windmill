@@ -69,7 +69,7 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
       // the array-test loop, or the normal test loop, by calling
       // the passed-in callback
       if (isJsTest) {
-        var msg = 'Wait timed out after ' + timeout + ' seconds.';
+        var msg = 'Wait timed out after ' + timeout + ' milliseconds.';
         jsTest.waitsCallback.call(jsTest, p.testName, new Error(msg));
         return;
       }
