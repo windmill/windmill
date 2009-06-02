@@ -307,8 +307,9 @@ class WindmillProxyApplication(object):
     def parse_headers(self, response):
         headers = [(x.lower(), y) for x, y in [z.split(':', 1) for z in
                              str(response.msg).splitlines() if ':' in z]]
-        if self.fmgr is not None:
-            self.fmgr.parse_headers(headers, response.url.netloc)
+        #all this does is cookie management, which we currently turned off
+        #if self.fmgr is not None:
+            #self.fmgr.parse_headers(headers, response.url.netloc)
         for header in headers:
             if is_hop_by_hop(header[0]):
                 headers.remove(header)
