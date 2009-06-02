@@ -34,6 +34,7 @@ first_forward_domains = []
 exclude_from_retry = ['http://sb-ssl.google.com',
                       'https://sb-ssl.google.com', 
                       'http://en-us.fxfeeds.mozilla.com',
+                      'fxfeeds.mozilla.com',
                       ]
 
 # Note that hoppish conntains proxy-connection, which is pre-HTTP-1.1 and
