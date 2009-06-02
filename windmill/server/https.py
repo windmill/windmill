@@ -255,9 +255,7 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
             env['REMOTE_HOST'] = host
         env['REMOTE_ADDR'] = self.client_address[0]
 
-        if self.headers.typeheader is None:
-            env['CONTENT_TYPE'] = self.headers.type
-        else:
+        if self.headers.typeheader is not None:
             env['CONTENT_TYPE'] = self.headers.typeheader
 
         length = self.headers.getheader('content-length')

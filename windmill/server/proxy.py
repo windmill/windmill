@@ -148,14 +148,10 @@ class WindmillProxyApplication(object):
                 if environ['REQUEST_METHOD'] == 'POST':
                     form = proxy_post_redirect_form(environ, redirect_url)
                     forward_forms[redirect_url] = form
-                response = 'Windmill is forwarding you to a new url at the proper test domain'
-                length = str(len(response))
-                start_response("302 Found", [('Content-Type', 'text/plain',), 
-                                             ('Content-Length', length,),
-                                             ('Location', redirect_url), 
+                start_response("302 Found", [('Location', redirect_url), 
                                              ]+cache_additions)
                 logger.debug('Domain change, forwarded to ' + redirect_url)
-                return [response]
+                return ['']
             elif url.geturl() in forward_forms:
                 response = forward_forms[url.geturl()]
                 length = str(len(response))
