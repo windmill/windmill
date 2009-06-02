@@ -56,6 +56,7 @@ test/javascript_tests/jum_basics.js
 test/javascript_tests/scope.js
 test/javascript_tests/shared.js
 test/javascript_tests/test_main.js
+test/javascript_tests/timer.js
 test/javascript_tests/wait_xhr.js
 test/local_tests/__init__.py
 test/local_tests/test_assert.py
