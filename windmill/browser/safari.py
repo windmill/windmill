@@ -86,13 +86,16 @@ def find_default_interface_name():
     target_host = urlparse.urlparse(windmill.settings['TEST_URL']).hostname
     x = ['/sbin/route', 'get', target_host]
     interface_id = [l for l in getoutput(x).splitlines() if 'interface' in l][0].split(":")[-1].strip()
-    all_inet = getoutput([windmill.settings['NETWORKSETUP_BINARY'], '-listallhardwareports']).split('\n\n')
+    all_inet = getoutput([windmill.settings['NETWORKSETUP_BINARY'], '-listallhardwareports']).splitlines()
     try:
-        interface_name = [ l for l in all_inet if l.find(interface_id) is not -1 ][0].split('\n')[0].split(':')[-1]
-        if interface_name[0] == ' ':
-            interface_name = interface_name.strip()
-        if interface_name[-1] == ' ':
-            interface_name = interface_name.rstrip()
+        i = all_inet.index([l for l in all_inet if 'Device: '+interface_id in l][0])
+        interface_name = all_inet[i - 1].split(':')[-1].strip()
+
+        # interface_name = [ l for l in all_inet if l.find(interface_id) is not -1 ][0].split('\n')[0].split(':')[-1]
+        # if interface_name[0] == ' ':
+        #     interface_name = interface_name.strip()
+        # if interface_name[-1] == ' ':
+        #     interface_name = interface_name.rstrip()
     except IndexError:
         print "ERROR: Cannot figure out interface name, please set NETWORK_INTERFACE_NAME in local settings file"
         from windmill.bin import admin_lib
