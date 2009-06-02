@@ -133,13 +133,14 @@ class WindmillProxyApplication(object):
                        conditions_pass(environ) ):
             # Do our domain change magic
             url = urlparse(environ['reconstructed_url'])
-            test_netloc = urlparse(test_url).netloc
+            test_target = urlparse(test_url)
+            #test_netloc = urlparse(test_url).netloc
 
             if (self.fmgr.is_static_forwarded(url)):
                 environ = self.fmgr.forward(url, environ)
                 url = self.fmgr.forward_map(url)
-
-            elif ( url.netloc != test_netloc ):
+            
+            elif ( url.scheme+"://"+url.netloc != test_target.scheme+"://"+test_target.netloc ):
                 # if the url's network address is not the test URL that has
                 # been set we need to return a forward
                 environ = self.fmgr.forward(url, environ)
