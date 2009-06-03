@@ -208,8 +208,7 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
         # == New non-blocking code ==
         try:
             for out in result:
-                self.wfile.write(out)
-                self.wfile.flush()
+                self.write(out)
         except socket.error, err:
             logger.debug("%s while serving (%s) %s" % (err,self.command, self.path))
         
@@ -229,21 +228,29 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
             raise AssertionError("Headers already set!")
 
         self.headers_set[:] = [status, headers]
+        status, response_headers = self.headers_sent[:] = self.headers_set
+        code, message = status.split(' ', 1)
+        self.send_response(int(code), message)
+        for header in response_headers:
+            self.send_header(header[0], header[1])
+        self.write('\r\n')
+        
         return self.write
 
     def write(self, data):
         if not self.headers_set:
             raise AssertionError("write() before start_response()")
 
-        elif not self.headers_sent:
-            # Before the first output, send the stored headers
-            status, response_headers = self.headers_sent[:] = self.headers_set
-            code, message = status.split(' ', 1)
-            self.send_response(int(code), message)
-            for header in response_headers:
-                self.send_header(header[0], header[1])
+        
+        # elif not self.headers_sent:
+        #     # Before the first output, send the stored headers
+        #     status, response_headers = self.headers_sent[:] = self.headers_set
+        #     code, message = status.split(' ', 1)
+        #     self.send_response(int(code), message)
+        #     for header in response_headers:
+        #         self.send_header(header[0], header[1])
 
-        self.wfile.write('\r\n'+data)
+        self.wfile.write(data)
         self.wfile.flush()
 
     def get_environ(self):
