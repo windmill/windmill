@@ -1089,10 +1089,6 @@ windmill.jsTest = new function () {
       s += '</div>';
     }
     windmill.out(s);
-    //We want the summary to have a concept of success/failure
-    var result = !(this.testFailureCount > 0);
-    var method = 'JS Test Suite Completion';
-    this.sendJSReport(method, result, null, this.jsSuiteSummary);
   };
 };
 
