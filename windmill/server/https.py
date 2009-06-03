@@ -386,7 +386,11 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
         print '-' * 40
         print 'Exception happened during processing of request from',
         print client_address
-        traceback.print_exc()
+        # traceback doesn't appear to be always be thread safe
+        try:
+            traceback.print_exc()
+        except TypeError:
+            print "Traceback cannot be printed, probably do to a thread safety issue."
         print '-' * 40
 
 class WindmillConnection(HTTPConnection):
