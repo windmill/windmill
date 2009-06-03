@@ -67,7 +67,7 @@ setup(name=PACKAGE_NAME,
       platforms =['Any'],
       install_requires = dependencies,
       entry_points = {
-                'nose.plugins.0.10': [
+                'nose.plugins': [
                     'windmill = windmill.authoring.nose_plugin:WindmillNosePlugin'
                     ],
                 'console_scripts': [
