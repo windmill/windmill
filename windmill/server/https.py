@@ -196,13 +196,23 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
             found = None
             environ = self.get_environ()
             result = proxy(environ, self.start_response)
-        out = list(result)
-        # send data back to browser
+        # == Old blocking code ==
+        # out = list(result)
+        # # send data back to browser
+        # try:
+        #     self.write(''.join(out))
+        # except socket.error, err:
+        #     logger.debug("%s while serving (%s) %s" % (err,
+        #                                       self.command, self.path))
+        
+        # == New non-blocking code ==
         try:
-            self.write(''.join(out))
+            for out in result:
+                self.wfile.write(out)
+                self.wfile.flush()
         except socket.error, err:
-            logger.debug("%s while serving (%s) %s" % (err,
-                                              self.command, self.path))
+            logger.debug("%s while serving (%s) %s" % (err,self.command, self.path))
+        
         self.connection.close()
 
     do_GET = handle_ALL
@@ -338,12 +348,18 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
         while self.ready:
             #self.current_request += 1
             self.handle_request()
-        print "Attempting to shut down..."
+        # print "Attempting to shut down..."
         self.server_close()
 
     def server_close(self):
-        self.socket.shutdown(socket.SHUT_RDWR)
-        self.socket.close()
+        try:
+            self.socket.shutdown(socket.SHUT_RDWR)
+            self.socket.close()
+        except socket.error, e:
+            if len(e.args) is 2 and e.args[0] is 57:
+                logger.debug("Server was killed, socket didn't shutdown perfectly.")
+            else:
+                raise e
 
     def add_namespace(self, name, application):
         """Add an application to a specific url namespace in windmill"""
