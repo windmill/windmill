@@ -15,6 +15,4 @@ def test_get_submit():
     client.type(text=u'simpletest', name=u'q')
     client.click(name=u'btnG')
     client.waits.forPageLoad(timeout=20000)
-    client.waits.forElement(xpath="//div[@id='prs']/b", timeout=8000)
-
-
+    client.waits.forElement(link=u'SimpleTest - Unit Testing for PHP', timeout=u'8000')
