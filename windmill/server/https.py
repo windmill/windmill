@@ -123,6 +123,7 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
     def __init__(self, request, client_address, server):
         self.headers_set = []
         self.headers_sent = []
+        self.header_buffer = ''
         BaseHTTPRequestHandler.__init__(self, request, client_address,
                                              server)
 
@@ -212,6 +213,7 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
         except socket.error, err:
             logger.debug("%s while serving (%s) %s" % (err,self.command, self.path))
         
+        self.wfile.flush()
         self.connection.close()
 
     do_GET = handle_ALL
@@ -231,11 +233,48 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
         status, response_headers = self.headers_sent[:] = self.headers_set
         code, message = status.split(' ', 1)
         self.send_response(int(code), message)
-        for header in response_headers:
-            self.send_header(header[0], header[1])
-        self.write('\r\n')
+        
+        self.send_headers(response_headers)
         
         return self.write
+        
+    def send_headers(self, response_headers):
+        for header in response_headers:
+            self.send_header(header[0], header[1])
+        try:
+            self.wfile.write(self.header_buffer+'\r\n')
+        except socket.error, e:
+            if len(e.args) is 2 and e.args[0] is 32:
+                logger.debug("Client severed connection prematurely.")
+            else:
+                raise e
+
+    def send_header(self, keyword, value):
+        """Send a MIME header."""
+        if self.request_version != 'HTTP/0.9':
+            self.header_buffer += "%s: %s\r\n" % (keyword, value)
+        if keyword.lower() == 'connection':
+            if value.lower() == 'close':
+                self.close_connection = 1
+            elif value.lower() == 'keep-alive':
+                self.close_connection = 0
+
+    def send_response(self, code, message=None):
+        """Send the response header and log the response code.
+            Also send two standard headers with the server software
+            version and the current date.
+            """
+        self.log_request(code)
+        if message is None:
+            if code in self.responses:
+                message = self.responses[code][0]
+            else:
+                message = ''
+        if self.request_version != 'HTTP/0.9':
+            self.wfile.write("%s %d %s\r\n" %
+                            (self.protocol_version, code, message))
+            # print (self.protocol_version, code, message)
+            
 
     def write(self, data):
         if not self.headers_set:
@@ -251,7 +290,7 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
         #         self.send_header(header[0], header[1])
 
         self.wfile.write(data)
-        self.wfile.flush()
+        # self.wfile.flush()
 
     def get_environ(self):
         """ Put together a wsgi environment """
