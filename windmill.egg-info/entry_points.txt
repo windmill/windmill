@@ -1,4 +1,4 @@
-[nose.plugins.0.10]
+[nose.plugins]
 windmill = windmill.authoring.nose_plugin:WindmillNosePlugin
 
 [console_scripts]
