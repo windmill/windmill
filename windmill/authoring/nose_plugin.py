@@ -32,6 +32,7 @@ parser_options.pop('wmexit')
 parser_options.pop('wmtest')
 parser_options.pop('wmpdb')
 parser_options.pop('wmloadtest')
+parser_options.pop('wmssl')
 
 import sys
 s = sys.__stdout__
@@ -49,6 +50,8 @@ class WindmillNosePlugin(Plugin):
         parser.add_option('--wmtesturl', dest="wmtesturl", 
                           help='Windmill option: Test url to run windmill tests against',
                           default=None)
+        parser.add_option('--wmssl', dest="wmssl", help='Windmill option: Enable SSL support',
+                          default=False, action="store_true")
     
     def configure(self, options, conf):
         for name, option_class in parser_options.items():
@@ -58,5 +61,7 @@ class WindmillNosePlugin(Plugin):
             setattr(global_settings, 'START_'+options.wmbrowser.upper(), True)
         if options.wmtesturl is not None:
             global_settings.TEST_URL = options.wmtesturl
+        if options.wmssl is True:
+            admin_options.SSL()(value=True)
 
 
