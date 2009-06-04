@@ -62,23 +62,25 @@ def is_hop_by_hop(header):
 class IterativeResponse(object):
     def __init__(self, response_instance):
         self.response_instance = response_instance
+        if response_instance.length / self.read_size > 100:
+            self.read_size = response_instance.length / 100
+        
+    read_size = 5120
         
     def __iter__(self):
-        if self.response_instance.chunked:
-            yield self.response_instance.read(1024)
-            while self.response_instance.chunk_left is not None:
-                if self.response_instance.chunk_left < 1024:
-                    yield self.response_instance.read()
-                    self.response_instance.chunk_left = None
-                else:
-                    yield self.response_instance.read(1024)
-        else:
-            yield self.response_instance.read()
+        yield self.response_instance.read(self.read_size)
+        while self.response_instance.chunk_left is not None:
+            if self.response_instance.chunk_left < self.read_size:
+                yield self.response_instance.read()
+                self.response_instance.chunk_left = None
+            else:
+                yield self.response_instance.read(self.read_size)
 
 def get_wsgi_response(response):
+        
     if type(response) is str:
         return [response]
-    if response.length > 1000:
+    if response.length > IterativeResponse.read_size:
         return IterativeResponse(response)
     else:
         return [response.read()]
@@ -283,6 +285,8 @@ class WindmillProxyApplication(object):
                 headers = connection[0][1]
                 body = connection[1]
                 for header in copy.copy(headers):
+                    if header[0].lower() == 'content-length':
+                        body.length = int(header[1].strip())
                     if header[0].lower() in cache_removal:
                         headers.remove(header)
                 start_response(status, headers+cache_additions)
@@ -294,6 +298,8 @@ class WindmillProxyApplication(object):
             logger.info('Could not fullfill proxy request to ' + url.geturl())
 
         for header in copy.copy(headers):
+            if header[0].lower() == 'content-length':
+                response.length = int(header[1].strip())
             if header[0].lower() in cache_removal:
                 headers.remove(header)
 
