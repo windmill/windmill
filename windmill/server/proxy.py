@@ -62,11 +62,8 @@ def is_hop_by_hop(header):
 class IterativeResponse(object):
     def __init__(self, response_instance):
         self.response_instance = response_instance
-        if response_instance.length / self.read_size > 100:
-            self.read_size = response_instance.length / 100
-        
-    read_size = 5120
-        
+        self.read_size = response_instance.length / 100
+                
     def __iter__(self):
         yield self.response_instance.read(self.read_size)
         while self.response_instance.chunk_left is not None:
@@ -80,7 +77,7 @@ def get_wsgi_response(response):
         
     if type(response) is str:
         return [response]
-    if response.length > IterativeResponse.read_size:
+    if response.length > 512000:
         return IterativeResponse(response)
     else:
         return [response.read()]
