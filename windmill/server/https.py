@@ -374,6 +374,8 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
         # the rest is the same
         HTTPServer.__init__(self, address, handler)
         self.setup_environ()
+        
+    daemon_threads = True
 
     def setup_environ(self):
         # Set up base environment
