@@ -16,7 +16,7 @@
 """This module provides the communication and management between the various 
 server interfaces and the browser's js interface"""
 
-import copy, os 
+import copy, os, sys
 try:
     import json as simplejson
 except:
@@ -117,10 +117,10 @@ class TestResolutionSuite(object):
     def report_without_resolve(self, result, uuid, starttime, endtime, suite_name, debug=None, output=None):
         test = {'result':result, 'uuid':uuid, 'starttime':starttime, 'endtime':endtime, 
                 'suite_name':suite_name, 'debug':debug, 'output':output}
-        if result is False:
-            test_results_logger.error('Test Failure in test %s' % repr(test))
-        elif result is True:
-            test_results_logger.debug('Test Success in test %s' % repr(test))
+        # if result is False:
+        #     test_results_logger.error('Test Failure in test %s' % repr(test))
+        # elif result is True:
+        #     test_results_logger.debug('Test Success in test %s' % repr(test))
     
         if self.result_processor is not None:
             if result is False:
@@ -303,7 +303,14 @@ class JSONRPCMethods(RPCMethods):
         
     def report_without_resolve(self, uuid, result, starttime, endtime, suite_name, debug=None, output=None):
         self._test_resolution_suite.report_without_resolve(result, uuid, starttime, endtime, suite_name, debug, output)
+        if result is True:
+            sys.stdout.write('.')
+        else:
+            sys.stdout.write('F')
+        sys.stdout.flush()
         return 200
+    
+    count = 0    
         
     def command_result(self, status, uuid, result):
         self._command_resolution_suite.resolve(status, uuid, result)
@@ -336,6 +343,17 @@ class JSONRPCMethods(RPCMethods):
     def teardown(self, tests):
         """teardown_module function for functest based python tests"""
         import windmill
+        if getattr(windmill, "js_framework_active", False) is True:
+            sys.stdout.write('\n'); sys.stdout.flush();
+            if tests["testFailureCount"] is not 0:
+                for k, v in tests.items():
+                    if type(v) is dict and v.get(u'result') is False:
+                        print "Failed: "+k
+            total_string = "Total Tests Run: "+str(tests["testCount"])+" "
+            total_string += "Total Passed: "+str(tests["testCount"] - tests["testFailureCount"])+" "
+            total_string += "Total Failed: "+str(tests["testFailureCount"])
+            print total_string
+            
         if windmill.settings['EXIT_ON_DONE']:
             from windmill.bin import admin_lib    
             admin_lib.teardown(admin_lib.shell_objects_dict)
