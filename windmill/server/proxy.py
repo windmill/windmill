@@ -271,7 +271,7 @@ class WindmillProxyApplication(object):
         if environ['REQUEST_METHOD'] == 'POST':
             threshold = 399
         else:
-            threshold = 200 
+            threshold = 399 
 
         if not isinstance(connection, HTTPConnection) or \
             response.status > threshold:
