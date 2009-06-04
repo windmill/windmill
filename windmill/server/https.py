@@ -271,8 +271,7 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
             else:
                 message = ''
         if self.request_version != 'HTTP/0.9':
-            self.wfile.write("%s %d %s\r\n" %
-                            (self.protocol_version, code, message))
+            self.header_buffer += "%s %d %s\r\n" % (self.protocol_version, code, message)
             # print (self.protocol_version, code, message)
             
 
@@ -422,12 +421,17 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
             pass
 
     def handle_error(self, request, client_address):
+        try:
+            args = sys.exec_info()
+        except:
+            return
+            
         print '-' * 40
         print 'Exception happened during processing of request from',
         print client_address
         # traceback doesn't appear to be always be thread safe
         try:
-            traceback.print_exc()
+            traceback.print_exception(*args)
         except TypeError:
             print "Traceback cannot be printed, probably do to a thread safety issue."
         print '-' * 40
