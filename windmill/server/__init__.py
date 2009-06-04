@@ -19,6 +19,7 @@ forwarding_conditions = [
     lambda e : 'google.com/safebrowsing/downloads' not in e['reconstructed_url'],
     lambda e : 'mozilla.org/en-US/firefox/livebookmarks.html' not in e['reconstructed_url'],
     lambda e : e.get('CONTENT_TYPE') != 'application/x-shockwave-flash',
+    lambda e : not e['reconstructed_url'].endswith(".mozilla.com/firefox/headlines.xml")
     ]
 
 def add_forward_condition(condition):
