@@ -35,6 +35,7 @@ exclude_from_retry = ['http://sb-ssl.google.com',
                       'https://sb-ssl.google.com', 
                       'http://en-us.fxfeeds.mozilla.com',
                       'fxfeeds.mozilla.com',
+                      'http://www.google-analytics.com',
                       ]
 
 # Note that hoppish conntains proxy-connection, which is pre-HTTP-1.1 and
@@ -277,7 +278,6 @@ class WindmillProxyApplication(object):
             new_response = retry_known_hosts(url, environ)
             if new_response is not None: 
                 response = new_response
-                logger.info('Found after retry: %s' % (url.geturl(),))
             elif not isinstance(connection, HTTPConnection):
                 status = connection[0][0]
                 headers = connection[0][1]
