@@ -117,13 +117,17 @@ windmill.controller.asserts.assertText = function (paramObject) {
         if (m.innerHTML.indexOf(validator) != -1){
           return true;
         }
-        if (m.value.indexOf(validator) != -1){
+        if (m.value && m.value.indexOf(validator) != -1){
           return true;
         }
       }
     }
   }
-  throw "Text '"+validator+"' was not found in the provided node.";
+  var found = n.textContent;
+  if (found == undefined)
+    found = n.innerText;
+  throw "Text '" + validator +
+        "' was not found in the provided node.  Found instead: " + found;
 };
 
 //Assert that a specified node exists
@@ -136,8 +140,11 @@ windmill.controller.asserts.assertValue = function (paramObject) {
   var n = lookupNode(paramObject);
   var validator = paramObject.validator;
 
+  if (n.value == undefined)
+    throw "Element doesn't have a value";
+
   if (n.value.indexOf(validator) == -1){
-    throw "Value not found, \""+ n.value + "\" is not equal to \""+ validator+"\"";
+    throw "Found value \""+ n.value + "\" is not equal to \""+ validator+"\"";
   }
   
 };
@@ -193,16 +200,22 @@ windmill.controller.asserts.assertChecked = function (paramObject) {
 windmill.controller.asserts.assertProperty = function (paramObject) {
   var element = lookupNode(paramObject);
   var vArray = paramObject.validator.split('|');
+  if (vArray.length != 2)
+    throw "Invalid validator '" + paramObject.validator + "'.  Use '|' to separate key from value.";
+
+  var expected = "Expected property '" + vArray[0] + "' to have value '" + vArray[1] + "'. ";
+
   var value = eval ('element.' + vArray[0]+';');
-  
+  if (value == undefined)
+    throw expected + "No '" + vArray[0] + "' property found.";
+
   if (value.indexOf(vArray[1]) != -1){
     return true;
   }
   if (String(value) == String(vArray[1])) {
     return true;
   }
-  
-  throw "Property did not match."
+  throw expected + "Found value '" + value + "' instead."
 };
 
 // Assert that a specified image has actually loaded
