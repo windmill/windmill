@@ -684,7 +684,18 @@ windmill.jsTest = new function () {
     }
     return ret;
   };
+  // Delegate to a method called on a setTimeout to give the
+  // UI thread time to fire onbeforeunload event when leaving
+  // the current page, and set the testCodeState to CANNOT_LOAD
+  // Without this, the test engine can end up trying to run
+  // the next test before it notices the test code on the page
+  // has been unloaded
   this.runNextTest = function () {
+    var timeout = fleegix.ua.isIE ? 100 : 0;
+    setTimeout(function () {
+      _this.runNextTestFreeUiThread.call(_this); }, timeout);
+  };
+  this.runNextTestFreeUiThread = function () {
     _log('Starting runNextTest.');
     var testName = '';
     var testItem = null;
