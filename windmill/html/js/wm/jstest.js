@@ -21,10 +21,13 @@ windmill.jsTest = new function () {
   var _this = this;
   // Private vars
   var _UNDEF; // Undefined val
+  var _OBJ_LOOKUP_RETRY_LIMIT = 10;
+
   var _debug = false;
   var _currentTestTimer;
   var _testsPaused = false;
   var _brokenEval;
+  var _objLookupRetries = 0;
   var _testItemArrayObj;
   var serverBasePath = '';
   var jsFilesBasePath = '';
@@ -690,12 +693,13 @@ windmill.jsTest = new function () {
   // Without this, the test engine can end up trying to run
   // the next test before it notices the test code on the page
   // has been unloaded
-  this.runNextTest = function () {
-    var timeout = fleegix.ua.isIE ? 100 : 0;
+  this.runNextTest = function (retryTestName) {
+    timeout = !!retryTestName ? 1000 : 0;
     setTimeout(function () {
-      _this.runNextTestFreeUiThread.call(_this); }, timeout);
+        _this.runNextTestFreeUiThread.call(_this, retryTestName); },
+            timeout);
   };
-  this.runNextTestFreeUiThread = function () {
+  this.runNextTestFreeUiThread = function (retryTestName) {
     _log('Starting runNextTest.');
     var testName = '';
     var testItem = null;
@@ -717,7 +721,7 @@ windmill.jsTest = new function () {
         return false;
       }
       // Get the test name
-      testName = this.testOrder.shift();
+      testName = retryTestName || this.testOrder.shift();
 
       // Test-run timing
       var timer = new windmill.TimeObj();
@@ -725,23 +729,38 @@ windmill.jsTest = new function () {
       timer.startTime();
       _currentTestTimer = timer;
 
-      // Need to separate scope and executable in cases
-      // where testable is an executable function because
-      // waits occur in a setTimeout loop that breaks scope
-      // -----------
-      // Namespaced testables
-      if (testName.indexOf('.') > -1) {
-        var testNameArr = testName.split('.');
-        var testNameKey = testNameArr.pop();
-        var testScope = testNameArr.join('.');
-        testScope = this.lookupObjRef(testScope);
-        testItem = testScope[testNameKey];
+      try {
+        // Need to separate scope and executable in cases
+        // where testable is an executable function because
+        // waits occur in a setTimeout loop that breaks scope
+        // -----------
+        // Namespaced testables
+        if (testName.indexOf('.') > -1) {
+          var testNameArr = testName.split('.');
+          var testNameKey = testNameArr.pop();
+          var testScope = testNameArr.join('.');
+          testScope = this.lookupObjRef(testScope);
+          testItem = testScope[testNameKey];
+        }
+        // Top-level, global-named testables
+        else {
+          testScope = this.getCurrentTestScope();
+          testItem = this.lookupObjRef(testName);
+        }
       }
-      // Top-level, global-named testables
-      else {
-        testScope = this.getCurrentTestScope();
-        testItem = this.lookupObjRef(testName);
+      catch (e) {
+        if (_objLookupRetries > _OBJ_LOOKUP_RETRY_LIMIT) {
+          _objLookupRetries = 0;
+          throw (e);
+        }
+        else {
+          _objLookupRetries++;
+          this.runNextTest(testName);
+          return;
+        }
       }
+      _objLookupRetries = 0;
+
       // Tell IDE what is going on -- if the string is really
       // long and namespaced, just use the functions name
       var testNameArr = testName.split(".");
