@@ -34,13 +34,7 @@ windmill.controller = new function () {
   this.extensions           = {};
   this.commands             = {};
   this.asserts              = {};
-  this.waits                = {};
-    
-  this._getDocumentStr = function () { return windmill.testWindowStr + '.document'; }
-  this._getWindowStr = function() { return windmill.testWindowStr; }
-  this._getDocument = function () { return windmill.testWindow.document; }
-  this._getWindow = function() { return windmill.testWindow; }
-  
+  this.waits                = {};  
 
 /************************************
 /* User facing windmill functionality
@@ -1041,13 +1035,6 @@ windmill.controller = new function () {
       windmill.testWindow = windmill.baseTestWindow;
     }
   };
-  
-  /**
-  * Execute some arbitrary JS in the testing app window
-  * @param {Object} paramObject The JavaScript object providing: js
-  */
-  this.execJsInTestWindow = this.execJS
-  this.execArbTestWinJS = this.execJS;
   
   /**
   * Execute some arbitrary JS

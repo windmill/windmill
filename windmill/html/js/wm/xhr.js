@@ -23,14 +23,16 @@ Copyright 2006-2007, Open Source Applications Foundation
 //object is only for the current browser, and there is only one copy of the code being
 //loaded into the browser for performance.
 windmill.xhr = new function() {
-
+    
     //Keep track of the loop state, running or paused
     this.loopState = false;
-    this.timeoutId = null;
     
     //If the are variables passed we need to do our lex and replace
     this.processVar = function(str){
-      if ((str.indexOf('{$') != -1) && (windmill.runTests == true)) {
+      //only process if it's no an exec method
+      if ((str.indexOf('"method": "exec') == -1)
+        && (str.indexOf('{$') != -1) 
+        && (windmill.runTests)) {
         str = handleVariable(str);
       }
       return str;
@@ -38,52 +40,41 @@ windmill.xhr = new function() {
     
     //action callback
     this.actionHandler = function(str) {
-        //Process variables but not for the execJS or execIDEJS
-        if ((str.indexOf('execJsInTestWindow') == -1) && (str.indexOf('execArbTestWinJS') == -1) && (str.indexOf('execIDEJS') == -1)){
-          str = windmill.xhr.processVar(str);
-        }
+        var self = windmill.xhr;
         
         //Eval 
         try {
-          windmill.xhr.xhrResponse = JSON.parse(str);
+          self.dataObj = JSON.parse(self.processVar(str));
         } catch (err){ return; }
         
-        var resp = windmill.xhr.xhrResponse;
-        var method = resp.result.method;
-        var params = resp.result.params;
+        self.action = self.dataObj.result;
+        self.methodArr = self.action.method.split(".");
         
         //If there was a legit json response
-        if (resp.error) {
+        if (self.dataObj.error) {
             windmill.err("There was a JSON syntax error: '" + 
-            resp.error + "'");
+              self.dataObj.error + "'");
         }
         else {
-            if (method != 'defer') {           
-                windmill.serviceDelay = windmill.serviceDelayRunning;
-                windmill.stat("Running " + method + "...");
-                windmill.ui.playback.setPlaying();
-            }
-            else {          
-                windmill.serviceDelay = windmill.serviceDelayDefer;
-                windmill.ui.playback.resetPlayBack();
-                windmill.stat("Ready, Waiting for tests...");
-            }
-
             //Init and start performance but not if the protocol defer
-            if (method != 'defer') {
-
+            if (self.action.method != 'defer') {
+              
+                //setup state
+                windmill.serviceDelay = windmill.serviceDelayRunning;
+                windmill.stat("Running " + self.action.method + "...");
+                windmill.ui.playback.setPlaying();
                 //Put on windmill main page that we are running something
-                windmill.xhr.action_timer = new TimeObj();
-                windmill.xhr.action_timer.setName(method);
+                self.action_timer = new TimeObj();
+                self.action_timer.setName(self.action.method);
 
                 //If the action already exists in the UI, skip all the creating suite stuff
-                if ($(params.uuid) != null) {
-                    var action = $(params.uuid);
+                if ($(self.action.params.uuid) != null) {
+                    var action = $(self.action.params.uuid);
                     action.style.background = 'lightyellow';
                 }
-                //If its a command we don't want to build any UI
-                else if (method.split(".")[0] != 'commands') {
-                  var action = windmill.xhr.createActionFromSuite(resp.result.suite_name, resp.result);
+                //If it's a command we don't want to build any UI
+                else if (self.methodArr[0] != 'commands') {
+                  var action = self.createActionFromSuite(self.action.suite_name, self.action);
                 }
                 
                 //default to true
@@ -95,27 +86,24 @@ windmill.xhr = new function() {
                 //This fix runs all commands regardless  
                 //Run the action
                 //If it's a user extension.. run it
-                if ((windmill.runTests == true) || (method.split(".")[0] == 'commands')) {
-
-                    //split the action up
-                    var mArray = method.split(".");
+                if ((windmill.runTests) || 
+                  (self.methodArr[0] == 'commands')) {
                     
                     //try running the actions
                     try {
                       //Start the action running timer
                         windmill.xhr.action_timer.startTime();
                         //Wait/open needs to not grab the next action immediately
-                        if ((method.split(".")[0] == 'waits')) {
+                        if ((self.methodArr[0] == 'waits')) {
                             windmill.pauseLoop();
-                            params.aid = action.id;
+                            self.action.params.aid = action.id;
                         }
-                        if (method.indexOf('.') != -1) {
+                        if (self.methodArr.length > 1){
                             //if asserts.assertNotSomething we need to set the result to !result
-                            if (method.indexOf('asserts.assertNot') != -1) {
-                                var m = mArray[1].replace('Not', '');
+                            if (self.action.method.indexOf('asserts.assertNot') != -1) {
+                                var m = self.methodArr[1].replace('Not', '');
                                   try { 
-                                    //windmill.controller[mArray[0]][m](params);
-                                    output = windmill.controller[mArray[0]][m](params);
+                                    output = windmill.controller[self.methodArr[0]][m](self.action.params);
                                   } catch(err){
                                     var assertNotErr = true;
                                   }
@@ -126,19 +114,20 @@ windmill.xhr = new function() {
                             }
                             //Normal asserts and waits
                             else {
-                                //windmill.controller[mArray[0]][mArray[1]](params, resp.result);
-                                output = windmill.controller[mArray[0]][mArray[1]](params, resp.result);
+                              output = windmill.controller[self.methodArr[0]][self.methodArr[1]](self.action.params, self.action);
                             }
                         }                        
                         //Every other action that isn't namespaced
-                        else { output = windmill.controller[method](params); }
+                        else { 
+                          output = windmill.controller[self.action.method](self.action.params); 
+                        }
                         
                         //End the timer
                         windmill.xhr.action_timer.endTime();
                         //Report all bug commands on success
-                        if (method.split(".")[0] != 'commands'){
-                          params.aid = action.id;
-                          windmill.actOut(method, params, result);
+                        if (self.methodArr[0] != 'commands'){
+                          self.action.params.aid = action.id;
+                          windmill.actOut(self.action.method, self.action.params, result);
                         }
                     }
                     catch(error) {
@@ -150,20 +139,11 @@ windmill.xhr = new function() {
                         //Sometimes this is a huge dom exception which can't be serialized
                         //so what we want to use is the message property
                         if (error.message){
-                          params.error = error.message;
+                          self.action.params.error = error.message;
                         }
-                        else { params.error = error; }
+                        else { self.action.params.error = error; }
                         
-                        windmill.actOut(method, params, result);
-                        // var newParams = copyObj(params);
-                        // delete newParams.uuid;
-                        // 
-                        // windmill.out("<font color=\"#FF0000\">" + 
-                        // method + ": " + error + "</font>");
-                        // 
-                        // windmill.out("<br>Action: <b>" + method + 
-                        // "</b><br>Parameters: " + fleegix.json.serialize(newParams) + 
-                        // "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
+                        windmill.actOut(self.action.method, self.action.params, result);
 
                         //If the option to throw errors is set
                         if ($('throwDebug').checked == true) {
@@ -179,26 +159,29 @@ windmill.xhr = new function() {
                 }
                 else {
                   //we must be loading, change the status to reflect that
-                  windmill.stat("Loading " + method + "...");
+                  windmill.stat("Loading " + self.action.method + "...");
                 }
-                var m = method.split(".");
+                var m = self.action.method.split(".");
                 //Send the report if it's not in the commands namespace, we only call report for test actions
                 if ((m[0] != 'commands') && (m[0] != 'waits') && (windmill.runTests == true)) {
-                    var newParams = copyObj(params);
+                    var newParams = copyObj(self.action.params);
                     delete newParams.uuid;
-                    //End timer and store
-                    //windmill.xhr.action_timer.endTime();
-                    //windmill.xhr.sendReport(method, result, windmill.xhr.action_timer, info);
-                    windmill.xhr.sendReport(method, result, windmill.xhr.action_timer, info, output);
-                    windmill.xhr.setActionBackground(action, result, resp.result);
+
+                    windmill.xhr.sendReport(self.action.method, result, windmill.xhr.action_timer, info, output);
+                    windmill.xhr.setActionBackground(action, result, self.action);
                     //Do the timer write
                     windmill.xhr.action_timer.write(newParams);
                 }
             }
+            //We received a defer, display that
+            else {
+              windmill.serviceDelay = windmill.serviceDelayDefer;
+              windmill.ui.playback.resetPlayBack();
+              windmill.stat("Ready, Waiting for tests...");
+            }
         }
         //Get the next action from the service
         setTimeout("windmill.xhr.getNext()", windmill.serviceDelay);
-
     };
 
     //Send the report
@@ -213,12 +196,12 @@ windmill.xhr = new function() {
         };
         
         //send the report
-        var result_string = JSON.stringify(windmill.xhr.xhrResponse.result);
+        var result_string = JSON.stringify(windmill.xhr.action);
         var test_obj = {
             "result": result,
             "output": typeof(output) !== "undefined" ? output : null,
             "debug": typeof(info) !== "undefined" ? info : null,
-            "uuid": windmill.xhr.xhrResponse.result.params.uuid,
+            "uuid": windmill.xhr.action.params.uuid,
             "starttime": timer.getStart(),
             "endtime": timer.getEnd()
         };
@@ -308,10 +291,6 @@ windmill.xhr = new function() {
                 action.parentNode.style.border.borderTop = "1px solid red";
                 action.parentNode.style.border.borderBottom = "1px solid red";
             }
-            // windmill.out("<br>Action: <b>" + obj.method + 
-            //      "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
-            //      "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
-            //             
             //if the continue on error flag has been set by the shell.. then we just keep on going
             if (windmill.stopOnFailure == true) {
                 windmill.xhr.loopState = false;
@@ -319,11 +298,7 @@ windmill.xhr = new function() {
             }
         }
         else {
-            //Write to the result tab
-            // windmill.out("<br>Action: <b>" + obj.method + 
-            // "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
-            // "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');
-            
+            //Write to the result tab            
             if ((typeof(action) != 'undefined') && (windmill.runTests == true)) {
                 action.style.background = '#C7FFCC';
                 if (action.parentNode.style.borderTop.indexOf("red") != -1){
@@ -349,9 +324,6 @@ windmill.xhr = new function() {
               output.style.height = "13px";
             }
             
-            // windmill.out("<br>Action: <b>" + obj.method + 
-            // "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
-            // "<br>Test Result: <font color=\"#FF0000\"><b>" + result + '</b></font>');
             
             //if the continue on error flag has been set by the shell.. then we just keep on going
             if (windmill.stopOnFailure == true) {
@@ -361,22 +333,18 @@ windmill.xhr = new function() {
         }
         else {
             //Write to the result tab
-            // windmill.out("<br>Action: <b>" + obj.method + 
-            // "</b><br>Parameters: " + fleegix.json.serialize(obj.params) + 
-            // "<br>Test Result: <font color=\"#61d91f\"><b>" + result + '</b></font>');
-            
             try {
-                if ((typeof(action) != 'undefined') && (windmill.runTests == true)) {
+                if ((typeof(action) != 'undefined') && (windmill.runTests)) {
                     action.style.background = '#C7FFCC';
                 }
-                if ((typeof(output) != 'undefined') && (windmill.runTests == true)) {
+                if ((typeof(output) != 'undefined') && (windmill.runTests)) {
                     output.style.background = '#C7FFCC';
                 }
             }
             catch(err) {}
         }
         //Send the report
-        windmill.xhr.xhrResponse.result = obj;
+        windmill.xhr.action = obj;
         //Don't report if we are running js tests
         if (obj.params.orig != 'js'){
           //windmill.xhr.sendReport(obj.method, result, windmill.xhr.action_timer);

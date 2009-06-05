@@ -17,7 +17,6 @@ Copyright 2006-2007, Open Source Applications Foundation
 var windmill = new function() {
 
     //More namespacing
-    this.builder = {};
     this.helpers = {};
 
     //The timeout for page loading, if the onload is never called
@@ -69,7 +68,6 @@ var windmill = new function() {
     this.varRegistry = new fleegix.hash.Hash();
 
     //The app your testing
-    this.testWindowStr = 'windmill.testWindow';
     this.testWindow = opener;
     this.initialHost = '';
     
