@@ -23,6 +23,12 @@ windmillMain.test_failures = new function () {
       return true;
     }
   ];
+  this.test_assertGreaterThanFailure = function () {
+    jum.assertGreaterThan(1, 2);
+  };
+  this.test_assertLessThanFailure = function () {
+    jum.assertLessThan(2, 1);
+  };
   this.test_waitTimeout = {
     method: "waits.forElement",
     params: {
@@ -52,13 +58,13 @@ windmillMain.test_failures = new function () {
       milliseconds: 1000
     }
   };
+  /*
   this.test_waitForJSFailureError = {
     method: "waits.forJS",
     params: {
       js: function () { eval('{{'); }
     }
   };
-  /*
   this.test_ApiMethodDoesntExist = {
     method: "orpen",
     params: { url: windmillMain.pages.MAIN }

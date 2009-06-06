@@ -23,6 +23,12 @@ windmillMain.test_jumBasics = new function () {
     jum.assertNotEquals(2112, 1001);
     jum.assertNotEquals('Geddy', 'Alex');
   };
+  this.test_assertGreaterThan = function () {
+    jum.assertGreaterThan(2, 1);
+  };
+  this.test_assertLessThan = function () {
+    jum.assertLessThan(1, 2);
+  };
   this.test_assertNull = function () {
     jum.assertNull(null);
     jum.assertNull($('asdfasdfasdfasdfasdf'));
@@ -32,7 +38,7 @@ windmillMain.test_jumBasics = new function () {
     jum.assertNotNull(document.body);
   };
   this.test_assertUndefined = function () {
-    var foo; 
+    var foo;
     jum.assertUndefined(foo);
   };
   this.test_assertNotUndefined = function () {
@@ -51,7 +57,7 @@ windmillMain.test_jumBasics = new function () {
     jum.assertEvaluatesToTrue({});
   };
   this.test_assertEvaluatesToFalse = function () {
-    var foo; 
+    var foo;
     jum.assertEvaluatesToFalse(foo);
     jum.assertEvaluatesToFalse(null);
     jum.assertEvaluatesToFalse(0);

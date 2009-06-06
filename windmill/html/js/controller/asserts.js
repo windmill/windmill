@@ -50,6 +50,16 @@ windmill.controller.asserts.assertRegistry = {
   errMsg: 'expected one of the two values not to be $1.'
   },
 
+  'assertGreaterThan': {
+  expr: function (a, b) { return a > b; },
+  errMsg: 'expected a value greater than $2 but was $1.'
+  },
+
+  'assertLessThan': {
+  expr: function (a, b) { return a < b; },
+  errMsg: 'expected a value less than $2 but was $1.'
+  },
+
   'assertNull': {
   expr: function (a) { return a === null; },
   errMsg: 'expected to be null but was $1.'
