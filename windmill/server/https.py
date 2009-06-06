@@ -374,6 +374,7 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
         # the rest is the same
         HTTPServer.__init__(self, address, handler)
         self.setup_environ()
+        self.threads = []
         
     daemon_threads = True
 
@@ -421,6 +422,19 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
             s.send("\n")
         except socket.error:
             pass
+            
+        for t in [t for t in self.threads if t.isAlive()]:
+            t.terminate()
+        
+    def process_request(self, request, client_address):
+        """Start a new thread to process the request."""
+        import thread2
+        t = thread2.Thread(target = self.process_request_thread,
+                           args = (request, client_address))
+        if self.daemon_threads:
+            t.setDaemon (1)
+        t.start()
+        self.threads.append(t)    
 
     def handle_error(self, request, client_address):
         try:

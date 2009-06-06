@@ -41,7 +41,7 @@ dependencies =  ['wsgi_jsonrpc >= 0.2.2',
 
 two_five_dependencies = [ 'simplejson >= 1.7.1',
                         ]
-two_four_dependencies = ['uuid']
+two_four_dependencies = ['uuid', 'ctypes']
 
 if not sys.version.startswith('2.6'):
     dependencies.extend(two_five_dependencies)
