@@ -38,6 +38,126 @@ windmill.xhr = new function() {
       return str;
     }
     
+    this.runAction = function(){
+      var self = windmill.xhr;
+      
+      //setup state
+      windmill.serviceDelay = windmill.serviceDelayRunning;
+      windmill.stat("Running " + self.action.method + "...");
+      windmill.ui.playback.setPlaying();
+      //Put on windmill main page that we are running something
+      self.action_timer = new TimeObj();
+      self.action_timer.setName(self.action.method);
+      
+      
+      //If the action already exists in the UI, skip all the creating suite stuff
+      if ($(self.action.params.uuid) != null) {
+          var action = $(self.action.params.uuid);
+          action.style.background = 'lightyellow';
+      }
+      //If it's a command we don't want to build any UI
+      else if (self.methodArr[0] != 'commands') {
+        var action = self.createActionFromSuite(self.action.suite_name, self.action);
+      }
+      
+      //default to true
+      var result = true;
+      var info = null;
+      var output;
+      
+      //Forgotten case; If the windmill.runTests is false, but we are trying to change it back to true with a command
+      //This fix runs all commands regardless  
+      //Run the action
+      //If it's a user extension.. run it
+      if ((windmill.runTests) || 
+        (self.methodArr[0] == 'commands')) {
+          
+          //try running the actions
+          try {
+            //Start the action running timer
+              windmill.xhr.action_timer.startTime();
+              //Wait/open needs to not grab the next action immediately
+              if ((self.methodArr[0] == 'waits')) {
+                  windmill.pauseLoop();
+                  self.action.params.aid = action.id;
+              }
+              if (self.methodArr.length > 1){
+                  //if asserts.assertNotSomething we need to set the result to !result
+                  if (self.action.method.indexOf('asserts.assertNot') != -1) {
+                      var m = self.methodArr[1].replace('Not', '');
+                        try { 
+                          output = windmill.controller[self.methodArr[0]][m](self.action.params);
+                        } catch(err){
+                          var assertNotErr = true;
+                        }
+                        //If the not call didn't error, it's an error
+                        if (!assertNotErr){
+                          throw "returned true.";
+                        }
+                  }
+                  //Normal asserts and waits
+                  else {
+                    output = windmill.controller[self.methodArr[0]][self.methodArr[1]](self.action.params, self.action);
+                  }
+              }                        
+              //Every other action that isn't namespaced
+              else { 
+                output = windmill.controller[self.action.method](self.action.params); 
+              }
+              
+              //End the timer
+              self.action_timer.endTime();
+              //Report all bug commands on success
+              if (self.methodArr[0] != 'commands'){
+                self.action.params.aid = action.id;
+                windmill.actOut(self.action.method, self.action.params, result);
+              }
+          }
+          catch(error) {
+              //End the timer if something broke
+              self.action_timer.endTime();
+              info = error;
+              result = false;
+              
+              //Sometimes this is a huge dom exception which can't be serialized
+              //so what we want to use is the message property
+              if (error.message){
+                self.action.params.error = error.message;
+              } else { 
+                self.action.params.error = error; 
+              }
+              
+              windmill.actOut(self.action.method, self.action.params, result);
+
+              //If the option to throw errors is set
+              if ($('throwDebug').checked == true) {
+                  if (console.log) { console.log(error); }
+                  else { throw (error); }
+              } else {
+                  if (!$('toggleBreak').checked) {
+                    windmill.continueLoop();
+                  }
+              }
+          }
+      }
+      else {
+        //we must be loading, change the status to reflect that
+        windmill.stat("Loading " + self.action.method + "...");
+      }
+
+      //Send the report if it's not in the commands namespace, we only call report for test actions
+      if ((self.methodArr[0] != 'commands') && (self.methodArr[0] != 'waits') 
+                                            && (windmill.runTests == true)) {
+          var newParams = copyObj(self.action.params);
+          delete newParams.uuid;
+
+          self.sendReport(self.action.method, result, self.action_timer, info, output);
+          self.setActionBackground(action, result, self.action);
+          //Do the timer write
+          self.action_timer.write(newParams);
+      }
+    };
+    
     //action callback
     this.actionHandler = function(str) {
         var self = windmill.xhr;
@@ -58,123 +178,8 @@ windmill.xhr = new function() {
         else {
             //Init and start performance but not if the protocol defer
             if (self.action.method != 'defer') {
-              
-                //setup state
-                windmill.serviceDelay = windmill.serviceDelayRunning;
-                windmill.stat("Running " + self.action.method + "...");
-                windmill.ui.playback.setPlaying();
-                //Put on windmill main page that we are running something
-                self.action_timer = new TimeObj();
-                self.action_timer.setName(self.action.method);
-
-                //If the action already exists in the UI, skip all the creating suite stuff
-                if ($(self.action.params.uuid) != null) {
-                    var action = $(self.action.params.uuid);
-                    action.style.background = 'lightyellow';
-                }
-                //If it's a command we don't want to build any UI
-                else if (self.methodArr[0] != 'commands') {
-                  var action = self.createActionFromSuite(self.action.suite_name, self.action);
-                }
-                
-                //default to true
-                var result = true;
-                var info = null;
-                var output;
-                
-                //Forgotten case; If the windmill.runTests is false, but we are trying to change it back to true with a command
-                //This fix runs all commands regardless  
-                //Run the action
-                //If it's a user extension.. run it
-                if ((windmill.runTests) || 
-                  (self.methodArr[0] == 'commands')) {
-                    
-                    //try running the actions
-                    try {
-                      //Start the action running timer
-                        windmill.xhr.action_timer.startTime();
-                        //Wait/open needs to not grab the next action immediately
-                        if ((self.methodArr[0] == 'waits')) {
-                            windmill.pauseLoop();
-                            self.action.params.aid = action.id;
-                        }
-                        if (self.methodArr.length > 1){
-                            //if asserts.assertNotSomething we need to set the result to !result
-                            if (self.action.method.indexOf('asserts.assertNot') != -1) {
-                                var m = self.methodArr[1].replace('Not', '');
-                                  try { 
-                                    output = windmill.controller[self.methodArr[0]][m](self.action.params);
-                                  } catch(err){
-                                    var assertNotErr = true;
-                                  }
-                                  //If the not call didn't error, it's an error
-                                  if (!assertNotErr){
-                                    throw "returned true.";
-                                  }
-                            }
-                            //Normal asserts and waits
-                            else {
-                              output = windmill.controller[self.methodArr[0]][self.methodArr[1]](self.action.params, self.action);
-                            }
-                        }                        
-                        //Every other action that isn't namespaced
-                        else { 
-                          output = windmill.controller[self.action.method](self.action.params); 
-                        }
-                        
-                        //End the timer
-                        windmill.xhr.action_timer.endTime();
-                        //Report all bug commands on success
-                        if (self.methodArr[0] != 'commands'){
-                          self.action.params.aid = action.id;
-                          windmill.actOut(self.action.method, self.action.params, result);
-                        }
-                    }
-                    catch(error) {
-                        //End the timer if something broke
-                        windmill.xhr.action_timer.endTime();
-                        info = error;
-                        result = false;
-                        
-                        //Sometimes this is a huge dom exception which can't be serialized
-                        //so what we want to use is the message property
-                        if (error.message){
-                          self.action.params.error = error.message;
-                        }
-                        else { self.action.params.error = error; }
-                        
-                        windmill.actOut(self.action.method, self.action.params, result);
-
-                        //If the option to throw errors is set
-                        if ($('throwDebug').checked == true) {
-                            if (console.log) { console.log(error); }
-                            else { throw (error); }
-                        }
-                        else {
-                            if (!$('toggleBreak').checked) {
-                                windmill.continueLoop();
-                            }
-                        }
-                    }
-                }
-                else {
-                  //we must be loading, change the status to reflect that
-                  windmill.stat("Loading " + self.action.method + "...");
-                }
-                var m = self.action.method.split(".");
-                //Send the report if it's not in the commands namespace, we only call report for test actions
-                if ((m[0] != 'commands') && (m[0] != 'waits') && (windmill.runTests == true)) {
-                    var newParams = copyObj(self.action.params);
-                    delete newParams.uuid;
-
-                    windmill.xhr.sendReport(self.action.method, result, windmill.xhr.action_timer, info, output);
-                    windmill.xhr.setActionBackground(action, result, self.action);
-                    //Do the timer write
-                    windmill.xhr.action_timer.write(newParams);
-                }
-            }
-            //We received a defer, display that
-            else {
+              self.runAction();
+            } else {
               windmill.serviceDelay = windmill.serviceDelayDefer;
               windmill.ui.playback.resetPlayBack();
               windmill.stat("Ready, Waiting for tests...");
@@ -241,9 +246,7 @@ windmill.xhr = new function() {
                 preventCache: true,
                 dataPayload: jsonString
             });
-
         }
-
     };
 
     this.clearQueue = function() {
@@ -352,6 +355,4 @@ windmill.xhr = new function() {
         }
         windmill.xhr.action_timer.write(obj.params);
     };
-
-
 };
