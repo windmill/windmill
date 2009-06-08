@@ -2,7 +2,7 @@ var firebug = {
   version:[1.23,20090506],
   el:{}, 
   env:{ 
-    "css":"http://getfirebug.com/releases/lite/1.2/firebug-lite.css", 
+    "css":"/windmill-serv/css/firebug-lite.css", 
     "debug":true,
     "detectFirebug":true,
     "dIndex":"console", 
