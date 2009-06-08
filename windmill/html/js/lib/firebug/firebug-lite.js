@@ -1,29 +1,32 @@
 var firebug = {
-  version:[1.23,20090309],
+  version:[1.23,20090506],
   el:{}, 
   env:{ 
-    "cache":{},
-    "extConsole":null,
-    "css":"/windmill-serv/css/firebug-lite.css", 
+    "css":"http://getfirebug.com/releases/lite/1.2/firebug-lite.css", 
     "debug":true,
-    "detectFirebug":false,
+    "detectFirebug":true,
     "dIndex":"console", 
-    "height":195,
+    "height":295,
     "hideDOMFunctions":false,
-    "init":false, 
-    "isPopup":false,
-    "liteFilename":"firebug-lite.js",
-    "minimized":false,
     "openInPopup": false,
     "override":false,
     "ml":false,
-    "popupWin":null,
     "showIconWhenHidden":true,
-    "targetWindow":undefined,
     "popupTop":1,
     "popupLeft":1,
     "popupWidth":undefined,
-    "popupHeight":undefined
+    "popupHeight":undefined,
+    "textNodeChars":0
+  },
+  internal:{
+    "cache":{},
+    "extConsole":null,
+    "init":false,
+    "isPopup":false,
+    "liteFilename":null,
+    "minimized":false,
+    "popupWin":null,
+    "targetWindow":undefined
   },
   initConsole:function(){
     /* 
@@ -47,50 +50,61 @@ var firebug = {
     with (firebug){
       env.override=true;
       try{
-        env.extConsole=window.console;
+        internal.extConsole=window.console;
       } catch(e){}
       initConsole();
     }
   },
   restoreConsole:function(){
     with(firebug){
-      if(env.extConsole){
+      if(internal.extConsole){
         env.override=false;
         try{
-          window.console=env.extConsole;
+          window.console=internal.extConsole;
         } catch(e){}
-        env.extConsole=null;
+        internal.extConsole=null;
       }
     }
   },
   init:function(_css){
-    var iconTitle = "Click here or press F12, (CTRL|CMD)+SHIFT+L or SHIFT+ENTER to show Firebug Lite. CTRL|CMD click this icon to hide it.";
+    var i,
+        cssLoaded=false,
+        iconTitle = "Click here or press F12, (CTRL|CMD)+SHIFT+L or SHIFT+ENTER to show Firebug Lite. CTRL|CMD click this icon to hide it.";
   
     with(firebug){
       if(document.getElementsByTagName('html')[0].attributes.getNamedItem('debug')){
         env.debug = document.getElementsByTagName('html')[0].attributes.getNamedItem('debug').nodeValue !== "false";
       }
             
-      if(env.isPopup) {
+      if(internal.isPopup) {
         env.openInPopup = false;
-        env.targetWindow = window.opener;
+        internal.targetWindow = window.opener;
         env.popupWidth = window.opener.firebug.env.popupWidth || window.opener.firebug.lib.util.GetViewport().width;
         env.popupHeight = window.opener.firebug.env.popupHeight || window.opener.firebug.lib.util.GetViewport().height;
       } else {
-        env.targetWindow = window;
+        internal.targetWindow = window;
         env.popupWidth = env.popupWidth || lib.util.GetViewport().width;
         env.popupHeight = env.popupHeight || lib.util.GetViewport().height;
       }
 
       settings.readCookie();
       
-      if(env.init || (env.detectFirebug && window.console && window.console.firebug)) {
+      if(internal.init || (env.detectFirebug && window.console && window.console.firebug)) {
         return;
       }
 
-      document.getElementsByTagName("head")[0].appendChild(
-        new lib.element("link").attribute.set("rel","stylesheet").attribute.set("type","text/css").attribute.set("href",env.css).element
-      );
+      for(i=0;i<document.styleSheets.length;i++) {
+        if(/firebug-lite\.css/i.test(document.styleSheets[i].href)) {
+          cssLoaded=true;
+          break;
+        }
+      }
+      
+      if(!cssLoaded){
+        document.getElementsByTagName("head")[0].appendChild(
+          new lib.element("link").attribute.set("rel","stylesheet").attribute.set("type","text/css").attribute.set("href",env.css).element
+        );
+      }
 
       if(env.override){
         overrideConsole();
@@ -99,15 +113,15 @@ var firebug = {
       /* 
        * Firebug Icon
        */
-      el.firebugIcon = new lib.element("div").attribute.set("id","firebugIconDiv").attribute.set("title",iconTitle).attribute.set("alt",iconTitle).event.addListener("mousedown",win.iconClicked).insert(document.body);
+      el.firebugIcon = new lib.element("div").attribute.set('firebugIgnore',true).attribute.set("id","firebugIconDiv").attribute.set("title",iconTitle).attribute.set("alt",iconTitle).event.addListener("mousedown",win.iconClicked).insert(document.body);
       
       /* 
        * main interface
        */
       el.content = {};
-      el.mainiframe = new lib.element("IFRAME").attribute.set("id","FirebugIFrame").environment.addStyle({ "display":"none", "width":lib.util.GetViewport().width+"px" }).insert(document.body);
-      el.main = new lib.element("DIV").attribute.set("id","Firebug").environment.addStyle({ "display":"none", "width":lib.util.GetViewport().width+"px" }).insert(document.body);
-      if(!env.isPopup){
+      el.mainiframe = new lib.element("IFRAME").attribute.set("id","FirebugIFrame").attribute.set('firebugIgnore',true).environment.addStyle({ "display":"none", "width":lib.util.GetViewport().width+"px" }).insert(document.body);
+      el.main = new lib.element("DIV").attribute.set("id","Firebug").attribute.set('firebugIgnore',true).environment.addStyle({ "display":"none", "width":lib.util.GetViewport().width+"px" }).insert(document.body);
+      if(!internal.isPopup){
         el.resizer = new lib.element("DIV").attribute.addClass("Resizer").event.addListener("mousedown",win.resizer.start).insert(el.main);
       }
       el.header = new lib.element("DIV").attribute.addClass("Header").insert(el.main);
@@ -123,11 +137,11 @@ var firebug = {
       el.button = {};
       el.button.container = new lib.element("DIV").attribute.addClass("ButtonContainer").insert(el.header);
       el.button.logo = new lib.element("A").attribute.set("title","Firebug Lite").attribute.set("target","_blank").attribute.set("href","http://getfirebug.com/lite.html").update("&nbsp;").attribute.addClass("Button Logo").insert(el.button.container);
-      el.button.inspect = new lib.element("A").attribute.addClass("Button").event.addListener("click",env.targetWindow.firebug.d.inspector.toggle).update("Inspect").insert(el.button.container);
+      el.button.inspect = new lib.element("A").attribute.addClass("Button").event.addListener("click",internal.targetWindow.firebug.d.inspector.toggle).update("Inspect").insert(el.button.container);
       el.button.dock = new lib.element("A").attribute.addClass("Button Dock").event.addListener("click", win.dock).insert(el.button.container);
       el.button.newWindow = new lib.element("A").attribute.addClass("Button NewWindow").event.addListener("click", win.newWindow).insert(el.button.container);
 
-      if(!env.isPopup){
+      if(!internal.isPopup){
         el.button.maximize = new lib.element("A").attribute.addClass("Button Maximize").event.addListener("click",win.maximize).insert(el.button.container);
         el.button.minimize = new lib.element("A").attribute.addClass("Button Minimize").event.addListener("click",win.minimize).insert(el.button.container);
         el.button.close = new lib.element("A").attribute.addClass("Button Close").event.addListener("click",win.hide).insert(el.button.container);
@@ -145,19 +159,19 @@ var firebug = {
       el.nav.console = new lib.element("A").attribute.addClass("Tab Selected").event.addListener("click",lib.util.Curry(d.navigate,window,"console")).update("Console").insert(el.nav.container);
       el.nav.html = new lib.element("A").attribute.addClass("Tab").update("HTML").event.addListener("click",lib.util.Curry(d.navigate,window,"html")).insert(el.nav.container);
       el.nav.css = new lib.element("A").attribute.addClass("Tab").update("CSS").event.addListener("click",lib.util.Curry(d.navigate,window,"css")).insert(el.nav.container);
-      if(!env.isPopup){
+      if(!internal.isPopup){
         el.nav.scripts = new lib.element("A").attribute.addClass("Tab").update("Script").event.addListener("click",lib.util.Curry(d.navigate,window,"scripts")).insert(el.nav.container);
       }
-      el.nav.dom = new lib.element("A").attribute.addClass("Tab").update("DOM").event.addListener("click",lib.util.Curry(d.navigate,env.targetWindow,"dom")).insert(el.nav.container);
+      el.nav.dom = new lib.element("A").attribute.addClass("Tab").update("DOM").event.addListener("click",lib.util.Curry(d.navigate,internal.targetWindow,"dom")).insert(el.nav.container);
       el.nav.xhr = new lib.element("A").attribute.addClass("Tab").update("XHR").event.addListener("click",lib.util.Curry(d.navigate,window,"xhr")).insert(el.nav.container);
       el.nav.optionsdiv = new lib.element("DIV").attribute.addClass("Settings").insert(el.nav.container);
-      el.nav.options = new lib.element("A").attribute.addClass("Tab").update("Options&nbsp;&or;").event.addListener("click", settings.toggle).insert(el.nav.optionsdiv);
+      el.nav.options = new lib.element("A").attribute.addClass("Tab Button Options").update("Options&nbsp;&nbsp;&nbsp;&nbsp;").event.addListener("click", settings.toggle).insert(el.nav.optionsdiv);
       
       /*
        * inspector
        */
-      el.borderInspector = new lib.element("DIV").attribute.set("id","FirebugBorderInspector").event.addListener("click",listen.inspector).insert(document.body);
-      el.bgInspector = new lib.element("DIV").attribute.set("id","FirebugBGInspector").insert(document.body);
+      el.borderInspector = new lib.element("DIV").attribute.set("id","FirebugBorderInspector").attribute.set('firebugIgnore',true).event.addListener("click",listen.inspector).insert(document.body);
+      el.bgInspector = new lib.element("DIV").attribute.set("id","FirebugBGInspector").attribute.set('firebugIgnore',true).insert(document.body);
 
       /*
        * console
@@ -259,7 +273,7 @@ var firebug = {
       el.button.dom = {};
       el.button.dom.container = new lib.element("DIV").attribute.addClass("ButtonSet DOM").insert(el.button.container);
       el.button.dom.label = new lib.element("LABEL").update("Object Path:").insert(el.button.dom.container);
-      el.button.dom.textbox = new lib.element("INPUT").event.addListener("keydown",listen.domTextbox).update(env.isPopup?"window.opener":"window").insert(el.button.dom.container);
+      el.button.dom.textbox = new lib.element("INPUT").event.addListener("keydown",listen.domTextbox).update(internal.isPopup?"window.opener":"window").insert(el.button.dom.container);
 
       /*
        * str
@@ -319,6 +333,10 @@ var firebug = {
       new lib.element("BR").insert(el.settings.content);
       el.settings.cbxOpenInPopup = new lib.element("INPUT").attribute.set("type","checkbox").attribute.addClass("SettingsCBX").insert(el.settings.content);
       el.settings.content.child.add(document.createTextNode("Open in popup"));
+      new lib.element("BR").insert(el.settings.content);
+      el.settings.content.child.add(document.createTextNode("Trim textnode to "));
+      el.settings.textNodeChars = new lib.element("INPUT").attribute.set("type","text").attribute.addClass("SettingsTextbox").insert(el.settings.content);
+      el.settings.content.child.add(document.createTextNode(" chars"));
       el.settings.buttonDiv = new lib.element("DIV").insert(el.settings.content);
       el.settings.buttonLeftDiv = new lib.element("DIV").attribute.addClass("ButtonsLeft").insert(el.settings.buttonDiv);
       el.settings.resetButton = new lib.element("INPUT").attribute.set("type","button").update("Reset").event.addListener("click",settings.reset).insert(el.settings.buttonLeftDiv);
@@ -329,7 +347,7 @@ var firebug = {
 
       lib.util.AddEvent(document,"mousemove",listen.mouse)("mousemove",win.resizer.resize)("mouseup",win.resizer.stop)("keydown",listen.keyboard);
 
-      env.init = true;
+      internal.init = true;
 
       for(var i=0, len=d.console.cache.length; i<len; i++){
         var item = d.console.cache[i];
@@ -354,14 +372,14 @@ var firebug = {
       }
      
       if(env.showIconWhenHidden) {
-        if(!env.popupWin) {
+        if(!internal.popupWin) {
           el.firebugIcon.environment.addStyle({ "display": env.debug&&'none'||'block' });
         }
       }
 
       lib.util.AddEvent(window, "unload", win.unload);
 
-      if (env.isPopup) {
+      if (internal.isPopup) {
         env.height=lib.util.GetViewport().height;
         lib.util.AddEvent(window, "resize", win.fitToPopup);
         win.fitToPopup();
@@ -371,7 +389,7 @@ var firebug = {
 
       win.setHeight(env.height);
 
-      if(env.openInPopup&&!env.isPopup) {
+      if(env.openInPopup&&!internal.isPopup) {
         win.newWindow();
       } else {
         el.main.environment.addStyle({ "display":env.debug&&'block'||'none' });
@@ -399,7 +417,7 @@ var firebug = {
 
         el.settings.container.environment.addStyle({
           "display": "block",
-          "left": (posXY.offsetLeft-125)+"px"
+          "left": (posXY.offsetLeft-107)+"px"
         });
         el.settings.progressDiv.environment.addStyle({
           "display": "none"
@@ -438,25 +456,28 @@ var firebug = {
       fe.override=elSet.cbxOverride.element.checked;
       fe.showIconWhenHidden=elSet.cbxShowIcon.element.checked;
       fe.openInPopup=elSet.cbxOpenInPopup.element.checked;
+      
+      if(isFinite(elSet.textNodeChars.element.value)&&elSet.textNodeChars.element.value>0) {
+        fe.textNodeChars=elSet.textNodeChars.element.value;
+      } else {
+        fe.textNodeChars=0;
+      }
 
-      if(fe.isPopup) {
-        ofe=window.opener.firebug.env;
-        ofe.debug=fe.debug;
-        ofe.detectFirebug=fe.detectFirebug;
-        ofe.hideDOMFunctions=fe.hideDOMFunctions;
-        ofe.override=fe.override;
-        ofe.showIconWhenHidden=fe.showIconWhenHidden;
-        ofe.openInPopup=fe.openInPopup;
-        ofe.popupTop=fe.popupTop;
-        ofe.popupLeft=fe.popupLeft;
-        ofe.popupWidth=fe.popupWidth;
-        ofe.popupHeight=fe.popupHeight;
+      if(firebug.internal.isPopup) {
+        window.opener.firebug.env = firebug.lib.util.Hash.clone(fe);
       }
 
       with(firebug) {
         settings.writeCookie();
         settings.hide();
         win.refreshDOM();
+        d.html.openHtmlTree();
+        if(internal.isPopup) {
+          with(opener.firebug) {
+            win.refreshDOM();
+            d.html.openHtmlTree();
+          }
+        }
       }
     },
     reset: function() {
@@ -470,8 +491,8 @@ var firebug = {
       var i,cookieArr,valueArr,item,value;
 
       with(firebug.env){
-        if(targetWindow.document.cookie.length>0) {
-          cookieArr=targetWindow.document.cookie.split('; ');
+        if(firebug.internal.targetWindow.document.cookie.length>0) {
+          cookieArr=firebug.internal.targetWindow.document.cookie.split('; ');
           
           for(i=0;i<cookieArr.length;i++) {
             if(cookieArr[i].split('=')[0]=='FBLiteSettings') {
@@ -502,6 +523,9 @@ var firebug = {
                   break;
                 case 'openInPopup':
                   openInPopup=value=="true";
+                  break;
+                case 'textNodeChars':
+                  textNodeChars=isFinite(value)?parseInt(value,10):0;
                   break;
                 case 'popupTop':
                   popupTop=parseInt(value,10);
@@ -534,8 +558,9 @@ var firebug = {
         values+='override:'+override+',';
         values+='showIconWhenHidden:'+showIconWhenHidden+',';
         values+='openInPopup:'+openInPopup+',';
+        values+='textNodeChars:'+textNodeChars+',';
 
-        if(isPopup) {
+        if(firebug.internal.isPopup) {
           if(window.outerWidth===undefined) {
             values+='popupTop:'+(window.screenTop-56)+',';
             values+='popupLeft:'+(window.screenLeft-8)+',';
@@ -554,11 +579,11 @@ var firebug = {
           values+='popupHeight:'+popupHeight+',';
         }
         
-        values+='height:'+(parseInt(targetWindow.firebug.el.main.element.style.height.replace(/px/,''),10)-38);
+        values+='height:'+(parseInt(firebug.internal.targetWindow.firebug.el.main.element.style.height.replace(/px/,''),10)-38);
 
         exdate=new Date();
         exdate.setDate(exdate.getDate()+365);
-        targetWindow.document.cookie='FBLiteSettings='+values+';expires='+exdate.toGMTString();
+        firebug.internal.targetWindow.document.cookie='FBLiteSettings='+values+';expires='+exdate.toGMTString();
       }
     },
     refreshForm: function() {
@@ -571,6 +596,7 @@ var firebug = {
       elSet.cbxOverride.element.checked=fe.override;
       elSet.cbxShowIcon.element.checked=fe.showIconWhenHidden;
       elSet.cbxOpenInPopup.element.checked=fe.openInPopup;
+      elSet.textNodeChars.element.value=fe.textNodeChars;
     }
   },
   win:{
@@ -616,7 +642,7 @@ var firebug = {
     },
     minimize:function(){
       with(firebug){
-        env.minimized=true;
+        internal.minimized=true;
         el.main.environment.addStyle({ "height":"35px" });
         el.mainiframe.environment.addStyle({ "height":"35px" });
         el.button.maximize.environment.addStyle({ "display":"block" });
@@ -626,48 +652,49 @@ var firebug = {
     },
     maximize:function(){
       with(firebug){
-        env.minimized=false;
+        internal.minimized=false;
         el.button.minimize.environment.addStyle({ "display":"block" });
         el.button.maximize.environment.addStyle({ "display":"none" });
         win.setHeight(env.height);
       }
     },
     newWindow: function() {
-      return;
       var interval,scripts,script,scriptPath,
-          fe=firebug.env;
+          fe=firebug.env,
+          fi=firebug.internal;
 
-      if (!fe.popupWin) {
+      if (!fi.popupWin) {
         scripts = document.getElementsByTagName('script');
         
-        fe.popupWin = window.open("", "_firebug", 
+        fi.popupWin = window.open("", "_firebug", 
           "status=0,menubar=0,resizable=1,top="+fe.popupTop+",left="+fe.popupLeft+",width=" + fe.popupWidth + 
           ",height=" + fe.popupHeight + ",scrollbars=0,addressbar=0,outerWidth="+fe.popupWidth+",outerHeight="+fe.popupHeight+
           "toolbar=0,location=0,directories=0,dialog=0");
         
-        if(!fe.popupWin) {
+        if(!fi.popupWin) {
           alert("Firebug Lite could not open a pop-up window, most likely because of a popup blocker.\nPlease enable popups for this domain");
         } else {
           firebug.settings.hide();
-        
+
           for (i=0,len=scripts.length; i<len; i++) {
-            if (scripts[i].src.indexOf(fe.liteFilename) > -1) {
+            if (scripts[i].src.indexOf(fi.liteFilename) > -1) {
               scriptPath = scripts[i].src;
               break;
             }
           }
 
           if (scriptPath) {
-            script = fe.popupWin.document.createElement('script'), done = false;
+            done = false;
+            script = fi.popupWin.document.createElement('script');
             script.type = 'text/javascript';
             script.src = scriptPath;
 
             script[firebug.lib.env.ie?"onreadystatechange":"onload"] = function(){
               if(!done && (!firebug.lib.env.ie || this.readyState == "complete" || this.readyState=="loaded")){
                 done = true;
-                if(fe.popupWin.firebug) {
-                  with(fe.popupWin.firebug) {
-                    env.isPopup = true;
+                if(fi.popupWin.firebug) {
+                  with(fi.popupWin.firebug) {
+                    internal.isPopup = true;
                     env.css = fe.css;
                     init();
                     el.button.dock.environment.addStyle({ "display": "block"});
@@ -678,13 +705,12 @@ var firebug = {
             };
 
             if (!done && firebug.lib.env.webkit) {
-              fe.popupWin.document.write('<html><head></head><body></body></html>');
               interval = setInterval(function() {
-                if (fe.popupWin.firebug) {
+                if (firebug.internal.popupWin.firebug) {
                   clearInterval(interval);
                   done = true;
-                  with(fe.popupWin.firebug) {
-                    env.isPopup = true;
+                  with(firebug.internal.popupWin.firebug) {
+                    internal.isPopup = true;
                     env.css = fe.css;
                     init();
                     el.button.dock.environment.addStyle({ "display": "block"});
@@ -694,23 +720,26 @@ var firebug = {
               }, 10);
             };
 
+            if(!firebug.lib.env.ie) {
+              firebug.internal.popupWin.document.write('<html><head><title>Firebug Lite - '+document.location.href+'</title></head><body></body></html>');
+            }
             if (!done) {
-              fe.popupWin.document.getElementsByTagName('head')[0].appendChild(script);
+              firebug.internal.popupWin.document.getElementsByTagName('head')[0].appendChild(script);
               firebug.el.main.environment.addStyle({"display": "none"});
               firebug.el.mainiframe.environment.addStyle({"display": "none"});
             }
           } else {
-            /*alert("Unable to detect the following script \"" + fe.liteFilename +
-                  "\" ... if the script has been renamed then please set the value of firebug.env.liteFilename to reflect this change");*/
-            fe.popupWin.close();
-            fe.popupWin=null;
+            alert("Unable to detect the following script \"" + firebug.internal.liteFilename +
+                  "\" ... if the script has been renamed then please set the value of firebug.internal.liteFilename to reflect this change");
+            firebug.internal.popupWin.close();
+            firebug.internal.popupWin=null;
           }
         }
       }
     },
     dock: function() {
       with(opener.firebug) {
-        env.popupWin = null;
+        internal.popupWin = null;
         el.main.environment.addStyle({
           "display": "block"
         });
@@ -723,10 +752,10 @@ var firebug = {
     },
     unload: function() {
       with(firebug){
-        if(env.isPopup) {
+        if(internal.isPopup) {
           win.dock();
-        } else if(env.popupWin) {
-          env.popupWin.close();
+        } else if(internal.popupWin) {
+          internal.popupWin.close();
         }
       }
     },
@@ -746,7 +775,7 @@ var firebug = {
       y:[], enabled:false,
       start:function(_event){
         with(firebug){
-          if(env.minimized)return;
+          if(internal.minimized)return;
           win.resizer.y=[el.main.element.offsetHeight,_event.clientY];
           if(lib.env.ie6){
             win.resizer.y[3]=parseInt(el.main.environment.getPosition().top);
@@ -823,7 +852,7 @@ var firebug = {
     },
     refreshSize:function(){
       with(firebug){
-        if(!env.init)
+        if(!internal.init)
           return;
 
         var dim = lib.util.GetViewport();
@@ -904,7 +933,7 @@ var firebug = {
           try {
             if(_cmd==='console.firebug') {
               d.console.addLine().attribute.addClass("Arrow").update(firebug.version);
-            } else {  
+            } else {
               result = eval.call(window,_cmd);
               d.console.print(_cmd,result);
             }
@@ -922,7 +951,7 @@ var firebug = {
       },
       run:function(_command){
         with(firebug){
-          if(!env.init){
+          if(!internal.init){
             d.console.cache.push({ "command":_command, "arg":Array.prototype.slice.call(arguments,1) });
           } else {
             d.console.cmd[_command].apply(window,Array.prototype.slice.call(arguments,1));
@@ -1050,7 +1079,7 @@ var firebug = {
       index:-1,
       open:function(_index){
         with (firebug) {
-          var item = env.targetWindow.document.styleSheets[_index],
+          var item = internal.targetWindow.document.styleSheets[_index],
           uri = item.href;
           try {
             var rules = item[lib.env.ie ? "rules" : "cssRules"], str = "";
@@ -1080,7 +1109,7 @@ var firebug = {
       refresh:function(){
         with(firebug){
           el.button.css.selectbox.update("");
-          var collection = env.targetWindow.document.styleSheets;
+          var collection = internal.targetWindow.document.styleSheets;
           for(var i=0,len=collection.length; i<len; i++){
             var uri = getFileName(collection[i].href);
             d.css.index=d.css.index<0?i:d.css.index;
@@ -1147,7 +1176,7 @@ var firebug = {
     highlight:function(_value,_inObject,_inArray,_link){
       with(firebug){
         var isArray = false, isHash, isElement = false, vtype=typeof _value, result=[];
-        
+
         if(vtype=="object"){
           if(Object.prototype.toString.call(_value) === "[object Date]"){
             vtype = "date";
@@ -1166,9 +1195,13 @@ var firebug = {
           isElement = _value!=undefined&&Boolean(_value.nodeName)&&Boolean(_value.nodeType);
 
           // number, string, boolean, null, function
-          if(_value==null||vtype=="number"||vtype=="string"||vtype=="boolean"||vtype=="function"||vtype=="regexp"||vtype=="date"){
+          if(_value==null||vtype=="number"||vtype=="string"||vtype=="boolean"||(vtype=="function"&&_value.nodeName!="OBJECT")||vtype=="regexp"||vtype=="date"){
             if(_value==null){
-              result.push("<span class='Null'>null</span>");
+              if(_value===undefined) {
+                result.push("<span class='Null'>undefined</span>");
+              } else {
+                result.push("<span class='Null'>null</span>");
+              }
             }else if (vtype=="regexp") {
               result.push("<span class='Maroon'>" + _value + "</span>");
             }else if (vtype=="date") {
@@ -1268,7 +1301,7 @@ var firebug = {
             return;
           }
           if(_clear){
-            env.targetWindow.firebug.el.bgInspector.environment.addStyle({ "display":"none" });
+            internal.targetWindow.firebug.el.bgInspector.environment.addStyle({ "display":"none" });
             return;
           }
           d.inspector.inspect(_element,true);
@@ -1278,33 +1311,28 @@ var firebug = {
         var map = [],
         parentLayer,
         t,
+        link,
         tagName,
+        searchEl,
         parent = _element;
         while (parent) {
           map.push(parent);
-          if (parent == firebug.env.targetWindow.document.body) break;
+          if (parent == firebug.internal.targetWindow.document.body) break;
           parent = parent.parentNode;
         }
         map = map.reverse();
         with(firebug) {
           if (env.dIndex != "html") {
-            env.targetWindow.firebug.d.navigate("html");
+            internal.targetWindow.firebug.d.navigate("html");
           }
 
-          env.targetWindow.firebug.d.inspector.toggle(false);
+          internal.targetWindow.firebug.d.inspector.toggle(false);
 
           for (t = 0; t < el.left.html.container.child.get().length; t++) {
-            if (el.left.html.container.child.get()[t].childNodes[0].childNodes[1].childNodes[0].childNodes[0]) {
-              if (el.left.html.container.child.get()[t].childNodes[0].childNodes[1].childNodes[0].childNodes[0].innerText) {
-                tagName = el.left.html.container.child.get()[t].childNodes[0].childNodes[1].childNodes[0].childNodes[0].innerText;
-              } else {
-                tagName = el.left.html.container.child.get()[t].childNodes[0].childNodes[1].childNodes[0].childNodes[0].textContent;
-              }
-
-              if (/<body/i.test(tagName)) {
-                parentLayer = el.left.html.container.child.get()[t].childNodes[1].lib;
-                break;
-              }
+            searchEl=el.left.html.container.child.get()[t];
+            if(/<body/i.test(searchEl.innerText||searchEl.textContent)) {
+              parentLayer = el.left.html.container.child.get()[t].childNodes[1].lib;
+              break;
             }
           }
 
@@ -1314,8 +1342,12 @@ var firebug = {
 
           for (t = 0, len = map.length; map[t]; t++) {
             if (t == len - 1) {
-              var link = parentLayer.environment.getElement().previousSibling.lib;
+              link = parentLayer.environment.getElement().previousSibling.lib;
               link.attribute.addClass("Selected");
+              
+              if(link.element.scrollIntoView) {
+                link.element.scrollIntoView(false);
+              }
 
               if (d.html.current) {
                 d.html.current[1].attribute.removeClass("Selected");
@@ -1337,13 +1369,17 @@ var firebug = {
       },
       openHtmlTree:function(_element,_parent,_returnParentElementByElement,_event){
         with(firebug){
-          var element = _element || env.targetWindow.document.documentElement, 
+          var element = _element || internal.targetWindow.document.documentElement, 
               parent = _parent || el.left.html.container, 
               returnParentEl = _returnParentElementByElement || null, 
               returnParentVal = null,
               len = element.childNodes.length,
               nodeLink;
-
+          
+          if (!window.Node) {
+            window.Node = {TEXT_NODE:3,COMMENT_NODE:8};
+          }
+              
           if(parent!=el.left.html.container){
             nodeLink = parent.environment.getParent().lib.child.get()[0].lib;
             if (d.html.current) {
@@ -1355,7 +1391,7 @@ var firebug = {
             d.html.openProperties();
           };
 
-          if(element.childNodes&&(len==0||(len==1&&element.childNodes[0].nodeType==3)))return;
+          if(element.childNodes&&(len==0||(len==1&&element.childNodes[0].nodeType==Node.TEXT_NODE)))return;
           parent.clean();
 
           if(parent.opened&&Boolean(_returnParentElementByElement)==false){
@@ -1382,22 +1418,28 @@ var firebug = {
             } 
             var item = element.childNodes[i];
 
-            if (item.nodeType != 3){
+            if (item.nodeType != Node.TEXT_NODE && !item.getAttribute('firebugIgnore')){
               var container = new lib.element().attribute.addClass("Block").insert(parent), 
-              link = new lib.element("A").attribute.addClass("Link").insert(container), 
-              spacer = new lib.element("SPAN").attribute.addClass("Spacer").update("&nbsp;").insert(link),
-              html = new lib.element("SPAN").attribute.addClass("Content").update(d.highlight(item)).insert(link),
-              subContainer = new lib.element("DIV").attribute.addClass("SubContainer").insert(container),
-              view = lib.util.Element.getView(item);
+                  link = new lib.element("A").attribute.addClass("Link").insert(container), 
+                  spacer = new lib.element("SPAN").attribute.addClass("Spacer").update("&nbsp;").insert(link),
+                  html = new lib.element("SPAN").attribute.addClass("Content").update(d.highlight(item)).insert(link),
+                  subContainer = new lib.element("DIV").attribute.addClass("SubContainer").insert(container),
+                  view;
 
+              if(item.nodeType == Node.COMMENT_NODE) {
+                continue;
+              }
+              
+              view = lib.util.Element.getView(item);
               link.event.addListener("click", lib.util.Curry(d.html.openHtmlTree, window, item, subContainer, false));
               link.event.addListener("mouseover", lib.util.Curry(d.html.highlight, window, item, false));
               link.event.addListener("mouseout", lib.util.Curry(d.html.highlight, window, item, true));
-
+                            
               returnParentVal = returnParentEl == item ? subContainer : returnParentVal;
-
+    
               if(d.html.current==null&&item==document.body){
                 link.attribute.addClass("Selected");
+                link.attribute.addClass("Parent");
                 d.html.current = [item,link];
                 d.html.openHtmlTree(item,subContainer);
               }
@@ -1408,17 +1450,20 @@ var firebug = {
 
               if (item.childNodes){
                 var childLen = item.childNodes.length;
-                if (childLen == 1 && item.childNodes[0].nodeType == 3) {
-                  html.child.add(document.createTextNode(item.childNodes[0].nodeValue.substring(0, 50)));
+                if (childLen == 1 && item.childNodes[0].nodeType == Node.TEXT_NODE) {
+                  if(isFinite(env.textNodeChars)&&parseInt(env.textNodeChars)>0) {
+                    html.child.add(document.createTextNode(item.childNodes[0].nodeValue.substring(0, env.textNodeChars)));
+                  } else {
+                    html.child.add(document.createTextNode(item.childNodes[0].nodeValue));
+                  }
                   html.child.add(document.createTextNode("</"));
                   html.child.add(new lib.element("span").attribute.addClass("Blue").update(item.nodeName.toLowerCase()).environment.getElement());
                   html.child.add(document.createTextNode(">"));
                   continue;
                 }
-                else 
-                  if (childLen > 0) {
-                    link.attribute.addClass("Parent");
-                  }
+                else if (childLen > 0) {
+                  link.attribute.addClass("Parent");
+                }
               }
             }
           };
@@ -1454,14 +1499,14 @@ var firebug = {
       el:null,
       inspect:function(_element,_bgInspector){
         with(firebug){
-          var pos = env.targetWindow.firebug.lib.util.Element.getPosition(_element);
+          var pos = internal.targetWindow.firebug.lib.util.Element.getPosition(_element);
 
-          env.targetWindow.firebug.el[_bgInspector&&"bgInspector"||"borderInspector"].environment.addStyle({ 
+          internal.targetWindow.firebug.el[_bgInspector&&"bgInspector"||"borderInspector"].environment.addStyle({ 
             "width":_element.offsetWidth+"px", "height":_element.offsetHeight+"px",
             "top":pos.offsetTop-(_bgInspector?0:2)+"px", "left":pos.offsetLeft-(_bgInspector?0:2)+"px",
             "display":"block"
           });
-9
+
           if(!_bgInspector){
             d.inspector.el = _element;
           }
@@ -1477,8 +1522,8 @@ var firebug = {
             el.borderInspector.environment.addStyle({ "display":"none" });
             d.inspector.el = null;
           } else if(lib.env.dIndex!="html") {
-            if (env.popupWin) {
-              env.popupWin.firebug.d.navigate("html");
+            if (internal.popupWin) {
+              internal.popupWin.firebug.d.navigate("html");
             } else {
               d.navigate("html");
             }
@@ -1493,28 +1538,26 @@ var firebug = {
         with(firebug){
           d.scripts.index = _index;
           el.left.scripts.container.update("");
-          var script = document.getElementsByTagName("script")[_index],uri = script.src||document.location.href,source;
+          var i=0,script = document.getElementsByTagName("script")[_index],uri = script.src||document.location.href,source;
           try {
             if(uri!=document.location.href){
-              source = env.cache[uri]||lib.xhr.get(uri).responseText;
-              env.cache[uri] = source;
+              source = internal.cache[uri]||lib.xhr.get(uri).responseText;
+              internal.cache[uri] = source;
             } else {
               source = script.innerHTML;
             }
             source = source.replace(/<|>/g,function(_ch){
               return ({"<":"&#60;",">":"&#62;"})[_ch];
             });
-          
-            if(!d.scripts.lineNumbers) 
-              el.left.scripts.container.child.add(
-                  new lib.element("DIV").attribute.addClass("CodeContainer").update(source)
-              );
-            else {
-              source = source.split("<br />");
-              for (var i = 0; i < source.length; i++) {
-                el.left.scripts.container.child.add(new lib.element("DIV").child.add(new lib.element("DIV").attribute.addClass("LineNumber").update(i + 1), new lib.element("DIV").attribute.addClass("Code").update("&nbsp;" + source[i]), new lib.element("DIV").attribute.addClass('Clear')));
-              };
-            };
+            
+            if(d.scripts.lineNumbers){
+              source = source.replace(/(^)|\n/g,function(_ch){
+                i++;
+                return "\n"+i+" ";
+              });
+            }
+
+            el.left.scripts.container.update(source);
           } catch(e){
             el.left.scripts.container.child.add(
               new lib.element("DIV").attribute.addClass("CodeContainer").update("<em>Access to restricted URI denied</em>")
@@ -1532,7 +1575,7 @@ var firebug = {
       refresh:function(){
         with(firebug){
           el.button.scripts.selectbox.clean();
-          var collection = env.targetWindow.document.getElementsByTagName("script");
+          var collection = internal.targetWindow.document.getElementsByTagName("script");
           for(var i=0,len=collection.length; i<len; i++){
             var item = collection[i],
             fileName = getFileName(item.src||item.baseURI||"..");
@@ -1560,7 +1603,7 @@ var firebug = {
           for(var i=0,len=arguments.length; i<len; i++){
             try {
               var item = arguments[i],
-                  val = env.targetWindow.eval(item);
+                  val = internal.targetWindow.eval(item);
               d.xhr.objects.push([item, val]);
             } catch(e){
               continue;
@@ -1717,7 +1760,7 @@ var firebug = {
   listen: {
     addXhrObject:function(){
       with(firebug){
-        d.xhr.addObject.apply(env.targetWindow, el.button.xhr.textbox.environment.getElement().value.split(","));
+        d.xhr.addObject.apply(internal.targetWindow, el.button.xhr.textbox.environment.getElement().value.split(","));
       }
     },
     consoleTextbox:function(_event){
@@ -1758,8 +1801,8 @@ var firebug = {
     },
     inspector:function(){
       with(firebug){
-        if (env.popupWin) {
-          env.popupWin.firebug.d.html.inspect(firebug.d.inspector.el);
+        if (internal.popupWin) {
+          internal.popupWin.firebug.d.html.inspect(firebug.d.inspector.el);
         } else {
           firebug.d.html.inspect(firebug.d.inspector.el);
         }
@@ -1769,18 +1812,18 @@ var firebug = {
       with(firebug){
         if(_event.keyCode==27 && d.inspector.enabled){
           d.inspector.toggle();
-        } else if(_event.keyCode === 123 && _event.ctrlKey || _event.metaKey) {
-          if(env.isPopup){
+        } else if(_event.keyCode === 123 && (_event.ctrlKey || _event.metaKey)) {
+          if(internal.isPopup){
             win.dock();
           }else {
             win.newWindow();
           }
         } else if(
-            (_event.keyCode === 123 && !_event.ctrlKey && !_event.metaKey) || 
+            (_event.keyCode === 123 && (!_event.ctrlKey && !_event.metaKey)) ||
             (_event.keyCode === 76 && (_event.ctrlKey || _event.metaKey) && _event.shiftKey) ||
             (_event.keyCode === 13 && _event.shiftKey)) {
 
-          if(env.isPopup){
+          if(internal.isPopup){
             win.dock();
           } else if (el.main.environment.getStyle("display") === 'none') {
             win.show();
@@ -1826,7 +1869,6 @@ var firebug = {
         for(var i=0, len=source.length; i<len; i++){
           var item = source[i]+"}", rule = !lib.env.ie?item:item.split(/{|}/),
               styleSheet = document.styleSheets[0];
-          console.log(rule);
           if(item.match(/.+\{.+\}/)){
             if(lib.env.ie)
               styleSheet.addRule(rule[0],rule[1]);
@@ -1844,7 +1886,7 @@ var firebug = {
     xhrTextbox:function(_event){
       with(firebug){
         if(_event.keyCode==13){
-          d.xhr.addObject.apply(env.targetWindow, el.button.xhr.textbox.environment.getElement().value.split(","));
+          d.xhr.addObject.apply(internal.targetWindow, el.button.xhr.textbox.environment.getElement().value.split(","));
         }
       }
     }
@@ -2513,7 +2555,18 @@ var firebug = {
   );
 })(firebug);
 
-with(firebug){
-  //initConsole();
-  //lib.util.Init.push(firebug.init);
-};
+(function(){
+  with(firebug){
+    var scriptsIncluded = document.getElementsByTagName('script');
+    for(var i=scriptsIncluded.length-1; i>=0; i--){
+      var script = scriptsIncluded[i],
+          src = getFileName(script.src);
+      if(src){
+        internal.liteFilename = src;
+        break;
+      }
+    }
+    //initConsole();
+    //lib.util.Init.push(firebug.init);
+  }
+})();
