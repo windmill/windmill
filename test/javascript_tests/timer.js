@@ -10,7 +10,9 @@ windmillMain.test_timer = new function () {
       str += 'asdf';
     }
     t.finish();
-    jum.assertTrue(t.time > 0);
+    // t.time should be a number -- may actually
+    // zero in Safari
+    jum.assertTrue(!isNaN(t.time));
   };
 };
 
