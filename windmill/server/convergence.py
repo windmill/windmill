@@ -349,6 +349,7 @@ class JSONRPCMethods(RPCMethods):
                 for k, v in tests.items():
                     if type(v) is dict and v.get(u'result') is False:
                         print "Failed: "+k
+                windmill.test_has_failed = True
             total_string = "Total Tests Run: "+str(tests["testCount"])+" "
             total_string += "Total Passed: "+str(tests["testCount"] - tests["testFailureCount"])+" "
             total_string += "Total Failed: "+str(tests["testFailureCount"])
