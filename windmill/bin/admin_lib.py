@@ -218,7 +218,7 @@ def teardown(shell_objects):
         #         except: pass
         
         shell_objects['httpd'].stop()
-        shell_objects['httpd_thread'].join()
+        #shell_objects['httpd_thread'].join()
         
 
 def runserver_action(shell_objects):
