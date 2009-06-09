@@ -77,7 +77,7 @@ class InternetExplorer(object):
         if hasattr(sys.stdout, 'fileno'):
             kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
         else:
-            kwargs = {'stdout':sys.__stdout__ ,'stderr':__sys.stderr__, 'stdin':sys.stdin}
+            kwargs = {'stdout':sys.__stdout__ ,'stderr':sys.__stderr__, 'stdin':sys.stdin}
         
         self.p_handle = killableprocess.Popen(self.cmd, **kwargs)
         
