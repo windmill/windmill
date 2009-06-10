@@ -225,6 +225,7 @@ class WindmillProxyApplication(object):
             nhosts.reverse()
             nhosts = first_forward_domains + nhosts
             hosts = [];
+            print nhosts
             # Can't use set() here because it needs to keep it's original ordering.
             for h in nhosts:
                 if h not in hosts and h not in exclude_from_retry: hosts.append(h)
