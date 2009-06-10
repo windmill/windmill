@@ -1,0 +1,169 @@
+body, html
+{	
+	font-size: 11px;
+	margin: 0px;
+	padding: 0px;
+	text-align: left;
+	font-family:  "Lucida Grande","Verdana",sans-serif;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0; 
+  overflow: auto; overflow-y: hidden; overflow-x: hidden;
+  width:100%;
+  height:100%;
+  position:absolute;
+}
+a {
+  color: #9a3527;
+  text-decoration: none;
+}
+a:hover {
+  color: #456068;
+  /*border-bottom: 1px dotted;*/
+}
+
+img {
+  border:none;
+}
+
+.suite {
+  overflow:hidden;
+  /*border-bottom:1px solid black;*/
+  position:relative;
+  width:99%;
+}
+
+.suiteHeader {
+  width:99%;
+  font-size:10px;
+  table-layout: fixed;
+}
+
+.suiteTitleDiv {
+  cursor:pointer;
+  width:220px;
+  overflow:hidden
+}
+
+.suiteButton {
+  padding-left:4px;
+  padding-right:4px;
+  font-size:11px;
+}
+
+.action {
+/*  position:relative;
+  border-top: 1px solid #aaa;
+  background: lightyellow;*/
+  padding:2px;
+}
+.action img {
+	width:23px;
+	height:23px;
+}
+
+
+.texta {
+  font: 10px arial;
+	margin:0px;
+	height:19px;
+	width:60%;
+	border:solid 0 #fff;
+	background: transparent url("../img/text_elem_gradient.gif"); 
+}
+
+.smalloption {
+  font:10px arial;
+  height:19px;
+  border:solid 0 #fff;
+}
+
+#cover {
+ width:100%;
+ height:100%;
+ background-color:white;
+ opacity:.8;
+ filter: alpha(opacity=80);
+ z-index:5;
+ position:absolute;
+ left:0px;
+ top:0px;
+ padding:0px;
+ margin:0px;
+}
+
+#icon {
+  position:relative;
+  left:3px;height:41px;
+  width:40px;
+  border:0px;
+}
+
+#runningStatus {
+ width:85%;
+ height:18px;
+ font-size:12px;
+ color:#456068; 
+ z-index:10;
+ position:relative;
+}
+
+#controllers {
+ z-index:1;
+ position:absolute;
+ top:43px;
+ left:70%;
+}
+
+#domExp {
+ display:none;
+ position:absolute;
+ background:white;
+ left:50px;
+ top:60px;
+ width:100%;
+ z-index:100;
+ font:15px arial;
+ color:#3f6d75;
+ border:1px solid #aaa; 
+ overflow:auto;
+}
+
+#ideForm {
+  position:relative;
+  width:100%;
+  overflow: auto; overflow-y: auto; overflow-x: hidden;
+}
+
+#resOut {
+  position:relative;
+  width:100%;
+  overflow: auto; overflow-y: auto; overflow-x: hidden;
+}
+#perfOut {
+  position:relative;
+  width:100%;
+  overflow: auto; overflow-y: auto; overflow-x: hidden;
+}
+
+.outputEntry {
+    position: relative;
+    padding: 3px;
+    overflow: hidden;
+    border-bottom: 1px solid #aaa;
+    width: 98%;
+    cursor:pointer;
+}
+
+#navigation {
+ padding:8px;
+ height:10px;
+ bottom:5px;
+ font:11px arial;
+ background:white;
+ left:10%;
+}
+
+.tab {
+height:100%;
+overflow-x: hidden;
+}

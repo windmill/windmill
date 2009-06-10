@@ -1,0 +1,6 @@
+[nose.plugins]
+windmill = windmill.authoring.nose_plugin:WindmillNosePlugin
+
+[console_scripts]
+windmill = windmill.bin.windmill_bin:main
+

@@ -1,0 +1,89 @@
+<!DOCTYPE html
+   PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>Windmill JavaScript tests form page</title>
+  <script type="text/javascript" src="/windmill-serv/js/lib/fleegix_js/fleegix.js"></script>
+  <script type="text/javascript">
+    var windmillTestForm = new function () {
+      this.setText = function () {
+        var form = $('wmTestForm');
+        var sel = form.sciFiSelect;
+        var val = sel.options[sel.selectedIndex].text;
+        $('display').innerHTML = val;
+      };
+      this.disableText = function () {
+        var node = $('disableText');
+        var dis = !node.disabled;
+        node.disabled = dis;
+      };
+      this.toggleCheckboxVis = function (node) {
+        var id = node.id.replace('visibility', '');
+        var vis = node.checked ? 'visible' : 'hidden';
+        $('vis' + id).style.visibility = vis;
+      }
+    };
+  </script>
+  <style type="text/css">
+    .visCheck {
+      padding: 4px;
+      margin: 2px;
+      border: 1px solid #ccc;
+      visibility: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <h3 id="formPageHeader">JavaScript tests ... fun with HTML forms.</h3>
+  <div id="content">
+    <form id="wmTestForm" action="">
+      <div>Select your bad 70s sci-fi movie:</div>
+      <div>
+        <select id="sciFiSelect" name="sciFiSelect"
+          onchange="windmillTestForm.setText();">
+          <option value="1">
+            Zardoz
+          </option>
+          <option value="2">
+            Logan's Run
+          </option>
+          <option value="3">
+            Battle Beyond the Stars 
+          </option>
+          <option value="4">
+            Saturn 3 
+          </option>
+        </select>
+      </div>
+      <div>
+        You selected: <span id="display"></span>
+      </div>
+      <div>
+        <input type="text" id="disableText" name="disableText"/>
+        <input type="button" id="disableButton" name="disableButton"
+          onclick="windmillTestForm.disableText();" value="Toggle Disabled"/>
+      </div>
+      <div>
+        <input type="checkbox" id="visibilityA" name="visibilityA"
+          onclick="windmillTestForm.toggleCheckboxVis(this);"> Kirk
+        <input type="checkbox" id="visibilityB" name="visibilityB"
+          onclick="windmillTestForm.toggleCheckboxVis(this);"> Spock
+        <input type="checkbox" id="visibilityC" name="visibilityC"
+          onclick="windmillTestForm.toggleCheckboxVis(this);"> Bones
+      </div>
+      <div>
+        <div class="visCheck" id="visA">Kirk</div>
+        <div class="visCheck" id="visB">Spock</div>
+        <div class="visCheck" id="visC">Bones</div>
+      </div>
+    </form>
+  </div>
+</body>
+
+</html>
+
+

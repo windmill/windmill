@@ -1,0 +1,23 @@
+Metadata-Version: 1.0
+Name: windmill
+Version: 1.2
+Summary: Web testing framework intended for complete automation of user interface testing, with strong test debugging and recording capabilities.
+Home-page: http://www.getwindmill.com/
+Author: OSAF, Mikeal Rogers, Adam Christian
+Author-email: windmill-dev@googlegroups.com
+License: http://www.apache.org/licenses/LICENSE-2.0
+Description: Windmill is an Open Source AJAX Web UI Testing framework.
+        
+        Windmill implements cross browser testing, in-browser recording and playback, and functionality for fast accurate debugging and test environment integration.
+        
+        We welcome any and all interest and contribution, as we work diligently at adding new features and keeping up with your bugs.
+        
+        Thanks for your interest and participation!
+        
+Platform: Any
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
