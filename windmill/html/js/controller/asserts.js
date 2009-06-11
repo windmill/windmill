@@ -114,7 +114,10 @@ windmill.controller.asserts.assertRegistry = {
 //Currently only does one level below the provided div
 //To make it more thorough it needs recursion to be implemented later
 windmill.controller.asserts.assertText = function (paramObject) {
-
+  //need to start moving test to use text instead of validator, its dumb
+  if (paramObject.text){
+    paramObject.validator = paramObject.text;
+  }
   var n = lookupNode(paramObject);
   var validator = paramObject.validator;
   if (n.innerHTML.indexOf(validator) != -1){
@@ -147,6 +150,10 @@ windmill.controller.asserts.assertNode = function (paramObject) {
 
 //Assert that a form element contains the expected value
 windmill.controller.asserts.assertValue = function (paramObject) {
+  //need to start moving test to use text instead of validator, its dumb
+  if (paramObject.text){
+    paramObject.validator = paramObject.text;
+  }
   var n = lookupNode(paramObject);
   var validator = paramObject.validator;
 
@@ -189,6 +196,11 @@ windmill.controller.asserts.assertElemJS = function (paramObject) {
 
 //Assert that a provided value is selected in a select element
 windmill.controller.asserts.assertSelected = function (paramObject) {
+  //need to start moving test to use text instead of validator, its dumb
+  if (paramObject.text){
+    paramObject.validator = paramObject.text;
+  }
+  
   var n = lookupNode(paramObject);
   var validator = paramObject.validator;
 
@@ -209,6 +221,9 @@ windmill.controller.asserts.assertChecked = function (paramObject) {
 // Assert that a an element's property is a particular value
 windmill.controller.asserts.assertProperty = function (paramObject) {
   var element = lookupNode(paramObject);
+  if (paramObject.text){
+    paramObject.validator = paramObject.text;
+  }
   var vArray = paramObject.validator.split('|');
   if (vArray.length != 2)
     throw "Invalid validator '" + paramObject.validator + "'.  Use '|' to separate key from value.";

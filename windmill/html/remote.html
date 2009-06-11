@@ -18,6 +18,9 @@
 	<script type='text/javascript' src="js/lib/jquery/ui.progressbar.js"></script>
 	<script type="text/javascript" src="js/lib/jquery/hoverIntent.js"></script>
 	<script type="text/javascript" src="js/lib/jquery/superfish.js"></script>
+	<script type="text/javascript" src="js/lib/jquery/jquery.bgiframe.js"></script>
+  <script type="text/javascript" src="js/lib/jquery/jquery.dimensions.js"></script>
+  <script type="text/javascript" src="js/lib/jquery/jquery.tooltip.min.js"></script>
 	
 		<script type="text/javascript">
 			jQuery(function(){
@@ -38,7 +41,6 @@
            } 
           }
         });
-        
         
         jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
           ui.panel.style.height = "95%";
@@ -272,7 +274,6 @@
     var scriptsArr = [];
     scriptsArr.push('js/lib/browserdetect.js')
     scriptsArr.push('js/lib/firebug/pi.js')
-    scriptsArr.push('js/lib/fleegix_js/plugins/hash.js')
     scriptsArr.push('js/lib/firebug/firebug-lite.js')
     //if (!/Opera[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
     scriptsArr.push('js/lib/json2.js')
@@ -350,6 +351,7 @@
       document.getElementById('ideForm').style.height = document.body.clientHeight -80 + "px";
       document.getElementById('resOut').style.height = document.body.clientHeight -80 + "px";
       document.getElementById('perfOut').style.height = document.body.clientHeight -80 + "px";
+      //jQuery('.texta').css("width", fleegix.dom.getViewportWidth() - 250+"px");
 
     }
     else {
@@ -357,11 +359,56 @@
       document.getElementById('ideForm').style.height = window.innerHeight -80 + "px";
       document.getElementById('resOut').style.height = window.innerHeight -80 + "px";
       document.getElementById('perfOut').style.height = window.innerHeight -80 + "px";
+      //jQuery('.texta').css("width", fleegix.dom.getViewportWidth() - 250+"px");
     }
   }
   jQuery(document).ready(reFlow);
   jQuery(window).resize(reFlow);
 
 </script>
+
+<textarea id="actionButtonsTemplate" style="display:none">
+    <a alt="Start Playback" href="#">
+      <img onclick="windmill.ui.playback.sendPlayBack('<%= id %>')" src="img/play.png" title="Play this action.">
+    </a>
+    <a alt="Delete Action" href="#">
+      <img onclick="windmill.ui.remote.deleteAction('<%= id %>')" src="img/trash.png" title="Delete this action.">
+    </a>
+    <a onclick="windmill.ui.remote.addActionAbove('<%= id %>')" href="#">
+      <img src="img/addup.png" title="Add a new action above.">
+    </a>
+    <a onclick="windmill.ui.remote.addActionBelow('<%= id %>')" href="#">
+      <img src="img/adddown.png" title="Add a new action below.">
+    </a>
+</textarea>
+
+<textarea id="suiteHeaderTemplate" style="display:none">
+    <table id="<%= suiteName %>Header" class="suiteHeader">
+      <tr>
+        <td style="font-size:13px;">
+          <strong style="cursor:all-scroll">Suite </strong>
+          <span class="suiteTitleDiv" title="<%= suiteName %>" id="<%= suiteName %>Title" 
+            onclick="windmill.ui.remote.updateSuite('<%= suiteName %>');">
+            <%= suiteName %>
+          </span>
+        </td>
+        <td VALIGN='top'>
+          <span id="<%= suiteName %>Links" align="right" style="top:0px;float:right;">
+            <a title="Play entire suite." class="ui-state-default ui-corner-all suiteButton" href="#" 
+              onclick="windmill.ui.playback.sendPlayBack(null,'<%= suiteName %>')">play</a>
+            <a title="Save this suite." class="ui-state-default ui-corner-all suiteButton" href="#" 
+              onclick="windmill.ui.remote.saveSuite('<%= suiteName %>')">save</a>
+            <a title="Delete suite." class="ui-state-default ui-corner-all suiteButton" href="#" 
+              onclick="windmill.ui.remote.deleteAction('<%= suiteName %>')">delete</a>
+            <a id="<%= suiteName %>Toggle" title="Toggle show/hide." class="ui-state-default ui-corner-all suiteButton" href="#" 
+              onclick="javascript:windmill.ui.toggleCollapse('<%= suiteName %>')">hide</a>
+            <a title="Select this suite." class="ui-state-default ui-corner-all suiteButton" href="#" 
+              onclick="windmill.ui.currentSuite='<%= suiteName %>'">select</a>
+          </span>
+          &nbsp;&nbsp;
+        </td>
+      </tr>
+    </table>
+</textarea>
 
 </html>

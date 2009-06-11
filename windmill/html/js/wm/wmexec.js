@@ -27,7 +27,7 @@ function Load() {
     fleegix.dom.center(load);
     
     var remUrl = window.location.href.replace("start.html", "remote.html");
-    var remote = window.open(remUrl, 'windmill_Remote', 'width=465,height=500,toolbar=no,' + 
+    var remote = window.open(remUrl, 'windmill_Remote', 'width=467,height=500,toolbar=no,' + 
     'location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');
    
     if (!remote) {

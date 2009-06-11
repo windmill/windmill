@@ -24,72 +24,73 @@ windmill.registry = new function () {
 windmill.registry.locator = ['id','link','xpath','jsid', 'name','value','classname', 'tagname','label'];
 //windmill.registry.locator.push('id','link','xpath','jsid', 'name','classname', 'tagname');
 
-for( loc in windmill.registry.locator ){
-  windmill.registry.option.push('opt'+loc);
+for( var i=0; i<windmill.registry.locator.length;i++ ){
+  windmill.registry.option.push('opt'+windmill.registry.locator[i]);
 }
 
 windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js', 'status','domain', 'coords', 'pixels', 'val');
 
 //Setup method registry
-windmill.registry.methods['-- Mouse --']        = {'locator': false, 'option': false, 'section': true};
-windmill.registry.methods['click']               = {'locator': true, 'option': false };
-windmill.registry.methods['doubleClick']         = {'locator': true, 'option': false};
-windmill.registry.methods['mouseDown']           = {'locator': true, 'option': false};
-windmill.registry.methods['mouseMove']           = {'locator': false, 'option': 'coords'};
-windmill.registry.methods['mouseMoveTo']         = {'locator': false, 'option': 'coords'};
-windmill.registry.methods['mouseUp']             = {'locator': true, 'option': false};
-windmill.registry.methods['mouseOut']            = {'locator': true,'option': false};
-windmill.registry.methods['mouseOver']           = {'locator': true,'option': false};
-windmill.registry.methods['dragDropElem']        = {'locator': true,'option': 'pixels'};
-windmill.registry.methods['dragDropAbs']         = {'locator': true,'option': 'coords'};
-windmill.registry.methods['dragDropElemToElem']  = {'locator': true,'option': true, 'optionIsLocator': true};
-windmill.registry.methods['radio']               = {'locator': true, 'option': false };
-windmill.registry.methods['check']               = {'locator': true, 'option': false };
-windmill.registry.methods['select']              = {'locator': true, 'option': 'option,val,index'};
-windmill.registry.methods['-- Keyboard --']      = {'locator': false, 'option': false, 'section': true};
-windmill.registry.methods['type']                = {'locator': true, 'option': 'text'};
-windmill.registry.methods['keyPress']            = {'locator': true, 'option': 'options'};
-windmill.registry.methods['keyDown']            = {'locator': true, 'option': 'options'};
-windmill.registry.methods['keyUp']            = {'locator': true, 'option': 'options'};
-windmill.registry.methods['-- Browser --']       = {'locator': false, 'option': false, 'section': true};
-windmill.registry.methods['open']                = {'locator': false, 'option': 'url' };
-windmill.registry.methods['goBack']              = {'locator': false, 'option': false };
-windmill.registry.methods['goForward']           = {'locator': false, 'option': false };
-windmill.registry.methods['refresh']             = {'locator': false, 'option': false };
-windmill.registry.methods['scroll']              = {'locator': false, 'option': 'coords' };
-windmill.registry.methods['-- Waits --']         = {'locator': false, 'option': false, 'section': true};
-windmill.registry.methods['waits.sleep']         = {'locator': false, 'option': 'milliseconds' };
-windmill.registry.methods['waits.forElement']     = {'locator': true, 'option': 'timeout' };
-windmill.registry.methods['waits.forNotElement']  = {'locator': true, 'option': 'timeout' };
-windmill.registry.methods['waits.forJS']        = {'locator': false, 'option': 'js' };
-windmill.registry.methods['waits.forElementProperty']    = {'locator': true, 'option': 'option' };
-windmill.registry.methods['waits.forPageLoad']    = {'locator': false, 'option': 'timeout' };
-windmill.registry.methods['-- Other --']        = {'locator': false, 'option': false, 'section': true};
-windmill.registry.methods['triggerEvent']    = {'locator': true, 'option': 'option' };
-windmill.registry.methods['closeWindow']   = {'locator': false, 'option': false};
-windmill.registry.methods['complex']        = {'locator': false, 'option': false };
-windmill.registry.methods['execJS']         = {'locator': false, 'option': 'js' };
-windmill.registry.methods['execIDEJS']      = {'locator': false, 'option': 'js' };
-windmill.registry.methods['revertWindow']   = {'locator': false, 'option': false};
-windmill.registry.methods['reWriteAlert']       = {'locator': false, 'option': false };
-windmill.registry.methods['setPromptDefault']       = {'locator': false, 'option': 'val' };
-windmill.registry.methods['setTestWindow']      = {'locator': false, 'option': 'path'};
-windmill.registry.methods['setWindowByTitle']   = {'locator': false, 'option': 'title'};
-windmill.registry.methods['setDocDomain']           = {'locator': false, 'option': 'domain' };
-windmill.registry.methods['setOptions']         = {'locator': false, 'option':'stopOnFailure'};
-windmill.registry.methods['storeURL']           = {'locator': true, 'option': false };
-windmill.registry.methods['storeVarFromJS']     = {'locator': false, 'option': 'options' };
-windmill.registry.methods['storeVarFromIDEJS']     = {'locator': false, 'option': 'options' };
-windmill.registry.methods['storeVarFromLocAttrib']     = {'locator': true, 'option': 'options' };
-windmill.registry.methods['-- Asserts --']        = {'locator': false, 'option': false, 'section': true};
-windmill.registry.methods['asserts.assertJS']    = {'locator': false, 'option': 'js' };
-windmill.registry.methods['asserts.assertIDEJS']    = {'locator': false, 'option': 'js' };
-windmill.registry.methods['asserts.assertElemJS']    = {'locator': true, 'option': 'js' };
-windmill.registry.methods['asserts.assertProperty'] = {'locator': true, 'option': 'validator' };
-windmill.registry.methods['asserts.assertText']     = {'locator': true, 'option': 'validator' };
-windmill.registry.methods['asserts.assertValue']    = {'locator': true, 'option': 'validator' };
-windmill.registry.methods['asserts.assertChecked']  = {'locator': true, 'option': false };
-windmill.registry.methods['asserts.assertSelected'] = {'locator': true, 'option': 'validator' } ;
-windmill.registry.methods['asserts.assertNode']     = {'locator': true, 'option': false };
-windmill.registry.methods['asserts.assertImageLoaded']  = {'locator': true, 'option': false };
-windmill.registry.methods['asserts.assertNotChecked']  = {'locator': true, 'option': false };
+windmill.registry.methods = {
+  '-- Mouse --': {'locator': false, 'option': false, 'section': true},
+  'click': {'locator': true, 'option': false},
+  'doubleClick': {'locator': true, 'option': false},
+  'mouseDown': {'locator': true, 'option': false},
+  'mouseMove': {'locator': false, 'option': 'coords'},
+  'mouseMoveTo': {'locator': false, 'option': 'coords'},
+  'mouseUp': {'locator': true, 'option': false},
+  'mouseOut': {'locator': true,'option': false},
+  'mouseOver': {'locator': true,'option': false},
+  'dragDropElem': {'locator': true,'option': 'pixels'},
+  'dragDropAbs': {'locator': true,'option': 'coords'},
+  'dragDropElemToElem': {'locator': true,'option': true, 'optionIsLocator': true},
+  'radio': {'locator': true, 'option': false },
+  'check': {'locator': true, 'option': false },
+  'select': {'locator': true, 'option': 'option,val,index'},
+  '-- Keyboard --': {'locator': false, 'option': false, 'section': true},
+  'type': {'locator': true, 'option': 'text'},
+  'keyPress': {'locator': true, 'option': 'options'},
+  'keyDown': {'locator': true, 'option': 'options'},
+  'keyUp': {'locator': true, 'option': 'options'},
+  '-- Browser --': {'locator': false, 'option': false, 'section': true},
+  'open': {'locator': false, 'option': 'url' },
+  'goBack': {'locator': false, 'option': false },
+  'goForward': {'locator': false, 'option': false },
+  'refresh': {'locator': false, 'option': false },
+  'scroll': {'locator': false, 'option': 'coords' },
+  '-- Waits --': {'locator': false, 'option': false, 'section': true},
+  'waits.sleep': {'locator': false, 'option': 'milliseconds' },
+  'waits.forElement': {'locator': true, 'option': 'timeout' },
+  'waits.forNotElement': {'locator': true, 'option': 'timeout' },
+  'waits.forJS': {'locator': false, 'option': 'js' },
+  'waits.forElementProperty': {'locator': true, 'option': 'option' },
+  'waits.forPageLoad': {'locator': false, 'option': 'timeout' },
+  '-- Other --': {'locator': false, 'option': false, 'section': true},
+  'triggerEvent': {'locator': true, 'option': 'option' },
+  'closeWindow': {'locator': false, 'option': false},
+  'execJS': {'locator': false, 'option': 'js' },
+  'execIDEJS': {'locator': false, 'option': 'js' },
+  'revertWindow': {'locator': false, 'option': false},
+  'reWriteAlert': {'locator': false, 'option': false },
+  'setPromptDefault': {'locator': false, 'option': 'val' },
+  'setTestWindow': {'locator': false, 'option': 'path'},
+  'setWindowByTitle': {'locator': false, 'option': 'title'},
+  'setDocDomain': {'locator': false, 'option': 'domain' },
+  'setOptions': {'locator': false, 'option':'stopOnFailure'},
+  'storeURL': {'locator': true, 'option': false },
+  'storeVarFromJS': {'locator': false, 'option': 'options' },
+  'storeVarFromIDEJS': {'locator': false, 'option': 'options' },
+  'storeVarFromLocAttrib': {'locator': true, 'option': 'options' },
+  '-- Asserts --': {'locator': false, 'option': false, 'section': true},
+  'asserts.assertJS': {'locator': false, 'option': 'js' },
+  'asserts.assertIDEJS': {'locator': false, 'option': 'js' },
+  'asserts.assertElemJS': {'locator': true, 'option': 'js' },
+  'asserts.assertProperty': {'locator': true, 'option': 'text,validator' },
+  'asserts.assertText': {'locator': true, 'option': 'text,validator' },
+  'asserts.assertValue': {'locator': true, 'option': 'text,validator' },
+  'asserts.assertChecked': {'locator': true, 'option': false },
+  'asserts.assertSelected': {'locator': true, 'option': 'text,validator' } ,
+  'asserts.assertNode': {'locator': true, 'option': false },
+  'asserts.assertImageLoaded': {'locator': true, 'option': false },
+  'asserts.assertNotChecked': {'locator': true, 'option': false }
+};

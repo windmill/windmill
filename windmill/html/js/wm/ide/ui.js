@@ -49,10 +49,12 @@ windmill.ui = new function() {
         if ($(id).style.height == '22px') {
             $(id).style.height = '';
             $(id).style.borderBottom = "";
+            $(id+"Toggle").innerHTML = "hide"
         }
         else {
             $(id).style.height = '22px';
             $(id).style.borderBottom = "1px solid #aaa";
+            $(id+"Toggle").innerHTML = "show"
         }
     };
 
@@ -202,8 +204,16 @@ windmill.ui.playback = new function() {
 
                           }
                           if (windmill.registry.methods[actionObj.method].option) {
-                              var si = $(suites[i].childNodes[j].id + 'optionType').selectedIndex;
-                              paramsObj[$(suites[i].childNodes[j].id + 'optionType')[si].value] = $(suites[i].childNodes[j].id + 'option').value;
+                              var optionNode = $(suites[i].childNodes[j].id + 'optionType');
+                              //if we have a drop down, get the selected element
+                              if (optionNode.tagName == "select"){
+                                var si = optionNode.selectedIndex;
+                                paramsObj[$(suites[i].childNodes[j].id + 'optionType')[si].value] = $(suites[i].childNodes[j].id + 'option').value; 
+                              }
+                              //if there is only one option, it's a span, get the innerHTML
+                              else{
+                                paramsObj[$(suites[i].childNodes[j].id + 'optionType').innerHTML] = $(suites[i].childNodes[j].id + 'option').value;
+                              }
                           }
 
                           actionObj.params = paramsObj;

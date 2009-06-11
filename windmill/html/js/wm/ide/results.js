@@ -37,7 +37,8 @@ windmill.ui.results = new function() {
           //   resDiv.style.width = "95%";
           // }
        
-          resDiv.innerHTML = "<strong>"+timeObj.identifier + "</strong>&nbsp;<a href='#'>+</a>";
+          resDiv.innerHTML = "<strong>"+timeObj.identifier + "</strong>: "+newParams.RunTime+
+            "&nbsp;<a class='moreLink' href='#'>more</a>";
           for (i in newParams){
             var propDiv = document.createElement('div');
             propDiv.style.fontSize = "11px";
@@ -54,11 +55,11 @@ windmill.ui.results = new function() {
           jQuery(resDiv).click(function() {
               if (resDiv.style.height == "13px"){
                 resDiv.style.height = "";
-                jQuery(resDiv).html(jQuery(resDiv).html().replace('+','-'));
+                jQuery(resDiv).html(windmill.helpers.replaceAll(jQuery(resDiv).html(),'more','less'));
               }
               else {
                 resDiv.style.height = "13px";
-                jQuery(resDiv).html(jQuery(resDiv).html().replace('-','+'));
+                jQuery(resDiv).html(windmill.helpers.replaceAll(jQuery(resDiv).html(),'less','more'));
               }
           });
     }
@@ -115,10 +116,10 @@ windmill.ui.results = new function() {
       }
       
       if (props){
-        resDiv.innerHTML = "<strong>"+method + "</strong>&nbsp;+" + resDiv.innerHTML;
+        resDiv.innerHTML = "<strong>"+method + "</strong>&nbsp;<a class='moreLink' href='#'>more</a>" + resDiv.innerHTML;
       }
       else {
-        resDiv.innerHTML = "<strong>"+method + "</strong>" + resDiv.innerHTML;
+        resDiv.innerHTML = "<strong>"+method + "</strong>: " + resDiv.innerHTML;
       }
       
       //Depending if there are any child nodes yet
@@ -132,11 +133,11 @@ windmill.ui.results = new function() {
       jQuery(resDiv).click(function() {
           if (resDiv.style.height == "13px"){
             this.style.height = "";
-            jQuery(this).html(jQuery(this).html().replace('+','-'));
+            jQuery(this).html(windmill.helpers.replaceAll(jQuery(this).html(),'more','less'));
           }
           else {
             this.style.height = "13px";
-            jQuery(this).html(jQuery(this).html().replace('-','+'));
+            jQuery(this).html(windmill.helpers.replaceAll(jQuery(this).html(),'less','more'));
           }
       });
     }
