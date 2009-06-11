@@ -101,8 +101,8 @@ windmill.xhr = new function() {
                   }
               }                        
               //Every other action that isn't namespaced
-              else { 
-                output = windmill.controller[_this.action.method](_this.action.params); 
+              else {
+                output = windmill.controller[_this.action.method](_this.action.params);
               }
               
               //End the timer

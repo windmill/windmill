@@ -28,30 +28,27 @@ var jsonCall = function(version, method, params) {
 
 
 //Translates from the way we are passing objects to functions to the lookups
-var lookupNode = function (paramObject, throwErr){
-  if (typeof(throwErr) == "undefined"){
-    var throwErr = false;
-  }
-  
+var lookupNode = function (paramObject){
   var s = null;
   var element = null;
+  
   //If a link was passed, lookup as link
   if(typeof paramObject.link != "undefined") {
     s = 'Looking up link '+ paramObject.link;
     element = elementslib.Element.LINK(paramObject.link);
   }
   //if xpath was passed, lookup as xpath
-  if(typeof paramObject.xpath != "undefined") {
+  else if(typeof paramObject.xpath != "undefined") {
     s = 'Looking up xpath '+ paramObject.xpath;        
     element = elementslib.Element.XPATH(paramObject.xpath);
   }
   //if id was passed, do as such
-  if(typeof paramObject.id != "undefined") {
+  else if(typeof paramObject.id != "undefined") {
     s = 'Looking up id '+ paramObject.id;
     element = elementslib.Element.ID(paramObject.id);
   }
   //if jsid was passed
-  if(typeof paramObject.jsid != "undefined") {
+  else if(typeof paramObject.jsid != "undefined") {
     //Here if the user hasn't specified the test window scope
     //we use the default and prepend it, else we eval whatever js they passed
     var jsid = windmill.testWin().eval(paramObject.jsid);
@@ -60,29 +57,32 @@ var lookupNode = function (paramObject, throwErr){
     element = elementslib.Element.ID(jsid);
   }
   //if name was passed
-  if(typeof paramObject.name != "undefined") {
+  else if(typeof paramObject.name != "undefined") {
     s = 'Looking up name '+ paramObject.name;
     element = elementslib.Element.NAME(paramObject.name);
   }
   //if value was passed
-  if(typeof paramObject.value != "undefined") {
+  else if(typeof paramObject.value != "undefined") {
     s = 'Looking up value '+ paramObject.value;
     element = elementslib.Element.VALUE(paramObject.value);
   }
   //if classname was passed
-  if(typeof paramObject.classname != "undefined") {
+  else if(typeof paramObject.classname != "undefined") {
     s = 'Looking up classname '+ paramObject.classname;
     element = elementslib.Element.CLASSNAME(paramObject.classname);
   }
   //if tagname was passed
-  if(typeof paramObject.tagname != "undefined") {
+  else if(typeof paramObject.tagname != "undefined") {
     s = 'Looking up tagname '+ paramObject.tagname;
     element = elementslib.Element.TAGNAME(paramObject.tagname);
   }
   //if label was passed
-  if(typeof paramObject.label != "undefined") {
+  else if(typeof paramObject.label != "undefined") {
     s = 'Looking up label '+ paramObject.label;
     element = elementslib.Element.LABEL(paramObject.label);
+  }
+  else {
+    return false;
   }
   //scroll so that the element is in view
   if (element) { 
@@ -95,8 +95,7 @@ var lookupNode = function (paramObject, throwErr){
     
     return element;
   }
-  else if (throwErr == true) { throw s + ", failed."; }
-  else{ lookupNode(paramObject, true); }
+  else { throw s + ", failed."; }
 };
 
 //Function to handle the random keyword scenario
