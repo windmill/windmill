@@ -1,7 +1,7 @@
 windmill.jsTest.require('shared.js');
 
-windmillMain.test_timer = new function () {
-  this.setup = windmillMain.shared.test_navMain;
+var test_timer = new function () {
+  this.setup = windmillTestShared.test_navMain;
   this.test_timerObj = function () {
     var t = new windmill.jsTest.Timer();
     t.start();

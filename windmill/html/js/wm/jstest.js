@@ -208,7 +208,9 @@ windmill.jsTest = new function () {
   this.testFiles = _UNDEF;
   this.testScriptSrc = _UNDEF;
   this.regFile = _UNDEF;
-  this.testNamespaces = _UNDEF;
+  this.topLevelTestables = _UNDEF;
+  this.registeredTestables = _UNDEF;
+  this.runRegisteredTestsOnly = false;
   this.testList = _UNDEF;
   this.testOrder = _UNDEF;
   this.testFailures = _UNDEF;
@@ -240,7 +242,9 @@ windmill.jsTest = new function () {
     this.testFiles = null;
     this.testScriptSrc = '';
     this.regFile = false;
-    this.testNamespaces = [];
+    this.topLevelTestables = [];
+    this.registeredTestables = {};
+    this.runRegisteredTestsOnly = false;
     this.testList = [];
     this.testOrder = null;
     this.testFailures = [];
@@ -349,6 +353,26 @@ windmill.jsTest = new function () {
     // files in the directories
     this.testFiles = testFiles;
     return true;
+  };
+  this.register = function () {
+    var nameArray;
+    var args = arguments;
+    // Tests names passed in as an array
+    if (typeof args[0].push != 'undefined') {
+      nameArray = args[0];
+    }
+    // Single test name as a string
+    else {
+      nameArray = args;
+    }
+    if (!nameArray[0]) {
+      throw new Error('jsTest.register requires at least one test name.');
+    }
+    var key;
+    for (var i = 0; i < nameArray.length; i++) {
+      key = nameArray[i];
+      _this.registeredTestables[key] = true;
+    }
   };
   // Grab the contents of the test files, and eval
   // them in window scope
@@ -463,29 +487,54 @@ windmill.jsTest = new function () {
     }
     this.testList = combineLists(this.testList, arr);
   };
+  // Have to get the initial list of testables on the base window
+  // using source-code parsing, because we may need to run them
+  // in a different order from which they have been added to the
+  // window object
   this.getCompleteListOfTestNames = function () {
-    // No register.js
-    if (!this.regFile) {
-      var code = this.testScriptSrc;
+    var win = this.getCurrentTestScope();
+    var topLevel = this.topLevelTestables;
+    var registered = this.registeredTestables;
+    // Start off with any explicitly registered testables
+    for (var p in registered) {
+      topLevel.push(p);
+    }
+    if (!this.runRegisteredTestsOnly) {
       var re;
       // Ignore anything in multiline comments
       // Simplified version of original regex from unitedscripters.com
       re = /\/\*(.|\n)*?\*\//g;
-      code = code.replace(re, '');
+      var code = this.testScriptSrc.replace(re, '');
       // Find any symbol with name staring with "test_"
       // in the top-level window scope
       // This will ignore anything in a one-line //-style comment
       re = /(^var\s+|^function\s+)(test_[^\s(]+)/gm;
+      var testName;
       while (m = re.exec(code)) {
-        this.testNamespaces.push(m[2]);
+        testName = m[2];
+        // Don't re-add any testables that have already been
+        // added via registration
+        if (typeof registered[testName] == 'undefined') {
+          topLevel.push(testName);
+        }
+      }
+      // Prepend setup, append teardown if these exist on the base
+      // window
+      if (win.setup) {
+        topLevel.unshift('setup');
+      }
+      if (win.teardown) {
+        topLevel.push('teardown');
       }
     }
-    var n = this.testNamespaces;
-    if (!n.length) {
+    // Okay, make sure we have some top-level testables to parse
+    if (!topLevel.length) {
       throw new Error('No tests or test namespaces to parse.');
     }
-    for (var i = 0; i < n.length; i++) {
-      this.parseTestNamespace(n[i]);
+    // Parse each of the top-level testables to populate the
+    // testList property with the ordered hierarchy of test names
+    for (var i = 0; i < topLevel.length; i++) {
+      this.parseTestNamespace(topLevel[i]);
     }
     if (!this.testList.length) {
       throw new Error('No tests to run.');

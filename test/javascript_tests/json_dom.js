@@ -1,25 +1,25 @@
 windmill.jsTest.require('shared.js');
 
-windmillMain.test_jsonDom = new function () {
+var test_jsonDom = new function () {
   // Navigate to the main page
-  this.setup = windmillMain.shared.test_navMain;
+  this.setup = windmillTestShared.test_navMain;
   this.test_getData = function () {
     // Callback function -- sets temp flag to 'returned'
     var success = function (s) {
       var data = eval('('+s+')');
-      windmillMain.tempData = data;
+      windmillTestShared.tempData = data;
     };
-    var url = windmillMain.shared.util.getCurrentDir() + 'data.json';
+    var url = windmillTestShared.util.getCurrentDir() + 'data.json';
     fleegix.xhr.get(success, url);
   };
-  this.test_wait = windmillMain.shared.util.waitForTempData;
+  this.test_wait = windmillTestShared.util.waitForTempData;
   this.test_verifyData = function () {
-    var data = windmillMain.tempData;
+    var data = windmillTestShared.tempData;
     var albums = data.albums;
     jum.assertNotNaN(albums.length);
   };
   this.test_writeDom = function () {
-    var data = windmillMain.tempData;
+    var data = windmillTestShared.tempData;
     var albums = data.albums;
     var c = $('content');
     for (var i = 0; i < albums.length; i++) {
@@ -46,7 +46,7 @@ windmillMain.test_jsonDom = new function () {
   ];
   this.teardown = function () {
     // Clear out the temp data
-    windmillMain.tempData = null;
+    windmillTestShared.tempData = null;
     // Clear the DOM
     $('content').innerHTML = '';
   };

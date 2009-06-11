@@ -1,8 +1,8 @@
 windmill.jsTest.require('shared.js');
 
-windmillMain.test_formBasics = new function () {
+var test_formBasics = new function () {
   // Navigate to the main page
-  this.setup = windmillMain.shared.test_navForm;
+  this.setup = windmillTestShared.test_navForm;
   this.test_optionsLength = function () {
     var form = $('wmTestForm');
     var len = form.sciFiSelect.options.length;

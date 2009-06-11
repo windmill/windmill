@@ -1,9 +1,9 @@
 windmill.jsTest.require('shared.js');
 
 // Namespace obj to contain our tests
-windmillMain.test_jumBasics = new function () {
+var test_jumBasics = new function () {
   // Navigate to the main page
-  this.setup = windmillMain.shared.test_navMain;
+  this.setup = windmillTestShared.test_navMain;
 
   this.test_assertTrue = function () {
     jum.assertTrue(true);
