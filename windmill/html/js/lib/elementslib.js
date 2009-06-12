@@ -119,14 +119,40 @@ var elementslib = new function(){
   
   //DOM element lookup functions, private to elementslib
   var nodeByName = function (s) { //search nodes by name
-    //sometimes the win object won't have this object
-    try{
-      var els = this.document.getElementsByName(s);
-      if (els.length > 0) {
-        return els[0];
-      }
+    var getElementsByAttribute = function(oElm, strTagName, strAttributeName, strAttributeValue){
+        var arrElements = (strTagName == "*" && oElm.all)? oElm.all : oElm.getElementsByTagName(strTagName);
+        var arrReturnElements = new Array();
+        var oAttributeValue = (typeof strAttributeValue != "undefined")? new RegExp("(^|\\s)" + strAttributeValue + "(\\s|$)", "i") : null;
+        var oCurrent;
+        var oAttribute;
+        for(var i=0; i<arrElements.length; i++){
+            oCurrent = arrElements[i];
+            oAttribute = oCurrent.getAttribute && oCurrent.getAttribute(strAttributeName);
+            if(typeof oAttribute == "string" && oAttribute.length > 0){
+                if(typeof strAttributeValue == "undefined" || (oAttributeValue && oAttributeValue.test(oAttribute))){
+                    arrReturnElements.push(oCurrent);
+                }
+            }
+        }
+        return arrReturnElements;
     }
-    catch(err){};
+      
+    if (navigator.userAgent.indexOf('MSIE') != -1){
+      var node = getElementsByAttribute(this.document, "*", "name", s);
+      if (node.length == 0){
+        return null;
+      }
+      return node[0];
+    } else {
+      //sometimes the win object won't have this object
+      try{
+        var els = this.document.getElementsByName(s);
+        if (els.length > 0) {
+          return els[0];
+        }
+      }
+      catch(err){};
+    }
     return null;
   };
   
