@@ -21,7 +21,7 @@ windmill.registry = new function () {
 };
 
 //Setup all the current methods supported
-windmill.registry.locator = ['id','link','xpath','jsid', 'name','value','classname', 'tagname','label'];
+windmill.registry.locator = ['id','link','xpath','jsid', 'name','value','classname', 'tagname','label','jquery'];
 //windmill.registry.locator.push('id','link','xpath','jsid', 'name','classname', 'tagname');
 
 for( var i=0; i<windmill.registry.locator.length;i++ ){
