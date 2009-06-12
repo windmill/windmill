@@ -119,7 +119,7 @@ windmill.ui.results = new function() {
         resDiv.innerHTML = "<strong>"+method + "</strong>&nbsp;<a class='moreLink' href='#'>more</a>" + resDiv.innerHTML;
       }
       else {
-        resDiv.innerHTML = "<strong>"+method + "</strong>: " + resDiv.innerHTML;
+        resDiv.innerHTML = "<strong>"+method + "</strong> " + resDiv.innerHTML;
       }
       
       //Depending if there are any child nodes yet

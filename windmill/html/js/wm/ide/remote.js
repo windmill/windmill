@@ -294,7 +294,7 @@ windmill.ui.remote = new function() {
       var reg = windmill.registry;
       
       var select = document.createElement('select');
-      select.className = 'smalloption floatLeft';
+      select.className = 'smalloption';
       select.id = state.action.id + 'method';
       //Setup default method
       var option = document.createElement('option');
@@ -535,41 +535,46 @@ windmill.ui.remote = new function() {
           jQuery(action).html(method + JSON.stringify(params));
           return action;
         }
-
+        
+        //Build the buttons
         var templ = new fleegix.ejs.Template({ node: $('actionButtonsTemplate') });
         var buttons = templ.process({ data: { id: action.id } });
         var buttonNode = $elem('span', {className:'buttons'});
         jQuery(buttonNode).html(buttons);
         
-        //IE is breaking because of the absolute positioning
-        if (windmill.browser.isIE){
-          buttonNode.style.position = "relative";
-          buttonNode.style.left = "20%";
-        }
         var state = {method: method, params: params, action: action};
         
+        //Get all the form elements for actions
         var methods = _this.getMethods(state);
         var locators = _this.getLocators(state);
         var options = _this.getOptions(state);
         var locatorInput = _this.getLocatorInput(state);
         var optionInput = _this.getOptionInput(state);
         
+        //add methods and buttons
         jQuery(action).append(jQuery(methods));
         jQuery(action).append(jQuery(buttonNode));
-
+        
+        //if this action has locators, add them in a container
         if (locators){
-          jQuery(action).append(jQuery($elem('div', {className:'clearBoth'})));
-          jQuery(action).append(jQuery(locators));
-          jQuery(action).append(jQuery(locatorInput));
+          var locCont = document.createElement('div');
+          locCont.appendChild(locators)
+          locCont.appendChild(locatorInput);
+          jQuery(action).append(jQuery(locCont));
         }
+        
+        //if this action has options, add them in a container
         if (options){
-          jQuery(action).append(jQuery($elem('div', {className:'clearBoth'})));
-          jQuery(action).append(jQuery(options));
+          var optCont = document.createElement('div');
+          optCont.appendChild(options);
           
+          //if its a string not a drop down: only one option
           if (options.tagName.toLowerCase() != "select"){
-            jQuery(action).append(jQuery(document.createElement('span')).html(': ').addClass("textSpan"));
+            jQuery(optCont).append(jQuery(document.createElement('span')).html(': ').addClass("textSpan"));
           }
-          jQuery(action).append(jQuery(optionInput));
+          jQuery(optCont).append(jQuery(optionInput));
+          //append options
+          jQuery(action).append(jQuery(optCont));
         }        
         return action;
     };
