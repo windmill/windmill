@@ -79,14 +79,14 @@ img {
 .moreLink {
   text-decoration: underline;
   font-size:9px;
-  position:relative;
-  left:20%;
+  position:absolute;
+  right:5px;
 }
 .lessLink {
   text-decoration: underline;
   font-size:9px;
-  position:relative;
-  left:20%;
+  position:absolute;
+  right:5px;
 }
 
 .texta {

@@ -116,7 +116,9 @@ windmill.ui.results = new function() {
       }
       
       if (props){
-        resDiv.innerHTML = "<strong>"+method + "</strong>&nbsp;<a class='moreLink' href='#'>more</a>" + resDiv.innerHTML;
+        resDiv.innerHTML = "<strong>"+method + 
+          "</strong>&nbsp;<a style='color:#000;' class='moreLink' href='#'>more</a>" + 
+          resDiv.innerHTML;
       }
       else {
         resDiv.innerHTML = "<strong>"+method + "</strong> " + resDiv.innerHTML;

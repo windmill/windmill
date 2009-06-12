@@ -110,6 +110,12 @@ windmill.xhr = new function() {
               //Report all bug commands on success
               if (_this.methodArr[0] != 'commands'){
                 _this.action.params.aid = action.id;
+                //serialize and send output to the UI
+                //if it isn't undefined
+                var serOutput = JSON.stringify(output);
+                if (serOutput != undefined){
+                  _this.action.params.output = serOutput;
+                }
                 windmill.actOut(_this.action.method, _this.action.params, result);
               }
           }
