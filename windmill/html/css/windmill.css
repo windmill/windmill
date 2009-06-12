@@ -52,8 +52,6 @@ img {
 
 .action {
   position:relative;
-  /*border-top: 1px solid #aaa;
-  background: lightyellow;*/
   padding:2px;
   margin:1px;
   overflow:hidden;
@@ -101,9 +99,9 @@ img {
     border-right-width : 1px;
     border-bottom-width : 1px;
     border-left-width : 1px;
-    border: 1px solid lightgray;
+    border: 1px solid #aaa;
     background: transparent url("../img/text_elem_gradient.gif");
-    margin:0px;
+    margin-top:1px;
     margin-left:2px;
     width:75%;
 }
@@ -111,7 +109,7 @@ img {
 .smalloption {
   font-size:10px;
   height:19px;
-  border:solid 1px lightgray;
+  border:solid 1px #dca;
   background: transparent url("../img/text_elem_gradient.gif");
   margin-bottom:1px;
   margin-top:1px;
