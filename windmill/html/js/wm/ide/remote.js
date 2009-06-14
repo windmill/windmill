@@ -513,7 +513,7 @@ windmill.ui.remote = new function() {
       };
       fleegix.event.listen(action, 'onkeypress', catchEnter);
       
-      action.style.border = "1px solid #ccc";
+      action.style.border = "2px solid #aaa";
       return action;
     };
     
