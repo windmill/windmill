@@ -60,6 +60,10 @@ img {
 	height:23px;
 }
 
+.tabHead {
+  font-size:12px;
+}
+
 .buttons {
  position:absolute;
  right:15px;
@@ -144,6 +148,9 @@ img {
   width:40px;
   border:0px;
 }
+#statusMessage {
+  position:absolute;top:40%;left:20%
+}
 
 #runningStatus {
  width:85%;
@@ -157,8 +164,8 @@ img {
 #controllers {
  z-index:1;
  position:absolute;
- top:43px;
- left:70%;
+ top:44px;
+ right:5px;
 }
 
 #domExp {
@@ -224,3 +231,41 @@ img {
 	opacity: 0.85;
 }
 #tooltip h3, #tooltip div { margin: 0; }
+
+ul#icons {
+  margin:0;
+  padding:0;
+}
+ul#icons li {
+  cursor:pointer;
+  float:left;
+  list-style-image:none;
+  list-style-position:outside;
+  list-style-type:none;
+  margin:2px;
+  padding:5px 5px;
+  position:relative;
+}
+ul#icons span.ui-icon {
+  float:left;
+  margin:0 4px;
+}
+
+ul#btns {
+  margin:0;
+  padding:0;
+}
+ul#btns li {
+  cursor:pointer;
+  float:left;
+  list-style-image:none;
+  list-style-position:outside;
+  list-style-type:none;
+  margin:2px;
+  padding:2px 0;
+  position:relative;
+}
+ul#btns span.ui-icon {
+  float:left;
+  margin:0 4px;
+}

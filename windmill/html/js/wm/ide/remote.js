@@ -491,7 +491,8 @@ windmill.ui.remote = new function() {
     
     this.getBaseAction = function(method, params){
       var action = document.createElement('div');
-      action.className = "ui-state-highlight ui-corner-all action";
+      action.className = "ui-corner-all action";
+      action.style.background = "#FBF9EE";
       
       if (typeof(params) == 'undefined') {
         var params = {};

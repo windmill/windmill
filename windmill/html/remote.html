@@ -56,7 +56,7 @@
 <body>
   <img style="position:absolute;" id="icon" src="img/wmIcon.png" alt="Welcome to Windmill!">
   
-  <div id="menu" style="position:relative;height:20px;z-index:99;">
+  <div id="menu" style="position:relative;height:20px;z-index:99;font-size:11px">
     <ul class="sf-menu" style="float:right;">
      			<li class="current">
      				<a href="#a">Test Building</a>
@@ -113,7 +113,7 @@
     </div>
   
     <div id="cover">
-      <div style="position:absolute;top:40%;left:20%" id="statusMessage">
+      <div id="statusMessage">
         <center><div style="font-weight:bold;font-size:14px;" id="loadMessage">Starting Up..</div></center><br>
         <center><img src="img/loading.gif"></center>
       </div>
@@ -121,32 +121,32 @@
 	
 	  <div id="controllers">
 		  <a href="#" title="Toggle Recorder">
-			  <img height="28px" width="28px" alt="Toggle Recorder" name='record' 
-			    id="record" border=no src="img/record.png" onClick="toggleRec();">
+			  <img title="Toggle Recorder" name='record' 
+			    id="record" border=no src="img/record.png" onclick="toggleRec();">
 		  </a>
 
 		  <a href="#" title="Play All">
-			  <img height="28px" width="28px" alt="Play All" name ='playback' 
-			    id="playback" border=no src="img/playback.png" onClick="togglePlay();">
+			  <img title="Play All" name='playback' 
+			    id="playback" border=no src="img/playback.png" onclick="togglePlay();">
 		  </a>
 
 	  	<a href="#" title="Toggle DOM Explorer">
-  			<img height="28px" width="28px" alt="Toggle DOM Explorer" name ='explorer' 
-  			id="explorer" border=no src="img/xon.png" onClick="toggleExplore();">
+  			<img title="Toggle DOM Explorer" name='explorer' 
+  			id="explorer" border=no src="img/xon.png" onclick="toggleExplore();">
   		</a>
 
   		<a href="#" title="Toggle Assert Explorer">
-  			<img height="28px" width="28px" alt="Toggle Assert Explorer" name ='assertx' 
-  			id="assertx" border=no src="img/axon.png" onClick="toggleAExplore();">
+  			<img title="Toggle Assert Explorer" name='assertx' 
+  			id="assertx" border=no src="img/axon.png" onclick="toggleAExplore();">
   		</a>
   	</div>
 	
   	<div id="domExp"></div>
     <div id="tabs">
       <ul>
-          <li class="ui-tabs-nav-item"><a href="#actionsTab">Actions</a></li>
-          <li class="ui-tabs-nav-item"><a href="#outputTab">Output</a></li>
-          <li class="ui-tabs-nav-item"><a href="#performanceTab">Performance</a></li>
+          <li class="ui-tabs-nav-item tabHead"><a href="#actionsTab">Actions</a></li>
+          <li class="ui-tabs-nav-item tabHead"><a href="#outputTab">Output</a></li>
+          <li class="ui-tabs-nav-item tabHead"><a href="#performanceTab">Performance</a></li>
       </ul>
       
       <div id="actionsTab" style="padding:0px;margin:0px;">
@@ -368,18 +368,24 @@
 </script>
 
 <textarea id="actionButtonsTemplate" style="display:none">
-    <a alt="Start Playback" href="#">
-      <img onclick="windmill.ui.playback.sendPlayBack('<%= id %>')" src="img/play.png" title="Play this action.">
-    </a>
-    <a alt="Delete Action" href="#">
-      <img onclick="windmill.ui.remote.deleteAction('<%= id %>')" src="img/trash.png" title="Delete this action.">
-    </a>
-    <a onclick="windmill.ui.remote.addActionAbove('<%= id %>')" href="#">
-      <img src="img/addup.png" title="Add a new action above.">
-    </a>
-    <a onclick="windmill.ui.remote.addActionBelow('<%= id %>')" href="#">
-      <img src="img/adddown.png" title="Add a new action below.">
-    </a>
+  <ul id="btns" class="ui-widget ui-helper-clearfix">
+    <li class="ui-state-default ui-corner-all ui-state-hover" 
+      onclick="windmill.ui.playback.sendPlayBack('<%= id %>')" title="Play this action">
+     <span class="ui-icon ui-icon-circle-triangle-e"/>
+    </li>
+    <li class="ui-state-default ui-corner-all ui-state-hover" 
+      onclick="windmill.ui.remote.deleteAction('<%= id %>')" src="img/trash.png" title="Delete this action">
+     <span class="ui-icon ui-icon-trash"/>
+    </li>
+    <li class="ui-state-default ui-corner-all ui-state-hover" 
+      onclick="windmill.ui.remote.addActionAbove('<%= id %>')" title="Add a new action above">
+     <span class="ui-icon ui-icon-arrowstop-1-n"/>
+    </li>
+    <li class="ui-state-default ui-corner-all ui-state-hover" 
+      onclick="windmill.ui.remote.addActionBelow('<%= id %>')" title="Add a new action below">
+     <span class="ui-icon ui-icon-arrowstop-1-s"/>
+    </li>
+  </ul>
 </textarea>
 
 <textarea id="suiteHeaderTemplate" style="display:none">
