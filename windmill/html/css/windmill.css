@@ -109,8 +109,7 @@ img {
 
 .smalloption {
   height:19px;
-  border:solid 1px #dca;
-  background: transparent url("../img/text_elem_gradient.gif");
+
   margin-bottom:1px;
   margin-top:1px;
 }
