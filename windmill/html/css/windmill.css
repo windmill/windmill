@@ -109,7 +109,7 @@ img {
 
 .smalloption {
   height:19px;
-
+  border:1px solid #dca;
   margin-bottom:1px;
   margin-top:1px;
 }
