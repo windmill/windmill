@@ -100,8 +100,7 @@ img {
     border-right-width : 1px;
     border-bottom-width : 1px;
     border-left-width : 1px;
-    border: 1px solid #dca;
-    background: transparent url("../img/text_elem_gradient.gif");
+    border:1px solid lightblue;
     margin-top:1px;
     margin-left:2px;
     width:75%;
@@ -112,6 +111,7 @@ img {
   height:19px;
   margin-bottom:1px;
   margin-top:1px;
+  border:1px solid lightblue;
 }
 
 .floatLeft {
