@@ -105,11 +105,11 @@ img {
     margin-top:1px;
     margin-left:2px;
     width:75%;
+    padding:2px;
 }
 
 .smalloption {
   height:19px;
-  border:1px solid #dca;
   margin-bottom:1px;
   margin-top:1px;
 }
