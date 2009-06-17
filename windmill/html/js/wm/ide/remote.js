@@ -257,8 +257,15 @@ windmill.ui.remote = new function() {
                     paramsObj[$(suite.childNodes[j].id + 'locatorType')[si].value] = $(suite.childNodes[j].id + 'locator').value;
                   }
                   if (windmill.registry.methods[actionObj.method].option) {
-                    var si = $(suite.childNodes[j].id + 'optionType').selectedIndex;
-                    paramsObj[$(suite.childNodes[j].id + 'optionType')[si].value] = $(suite.childNodes[j].id + 'option').value;
+                    var optNode = $(suite.childNodes[j].id + 'optionType');
+                    //if we have a select vs a span (1 option)
+                    if (optNode.tagName.toLowerCase() == "select"){
+                      var si = $(suite.childNodes[j].id + 'optionType').selectedIndex;
+                      paramsObj[$(suite.childNodes[j].id + 'optionType')[si].value] = $(suite.childNodes[j].id + 'option').value;
+                    }
+                    else {
+                      paramsObj[$(suite.childNodes[j].id + 'optionType').innerHTML] = $(suite.childNodes[j].id + 'option').value; 
+                    }
                   }
                   actionObj.params = paramsObj;
                 }
