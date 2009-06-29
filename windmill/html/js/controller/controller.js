@@ -839,11 +839,10 @@ windmill.controller = new function () {
   * Re-write the window alert function to instead send it's output to the output tab
   */
   this.reWriteAlert = function(paramObject){
-    
     try {
       windmill.testWin().alert = function(s){
         windmill.alertStore.push(s);
-        windmill.out("Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
+        windmill.out("Alert: <b>" + s + ".</b>");     
       };
     } catch(err){ windmill.err(err); }
     
@@ -855,7 +854,7 @@ windmill.controller = new function () {
           try{
   	        iframeArray[i].alert = function(s){
         		  windmill.alertStore.push(s);
-        		  windmill.out("Alert: <b><font color=\"#fff32c\">" + s + "</font>.</b>");     
+        		  windmill.out("Alert: <b>" + s + ".</b>");     
      	      };
   	        rwaRecurse(iframeArray[i]);
           }
@@ -875,7 +874,7 @@ windmill.controller = new function () {
     try {
       windmill.testWin().confirm = function(s){
         windmill.confirmStore.push(s);
-        windmill.out("Confirm: <b><font color=\"#fff32c\">" + s + "</font></b> -"+windmill.confirmAnswer);
+        windmill.out("Confirm: <b>" + s + ".</b> -"+windmill.confirmAnswer);
         return windmill.confirmAnswer;
       };
     } catch(err){ windmill.err(err); }
@@ -888,7 +887,7 @@ windmill.controller = new function () {
           try{
   	        iframeArray[i].confirm = function(s){
   	          windmill.confirmStore.push(s);
-  	          windmill.out("Confirm: <b><font color=\"#fff32c\">" + s + "</font></b> -"+windmill.confirmAnswer);
+  	          windmill.out("Confirm: <b>" + s + ".</b> -"+windmill.confirmAnswer);
         		  return windmill.confirmAnswer;    
      	      };
   	        rwaRecurse(iframeArray[i]);
@@ -909,7 +908,7 @@ windmill.controller = new function () {
      try {
        windmill.testWin().prompt = function(s, d){
          windmill.promptStore.push(s);
-         windmill.out("Prompt: <b><font color=\"#fff32c\">" + s + "</font></b> -"+windmill.promptAnswer);
+         windmill.out("Prompt: <b>" + s + ".</b> -"+windmill.promptAnswer);
          return windmill.promptAnswer;      
        };
      } catch(err){ windmill.err(err); }
@@ -922,7 +921,7 @@ windmill.controller = new function () {
            try{
    	         iframeArray[i].prompt = function(s, d){
          		   windmill.promptStore.push(s);
-               windmill.out("Prompt: <b><font color=\"#fff32c\">" + s + "</font></b> -"+windmill.promptAnswer);
+               windmill.out("Prompt: <b>" + s + "</b> -"+windmill.promptAnswer);
                return windmill.promptAnswer;          
       	      };
    	        rwaRecurse(iframeArray[i]);

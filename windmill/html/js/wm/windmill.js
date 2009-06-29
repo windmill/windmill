@@ -258,6 +258,7 @@ var windmill = new function() {
     
     //When the page is unloaded turn off the loop until it loads the new one
     this.unloaded = function() {
+        
         try {
           windmill.pauseLoop();
 
@@ -306,6 +307,45 @@ var windmill = new function() {
         }
     };
     
+    this.overWrite = function(){
+      //Overwrite alerts to keep the browser from getting stuck
+      //on by default      
+      if (windmill.alerts){
+        //Sometimes we can't access it yet
+        try {
+          windmill.testWin().oldAlert = windmill.testWin().alert;
+        } catch(err){
+          windmill.err(err);
+        }
+        windmill.controller.reWriteAlert();
+      }
+      //re-write the confirm dialogs
+      if (windmill.confirms){
+        //Sometimes we can't access it yet
+        try {
+          windmill.testWin().oldConfirm = windmill.testWin().confirm;
+        } catch(err){
+          windmill.err(err);
+        }
+        windmill.controller.reWriteConfirm();
+      }
+      //re-write the confirm dialogs
+      if (windmill.prompts){
+        //Sometimes we can't access it yet
+        try {
+          windmill.testWin().oldPrompt = windmill.testWin().prompt;
+        } catch(err){
+          windmill.err(err);
+        }
+        windmill.controller.reWritePrompt();
+      }
+      //if popup support is enabled
+      if (windmill.popups){
+        try { windmill.controller.reWritePopups(); }
+        catch(err) { windmill.err(err); }
+      }
+    };
+    
     //On load setup all the listener stuff
     //Set the listener on the testingApp on unload
     this.loaded = function() {
@@ -321,40 +361,7 @@ var windmill = new function() {
         //If the doc domain has changed
         //and we can't get to it, try updating it
         try{ var v = windmill.testWin().document.domain; }
-        catch(err){
-//          document.domain = windmill.docDomain; 
-        }
-
-        //Overwrite alerts to keep the browser from getting stuck
-        //on by default
-        if (windmill.alerts){
-          //Sometimes we can't access it yet
-          try {
-            windmill.testWin().oldAlert = windmill.testWin().alert;
-          } catch(err){}
-          windmill.controller.reWriteAlert();
-        }
-        //re-write the confirm dialogs
-        if (windmill.confirms){
-          //Sometimes we can't access it yet
-          try {
-            windmill.testWin().oldConfirm = windmill.testWin().confirm;
-          } catch(err){}
-          windmill.controller.reWriteConfirm();
-        }
-        //re-write the confirm dialogs
-        if (windmill.prompts){
-          //Sometimes we can't access it yet
-          try {
-            windmill.testWin().oldPrompt = windmill.testWin().prompt;
-          } catch(err){}
-          windmill.controller.reWritePrompt();
-        }
-        //if popup support is enabled
-        if (windmill.popups){
-          try { windmill.controller.reWritePopups(); }
-          catch(err) { windmill.err(err); }
-        }
+        catch(err){ windmill.err(err); }
 
         //We need to define the windmill object in the
         //test window to allow the JS test framework
@@ -382,12 +389,10 @@ var windmill = new function() {
         var jsTest = windmill.jsTest;
         var waitForIt = jsTest.setTestCodeState(jsTest.testCodeStates.NOT_LOADED);
 
-        delayed = function() {
-          if (windmill.waiting == false) {
-            windmill.continueLoop(); 
-          }
+        if (windmill.waiting == false) {
+          windmill.overWrite();
+          windmill.continueLoop(); 
         }
-        setTimeout('delayed()', 0);
     };
     
     //After a page is done loading, continue the loop

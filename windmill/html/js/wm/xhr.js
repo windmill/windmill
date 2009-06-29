@@ -152,8 +152,10 @@ windmill.xhr = new function() {
       }
 
       //Send the report if it's not in the commands namespace, we only call report for test actions
-      if ((_this.methodArr[0] != 'commands') && (_this.methodArr[0] != 'waits') 
-                                            && (windmill.runTests == true)) {
+      if ((_this.methodArr[0] != 'commands') 
+        && (_this.methodArr[0] != 'waits') 
+        && (windmill.runTests == true)) {
+        
           var newParams = copyObj(_this.action.params);
           delete newParams.uuid;
 
