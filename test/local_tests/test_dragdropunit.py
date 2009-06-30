@@ -31,10 +31,10 @@ def test_dragdropunit():
     client.waits.sleep(milliseconds=u'500')
     client.dragDropElemToElem(xpath="//div/div[3]/div[2]", optxpath="//div/div[3]/div[4]")
     client.waits.sleep(milliseconds=u'500')
-    client.asserts.assertText(xpath="//div/div[3]/div[4]", validator='Dropped!')
+    client.asserts.assertElemJS(xpath="//div/div[3]/div[4]", js=u"element.innerHTML.indexOf('Dropped!') != -1")
     client.dragDropElem(xpath="//div/div[3]/div[2]", pixels='(0,200)')
     client.waits.sleep(milliseconds=u'500')
-    client.asserts.assertText(xpath=u"//div/div[3]/div[4]", validator=u'Dropped! Dropped!')
+    client.asserts.assertElemJS(xpath="//div/div[3]/div[4]", js=u"element.innerHTML.indexOf('Dropped! Dropped!') != -1")
     #test the sortable widgets
     client.click(link=u'Sortable')
     client.click(link=u'Sortable')

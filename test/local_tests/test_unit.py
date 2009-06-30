@@ -67,7 +67,7 @@ def test_wmunti1():
     assert client.check(id=u'Dizziness')['result']
     assert client.asserts.assertChecked(id=u'Dizziness')['result']
     assert client.type(text=u'The text area tester', name=u'story')['result']
-    assert client.asserts.assertValue(validator=u'area', id=u'story')['result']
+    assert client.asserts.assertValue(validator=u'The text area tester', id=u'story')['result']
     assert client.select(option=u'Strawberry', id=u'flavor')['result']
     assert client.asserts.assertSelected(validator=u'b', id=u'flavor')['result']
     assert client.select(option=u'Rum and Raisin', id=u'flavor')['result']

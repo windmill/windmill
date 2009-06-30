@@ -116,22 +116,10 @@ windmill.controller.asserts.assertRegistry = {
 windmill.controller.asserts.assertText = function (paramObject) {
   var n = lookupNode(paramObject);
   var validator = paramObject.validator;
-  if (n.innerHTML.indexOf(validator) != -1){
+  if (n.innerHTML == validator){
     return true;
   }
-  if (n.hasChildNodes()){
-    for(var m = n.firstChild; m != null; m = m.nextSibling) {
-      //for non text nodes
-      if (m.nodeType != 3){
-        if (m.innerHTML.indexOf(validator) != -1){
-          return true;
-        }
-        if (m.value && m.value.indexOf(validator) != -1){
-          return true;
-        }
-      }
-    }
-  }
+  
   var found = n.textContent;
   if (found == undefined)
     found = n.innerText;
@@ -153,10 +141,9 @@ windmill.controller.asserts.assertValue = function (paramObject) {
   if (n.value == undefined)
     throw "Element doesn't have a value";
 
-  if (n.value.indexOf(validator) == -1){
+  if (n.value != validator){
     throw "Found value \""+ n.value + "\" is not equal to \""+ validator+"\"";
   }
-  
 };
 
 //Assert that a provided value is selected in a select element
