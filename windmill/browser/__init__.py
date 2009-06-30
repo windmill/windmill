@@ -102,6 +102,7 @@ def get_firefox_controller():
         "security.OCSP.enabled":0,
         #Make the firefox IDE stop showing the location bar
         "dom.disable_window_open_feature.location":False,
+        "browser.rights.3.shown": True,
     }
     
     if windmill.has_ssl:
