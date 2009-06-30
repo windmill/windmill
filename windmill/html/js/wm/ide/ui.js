@@ -206,7 +206,7 @@ windmill.ui.playback = new function() {
                           if (windmill.registry.methods[actionObj.method].option) {
                               var optionNode = $(suites[i].childNodes[j].id + 'optionType');
                               //if we have a drop down, get the selected element
-                              if (optionNode.tagName == "select"){
+                              if (optionNode.tagName.toLowerCase() == "select"){
                                 var si = optionNode.selectedIndex;
                                 paramsObj[$(suites[i].childNodes[j].id + 'optionType')[si].value] = $(suites[i].childNodes[j].id + 'option').value; 
                               }

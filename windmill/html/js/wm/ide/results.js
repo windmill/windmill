@@ -109,7 +109,7 @@ windmill.ui.results = new function() {
       var props = false;
       for (i in newParams){
         var propDiv = document.createElement('div');
-        propDiv.style.fontSize = "11px";
+        //propDiv.style.fontSize = "11px";
         propDiv.innerHTML = "<strong>"+i+"</strong>: "+newParams[i];
         resDiv.appendChild(propDiv);
         props = true;
