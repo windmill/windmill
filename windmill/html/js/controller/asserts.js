@@ -116,7 +116,11 @@ windmill.controller.asserts.assertRegistry = {
 windmill.controller.asserts.assertText = function (paramObject) {
   var n = lookupNode(paramObject);
   var validator = paramObject.validator;
-  if (n.innerHTML == validator){
+  
+  // new lines and spaces break a lot of these, so removing them makes sense
+  var iHTML = n.innerHTML.replace(/^\s*|\s*$/g,'');
+  
+  if (iHTML == validator){
     return true;
   }
   
