@@ -131,6 +131,25 @@ windmill.controller.asserts.assertText = function (paramObject) {
         "' was not found in the provided node.  Found instead: " + found;
 };
 
+windmill.controller.asserts.assertTextIn = function (paramObject) {
+  var n = lookupNode(paramObject);
+  var validator = paramObject.validator;
+  
+  // new lines and spaces break a lot of these, so removing them makes sense
+  var iHTML = n.innerHTML.replace(/^\s*|\s*$/g,'');
+  
+  if (iHTML.indexOf(validator) != -1){
+    return true;
+  }
+  
+  var found = n.textContent;
+  if (found == undefined)
+    found = n.innerText;
+  throw "Text '" + validator +
+        "' was not found in the provided node.  Found instead: " + found;
+};
+
+
 //Assert that a specified node exists
 windmill.controller.asserts.assertNode = function (paramObject) {
   var element = lookupNode(paramObject);
@@ -146,6 +165,19 @@ windmill.controller.asserts.assertValue = function (paramObject) {
     throw "Element doesn't have a value";
 
   if (n.value != validator){
+    throw "Found value \""+ n.value + "\" is not equal to \""+ validator+"\"";
+  }
+};
+
+windmill.controller.asserts.assertValueIn = function (paramObject) {
+  //need to start moving test to use text instead of validator, its dumb
+  var n = lookupNode(paramObject);
+  var validator = paramObject.validator;
+
+  if (n.value == undefined)
+    throw "Element doesn't have a value";
+
+  if (n.value.indexOf(validator) == -1){
     throw "Found value \""+ n.value + "\" is not equal to \""+ validator+"\"";
   }
 };
