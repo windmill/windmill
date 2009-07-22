@@ -38,8 +38,8 @@ img {
 }
 
 .suiteTitleDiv {
-  cursor:pointer;
-  width:220px;
+  /*cursor:pointer;*/
+  width:215px;
   overflow:hidden
 }
 

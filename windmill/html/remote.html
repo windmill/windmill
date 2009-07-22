@@ -392,10 +392,9 @@
     <table id="<%= suiteName %>Header" class="suiteHeader">
       <tr>
         <td VALIGN='top' style="font-size:13px;">
-          <strong style="cursor:all-scroll">Suite </strong>
-          <span class="suiteTitleDiv" title="<%= suiteName %>" id="<%= suiteName %>Title" 
-            onclick="windmill.ui.remote.updateSuite('<%= suiteName %>');">
-            <%= suiteName %>
+          <strong ondblclick="windmill.ui.remote.updateSuite('<%= suiteName %>');" style="cursor:all-scroll">Suite </strong>
+          <span class="suiteTitleDiv" title="<%= suiteName %>" id="<%= suiteName %>Title">
+            <%= suiteNameCrop %>
           </span>
         </td>
         <td VALIGN='top'>

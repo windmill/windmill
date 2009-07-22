@@ -162,7 +162,7 @@ windmill.ui.remote = new function() {
     
     //Update all the required DOM to rename the suite
     this.updateSuite = function(suiteName){
-      var newSN = prompt("New Suite Name?","");
+      var newSN = prompt("New Suite Name?",suiteName);
       if ((!newSN) || (newSN == "")){
         return;
       }
@@ -209,7 +209,12 @@ windmill.ui.remote = new function() {
             suite.id = suiteName;
             
             var templ = new fleegix.ejs.Template({ node: $('suiteHeaderTemplate') });
-            var suiteHead = templ.process({ data: { suiteName: suiteName } });
+            //display some of the name
+            var suiteNameCrop = suiteName;
+            if (suiteNameCrop.length > 18){
+              suiteNameCrop = suiteName.substr(0, 18) + "..."
+            }
+            var suiteHead = templ.process({ data: { suiteName: suiteName, suiteNameCrop: suiteNameCrop} });
             jQuery(suite).html(suiteHead);
             
             //Append the new suite to the IDE
