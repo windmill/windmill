@@ -157,7 +157,7 @@ windmill.ui.playback = new function() {
         suites.push('\n   ');
         suites.push($(suiteOnly));
         $(suiteOnly).style.border = "0px";
-        $(suiteOnly).style.borderBottom = '1px solid black';
+        //$(suiteOnly).style.borderBottom = '1px solid black';
       }
 
       //else play every suite in the IDE
