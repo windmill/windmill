@@ -72,6 +72,7 @@ windmill.registry.methods = {
   'execIDEJS': {'locator': false, 'option': 'js' },
   'revertWindow': {'locator': false, 'option': false},
   'reWriteAlert': {'locator': false, 'option': false },
+  'overrideDialogs': {'locator': false, 'option': false },
   'setPromptDefault': {'locator': false, 'option': 'val' },
   'setTestWindow': {'locator': false, 'option': 'path'},
   'setWindowByTitle': {'locator': false, 'option': 'title'},

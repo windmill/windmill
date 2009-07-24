@@ -835,6 +835,10 @@ windmill.controller = new function () {
     windmill.testWin().scrollTo(cArr[0],cArr[1]);
   }
   
+  this.overrideDialogs = function(paramObject){
+    windmill.overWrite();
+  }
+  
   /**
   * Re-write the window alert function to instead send it's output to the output tab
   */
