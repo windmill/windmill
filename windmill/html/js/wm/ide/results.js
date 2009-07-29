@@ -32,7 +32,7 @@ windmill.ui.results = new function() {
           var resultsDiv = $("perfOut");
           var resDiv = document.createElement('div');
           resDiv.className = "ui-state-highlight ui-corner-all outputEntry";
-          resDiv.style.height = "13px";
+          resDiv.style.height = "12px";
           // if (windmill.browser.isIE){
           //   resDiv.style.width = "95%";
           // }
@@ -53,12 +53,12 @@ windmill.ui.results = new function() {
             resultsDiv.insertBefore(resDiv, jQuery(resultsDiv).children()[0]);
           }
           jQuery(resDiv).click(function() {
-              if (resDiv.style.height == "13px"){
+              if (resDiv.style.height == "12px"){
                 resDiv.style.height = "";
                 jQuery(resDiv).html(windmill.helpers.replaceAll(jQuery(resDiv).html(),'more','less'));
               }
               else {
-                resDiv.style.height = "13px";
+                resDiv.style.height = "12px";
                 jQuery(resDiv).html(windmill.helpers.replaceAll(jQuery(resDiv).html(),'less','more'));
               }
           });
@@ -95,7 +95,7 @@ windmill.ui.results = new function() {
       // if (windmill.browser.isIE){
       //   resDiv.style.width = "95%";
       // }
-      resDiv.style.height = "13px";
+      resDiv.style.height = "12px";
       if (result){
         resDiv.className = "ui-state-highlight ui-corner-all outputEntry";
         resDiv.style.border = "1px solid darkgreen";
@@ -133,12 +133,12 @@ windmill.ui.results = new function() {
       }
       
       jQuery(resDiv).click(function() {
-          if (resDiv.style.height == "13px"){
+          if (resDiv.style.height == "12px"){
             this.style.height = "";
             jQuery(this).html(windmill.helpers.replaceAll(jQuery(this).html(),'more','less'));
           }
           else {
-            this.style.height = "13px";
+            this.style.height = "12px";
             jQuery(this).html(windmill.helpers.replaceAll(jQuery(this).html(),'less','more'));
           }
       });

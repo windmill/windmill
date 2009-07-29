@@ -116,37 +116,52 @@ windmill.controller.asserts.assertRegistry = {
 windmill.controller.asserts.assertText = function (paramObject) {
   var n = lookupNode(paramObject);
   var validator = paramObject.validator;
-  
+    
+  var inner = '';
+  if (n.textContent){
+    inner = n.textContent;
+  }
+  else {
+    inner = n.innerText;
+  }
   // new lines and spaces break a lot of these, so removing them makes sense
-  var iHTML = n.innerHTML.replace(/^\s*|\s*$/g,'');
+  var iHTML = inner.replace(/^\s*|\s*$/g,'');
   
   if (iHTML == validator){
     return true;
   }
   
-  var found = n.textContent;
-  if (found == undefined)
-    found = n.innerText;
+  // var found = n.textContent;
+  // if (found == undefined)
+  //   found = n.innerText;
   throw "Text '" + validator +
-        "' was not found in the provided node.  Found instead: " + found;
+        "' was not found in the provided node.  Found instead: " + iHTML;
 };
 
 windmill.controller.asserts.assertTextIn = function (paramObject) {
   var n = lookupNode(paramObject);
   var validator = paramObject.validator;
   
+  var inner = '';
+  if (n.textContent){
+    inner = n.textContent;
+  }
+  else {
+    inner = n.innerText;
+  }
+  
   // new lines and spaces break a lot of these, so removing them makes sense
-  var iHTML = n.innerHTML.replace(/^\s*|\s*$/g,'');
+  var iHTML = inner.replace(/^\s*|\s*$/g,'');
   
   if (iHTML.indexOf(validator) != -1){
     return true;
   }
   
-  var found = n.textContent;
-  if (found == undefined)
-    found = n.innerText;
+  // var found = n.textContent;
+  // if (found == undefined)
+  //   found = n.innerText;
   throw "Text '" + validator +
-        "' was not found in the provided node.  Found instead: " + found;
+        "' was not found in the provided node.  Found instead: " + inner;
 };
 
 
