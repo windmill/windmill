@@ -90,6 +90,10 @@ var lookupNode = function (paramObject){
     var theRest = paramObject.jquery.replace(chain[0],'');
     element = eval('start'+theRest);
   }
+  else if(typeof paramObject.rteID != "undefined"){
+    s = 'Looking up rte selector '+ paramObject.rte;
+    element = lookupNode({id:paramObject.rteID}).contentWindow.document.body; 
+  }
   else {
     return false;
   }
