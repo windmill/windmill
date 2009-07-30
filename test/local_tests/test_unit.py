@@ -32,9 +32,8 @@ def test_wmunti1():
     end = datetime.now()
     print (end - start)
     assert ( end - start ).seconds >= 3
-    
     assert client.asserts.assertText(validator=u'', id=u'sleeper')['result']
-    
+        
     # Tests that an 8 second sleep actually waits long enough
     start = datetime.now()
     assert client.waits.sleep(milliseconds=u'8000')['result']
