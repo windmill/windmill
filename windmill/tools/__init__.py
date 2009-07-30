@@ -26,7 +26,7 @@ def make_xmlrpc_client():
     import xmlrpclib
     url = urlparse(windmill.settings['TEST_URL'])
     uri = url.scheme+'://'+url.netloc+'/windmill-xmlrpc/'
-    proxy = windmill.tools.server_tools.ProxiedTransport('localhost:%s' % str(windmill.settings['SERVER_HTTP_PORT']))
+    proxy = windmill.tools.server_tools.ProxiedTransport('127.0.0.1:%s' % str(windmill.settings['SERVER_HTTP_PORT']))
     xmlrpc_client = xmlrpclib.ServerProxy(uri, transport=proxy, allow_none=True)
     return xmlrpc_client        
     
@@ -34,7 +34,7 @@ def make_jsonrpc_client():
     import windmill
     url = urlparse(windmill.settings['TEST_URL'])
     uri = url.scheme+'://'+url.netloc+'/windmill-jsonrpc/'
-    proxy = windmill.tools.json_tools.JSONRPCTransport(uri=uri, proxy_uri='http://localhost:'+str(windmill.settings['SERVER_HTTP_PORT']))
+    proxy = windmill.tools.json_tools.JSONRPCTransport(uri=uri, proxy_uri='http://127.0.0.1:'+str(windmill.settings['SERVER_HTTP_PORT']))
     jsonrpc_client = windmill.tools.json_tools.ServerProxy(transport=proxy)
     return jsonrpc_client
     

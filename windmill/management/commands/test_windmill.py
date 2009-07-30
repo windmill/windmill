@@ -67,7 +67,7 @@ class Command(BaseCommand):
         server_container = ServerContainer()
         server_container.start_test_server()
         
-        global_settings.TEST_URL = 'http://localhost:%d' % server_container.server_thread.port
+        global_settings.TEST_URL = 'http://127.0.0.1:%d' % server_container.server_thread.port
         
         # import windmill
         # windmill.stdout, windmill.stdin = sys.stdout, sys.stdin

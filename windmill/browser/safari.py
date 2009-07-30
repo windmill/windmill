@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 Colossus:/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support mikeal$ ./networksetup -getwebproxy "AirPort"                                          [14:12]
 cp: /Library/Preferences/SystemConfiguration/preferences.plist.old: Permission denied
 Enabled: No
-Server: localhost
+Server: 127.0.0.1
 Port: 4444
 Authenticated Proxy Enabled: 0
 Colossus:/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support mikeal$ ./networksetup -setwebproxystate "AirPort" on                                  [14:12]
@@ -44,7 +44,7 @@ cp: /Library/Preferences/SystemConfiguration/preferences.plist.old: Permission d
 Colossus:/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support mikeal$ ./networksetup -getwebproxy "AirPort"                                          [14:13]
 cp: /Library/Preferences/SystemConfiguration/preferences.plist.old: Permission denied
 Enabled: Yes
-Server: localhost
+Server: 127.0.0.1
 Port: 4444
 Authenticated Proxy Enabled: 0
 Colossus:/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support mikeal$ whoami                                                                         [14:13]
@@ -131,7 +131,7 @@ class Safari(object):
 	    interface_name = find_default_interface_name()
 	    uri = urlparse.urlparse(self.test_url)
 	    set_proxy_command = [ self.netsetup_binary, '-setwebproxy', 
-	                          interface_name, 'localhost', 
+	                          interface_name, '127.0.0.1', 
 	                          str(windmill.settings['SERVER_HTTP_PORT'])
 	                        ]
 	    dprint(getoutput(set_proxy_command))
@@ -142,7 +142,7 @@ class Safari(object):
 	    dprint(getoutput(enable_proxy_command))
 	    if windmill.has_ssl:
 	        set_ssl_proxy_command = [ self.netsetup_binary, '-setsecurewebproxy', 
-    	                              interface_name, 'localhost', 
+    	                              interface_name, '127.0.0.1', 
     	                              str(windmill.settings['SERVER_HTTP_PORT'])
     	                            ]
     	    dprint(getoutput(set_proxy_command))

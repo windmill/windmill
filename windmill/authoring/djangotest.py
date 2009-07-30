@@ -99,7 +99,7 @@ class TestServerThread(threading.Thread):
         threading.Thread.join(self, timeout)
 
 
-def start_test_server(self, address='localhost', port=8000):
+def start_test_server(self, address='127.0.0.1', port=8000):
     """Creates a live test server object (instance of WSGIServer)."""
     self.server_thread = TestServerThread(address, port)
     self.server_thread.start()
@@ -121,8 +121,8 @@ from windmill.authoring import unit
 class WindmillDjangoUnitTest(TestCase, unit.WindmillUnitTestCase):
     test_port = 8000
     def setUp(self):
-        self.start_test_server('localhost', self.test_port)
-        self.test_url = 'http://localhost:%d' % self.server_thread.port
+        self.start_test_server('127.0.0.1', self.test_port)
+        self.test_url = 'http://127.0.0.1:%d' % self.server_thread.port
         unit.WindmillUnitTestCase.setUp(self)
 
     def tearDown(self):

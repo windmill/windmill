@@ -63,7 +63,7 @@ def get_firefox_controller():
         "browser.link.open_external": 2,
         "browser.link.open_newwindow": 2,
         # Configure local proxy
-        "network.proxy.http": 'localhost',
+        "network.proxy.http": '127.0.0.1',
         "network.proxy.http_port": windmill.settings['SERVER_HTTP_PORT'],
         "network.proxy.no_proxies_on": "",
         "network.proxy.type": 1,
@@ -106,7 +106,7 @@ def get_firefox_controller():
     }
     
     if windmill.has_ssl:
-         prop_hash["network.proxy.ssl"] = 'localhost'
+         prop_hash["network.proxy.ssl"] = '127.0.0.1'
          prop_hash["network.proxy.ssl_port"] = windmill.settings['SERVER_HTTP_PORT']
        
     windmill.settings['MOZILLA_PREFERENCES'].update(prop_hash)

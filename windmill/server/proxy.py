@@ -126,10 +126,10 @@ class WindmillProxyApplication(object):
             # FORWARDING_TEST_URL a chance to be set
             self.fmgr = ForwardManager(test_url)
         # Once FORWARDING_TEST_URL is set we should check for cross-domain
-        # forward but we must disable for localhost as redirects to localhost
+        # forward but we must disable for 127.0.0.1 as redirects to 127.0.0.1
         # will cause the browser to error.
         if windmill.settings['FORWARDING_TEST_URL'] is not None and (
-                       not url.netloc.startswith('localhost') ) and (
+                       not url.netloc.startswith('127.0.0.1') ) and (
                        not url.netloc.startswith('127.0.0.1') ) and (
                        conditions_pass(environ) ):
             # Do our domain change magic

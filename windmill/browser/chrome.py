@@ -52,7 +52,7 @@ class Chrome(safari.Safari):
     #     set_proxy_command = ' '.join([ self.netsetup_binary, 
     #                                    '-setwebproxy', 
     #                                    '"'+interface_name+'"', 
-    #                                    'localhost', 
+    #                                    '127.0.0.1', 
     #                                    str(windmill.settings['SERVER_HTTP_PORT'])
     #                                  ])
     #     commands.getoutput(set_proxy_command)

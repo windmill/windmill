@@ -24,7 +24,7 @@ else:
     # python 2.4
     from windmill.tools.urlparse_25 import urlparse
 
-def get_request(url, proxy_host='localhost', proxy_port=4444):
+def get_request(url, proxy_host='127.0.0.1', proxy_port=4444):
     
     connection = httplib.HTTPConnection(proxy_host + ':' + str(proxy_port))
     connection.request('GET', url)

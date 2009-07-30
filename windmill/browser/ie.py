@@ -37,9 +37,9 @@ class InternetExplorer(object):
         
         self.proxy_port = windmill.settings['SERVER_HTTP_PORT']
         self.test_url = windmill.get_test_url(windmill.settings['TEST_URL']) 
-        self.registry_modifications['ProxyServer']['new_value'] = "http=localhost:%s" % self.proxy_port
+        self.registry_modifications['ProxyServer']['new_value'] = "http=127.0.0.1:%s" % self.proxy_port
         if windmill.has_ssl:
-            self.registry_modifications['ProxyServer']['new_value'] += ';https=localhost:%s' % self.proxy_port
+            self.registry_modifications['ProxyServer']['new_value'] += ';https=127.0.0.1:%s' % self.proxy_port
         self.reg = wreg.OpenKey(wreg.HKEY_CURRENT_USER, 
                                 "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", 0, wreg.KEY_ALL_ACCESS)
                                                     
