@@ -117,11 +117,11 @@ windmill.controller.asserts.assertText = function (paramObject) {
   var n = lookupNode(paramObject);
   var validator = paramObject.validator;
     
-  var inner = '';
+  var inner = n.innerHTML;
   if (n.textContent){
     inner = n.textContent;
   }
-  else {
+  else if (n.innerText) {
     inner = n.innerText;
   }
   // new lines and spaces break a lot of these, so removing them makes sense
@@ -142,11 +142,11 @@ windmill.controller.asserts.assertTextIn = function (paramObject) {
   var n = lookupNode(paramObject);
   var validator = paramObject.validator;
   
-  var inner = '';
+  var inner = n.innerHTML;
   if (n.textContent){
     inner = n.textContent;
   }
-  else {
+  else if (n.innerText){
     inner = n.innerText;
   }
   
