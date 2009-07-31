@@ -804,7 +804,12 @@ windmill.jsTest = new function () {
         }
         else {
           _objLookupRetries++;
-          this.runNextTest(testName);
+          // Smart backoff for retries -- use the cube of
+          // the retry number for an expanding retry window
+          var delay = Math.pow(_objLookupRetries, 3) * 10;
+          var retryFunc = function () {
+              _this.runNextTest.call(_this, testName); }
+          setTimeout(retryFunc, delay);
           return;
         }
       }

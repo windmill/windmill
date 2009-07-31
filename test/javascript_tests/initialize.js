@@ -28,11 +28,11 @@ windmill.jsTest.register(registeredTests);
 //windmill.jsTest.runRegisteredTestsOnly = true;
 
 // Pull in the code for all the tests
-windmill.jsTest.require('wait_xhr.js');
 windmill.jsTest.require('json_dom.js');
+windmill.jsTest.require('wait_xhr.js');
 windmill.jsTest.require('form_basics.js');
-windmill.jsTest.require('scope.js');
 windmill.jsTest.require('jum_basics.js');
+windmill.jsTest.require('scope.js');
 windmill.jsTest.require('timer.js');
 windmill.jsTest.require('failures.js');
 
