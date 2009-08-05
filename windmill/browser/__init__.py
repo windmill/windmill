@@ -97,7 +97,7 @@ def get_firefox_controller():
         # self.user_pref('"browser.cache.memory.enable", false')
         # Disable "do you want to remember this password?"
         "signon.rememberSignons": False,
-        "dom.max_script_run_time": 20,
+        "dom.max_script_run_time": 100,
         # Disable OSCP validation, breaks through proxy.
         "security.OCSP.enabled":0,
         #Make the firefox IDE stop showing the location bar
