@@ -108,7 +108,13 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
         return; // Don't keep looping! :)
       }
       else {
-        throw e;
+        //waits.forPageLoad is not an assert
+        //and since it's not 100% accurate
+        //it should never make a test fail
+        //thats what wait.forElement is for
+        if (!pageLoad){
+          throw e;
+        }
       }
     }
     result = !!result; // Make sure we've got a Boolean
