@@ -839,6 +839,10 @@ windmill.controller = new function () {
     windmill.overWrite();
   }
   
+  this.show = function(paramObject){
+    show(lookupNode(paramObject));
+  }
+  
   /**
   * Re-write the window alert function to instead send it's output to the output tab
   */

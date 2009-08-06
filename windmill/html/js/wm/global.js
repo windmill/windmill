@@ -114,6 +114,28 @@ var lookupNode = function (paramObject){
   else { throw s + ", failed."; }
 };
 
+//visually display a node on the page
+var show = function(obj){
+  //if we receive a node, use that
+  //if we get a locator, use that
+  if (obj.nodeType){ elem = obj; }
+  else { var elem = lookupNode(obj); }
+  
+  //use outline in FF, and border in IE
+  var prop = windmill.ui.hilightProp;
+  
+  //reset the outline/border when done
+  var reset = function(e){
+    elem.style[windmill.ui.hilightProp] = "";
+  }
+  
+  //blink the node
+  if (elem){
+    elem.style[windmill.ui.hilightProp] = "4px solid orange";
+    jQuery(elem).fadeOut(700).fadeIn(700).fadeOut(700).fadeIn(1000, reset);    
+  }
+};
+
 //Function to handle the random keyword scenario
 var handleVariable = function (val){
   var ret = val;
