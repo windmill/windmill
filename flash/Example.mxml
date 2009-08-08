@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="*"
+    layout="vertical"
+    applicationComplete="initApp()">
+    <mx:Script>
+        <![CDATA[
+            public function initApp():void {
+                new ExampleCode().init(this);
+            }
+        ]]>
+    </mx:Script>
+</mx:Application>
+
