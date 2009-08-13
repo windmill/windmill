@@ -31,6 +31,8 @@ as_re = re.compile('\.as$|\.mxml$')
 files = {}
 # Script options
 opts = None
+# Global flag for any dirty files
+found_dirty = False
 
 class FileObj:
 	def __init__(self, path):
@@ -55,6 +57,7 @@ def get_files(dirname=None, incl_mxml=True):
 	'''Get a list of all the .as files under the
 	current directory
 	'''
+	global found_dirty
 	if dirname is None:
 		dirname = opts.dirname
 	filename = opts.filename
@@ -64,7 +67,8 @@ def get_files(dirname=None, incl_mxml=True):
 					if file.endswith('.as') or (incl_mxml and
 							file.endswith('.mxml')):
 						path = root + '/' + file
-						files[path] = FileObj(path)
+						if not path in files:
+							files[path] = FileObj(path)
 	elif filename:
 		files[filename] = FileObj(filename)
 		# If this is an mxml file, it implicitly imports
@@ -73,7 +77,10 @@ def get_files(dirname=None, incl_mxml=True):
 			path_arr = filename.split('/')
 			path_arr.pop()
 			mxml_dir = '/'.join(path_arr)
-			get_files(mxml_dir, False)
+			files[filename] = FileObj(filename)
+			files[filename].dirty = True
+			found_dirty = True
+			get_files(dirname=mxml_dir, incl_mxml=False)
 	else:
 		print 'No filename or directory specified.'
 
@@ -84,7 +91,7 @@ def flag_dirty_and_parse_for_imports():
 	2. Parses the file contents to build a list
 	of files it imports
 	'''
-	found_dirty = False
+	global found_dirty
 	for key in files.keys():
 			dirty = False
 			file = files[key]
@@ -103,7 +110,6 @@ def flag_dirty_and_parse_for_imports():
 					file.dirty = True
 					found_dirty = True
 			parse_file_for_imports(file)
-	return found_dirty
 
 def parse_file_for_imports(file):
 	  '''Parse file contents to build a list of files
@@ -220,6 +226,9 @@ def parse_opts():
 		parser.error('Please choose either a file or a directory, not both.')
 	elif not (opts.filename or opts.dirname):
 		opts.dirname = '.'
+	elif opts.filename and not (opts.filename.startswith('/') or
+			opts.filename.startswith('../')):
+		opts.filename = './' + opts.filename
 	return opts, args
 
 def main(o, a):
@@ -234,7 +243,7 @@ def main(o, a):
 
 def compile():
 	get_files()
-	found_dirty = flag_dirty_and_parse_for_imports()
+	flag_dirty_and_parse_for_imports()
 	if found_dirty:
 			flag_files_that_import_dirty()
 			print 'Compile this biyatch ...'
