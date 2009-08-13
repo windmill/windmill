@@ -4,6 +4,7 @@
 	import flash.events.*
 	import flash.external.ExternalInterface;
 	import mx.controls.*
+	import mx.containers.Panel
 	import mx.events.*
 	import flash.net.URLRequest;
 	import org.windmill.*;
@@ -18,21 +19,32 @@
 		public function init(ctxt:Application):void {
 			context = ctxt;
 
+			// Panel
+			var panel:Panel = new Panel();
+			context.addChild(panel);
+			panel.id = 'mainPanel';
+			panel.title = "Windmill Flash Tests";
+
 			// TextArea
 			var txtArea:TextArea = new TextArea();
 			txtArea.name = 'testTextArea';
-			context.addChild(txtArea);
+			panel.addChild(txtArea);
 			elems.txtArea = txtArea;
 
 			// Button
 			var button:Button = new Button();
+			button.id = 'howdyButton';
 			button.label = 'Howdy';
-			context.addChild(button);
+			panel.addChild(button);
+
+			var subPanel:Panel = new Panel();
+			panel.addChild(subPanel);
+			subPanel.id = 'subPanel';
 
 			// Plain text field
 			var txtField:Text = new Text();
 			txtField.name = 'testText';
-			context.addChild(txtField);
+			subPanel.addChild(txtField);
 			txtField.htmlText = 'This is some test text. <u><a href="event:foo">This is a <em>test</em> link</a></u>';
 
 			// Combo box (select)
@@ -55,7 +67,7 @@
 			box.name = 'comboTest';
 			box.dataProvider = items;
 			box.selectedItem = items[1];
-			context.addChild(box);
+			subPanel.addChild(box);
 
 			context.doubleClickEnabled = true;
 			// Focus
