@@ -6,11 +6,9 @@ import re
 import shutil
 import time
 
-# Location of the compiler
+# Location of compilers
 MXMLC_PATH = '/Users/mde/flex_sdk_3/bin/mxmlc'
-# Assume we're compiling in the current dir
-# TODO: parameterize this
-SOURCE_PATH = '.'
+COMPC_PATH = '/Users/mde/flex_sdk_3/bin/compc'
 # Ignore imports of these namespaces
 IGNORED_TOPLEVELS = ["adobe", "flash", "fl", "mx"]
 # Pattern to remove comments before looking for import
@@ -31,6 +29,8 @@ as_re = re.compile('\.as$|\.mxml$')
 files = {}
 # Script options
 opts = None
+# Global for compile source-path arg
+source_path = ''
 # Global flag for any dirty files
 found_dirty = False
 
@@ -57,11 +57,12 @@ def get_files(dirname=None, incl_mxml=True):
 	'''Get a list of all the .as files under the
 	current directory
 	'''
-	global found_dirty
+	global source_path, found_dirty
 	if dirname is None:
 		dirname = opts.dirname
 	filename = opts.filename
 	if dirname:
+		source_path = dirname
 		for root, dirs, file_list in os.walk(dirname):
 				for file in file_list:
 					if file.endswith('.as') or (incl_mxml and
@@ -204,7 +205,7 @@ def compile_all_dirty(file=None):
 			print 'Compiling ' + as_file
 			# Compile this biyatch
 			# -----------------------
-			cmd = MXMLC_PATH + ' -source-path=' + SOURCE_PATH + ' ' + as_file + ' -o ' + swf_file
+			cmd = MXMLC_PATH + ' -source-path=' + source_path + ' ' + as_file + ' -o ' + swf_file
 			print cmd
 			os.system(cmd)
 			# -----------------------
@@ -214,8 +215,8 @@ def compile_all_dirty(file=None):
 def parse_opts():
 	parser = optparse.OptionParser()
 	parser.add_option('-a', '--action', dest='action',
-			help='perform ACTION (compile/clean, default is compile)',
-			metavar='ACTION', choices=('compile', 'clean'), default='compile')
+			help='perform ACTION (compile/clean/package, default is compile)',
+			metavar='ACTION', choices=('compile', 'clean', 'package'), default='compile')
 	parser.add_option('-f', '--file', dest='filename',
 			help='compile/clean FILE and all its imports', metavar='FILE')
 	parser.add_option('-d', '--directory', dest='dirname',
@@ -238,6 +239,8 @@ def main(o, a):
 		compile()
 	elif opts.action == 'clean':
 		clean()
+	elif opts.action == 'package':
+		package()
 	else:
 		print 'Not a valid action.'
 
@@ -277,6 +280,23 @@ def clean(dirname=None):
 			os.system(cmd)
 	else:
 		print 'No filename or directory specified.'
+
+def package():
+	import json
+	try:
+		h = open('./pkg/build.json', 'r')
+		text = h.read()
+		h.close()
+	except IOError:
+		print 'pkg/build.json config file for packaging does not exist.'
+		return
+	config = json.loads(text)
+	cmd = COMPC_PATH + ' -source-path=' + config['source-path'] + \
+			' -output=' + config['output'] + ' -include-classes'
+	for incl in config['include-classes']:
+		cmd += ' ' + incl
+	print cmd
+	os.system(cmd)
 
 if __name__ == "__main__":
 	main(*parse_opts())
