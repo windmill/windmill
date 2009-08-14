@@ -19,13 +19,14 @@ package org.windmill {
 	import org.windmill.Locator;
 	import flash.events.*
 	import mx.events.*
+	import flash.utils.*;
 	import flash.external.ExternalInterface;
 
 	public class Controller {
 		private static function _log(msg:*):void {
 			ExternalInterface.call("logger", msg);
 		}
-		
+
 		public function Controller():void {}
 
 		public static function click(params:Object):void {
@@ -46,13 +47,80 @@ package org.windmill {
 			Events.triggerMouseEvent(obj, MouseEvent.MOUSE_UP);
 			Events.triggerMouseEvent(obj, MouseEvent.CLICK);
 		}
-		
+
 		// Click alias functions
 		public static function check(params:Object):void {
 			return Controller.click(params);
 		}
 		public static function radio(params:Object):void {
 			return Controller.click(params);
+		}
+
+		public static function dragToCoords(params:Object):void {
+			Controller._log('started ...');
+			var obj:* = Locator.lookupDisplayObject(params);
+			var startCoords:Array = [obj.x, obj.y];
+			var endCoords:Array = Controller.parseCoords(params.coords);
+			// Move mouse over to the dragged obj
+			Events.triggerMouseEvent(obj.stage, MouseEvent.MOUSE_MOVE, {
+				stageX: startCoords[0],
+				stageY: startCoords[1]
+			});
+			// Give it focus
+			Events.triggerFocusEvent(obj, FocusEvent.FOCUS_IN);
+			// Down, (TextEvent.LINK,) up, click
+			Events.triggerMouseEvent(obj, MouseEvent.MOUSE_DOWN, {
+					buttonDown: true });
+			// Number of steps will be number of pixels in shorter delta
+			var deltaX:int = endCoords[0] - startCoords[0];
+			var deltaY:int = endCoords[1] - startCoords[1];
+			var stepCount:int = 10; // Just pick an arbitrary number of steps
+			// Number of pixels per step
+			var incrX:Number = deltaX / stepCount;
+			var incrY:Number = deltaY / stepCount;
+			// Current pos as the move happens
+			var currX:Number = startCoords[0];
+			var currY:Number = startCoords[1];
+			// Step number
+			var currStep:int = 0;
+			// Use a delay so we can see the move
+			var stepTimer:Timer = new Timer(5);
+			// Step function -- reposition per step
+			var doStep:Function = function ():void {
+				if (currStep <= stepCount) {
+					Events.triggerMouseEvent(obj.stage, MouseEvent.MOUSE_MOVE, {
+						stageX: currX,
+						stageY: currY
+					});
+					currX += incrX;
+					currY += incrY;
+					currStep++;
+				}
+				// Once it's finished, stop the timer and trigger
+				// the final mouse events
+				else {
+					stepTimer.stop();
+					Events.triggerMouseEvent(obj, MouseEvent.MOUSE_UP);
+					Events.triggerMouseEvent(obj, MouseEvent.CLICK);
+				}
+			}
+			// Start the timer loop
+			stepTimer.addEventListener(TimerEvent.TIMER, doStep);
+			stepTimer.start();
+		}
+
+		// Ensure coords are in the right format and are numbers
+		private static function parseCoords(coordsStr:String):Array {
+			var coords:Array = coordsStr.replace(
+					/\(|\)| /g, '').split(',');
+			if (isNaN(coords[0]) || isNaN(coords[1])) {
+				throw new Error('Coordinates must be in format "(x, y)"');
+			}
+			else {
+				coords[0] = parseInt(coords[0], 10);
+				coords[1] = parseInt(coords[1], 10);
+			}
+			return coords;
 		}
 
 		public static function doubleClick(params:Object):void {

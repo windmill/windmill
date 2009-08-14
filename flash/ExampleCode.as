@@ -7,9 +7,12 @@
 	import mx.containers.Panel
 	import mx.events.*
 	import flash.net.URLRequest;
+	import flash.display.Sprite;
 	import org.windmill.*;
 
 	public class ExampleCode extends MovieClip {
+		private var spr:Sprite = new Sprite();
+		private var draggable:Sprite;
 		private var context:*;
 		private var elems:Object = {};
 		private function _log(msg:*):void {
@@ -69,6 +72,15 @@
 			box.selectedItem = items[1];
 			subPanel.addChild(box);
 
+			spr.name = 'dragSprite';
+			spr.graphics.clear()
+			spr.graphics.beginFill(0x00ff00);
+			spr.graphics.drawRect(0,0,100,100);
+			subPanel.stage.addChild(spr);
+			spr.addEventListener(MouseEvent.MOUSE_DOWN, beginDrag);
+			subPanel.stage.addEventListener(MouseEvent.MOUSE_MOVE, doDrag);
+			subPanel.stage.addEventListener(MouseEvent.MOUSE_UP, endDrag);
+
 			context.doubleClickEnabled = true;
 			// Focus
 			context.addEventListener(FocusEvent.FOCUS_IN, evHandler);
@@ -79,6 +91,7 @@
 			// Mouse
 			context.addEventListener(MouseEvent.MOUSE_DOWN, evHandler);
 			context.addEventListener(MouseEvent.MOUSE_UP, evHandler);
+			context.addEventListener(MouseEvent.MOUSE_MOVE, evHandler);
 			context.addEventListener(MouseEvent.DOUBLE_CLICK, evHandler);
 			context.addEventListener(MouseEvent.CLICK, evHandler);
 			// Text
@@ -96,7 +109,8 @@
 			ExternalInterface.addCallback('wmFlashDoubleClick', org.windmill.Controller.doubleClick);
 			ExternalInterface.addCallback('wmFlashType', org.windmill.Controller.type);
 			ExternalInterface.addCallback('wmFlashSelect', org.windmill.Controller.select);
-			org.windmill.Windmill.init({ context: context });
+			ExternalInterface.addCallback('wmFlashDragToCoords', org.windmill.Controller.dragToCoords);
+			org.windmill.Windmill.init({ context: context.stage });
 
 			/*
 			org.windmill.Controller.click({
@@ -117,6 +131,19 @@
 			_log(e.target.toString());
 			_log(e.toString());
 		}
-
+		
+		private function beginDrag(e:MouseEvent):void {
+			draggable = spr;
+		}
+		private function doDrag(e:MouseEvent):void {
+			//_log(e.toString());
+			if (draggable) {
+				draggable.x = e.stageX;
+				draggable.y = e.stageY;
+			}
+		}
+		private function endDrag(e:MouseEvent):void {
+			draggable = null;
+		}
 	}
 }

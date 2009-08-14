@@ -86,6 +86,18 @@ package org.windmill.events {
 					p.cancelable, p.localX, p.localY,
 					p.relatedObject, p.ctrlKey, p.altKey, p.shiftKey,
 					p.buttonDown, p.delta);
+			// Check for stageX and stageY in params obj -- these are
+			// only getters in th superclass, so we don't set them in
+			// the constructor -- we set them here.
+			if (args.length && !(args[0] is Boolean)) {
+				p = args[0];
+				if ('stageX' in p) {
+					ev.stageX = p.stageX;
+				}
+				if ('stageY' in p) {
+					ev.stageY = p.stageY;
+				}
+			}
 			obj.dispatchEvent(ev);
 		}
 
