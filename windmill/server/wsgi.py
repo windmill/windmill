@@ -121,7 +121,6 @@ class WindmillCompressor(object):
         ('controller', 'commands.js',),
         ('controller', 'asserts.js',),
         ('controller', 'waits.js',),
-        ('extensions', 'extensions.js',),
         ('wm', 'registry.js',),
         ('wm', 'utils.js',),
         ('wm', 'ide', 'ui.js',),
@@ -136,6 +135,7 @@ class WindmillCompressor(object):
         ('wm', 'global.js',),
         ('wm', 'jstest.js',),
         ('wm', 'load.js',),
+        ('extensions', 'extensions.js',),
     ]
     
     def __init__(self, js_path, enabled=True):
