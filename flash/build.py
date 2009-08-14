@@ -261,7 +261,7 @@ def clean(dirname=None):
 	if dirname:
 		for root, dirs, file_list in os.walk(dirname):
 				for file in file_list:
-					if file.endswith('.swf'):
+					if file.endswith('.swf') or file.endswith('.swc'):
 						path = root + '/' + file
 						cmd = 'rm ' + path
 						print cmd
@@ -292,7 +292,7 @@ def package():
 		return
 	config = json.loads(text)
 	cmd = COMPC_PATH + ' -source-path=' + config['source-path'] + \
-			' -output=' + config['output'] + ' -include-classes'
+			' -output=pkg/' + config['output'] + ' -include-classes'
 	for incl in config['include-classes']:
 		cmd += ' ' + incl
 	print cmd
