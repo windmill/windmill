@@ -17,4 +17,34 @@ Copyright 2006-2007, Open Source Applications Foundation
 /*For information on how to build your own extensions, visit:
   http://trac.getwindmill.com/wiki/BookChapter-7-Extensions
 */
-windmill.controller.extensions = new function(){ };
+windmill.controller.extensions = new function () {};
+
+/*
+// This is a sample extension that checks what an HTML
+// form's method attribute is
+windmill.controller.extensions.assertFormMethod = function (paramObject) {
+	// Look up the form, by id or whatever
+  var n = lookupNode(paramObject);
+	// GET, POST, etc.
+  var validator = paramObject.validator;
+	if (!n.method) {
+		return false;
+	}
+	// HTTP methods are supposed to be case-sensitive, but
+	// who knows what people will use
+	if (n.method.toLowerCase() == validator.toLowerCase()) {
+		return true;
+	}
+	else {
+		return false;
+	}
+};
+
+// This makes it show up in the IDE -- note: it needs to be
+// an object key *string* of "extensions.yourAsserName"
+// You have to pass it as a string, since it contains a dot
+windmill.registry.methods['extensions.assertFormMethod'] = {
+  locator: true,
+  option: 'validator'
+};
+*/
