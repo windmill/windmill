@@ -21,13 +21,8 @@ package org.windmill {
   import mx.events.*
   import flash.utils.*;
   import flash.geom.Point;
-  import flash.external.ExternalInterface;
 
   public class WMController {
-    private static function _log(msg:*):void {
-      ExternalInterface.call("logger", msg);
-    }
-
     public function WMController():void {}
 
     public static function click(params:Object):void {

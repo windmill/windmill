@@ -15,15 +15,12 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 */
 
 package org.windmill {
-  import flash.external.ExternalInterface;
   import flash.utils.*;
+  import flash.external.ExternalInterface;
 
   public class Windmill {
     public static var context:*; // May be Stage or Application
     public static var controllerMethods:Array = [];
-    public static function _log(msg:*):void {
-      ExternalInterface.call("logger", msg);
-    }
 
     public function Windmill():void {}
 

@@ -2,7 +2,6 @@
   import mx.core.Application;
   import flash.display.MovieClip;
   import flash.events.*
-  import flash.external.ExternalInterface;
   import mx.controls.*
   import mx.containers.Panel
   import mx.events.*
@@ -15,9 +14,6 @@
     private var draggable:Sprite;
     private var context:*;
     private var elems:Object = {};
-    private function _log(msg:*):void {
-      ExternalInterface.call("logger", msg);
-    }
 
     public function init(ctxt:Application):void {
       context = ctxt;
@@ -123,8 +119,7 @@
       */
     }
     private function evHandler(e:Event):void {
-      _log(e.target.toString());
-      _log(e.toString());
+      WMLogger.log(e.toString());
     }
 
 		private function beginDrag(e:MouseEvent):void {
@@ -132,7 +127,7 @@
     }
     private function doDrag(e:MouseEvent):void {
       if (draggable) {
-        //_log(e.toString());
+        //WMLogger.log(e.toString());
         draggable.x = e.stageX;
         draggable.y = e.stageY;
       }

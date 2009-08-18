@@ -18,13 +18,9 @@ package org.windmill.events {
   import org.windmill.events.*;
   import flash.events.*
   import mx.events.*
-  import flash.external.ExternalInterface;
 
   public class Events {
     public function Events():void {}
-    private static function _log(msg:*):void {
-      ExternalInterface.call("logger", msg);
-    }
 
     // Allow lengthy list of ordered params or a simple params
     // object to override the default values

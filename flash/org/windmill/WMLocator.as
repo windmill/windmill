@@ -18,12 +18,8 @@ package org.windmill {
   import org.windmill.Windmill;
   import flash.display.DisplayObject;
   import flash.display.DisplayObjectContainer;
-  import flash.external.ExternalInterface;
 
   public class WMLocator {
-    private static function _log(msg:*):void {
-      ExternalInterface.call("logger", msg);
-    }
     public function WMLocator():void {}
 
     public static function lookupDisplayObject(
