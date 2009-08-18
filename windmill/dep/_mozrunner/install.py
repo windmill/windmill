@@ -59,10 +59,9 @@ try:
 except:
     import simplejson
 
-from windmill.dep import mozrunner
-
 def set_preferences(profile, prefs, enable_default_prefs=True):
     """Set all the preferences from dict in the profile's prefs.py"""
+    from windmill.dep import mozrunner
     prefs_file = os.path.join(profile, 'user.js')
     f = open(prefs_file, 'w+')
     f.write('\n#MozRunner Prefs Start\n')

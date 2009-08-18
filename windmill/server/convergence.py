@@ -22,7 +22,7 @@ try:
 except:
     import simplejson
 import logging
-from windmill.dep.uuid import uuid1
+from windmill.dep import uuid
 import windmill
 from time import sleep
 
@@ -201,7 +201,7 @@ class RPCMethods(object):
         callback_object = copy.copy(callback)
         callback_object.update(action_object)
         if not callback_object['params'].get('uuid'): 
-            callback_object['params']['uuid'] = str(uuid1())
+            callback_object['params']['uuid'] = str(uuid.uuid1())
         self._logger.debug('Adding object %s' % str(callback_object))
         queue_method(callback_object, suite_name=suite_name)    
         return callback_object['params']['uuid']
