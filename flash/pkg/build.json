@@ -1,0 +1,18 @@
+{
+	"source-path":
+		".",
+  "output":
+    "windmill.swc",
+  "include-classes":
+    [
+			"org.windmill.Windmill",
+			"org.windmill.WMController",
+			"org.windmill.WMLocator",
+			"org.windmill.events.Events",
+			"org.windmill.events.WMFocusEvent",
+			"org.windmill.events.WMKeyboardEvent",
+			"org.windmill.events.WMListEvent",
+			"org.windmill.events.WMMouseEvent",
+			"org.windmill.events.WMTextEvent"
+		]
+}
