@@ -15,12 +15,12 @@
 #   limitations under the License.
 
 import windmill
-import uuid
+from windmill.dep import uuid
 import sys, os, logging, re
 from time import sleep
 from windmill.authoring import frame
 from threading import Thread
-import functest
+from windmill.dep import functest
 
 logger = logging.getLogger(__name__)
 
@@ -143,7 +143,7 @@ def run_js_tests(js_dir, test_filter=None, phase=None):
     import windmill
     windmill.js_framework_active = True
     js_dir = os.path.abspath(os.path.expanduser(js_dir))
-    from wsgi_fileserver import WSGIFileServerApplication
+    from windmill.dep.wsgi_fileserver import WSGIFileServerApplication
     application = WSGIFileServerApplication(root_path=os.path.abspath(js_dir), mount_point='/windmill-jstest/')
     from windmill.server import wsgi
     wsgi.add_namespace('windmill-jstest', application)
@@ -170,7 +170,7 @@ def run_js_tests(js_dir, test_filter=None, phase=None):
 def load_extensions_dir(dirname):
    """Mount the directory and send all javascript file links to the IDE in order to execute those test urls under the jsUnit framework"""
    # Mount the fileserver application for tests
-   from wsgi_fileserver import WSGIFileServerApplication
+   from windmill.dep.wsgi_fileserver import WSGIFileServerApplication
    application = WSGIFileServerApplication(root_path=os.path.abspath(dirname), mount_point='/windmill-extentions/')
    from windmill.server import wsgi
    wsgi.add_namespace('windmill-extentions', application)

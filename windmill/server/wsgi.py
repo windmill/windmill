@@ -35,9 +35,9 @@ logger = logging.getLogger(__name__)
 
 import windmill
 from windmill.server import proxy
-import wsgi_jsonrpc
-import wsgi_xmlrpc
-import wsgi_fileserver
+from windmill.dep import wsgi_jsonrpc
+from windmill.dep import wsgi_xmlrpc
+from windmill.dep import wsgi_fileserver
 
 import jsmin
 

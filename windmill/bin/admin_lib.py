@@ -21,7 +21,7 @@ from datetime import datetime
 from threading import Thread
 import shutil
 import socket
-import functest
+from windmill.dep import functest
 functest.configure()
 
 def process_options(argv_list):

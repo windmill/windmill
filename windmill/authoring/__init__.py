@@ -16,7 +16,7 @@
 import windmill
 from windmill.bin import admin_lib
 import logging
-import functest
+from windmill.dep import functest
 import transforms
 try:
     import json as simplejson

@@ -15,7 +15,7 @@
 
 import windmill
 import os, sys, logging
-import functest
+from windmill.dep import functest
 
 class LogLevel(object):
     """Log level command, sets the global logging level."""

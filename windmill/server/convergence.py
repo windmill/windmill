@@ -22,7 +22,7 @@ try:
 except:
     import simplejson
 import logging
-from uuid import uuid1
+from windmill.dep.uuid import uuid1
 import windmill
 from time import sleep
 
