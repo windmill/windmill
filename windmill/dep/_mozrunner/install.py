@@ -54,10 +54,7 @@ except ImportError:
 from distutils import dir_util
 copytree = dir_util.copy_tree
 
-try:
-    import json as simplejson
-except:
-    import simplejson
+from windmill.dep import json
 
 def set_preferences(profile, prefs, enable_default_prefs=True):
     """Set all the preferences from dict in the profile's prefs.py"""
@@ -69,13 +66,13 @@ def set_preferences(profile, prefs, enable_default_prefs=True):
     if enable_default_prefs and hasattr(mozrunner, 'settings'):
         default_prefs = mozrunner.settings.get('MOZILLA_DEFAULT_PREFS')
         pref_lines = ['user_pref(%s, %s);' % 
-                      (simplejson.dumps(k), simplejson.dumps(v) ) for k, v in default_prefs.items()]
+                      (json.dumps(k), json.dumps(v) ) for k, v in default_prefs.items()]
         f.write('#MozRunner Default Prefs\n')
         for line in pref_lines:
             f.write(line+'\n')
     
     pref_lines = ['user_pref(%s, %s);' % 
-                  (simplejson.dumps(k), simplejson.dumps(v) ) for k, v in prefs.items()]
+                  (json.dumps(k), json.dumps(v) ) for k, v in prefs.items()]
     f.write('#MozRunner Preferences\n')
     for line in pref_lines:
         f.write(line+'\n')

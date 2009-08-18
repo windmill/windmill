@@ -17,10 +17,7 @@
 import os
 import sys
 import windmill
-try:
-    import json as simplejson
-except:
-    import simplejson
+from windmill.dep import json
 import tempfile
 
 if not sys.version.startswith('2.4'):
@@ -80,7 +77,7 @@ def create_json_test_file(suite_name, tests, location=None):
     for test in tests:
         # Strip keys that aren't part of the api
         test.pop('suite_name', None) ; test.pop('version', None)
-        f.write(simplejson.dumps(test))
+        f.write(json.dumps(test))
         f.write('\n')
     f.flush()
     f.close()
@@ -89,7 +86,7 @@ def create_json_test_file(suite_name, tests, location=None):
 def test_object_transform_to_javascript(test):
     """Transform test object in to controller call in javascript."""
     test = dict([(k, v,) for k, v in test.items() if k == 'method' or k == 'params'])
-    return simplejson.dumps(test)
+    return json.dumps(test)
 
 def build_javascript_test_file(tests, suite_name=None):
     """Build the test file for javascript"""

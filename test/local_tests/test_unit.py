@@ -12,10 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-try:
-    import json as simplejson
-except:
-    import simplejson
+from windmill.dep import json
 from windmill.dep import functest
 from datetime import datetime
 from windmill.authoring import WindmillTestClient

@@ -15,10 +15,7 @@
 import time
 import httplib, urllib, copy
 from urlparse import urlparse
-try:
-    import json as simplejson
-except:
-    import simplejson
+from windmill.dep import json
 import logging
 
 __version__ = str(0.1)
@@ -50,7 +47,7 @@ class _Method(object):
             params = None
         request['params'] = params
         logger.debug('Created python request object %s' % str(request))
-        return self.call(simplejson.dumps(request))
+        return self.call(json.dumps(request))
         
     def __getattr__(self, name):
         return _Method(self.call, "%s.%s" % (self.name, name))
@@ -111,7 +108,7 @@ class ServerProxy(object):
         response = self.__transport.request(request)
         logger.debug('got response from __transport :: %s' % response)
         if type(response) is not int:
-            return simplejson.loads(response)
+            return json.loads(response)
         else:
             logger.error('Recieved status code %s' % response)
 

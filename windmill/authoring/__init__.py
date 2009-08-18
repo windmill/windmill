@@ -18,10 +18,7 @@ from windmill.bin import admin_lib
 import logging
 from windmill.dep import functest
 import transforms
-try:
-    import json as simplejson
-except:
-    import simplejson
+from windmill.dep import json
 import os, sys, re
 from time import sleep
 
@@ -84,7 +81,7 @@ class RunJsonFile(object):
         self.do_command = getattr(client, self.do_command)
         client.start_suite(self.name)
         for line in self.lines:
-            if simplejson.loads(line)['method'].find('command') is -1:
+            if json.loads(line)['method'].find('command') is -1:
                 result = self.do_test(line)
                 if not self.debugging:  
                     assert result['result']

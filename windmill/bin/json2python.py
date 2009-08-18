@@ -13,10 +13,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-try:
-    import json as simplejson
-except:
-    import simplejson
+from windmill.dep import json
 import sys, os
 from windmill.authoring import transforms
 
@@ -24,7 +21,7 @@ def transform_json_to_python(json_strings):
     """Transform serialized JSON objects to python code using the windmill transformer architecture"""
     tests = []
     for line in json_strings:
-        tests.append(simplejson.loads(line))
+        tests.append(json.loads(line))
     return transforms.build_test_file(tests)
     
 if __name__ == '__main__':

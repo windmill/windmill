@@ -14,13 +14,11 @@
 
 from datetime import datetime
 from StringIO import StringIO
-try:
-    import json as simplejson
-except:
-    import simplejson
 import sys, traceback
 import logging
 import json_tools, test_jsonrpc
+
+from windmill.dep import json
 
 logger = logging.getLogger(__name__)
 
@@ -123,9 +121,9 @@ class JSONRPCDispatcher(object):
         description['procs'] = self.system_list_methods()
         return description
     
-    def dispatch(self, json):
+    def dispatch(self, s):
         """Public dispatcher, verifies that a method exists in it's method dictionary and calls it"""
-        rpc_request = self._decode(json)
+        rpc_request = self._decode(s)
         logger.debug('decoded to python object %s' % str(rpc_request))
         
         if self.__dict__.has_key(rpc_request[u'method']):
@@ -207,11 +205,11 @@ class JSONRPCDispatcher(object):
             response['error'] = {'type':error_type,
                                  'message':error_message}
         logger.debug('serializing %s' % str(response))
-        return simplejson.dumps(response)
+        return json.dumps(response)
         
-    def _decode(self, json):
+    def _decode(self, s):
         """Internal method for decoding json objects, uses simplejson"""
-        return simplejson.loads(json)
+        return json.loads(s)
     
 class WSGIJSONRPCApplication(JSONRPCDispatcher):
     """A WSGI Application for generic JSONRPC requests."""

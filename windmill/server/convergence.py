@@ -17,10 +17,7 @@
 server interfaces and the browser's js interface"""
 
 import copy, os, sys
-try:
-    import json as simplejson
-except:
-    import simplejson
+from windmill.dep import json
 import logging
 from windmill.dep import uuid
 import windmill
@@ -208,7 +205,7 @@ class RPCMethods(object):
     
     def add_json_test(self, json, suite_name=None):
         """Add test from json object with 'method' and 'params' defined"""
-        action_object = simplejson.loads(json)
+        action_object = json.loads(json)
         self.add_object(self._queue.add_test,  action_object, suite_name)
         return 200
         
@@ -218,7 +215,7 @@ class RPCMethods(object):
 
     def add_json_command(self, json):    
         """Add command from json object with 'method' and 'params' defined"""
-        action_object = simplejson.loads(json)
+        action_object = json.loads(json)
         self.add_object(self._queue.add_command, action_object)
         return 200
         
@@ -240,12 +237,12 @@ class RPCMethods(object):
 
     def execute_json_command(self, json):
         """Add command from json object with 'method' and 'params' defined, block until it returns, return the result"""
-        action_object = simplejson.loads(json)
+        action_object = json.loads(json)
         return self.execute_object(self._queue.add_command, self._command_resolution_suite, action_object)
 
     def execute_json_test(self, json):
         """Add test from json object with 'method' and 'params' defined, block until it returns, return the result"""
-        action_object = simplejson.loads(json)
+        action_object = json.loads(json)
         return self.execute_object(self._queue.add_test, self._test_resolution_suite, action_object)
         
     def execute_command(self, action_object):
@@ -258,7 +255,7 @@ class RPCMethods(object):
         
     def run_json_tests(self, tests):
         """Run list of json tests"""
-        return self.run_tests([simplejson.loads(test) for test in tests])
+        return self.run_tests([json.loads(test) for test in tests])
 
     def run_tests(self, tests):
         """Run list of tests"""
