@@ -16,22 +16,22 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 
 package org.windmill {
   import org.windmill.events.*;
-  import org.windmill.Locator;
+  import org.windmill.WMLocator;
   import flash.events.*
   import mx.events.*
   import flash.utils.*;
   import flash.geom.Point;
   import flash.external.ExternalInterface;
 
-  public class Controller {
+  public class WMController {
     private static function _log(msg:*):void {
       ExternalInterface.call("logger", msg);
     }
 
-    public function Controller():void {}
+    public function WMController():void {}
 
     public static function click(params:Object):void {
-      var obj:* = Locator.lookupDisplayObject(params);
+      var obj:* = WMLocator.lookupDisplayObject(params);
       // Give it focus
       Events.triggerFocusEvent(obj, FocusEvent.FOCUS_IN);
       // Down, (TextEvent.LINK,) up, click
@@ -40,7 +40,7 @@ package org.windmill {
       // If this is a link, do the TextEvent hokey-pokey
       // All events fire on the containing DisplayObject
       if ('link' in params) {
-        var link:String = Locator.locateLinkHref(params.link,
+        var link:String = WMLocator.locateLinkHref(params.link,
           obj.htmlText);
         Events.triggerTextEvent(obj, TextEvent.LINK, {
             text: link });
@@ -51,10 +51,10 @@ package org.windmill {
 
     // Click alias functions
     public static function check(params:Object):void {
-      return Controller.click(params);
+      return WMController.click(params);
     }
     public static function radio(params:Object):void {
-      return Controller.click(params);
+      return WMController.click(params);
     }
 
     public static function dragDropElemToElem(params:Object):void {
@@ -66,7 +66,7 @@ package org.windmill {
           break;
         }
       }
-      var dest:* = Locator.lookupDisplayObject(destParams);
+      var dest:* = WMLocator.lookupDisplayObject(destParams);
       var destCoords:Point = new Point(0, 0);
       destCoords = dest.localToGlobal(destCoords);
       params.coords = '(' + destCoords.x + ',' + destCoords.y + ')';
@@ -74,9 +74,9 @@ package org.windmill {
     }
 
     public static function dragDropToCoords(params:Object):void {
-      var obj:* = Locator.lookupDisplayObject(params);
+      var obj:* = WMLocator.lookupDisplayObject(params);
       var startCoordsLocal:Point = new Point(0, 0);
-      var endCoordsAbs:Point = Controller.parseCoords(params.coords);
+      var endCoordsAbs:Point = WMController.parseCoords(params.coords);
       // Convert local X/Y to global
       var startCoordsAbs:Point = obj.localToGlobal(startCoordsLocal);
       // Move mouse over to the dragged obj
@@ -160,7 +160,7 @@ package org.windmill {
     }
 
     public static function doubleClick(params:Object):void {
-      var obj:* = Locator.lookupDisplayObject(params);
+      var obj:* = WMLocator.lookupDisplayObject(params);
       // Give it focus
       Events.triggerFocusEvent(obj, FocusEvent.FOCUS_IN);
       // First click
@@ -170,7 +170,7 @@ package org.windmill {
       // If this is a link, do the TextEvent hokey-pokey
       // All events fire on the containing DisplayObject
       if ('link' in params) {
-        var link:String = Locator.locateLinkHref(params.link,
+        var link:String = WMLocator.locateLinkHref(params.link,
           obj.htmlText);
         Events.triggerTextEvent(obj, TextEvent.LINK, {
             text: link });
@@ -192,7 +192,7 @@ package org.windmill {
 
     public static function type(params:Object):void {
       // Look up the item to write to
-      var obj:* = Locator.lookupDisplayObject(params);
+      var obj:* = WMLocator.lookupDisplayObject(params);
       // Text to type out
       var str:String = params.text;
       // Char
@@ -224,7 +224,7 @@ package org.windmill {
 
     public static function select(params:Object):void {
       // Look up the item to write to
-      var obj:* = Locator.lookupDisplayObject(params);
+      var obj:* = WMLocator.lookupDisplayObject(params);
       var sel:* = obj.selectedItem;
       var item:*;
       // Give the item focus

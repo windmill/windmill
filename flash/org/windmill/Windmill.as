@@ -35,7 +35,7 @@ package org.windmill {
       // Introspect all the public controller methods
       // to expose via ExternalInterface
       var descr:XML = flash.utils.describeType(
-          org.windmill.Controller);
+          org.windmill.WMController);
       for each (var item:* in descr..method) {
         controllerMethods.push(item.@name.toXMLString());
       }
@@ -43,7 +43,7 @@ package org.windmill {
       // 'dragDropOnCoords' becomes 'wm_dragDropOnCoords'
       for each (var methodName:String in controllerMethods) {
         ExternalInterface.addCallback('wm_' + methodName,
-            org.windmill.Controller[methodName]);
+            org.windmill.WMController[methodName]);
       }
     }
   }

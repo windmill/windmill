@@ -108,15 +108,15 @@
       org.windmill.Windmill.init({ context: context.stage });
 
       /*
-      org.windmill.Controller.click({
+      org.windmill.WMController.click({
         label: 'Howdy'
       });
 
-      org.windmill.Controller.click({
+      org.windmill.WMController.click({
         link: 'This is a test link'
       });
 
-      org.windmill.Controller.type({
+      org.windmill.WMController.type({
         name: 'testText',
         text: 'Howdy, sir.'
       });

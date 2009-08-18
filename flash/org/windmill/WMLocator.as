@@ -20,23 +20,23 @@ package org.windmill {
   import flash.display.DisplayObjectContainer;
   import flash.external.ExternalInterface;
 
-  public class Locator {
+  public class WMLocator {
     private static function _log(msg:*):void {
       ExternalInterface.call("logger", msg);
     }
-    public function Locator():void {}
+    public function WMLocator():void {}
 
     public static function lookupDisplayObject(
         params:Object):DisplayObject {
-      Locator.init();
+      WMLocator.init();
       var locators:Array = [];
       var queue:Array = [];
       var obj:* = params.context || Windmill.context;
-      var checkLocatorChain:Function = function (
+      var checkWMLocatorChain:Function = function (
           item:*, pos:int):DisplayObject {
-        var map:Object = Locator.locatorMapObj;
+        var map:Object = WMLocator.locatorMapObj;
         var loc:Object = locators[pos];
-        var finder:Function = map[loc.attr] || Locator.findBySimpleAttr;
+        var finder:Function = map[loc.attr] || WMLocator.findBySimpleAttr;
         var next:int = pos + 1;
         if (!!finder(item, loc.attr, loc.val)) {
           // Move to the next locator in the chain
@@ -54,7 +54,7 @@ package org.windmill {
             var index:int = 0;
             while (index < count) {
               var kid:DisplayObject = item.getChildAt(index);
-              var res:DisplayObject = checkLocatorChain(kid, next);
+              var res:DisplayObject = checkWMLocatorChain(kid, next);
               if (res) {
                 return res;
               }
@@ -64,8 +64,8 @@ package org.windmill {
         }
         return null;
       };
-      var str:String = normalizeLocator(params);
-      locators = parseLocatorChainExpresson(str);
+      var str:String = normalizeWMLocator(params);
+      locators = parseWMLocatorChainExpresson(str);
       queue.push(obj);
       while (queue.length) {
         // Otherwise grab the next item in the queue
@@ -80,7 +80,7 @@ package org.windmill {
             index++;
           }
         }
-        var res:DisplayObject = checkLocatorChain(item, 0);
+        var res:DisplayObject = checkWMLocatorChain(item, 0);
         // If this is a full match, we're done
         if (res) {
           return res;
@@ -89,7 +89,7 @@ package org.windmill {
       return null;
     }
 
-    private static function parseLocatorChainExpresson(
+    private static function parseWMLocatorChainExpresson(
         exprStr:String):Array {
       var locators:Array = [];
       var expr:Array = exprStr.split('/');
@@ -104,15 +104,15 @@ package org.windmill {
       return locators;
     }
 
-    private static function normalizeLocator(params:Object):String {
+    private static function normalizeWMLocator(params:Object):String {
       if ('chain' in params) {
         return params.chain;
       }
       else {
-        var map:Object = Locator.locatorMap;
+        var map:Object = WMLocator.locatorMap;
         var attr:String;
         var val:*;
-        // Locators have an order of precedence -- ComboBox will
+        // WMLocators have an order of precedence -- ComboBox will
         // have a name/id, and its sub-options will have label
         // Make sure to do name-/id-based lookups first, label last
         for each (var item:Array in map) {
@@ -173,15 +173,15 @@ package org.windmill {
     private static var locatorMap:Array = [
       ['name', null],
       ['id', null],
-      ['link', Locator.findLink],
+      ['link', WMLocator.findLink],
       ['label', null]
     ];
 
     private static var locatorMapObj:Object = {};
 
     private static function init():void {
-      for each (var arr:Array in Locator.locatorMap) {
-        Locator.locatorMapObj[arr[0]] = arr[1];
+      for each (var arr:Array in WMLocator.locatorMap) {
+        WMLocator.locatorMapObj[arr[0]] = arr[1];
       }
     }
 
