@@ -67,7 +67,7 @@ package org.windmill {
         }
       }
       var dest:* = Locator.lookupDisplayObject(destParams);
-      var destCoords:Point = new Point(dest.x, dest.y);
+      var destCoords:Point = new Point(0, 0);
       destCoords = dest.localToGlobal(destCoords);
       params.coords = '(' + destCoords.x + ',' + destCoords.y + ')';
       dragDropToCoords(params);
@@ -75,19 +75,17 @@ package org.windmill {
 
     public static function dragDropToCoords(params:Object):void {
       var obj:* = Locator.lookupDisplayObject(params);
-      var startCoords:Point = new Point(obj.x, obj.y);
-      var endCoords:Point = Controller.parseCoords(params.coords);
-      Controller._log('start local' + startCoords.toString());
-      Controller._log('end local ' + endCoords.toString());
+      var startCoordsLocal:Point = new Point(0, 0);
+      var endCoordsAbs:Point = Controller.parseCoords(params.coords);
+      Controller._log('start local' + startCoordsLocal.toString());
       // Convert local X/Y to global
-      startCoords = obj.localToGlobal(startCoords);
-      endCoords = obj.localToGlobal(endCoords);
-      Controller._log('start global ' + startCoords.toString());
-      Controller._log('end global ' + endCoords.toString());
+      var startCoordsAbs:Point = obj.localToGlobal(startCoordsLocal);
+      Controller._log('start global ' + startCoordsAbs.toString());
+      Controller._log('end global ' + endCoordsAbs.toString());
       // Move mouse over to the dragged obj
       Events.triggerMouseEvent(obj.stage, MouseEvent.MOUSE_MOVE, {
-        stageX: startCoords.x,
-        stageY: startCoords.y
+        stageX: startCoordsAbs.x,
+        stageY: startCoordsAbs.y
       });
       // Give it focus
       Events.triggerFocusEvent(obj, FocusEvent.FOCUS_IN);
@@ -95,15 +93,17 @@ package org.windmill {
       Events.triggerMouseEvent(obj, MouseEvent.MOUSE_DOWN, {
           buttonDown: true });
       // Number of steps will be number of pixels in shorter delta
-      var deltaX:int = endCoords.x - startCoords.x;
-      var deltaY:int = endCoords.y - startCoords.y;
+      var deltaX:int = endCoordsAbs.x - startCoordsAbs.x;
+      var deltaY:int = endCoordsAbs.y - startCoordsAbs.y;
       var stepCount:int = 10; // Just pick an arbitrary number of steps
       // Number of pixels to move per step
       var incrX:Number = deltaX / stepCount;
       var incrY:Number = deltaY / stepCount;
       // Current pos as the move happens
-      var currX:Number = startCoords.x;
-      var currY:Number = startCoords.y;
+      var currXAbs:Number = startCoordsAbs.x;
+      var currYAbs:Number = startCoordsAbs.y;
+      var currXLocal:Number = startCoordsLocal.x;
+      var currYLocal:Number = startCoordsLocal.y;
       // Step number
       var currStep:int = 0;
       // Use a delay so we can see the move
@@ -111,20 +111,34 @@ package org.windmill {
       // Step function -- reposition per step
       var doStep:Function = function ():void {
         if (currStep <= stepCount) {
-          Events.triggerMouseEvent(obj.stage, MouseEvent.MOUSE_MOVE, {
-            stageX: currX,
-            stageY: currY
+          Events.triggerMouseEvent(obj, MouseEvent.MOUSE_MOVE, {
+            stageX: currXAbs,
+            stageY: currYAbs,
+            localX: currXLocal,
+            localY: currYLocal
           });
-          currX += incrX;
-          currY += incrY;
+          currXAbs += incrX;
+          currYAbs += incrY;
+          currXLocal += incrX;
+          currYLocal += incrY;
           currStep++;
         }
         // Once it's finished, stop the timer and trigger
         // the final mouse events
         else {
           stepTimer.stop();
-          Events.triggerMouseEvent(obj, MouseEvent.MOUSE_UP);
-          Events.triggerMouseEvent(obj, MouseEvent.CLICK);
+          Events.triggerMouseEvent(obj, MouseEvent.MOUSE_UP, {
+            stageX: currXAbs,
+            stageY: currYAbs,
+            localX: currXLocal,
+            localY: currYLocal
+          });
+          Events.triggerMouseEvent(obj, MouseEvent.CLICK, {
+            stageX: currXAbs,
+            stageY: currYAbs,
+            localX: currXLocal,
+            localY: currYLocal
+          });
         }
       }
       // Start the timer loop

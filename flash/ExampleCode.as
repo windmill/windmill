@@ -91,7 +91,7 @@
       // Mouse
       context.addEventListener(MouseEvent.MOUSE_DOWN, evHandler);
       context.addEventListener(MouseEvent.MOUSE_UP, evHandler);
-      context.addEventListener(MouseEvent.MOUSE_MOVE, evHandler);
+      //context.addEventListener(MouseEvent.MOUSE_MOVE, evHandler);
       context.addEventListener(MouseEvent.DOUBLE_CLICK, evHandler);
       context.addEventListener(MouseEvent.CLICK, evHandler);
       // Text
@@ -131,8 +131,8 @@
       draggable = spr;
     }
     private function doDrag(e:MouseEvent):void {
-      //_log(e.toString());
       if (draggable) {
+        //_log(e.toString());
         draggable.x = e.stageX;
         draggable.y = e.stageY;
       }
