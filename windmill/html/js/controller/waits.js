@@ -155,7 +155,7 @@ windmill.controller.waits.forJSTrue = windmill.controller.waits.forJS;
 windmill.controller.waits.forElement = function (paramObj,obj) { 
     var p = paramObj || {};
     var f = function () {
-      try { return lookupNode(p); }
+      try { return lookupNode(p, false); }
       catch(err){}
     };
     p.test = f;
@@ -175,7 +175,7 @@ windmill.controller.waits.forElementProperty = function (paramObj,obj) {
     //function
     var f = function () {
       try { 
-        var node = lookupNode(p);
+        var node = lookupNode(p, false);
         var value = eval ('node.' + vArray[0]+';');
       
         if (value == vArray[1]){
@@ -194,7 +194,7 @@ windmill.controller.waits.forNotElement = function (paramObj,obj) {
     var p = paramObj || {};
     var f = function () {
       try{
-        var node = lookupNode(p);
+        var node = lookupNode(p, false);
         return !node; 
       }
       catch(err){

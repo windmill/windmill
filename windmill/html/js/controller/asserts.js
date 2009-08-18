@@ -114,7 +114,7 @@ windmill.controller.asserts.assertRegistry = {
 //Currently only does one level below the provided div
 //To make it more thorough it needs recursion to be implemented later
 windmill.controller.asserts.assertText = function (paramObject) {
-  var n = lookupNode(paramObject);
+  var n = lookupNode(paramObject, false);
   var validator = paramObject.validator;
     
   var inner = n.innerHTML;
@@ -139,7 +139,7 @@ windmill.controller.asserts.assertText = function (paramObject) {
 };
 
 windmill.controller.asserts.assertTextIn = function (paramObject) {
-  var n = lookupNode(paramObject);
+  var n = lookupNode(paramObject, false);
   var validator = paramObject.validator;
   
   var inner = n.innerHTML;
@@ -167,13 +167,13 @@ windmill.controller.asserts.assertTextIn = function (paramObject) {
 
 //Assert that a specified node exists
 windmill.controller.asserts.assertNode = function (paramObject) {
-  var element = lookupNode(paramObject);
+  var element = lookupNode(paramObject, false);
 };
 
 //Assert that a form element contains the expected value
 windmill.controller.asserts.assertValue = function (paramObject) {
   //need to start moving test to use text instead of validator, its dumb
-  var n = lookupNode(paramObject);
+  var n = lookupNode(paramObject, false);
   var validator = paramObject.validator;
 
   if (n.value == undefined)
@@ -186,7 +186,7 @@ windmill.controller.asserts.assertValue = function (paramObject) {
 
 windmill.controller.asserts.assertValueIn = function (paramObject) {
   //need to start moving test to use text instead of validator, its dumb
-  var n = lookupNode(paramObject);
+  var n = lookupNode(paramObject, false);
   var validator = paramObject.validator;
 
   if (n.value == undefined)
@@ -217,7 +217,7 @@ windmill.controller.asserts.assertIDEJS = function (paramObject) {
 
 //Asserting javascript with an element object available
 windmill.controller.asserts.assertElemJS = function (paramObject) {
-  var element = lookupNode(paramObject);
+  var element = lookupNode(paramObject, false);
   var js = paramObject.js;
   var result = eval(js);
   if (result != true){
@@ -227,7 +227,7 @@ windmill.controller.asserts.assertElemJS = function (paramObject) {
 
 //Assert that a provided value is selected in a select element
 windmill.controller.asserts.assertSelected = function (paramObject) {
-  var n = lookupNode(paramObject);
+  var n = lookupNode(paramObject, false);
   var validator = paramObject.validator;
 
   if ((n.options[n.selectedIndex].value != validator) && (n.options[n.selectedIndex].innerHTML != validator)){
@@ -237,7 +237,7 @@ windmill.controller.asserts.assertSelected = function (paramObject) {
 
 //Assert that a provided checkbox is checked
 windmill.controller.asserts.assertChecked = function (paramObject) {
-  var n = lookupNode(paramObject);
+  var n = lookupNode(paramObject, false);
 
   if (!n.checked){
     throw "Checked property not true";
@@ -246,7 +246,7 @@ windmill.controller.asserts.assertChecked = function (paramObject) {
 
 // Assert that a an element's property is a particular value
 windmill.controller.asserts.assertProperty = function (paramObject) {
-  var element = lookupNode(paramObject);
+  var element = lookupNode(paramObject, false);
   var vArray = paramObject.validator.split('|');
   if (vArray.length != 2)
     throw "Invalid validator '" + paramObject.validator + "'.  Use '|' to separate key from value.";
@@ -270,7 +270,7 @@ windmill.controller.asserts.assertProperty = function (paramObject) {
 // The Safari workaround results in additional requests
 // for broken images (in Safari only) but works reliably
 windmill.controller.asserts.assertImageLoaded = function (paramObject) {
-  var img = lookupNode(paramObject);
+  var img = lookupNode(paramObject, false);
   if (!img || img.tagName != 'IMG') {
     throw "The node was not an image."
   }

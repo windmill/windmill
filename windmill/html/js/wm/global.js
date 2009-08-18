@@ -28,7 +28,8 @@ var jsonCall = function(version, method, params) {
 
 
 //Translates from the way we are passing objects to functions to the lookups
-var lookupNode = function (paramObject){
+var lookupNode = function (paramObject, scroll){
+  
   var s = null;
   var element = null;
   
@@ -105,10 +106,11 @@ var lookupNode = function (paramObject){
     //if the element you accessed is a flash object
     //the scroll into view will actually fail and 
     //throw a crazy DOM exception
-    try {
-      element.scrollIntoView(); 
-    } catch(err){}
-    
+    if (scroll != false){
+      try {
+        element.scrollIntoView(); 
+      } catch(err){}
+    }
     return element;
   }
   else { throw s + ", failed."; }
