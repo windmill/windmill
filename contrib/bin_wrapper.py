@@ -38,7 +38,7 @@ import sys, os
 if sys.platform != 'win32':
     import pwd
 import commands
-from mozrunner import killableprocess
+from windmill.dep.mozrunner import killableprocess
 import logging
 import signal
 import exceptions

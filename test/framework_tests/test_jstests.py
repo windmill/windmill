@@ -1,7 +1,7 @@
 
 import sys, os, commands
 
-import functest
+from windmill.dep import functest
 from time import sleep
 
 def test_functest_google_firefox_url():

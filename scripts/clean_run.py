@@ -40,18 +40,18 @@ import win32api, win32pdhutil, win32con
 if sys.platform != 'win32':
     import pwd
 import commands
-from mozrunner import killableprocess
 import logging
 import signal
 import exceptions
 from StringIO import StringIO
-
 from time import sleep
 import subprocess
 from subprocess import Popen, PIPE, call
 
 from datetime import datetime
 from datetime import timedelta
+
+from windmill.dep.mozrunner import killableprocess
 
 logger = logging.getLogger(__name__)
 

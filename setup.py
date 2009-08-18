@@ -1,3 +1,4 @@
+
 #   Copyright (c) 2006-2007 Open Source Applications Foundation
 #   Copyright (c) 2008-2009 Mikeal Rogers <mikeal.rogers@gmail.com>
 #   Copyright (c) 2009 Domen Kozar <domen@dev.si>
@@ -18,7 +19,7 @@ from setuptools import setup, find_packages
 import os, sys
 
 PACKAGE_NAME = "windmill"
-PACKAGE_VERSION = "1.2"
+PACKAGE_VERSION = "1.2.1b4"
 
 SUMMARY = 'Web testing framework intended for complete automation of user interface testing, with strong test debugging and recording capabilities.'
 
@@ -31,20 +32,9 @@ We welcome any and all interest and contribution, as we work diligently at addin
 Thanks for your interest and participation!
 """
 
-dependencies =  ['wsgi_jsonrpc >= 0.2.2',
-                 'wsgi_xmlrpc >= 0.2.3',
-                 'wsgi_fileserver >= 0.2.3',
-                 'functest >= 0.7.1',
-                 'mozrunner <= 1.9.9',
-                 'simplesettings',
-                 ]
+dependencies =  []
 
-two_five_dependencies = [ 'simplejson >= 1.7.1',
-                        ]
-two_four_dependencies = ['uuid', 'ctypes']
-
-if not sys.version.startswith('2.6'):
-    dependencies.extend(two_five_dependencies)
+two_four_dependencies = ['ctypes']
 
 if sys.version.startswith('2.4'):
     dependencies.extend(two_four_dependencies)

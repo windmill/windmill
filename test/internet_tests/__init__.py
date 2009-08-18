@@ -6,7 +6,7 @@
 from windmill.bin import admin_lib
 import windmill
 import os, sys
-import wsgi_fileserver
+from windmill.dep import wsgi_fileserver
 
 def setup_module(module):
     windmill.authoring.setup_module(module)

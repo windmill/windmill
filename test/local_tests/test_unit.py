@@ -16,7 +16,7 @@ try:
     import json as simplejson
 except:
     import simplejson
-import functest
+from windmill.dep import functest
 from datetime import datetime
 from windmill.authoring import WindmillTestClient
 
