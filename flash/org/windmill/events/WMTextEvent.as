@@ -15,15 +15,15 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 */
 
 package org.windmill.events {
-	import flash.events.TextEvent;
-	
-	public class WMTextEvent extends TextEvent {
-		public function WMTextEvent(type:String,
-				bubbles:Boolean = false, cancelable:Boolean = false,
-				text:String = "") {
-			super(type, bubbles, cancelable, text);
-		}
-	}
+  import flash.events.TextEvent;
+  
+  public class WMTextEvent extends TextEvent {
+    public function WMTextEvent(type:String,
+        bubbles:Boolean = false, cancelable:Boolean = false,
+        text:String = "") {
+      super(type, bubbles, cancelable, text);
+    }
+  }
 }
 
 

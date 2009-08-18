@@ -15,175 +15,175 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 */
 
 package org.windmill {
-	import org.windmill.Windmill;
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
-	import flash.external.ExternalInterface;
+  import org.windmill.Windmill;
+  import flash.display.DisplayObject;
+  import flash.display.DisplayObjectContainer;
+  import flash.external.ExternalInterface;
 
-	public class Locator {
-		private static function _log(msg:*):void {
-			ExternalInterface.call("logger", msg);
-		}
-		public function Locator():void {}
+  public class Locator {
+    private static function _log(msg:*):void {
+      ExternalInterface.call("logger", msg);
+    }
+    public function Locator():void {}
 
-		public static function lookupDisplayObject(
-				params:Object):DisplayObject {
-			Locator.init();
-			var locators:Array = [];
-			var queue:Array = [];
-			var obj:* = params.context || Windmill.context;
-			var checkLocatorChain:Function = function (
-					item:*, pos:int):DisplayObject {
-				var map:Object = Locator.locatorMapObj;
-				var loc:Object = locators[pos];
-				var finder:Function = map[loc.attr] || Locator.findBySimpleAttr;
-				var next:int = pos + 1;
-				if (!!finder(item, loc.attr, loc.val)) {
-					// Move to the next locator in the chain
-					// If it's the end of the chain, we have a winner
-					if (next == locators.length) {
-						return item;
-					}
-					// Otherwise recursively check the next link in
-					// the locator chain
-					var count:int = 0;
-					if (item is DisplayObjectContainer) {
-						count = item.numChildren;
-					}
-					if (count > 0) {
-						var index:int = 0;
-						while (index < count) {
-							var kid:DisplayObject = item.getChildAt(index);
-							var res:DisplayObject = checkLocatorChain(kid, next);
-							if (res) {
-								return res;
-							}
-							index++;
-						}
-					}
-				}
-				return null;
-			};
-			var str:String = normalizeLocator(params);
-			locators = parseLocatorChainExpresson(str);
-			queue.push(obj);
-			while (queue.length) {
-				// Otherwise grab the next item in the queue
-				var item:* = queue.shift();
-				// Append any kids to the end of the queue
-				if (item is DisplayObjectContainer) {
-					var count:int = item.numChildren;
-					var index:int = 0;
-					while (index < count) {
-						var kid:DisplayObject = item.getChildAt(index);
-						queue.push(kid);
-						index++;
-					}
-				}
-				var res:DisplayObject = checkLocatorChain(item, 0);
-				// If this is a full match, we're done
-				if (res) {
-					return res;
-				}
-			}
-			return null;
-		}
+    public static function lookupDisplayObject(
+        params:Object):DisplayObject {
+      Locator.init();
+      var locators:Array = [];
+      var queue:Array = [];
+      var obj:* = params.context || Windmill.context;
+      var checkLocatorChain:Function = function (
+          item:*, pos:int):DisplayObject {
+        var map:Object = Locator.locatorMapObj;
+        var loc:Object = locators[pos];
+        var finder:Function = map[loc.attr] || Locator.findBySimpleAttr;
+        var next:int = pos + 1;
+        if (!!finder(item, loc.attr, loc.val)) {
+          // Move to the next locator in the chain
+          // If it's the end of the chain, we have a winner
+          if (next == locators.length) {
+            return item;
+          }
+          // Otherwise recursively check the next link in
+          // the locator chain
+          var count:int = 0;
+          if (item is DisplayObjectContainer) {
+            count = item.numChildren;
+          }
+          if (count > 0) {
+            var index:int = 0;
+            while (index < count) {
+              var kid:DisplayObject = item.getChildAt(index);
+              var res:DisplayObject = checkLocatorChain(kid, next);
+              if (res) {
+                return res;
+              }
+              index++;
+            }
+          }
+        }
+        return null;
+      };
+      var str:String = normalizeLocator(params);
+      locators = parseLocatorChainExpresson(str);
+      queue.push(obj);
+      while (queue.length) {
+        // Otherwise grab the next item in the queue
+        var item:* = queue.shift();
+        // Append any kids to the end of the queue
+        if (item is DisplayObjectContainer) {
+          var count:int = item.numChildren;
+          var index:int = 0;
+          while (index < count) {
+            var kid:DisplayObject = item.getChildAt(index);
+            queue.push(kid);
+            index++;
+          }
+        }
+        var res:DisplayObject = checkLocatorChain(item, 0);
+        // If this is a full match, we're done
+        if (res) {
+          return res;
+        }
+      }
+      return null;
+    }
 
-		private static function parseLocatorChainExpresson(
-				exprStr:String):Array {
-			var locators:Array = [];
-			var expr:Array = exprStr.split('/');
-			var arr:Array;
-			for each (var item:String in expr) {
-				arr = item.split(':');
-				locators.push({
-					attr: arr[0],
-					val: arr[1]
-				});
-			}
-			return locators;
-		}
+    private static function parseLocatorChainExpresson(
+        exprStr:String):Array {
+      var locators:Array = [];
+      var expr:Array = exprStr.split('/');
+      var arr:Array;
+      for each (var item:String in expr) {
+        arr = item.split(':');
+        locators.push({
+          attr: arr[0],
+          val: arr[1]
+        });
+      }
+      return locators;
+    }
 
-		private static function normalizeLocator(params:Object):String {
-			if ('chain' in params) {
-				return params.chain;
-			}
-			else {
-				var map:Object = Locator.locatorMap;
-				var attr:String;
-				var val:*;
-				// Locators have an order of precedence -- ComboBox will
-				// have a name/id, and its sub-options will have label
-				// Make sure to do name-/id-based lookups first, label last
-				for each (var item:Array in map) {
-					if (item[0] in params) {
-						attr = item[0];
-						val = params[attr];
-						break;
-					}
-				}
-				return attr + ':' + val;
-			}
-		}
+    private static function normalizeLocator(params:Object):String {
+      if ('chain' in params) {
+        return params.chain;
+      }
+      else {
+        var map:Object = Locator.locatorMap;
+        var attr:String;
+        var val:*;
+        // Locators have an order of precedence -- ComboBox will
+        // have a name/id, and its sub-options will have label
+        // Make sure to do name-/id-based lookups first, label last
+        for each (var item:Array in map) {
+          if (item[0] in params) {
+            attr = item[0];
+            val = params[attr];
+            break;
+          }
+        }
+        return attr + ':' + val;
+      }
+    }
 
-		// Default locator for all basic key/val attr matches
-		private static function findBySimpleAttr(
-				obj:*, attr:String, val:*):Boolean {
-			return !!(attr in obj && obj[attr] == val);
-		}
+    // Default locator for all basic key/val attr matches
+    private static function findBySimpleAttr(
+        obj:*, attr:String, val:*):Boolean {
+      return !!(attr in obj && obj[attr] == val);
+    }
 
-		// Custom locator for links embedded in htmlText
-		private static function findLink(
-				obj:*, attr:String, val:*):Boolean {
-			var res:Boolean = false;
-			if ('htmlText' in obj) {
-				res = !!locateLinkHref(val, obj.htmlText);
-			}
-			return res;
-		}
+    // Custom locator for links embedded in htmlText
+    private static function findLink(
+        obj:*, attr:String, val:*):Boolean {
+      var res:Boolean = false;
+      if ('htmlText' in obj) {
+        res = !!locateLinkHref(val, obj.htmlText);
+      }
+      return res;
+    }
 
-		// Used by the custom locator for links, above
-		public static function locateLinkHref(linkText:String,
-				htmlText:String):String {
-			var pat:RegExp = /(<a.+?>)([\s\S]*?)(?:<\/a>)/gi;
-			var res:Array;
-			var linkPlain:String = '';
-			while (!!(res = pat.exec(htmlText))) {
-				// Remove HTML tags and linebreaks; and trim
-				linkPlain = res[2].replace(/<.+?>/g, '').
-						replace(/\s+/g, ' ').replace(/^ | $/g, '');
-				if (linkPlain == linkText) {
-					var evPat:RegExp = /href="event:(.*?)"/i;
-					var arr:Array = evPat.exec(res[1]);
-					if (!!(arr && arr[1])) {
-						return arr[1];
-					}
-					else {
-						return '';
-					}
-				}
-			}
-			return '';
-		}
+    // Used by the custom locator for links, above
+    public static function locateLinkHref(linkText:String,
+        htmlText:String):String {
+      var pat:RegExp = /(<a.+?>)([\s\S]*?)(?:<\/a>)/gi;
+      var res:Array;
+      var linkPlain:String = '';
+      while (!!(res = pat.exec(htmlText))) {
+        // Remove HTML tags and linebreaks; and trim
+        linkPlain = res[2].replace(/<.+?>/g, '').
+            replace(/\s+/g, ' ').replace(/^ | $/g, '');
+        if (linkPlain == linkText) {
+          var evPat:RegExp = /href="event:(.*?)"/i;
+          var arr:Array = evPat.exec(res[1]);
+          if (!!(arr && arr[1])) {
+            return arr[1];
+          }
+          else {
+            return '';
+          }
+        }
+      }
+      return '';
+    }
 
-		// Stupid AS3 doesn't iterate over Object keys
-		// in insertion order
-		// null for the finder func means use the default
-		// of findBySimpleAttr
-		private static var locatorMap:Array = [
-			['name', null],
-			['id', null],
-			['link', Locator.findLink],
-			['label', null]
-		];
+    // Stupid AS3 doesn't iterate over Object keys
+    // in insertion order
+    // null for the finder func means use the default
+    // of findBySimpleAttr
+    private static var locatorMap:Array = [
+      ['name', null],
+      ['id', null],
+      ['link', Locator.findLink],
+      ['label', null]
+    ];
 
-		private static var locatorMapObj:Object = {};
+    private static var locatorMapObj:Object = {};
 
-		private static function init():void {
-			for each (var arr:Array in Locator.locatorMap) {
-				Locator.locatorMapObj[arr[0]] = arr[1];
-			}
-		}
+    private static function init():void {
+      for each (var arr:Array in Locator.locatorMap) {
+        Locator.locatorMapObj[arr[0]] = arr[1];
+      }
+    }
 
-	}
+  }
 }

@@ -15,18 +15,36 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 */
 
 package org.windmill {
-	import flash.external.ExternalInterface;
+  import flash.external.ExternalInterface;
+  import flash.utils.*;
 
-	public class Windmill {
-		public static var context:*; // May be Stage or Application
-		public static function _log(msg:*):void {
-			ExternalInterface.call("logger", msg);
-		}
+  public class Windmill {
+    public static var context:*; // May be Stage or Application
+    public static var controllerMethods:Array = [];
+    public static function _log(msg:*):void {
+      ExternalInterface.call("logger", msg);
+    }
 
-		public function Windmill():void {}
+    public function Windmill():void {}
 
-		public static function init(config:Object):void {
-			context = config.context;
-		}
-	}
+    public static function init(config:Object):void {
+      // Search context for locators -- can be either
+      // Stage or Application, but usually a Stage
+      context = config.context;
+
+      // Introspect all the public controller methods
+      // to expose via ExternalInterface
+      var descr:XML = flash.utils.describeType(
+          org.windmill.Controller);
+      for each (var item:* in descr..method) {
+        controllerMethods.push(item.@name.toXMLString());
+      }
+      // Expose public methods via ExternalInterface
+      // 'dragDropOnCoords' becomes 'wm_dragDropOnCoords'
+      for each (var methodName:String in controllerMethods) {
+        ExternalInterface.addCallback('wm_' + methodName,
+            org.windmill.Controller[methodName]);
+      }
+    }
+  }
 }

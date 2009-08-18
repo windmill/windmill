@@ -15,17 +15,17 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 */
 
 package org.windmill.events {
-	import flash.events.FocusEvent;
-	import flash.display.InteractiveObject;
-	
-	public class WMFocusEvent extends FocusEvent {
-		public function WMFocusEvent(type:String,
-				bubbles:Boolean = true, cancelable:Boolean = false,
-				relatedObject:InteractiveObject = null,
-				shiftKey:Boolean = false, keyCode:uint = 0) {
-			super(type, bubbles, cancelable, relatedObject,
-					shiftKey, keyCode);
-		}
-	}
+  import flash.events.FocusEvent;
+  import flash.display.InteractiveObject;
+  
+  public class WMFocusEvent extends FocusEvent {
+    public function WMFocusEvent(type:String,
+        bubbles:Boolean = true, cancelable:Boolean = false,
+        relatedObject:InteractiveObject = null,
+        shiftKey:Boolean = false, keyCode:uint = 0) {
+      super(type, bubbles, cancelable, relatedObject,
+          shiftKey, keyCode);
+    }
+  }
 }
 

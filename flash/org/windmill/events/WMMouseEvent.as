@@ -15,37 +15,37 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 */
 
 package org.windmill.events {
-	
-	import flash.events.MouseEvent;
-	import flash.display.InteractiveObject;
-	
-	public class WMMouseEvent extends MouseEvent {
-		private var fakeStageX:Number;
-		private var fakeStageY:Number;
+  
+  import flash.events.MouseEvent;
+  import flash.display.InteractiveObject;
+  
+  public class WMMouseEvent extends MouseEvent {
+    private var fakeStageX:Number;
+    private var fakeStageY:Number;
 
-		public function WMMouseEvent(type:String,
-				bubbles:Boolean = false, cancelable:Boolean = false,
-				localX:Number = NaN, localY:Number = NaN, 
-				relatedObject:InteractiveObject = null,
-				ctrlKey:Boolean = false, altKey:Boolean = false,
-				shiftKey:Boolean = false, buttonDown:Boolean = false,
-				delta:int = 0) {
-			super(type, bubbles, cancelable, localX, localY,
-					relatedObject, ctrlKey, altKey, shiftKey, buttonDown,
-					delta);
-		}
-		public function set stageX(value:Number):void {
-			fakeStageX = value;
-		}
-		override public function get stageX():Number {
-			return fakeStageX;
-		}
-		public function set stageY(value:Number):void {
-			fakeStageY = value;
-		}
-		override public function get stageY():Number {
-			return fakeStageY;
-		}
-	}
+    public function WMMouseEvent(type:String,
+        bubbles:Boolean = false, cancelable:Boolean = false,
+        localX:Number = NaN, localY:Number = NaN, 
+        relatedObject:InteractiveObject = null,
+        ctrlKey:Boolean = false, altKey:Boolean = false,
+        shiftKey:Boolean = false, buttonDown:Boolean = false,
+        delta:int = 0) {
+      super(type, bubbles, cancelable, localX, localY,
+          relatedObject, ctrlKey, altKey, shiftKey, buttonDown,
+          delta);
+    }
+    public function set stageX(value:Number):void {
+      fakeStageX = value;
+    }
+    override public function get stageX():Number {
+      return fakeStageX;
+    }
+    public function set stageY(value:Number):void {
+      fakeStageY = value;
+    }
+    override public function get stageY():Number {
+      return fakeStageY;
+    }
+  }
 }
 
