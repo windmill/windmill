@@ -77,11 +77,8 @@ package org.windmill {
       var obj:* = Locator.lookupDisplayObject(params);
       var startCoordsLocal:Point = new Point(0, 0);
       var endCoordsAbs:Point = Controller.parseCoords(params.coords);
-      Controller._log('start local' + startCoordsLocal.toString());
       // Convert local X/Y to global
       var startCoordsAbs:Point = obj.localToGlobal(startCoordsLocal);
-      Controller._log('start global ' + startCoordsAbs.toString());
-      Controller._log('end global ' + endCoordsAbs.toString());
       // Move mouse over to the dragged obj
       Events.triggerMouseEvent(obj.stage, MouseEvent.MOUSE_MOVE, {
         stageX: startCoordsAbs.x,
