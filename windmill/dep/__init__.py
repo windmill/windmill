@@ -17,3 +17,6 @@ try:
     import uuid
 except:
     import _uuid as uuid
+
+import sys
+sys.modules['functest'] = functest # Support global access on functest

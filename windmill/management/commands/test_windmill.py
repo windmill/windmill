@@ -103,8 +103,9 @@ class Command(BaseCommand):
             x = logging.getLogger()
             x.setLevel(0)
             from windmill.server.proxy import logger
-            from windmill.dep.functest import bin
-            from windmill.dep.functest import runner
+            from windmil.dep import functest
+            bin = functest.bin
+            runner = functest.runner
             runner.CLIRunner.final = classmethod(lambda self, totals: testtotals.update(totals) )
             import windmill
             setup_module(tests[0][1])

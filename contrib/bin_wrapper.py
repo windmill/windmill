@@ -38,7 +38,6 @@ import sys, os
 if sys.platform != 'win32':
     import pwd
 import commands
-from windmill.dep.mozrunner import killableprocess
 import logging
 import signal
 import exceptions
@@ -49,6 +48,9 @@ import subprocess
 
 from datetime import datetime
 from datetime import timedelta
+
+from windmill.dep import mozrunner 
+killableprocess = mozrunner.killableprocess
 
 logger = logging.getLogger(__name__)
 

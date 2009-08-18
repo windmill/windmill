@@ -51,7 +51,8 @@ from subprocess import Popen, PIPE, call
 from datetime import datetime
 from datetime import timedelta
 
-from windmill.dep.mozrunner import killableprocess
+from windmill.dep import mozrunner 
+killableprocess = mozrunner.killableprocess
 
 logger = logging.getLogger(__name__)
 

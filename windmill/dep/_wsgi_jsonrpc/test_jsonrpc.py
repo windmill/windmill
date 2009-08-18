@@ -31,7 +31,8 @@ def make_server(host='localhost', port=4325):
     return  simple_server.make_server(host, port, application)
 
 def test_jsonrpc_server(uri='http://localhost:4325/'):
-    from windmill.dep.wsgi_jsonrpc import json_tools
+    from windmill.dep import wsgi_jsonrpc 
+    json_tools = wsgi_jsonrpc.json_tools
     
     jsonrpc_client = json_tools.ServerProxy(uri=uri)
     assert jsonrpc_client.test_1() == {u'result':u'test_1'}

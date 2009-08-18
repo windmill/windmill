@@ -15,7 +15,8 @@
 import unittest
 import sys
 
-from windmill.dep.functest import reports
+from windmill.dep import functest 
+reports = functest.reports
 
 class UnitTestReporter(reports.FunctestReportInterface):
     def summary(self, test_list, totals_dict, stdout_capture):

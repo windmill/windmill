@@ -32,7 +32,7 @@ windmill.browser_registry = {}
 def get_firefox_controller():
     """Get the firefox browser object"""
     from windmill.dep import mozrunner
-    from windmill.dep.mozrunner import global_settings
+    global_settings = mozrunner.global_settings
     from windmill.dep import simplesettings
     
     mozrunner_settings = simplesettings.initialize_settings(global_settings, mozrunner,     
