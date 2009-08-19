@@ -16,6 +16,7 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 
 package org.windmill {
   import org.windmill.Windmill;
+  import org.windmill.WMLogger;
   import flash.display.DisplayObject;
   import flash.display.DisplayObjectContainer;
 
