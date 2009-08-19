@@ -1,0 +1,308 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>windmill &#8212; Browser Automation Tool &mdash; windmill v2.0a1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.0a1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="windmill v2.0a1 documentation" href="" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li><a href="">windmill v2.0a1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="module-windmill">
+<h1><tt class="xref docutils literal"><span class="pre">windmill</span></tt> &#8212; Browser Automation Tool<a class="headerlink" href="#module-windmill" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="module-windmill.castile">
+<h1><tt class="xref docutils literal"><span class="pre">windmill.castile</span></tt> &#8212; Remote Object Representation and Event Serialization<a class="headerlink" href="#module-windmill.castile" title="Permalink to this headline">¶</a></h1>
+<p>Castile is a new and more dynamic way of providing communications between multiple endpoints. It avoids the blocking and bloat of SOAP and the one-way nature of RPC based systems while providing a flexible way to communicate and manipulate applications in different locations and programming languages.</p>
+<div class="section" id="remote-object-representation">
+<h2>Remote Object Representation<a class="headerlink" href="#remote-object-representation" title="Permalink to this headline">¶</a></h2>
+<p>Rather than the strictness of SOAP and RPC, ROR (Remote Object Representation) seeks to provide a way for one application to describe, interact, and manipulate foreign objects dynamically and in a more-or-less language neutral manner.</p>
+</div>
+<div class="section" id="event-bridging">
+<h2>Event Bridging<a class="headerlink" href="#event-bridging" title="Permalink to this headline">¶</a></h2>
+<p>Instead of constantly polling for relevant information Castile provides mechanisms for different environments to serialize their event systems from one end to another. This allows us to provide fast and flexible asynchronous communication channels between various environments.</p>
+</div>
+<div class="section" id="node-based-event-propogation">
+<h2>Node Based Event Propogation<a class="headerlink" href="#node-based-event-propogation" title="Permalink to this headline">¶</a></h2>
+<p>In Windmill 1.0 we ran in to a problem. We have a Python environment and a JavaScript environment and the JavaScript environment is dependent on the Python environment to overcome security limitations in the browser. When we throw in another environment, say a Ruby or Java test api, that environment now has to communicate through the Python environment to talk to JavaScript. In traditional RPC systems this is a huge limitation, it means there is little flexibility in communication and events that have to be sent through the intermediary in rigid pre-defined ways.</p>
+</div>
+</div>
+<div class="section" id="module-windmill.castile.events">
+<h1><tt class="xref docutils literal"><span class="pre">windmill.castile.events</span></tt> &#8212; Event Node Implementation<a class="headerlink" href="#module-windmill.castile.events" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="windmill.castile.events.EventNode">
+<!--[windmill.castile.events.EventNode]-->class <tt class="descclassname">windmill.castile.events.</tt><tt class="descname">EventNode</tt><big>(</big><em>ns</em>, <em>events_uri</em><big>)</big><a class="headerlink" href="#windmill.castile.events.EventNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Castile Event Node.</p>
+<p><em>ns</em> is the root namespace for this node. It must be unique between any peers
+it connects to or else bad things will happen.</p>
+<p><em>events_uri</em> is the full public URI to this node once it is served over HTTP.</p>
+<dl class="method">
+<dt id="windmill.castile.events.EventNode.register_with_node">
+<!--[windmill.castile.events.EventNode.register_with_node]--><tt class="descname">register_with_node</tt><big>(</big><em>uri</em><big>)</big><a class="headerlink" href="#windmill.castile.events.EventNode.register_with_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register this node with another remote node.</p>
+<p><em>uri</em> is the full http uri to the remote event node.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="windmill.castile.events.EventNode.add_listener">
+<!--[windmill.castile.events.EventNode.add_listener]--><tt class="descname">add_listener</tt><big>(</big><em>ns</em>, <em>func</em><big>)</big><a class="headerlink" href="#windmill.castile.events.EventNode.add_listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a listener to the specified namespace.</p>
+<p><em>ns</em> can be either a local or remote namespace, that logic is handled by
+the event node logic.</p>
+<p><em>func</em> can be any callable that accepts a single argument, the event object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="windmill.castile.events.EventNode.fire_event">
+<!--[windmill.castile.events.EventNode.fire_event]--><tt class="descname">fire_event</tt><big>(</big><em>ns</em>, <em>obj</em><big>)</big><a class="headerlink" href="#windmill.castile.events.EventNode.fire_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fire an event.</p>
+<p><em>ns</em> should not include the node&#8217;s namespace, this will get pre-pended before the
+event is fired and propogated.</p>
+<p><em>obj</em> needs to be a dictionary that is JSON serializable. An additional value is
+added before the event is propogated &#8220;event-type&#8221; which is the full namespace,
+including the event node&#8217;s namespace.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="windmill.castile.events.EventNode.get_application">
+<!--[windmill.castile.events.EventNode.get_application]--><tt class="descname">get_application</tt><big>(</big><big>)</big><a class="headerlink" href="#windmill.castile.events.EventNode.get_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a <tt class="xref docutils literal"><span class="pre">CastileApplication</span></tt> instance for this node instance.</p>
+<p>Returns a <tt class="xref docutils literal"><span class="pre">CastileApplication</span></tt> instance which is a valid WSGI application.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="windmill.castile.events.EventNode.get_cherrypy_server">
+<!--[windmill.castile.events.EventNode.get_cherrypy_server]--><tt class="descname">get_cherrypy_server</tt><big>(</big><span class="optional">[</span><em>host</em><span class="optional">[</span>, <em>port</em><span class="optional">[</span>, <em>server_name</em><span class="optional">[</span>, <em>numthreads</em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#windmill.castile.events.EventNode.get_cherrypy_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a <tt class="xref docutils literal"><span class="pre">cherrypy.wsgiserver.CherryPyWSGIServer</span></tt> server for the
+<tt class="xref docutils literal"><span class="pre">CastileApplication</span></tt> instance for this node.</p>
+<p>Server instance is returned and self.httpd is set to server.</p>
+<p>If port is ommitted the port of the events_uri is parsed and used.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="windmill.castile.events.EventNode.start_cherrypy_server">
+<!--[windmill.castile.events.EventNode.start_cherrypy_server]--><tt class="descname">start_cherrypy_server</tt><big>(</big><span class="optional">[</span><em>host</em><span class="optional">[</span>, <em>port</em><span class="optional">[</span>, <em>server_name</em><span class="optional">[</span>, <em>numthreads</em><span class="optional">[</span>, <em>threaded</em><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#windmill.castile.events.EventNode.start_cherrypy_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls get_cherrpy_server(), starts the server and then returns it.</p>
+<p><em>threaded</em> defaults to True. If run threaded self.thread will be set to the
+<tt class="xref docutils literal"><span class="pre">threading.Thread</span></tt> instance</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="windmill.castile.events.EventApplication">
+<!--[windmill.castile.events.EventApplication]-->class <tt class="descclassname">windmill.castile.events.</tt><tt class="descname">EventApplication</tt><big>(</big><em>events_node</em><big>)</big><a class="headerlink" href="#windmill.castile.events.EventApplication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inherits from <tt class="xref docutils literal"><span class="pre">webenv.rest.RestApplication</span></tt>.</p>
+<p><em>events_node</em> is a <a title="windmill.castile.events.EventNode" class="reference internal" href="#windmill.castile.events.EventNode"><tt class="xref docutils literal"><span class="pre">EventNode</span></tt></a> instance.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="windmill.castile.events.ROR">
+<!--[windmill.castile.events.ROR]-->class <tt class="descclassname">windmill.castile.events.</tt><tt class="descname">ROR</tt><a class="headerlink" href="#windmill.castile.events.ROR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements a node&#8217;s Remote Object Representation registration and access API.</p>
+<p>An instance of this class is attached to each EventNode instance.</p>
+<dl class="method">
+<dt id="windmill.castile.events.ROR.add_object">
+<!--[windmill.castile.events.ROR.add_object]--><tt class="descname">add_object</tt><big>(</big><em>name</em>, <em>object</em><big>)</big><a class="headerlink" href="#windmill.castile.events.ROR.add_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds <em>object</em> to a nodes registry so that it is exposed to other nodes as
+<em>name</em>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">windmill2.events</span> <span class="kn">import</span> <span class="n">EventNode</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enode</span> <span class="o">=</span> <span class="n">EventNode</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">module_dict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enode</span><span class="o">.</span><span class="n">ror</span><span class="o">.</span><span class="n">add_object</span><span class="p">(</span><span class="s">&quot;mod_dict&quot;</span><span class="p">,</span> <span class="n">module_dict</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enode</span><span class="o">.</span><span class="n">ror</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s">&quot;mod_dict&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">module_dict</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="windmill.castile.events.ROR.get_object">
+<!--[windmill.castile.events.ROR.get_object]--><tt class="descname">get_object</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#windmill.castile.events.ROR.get_object" title="Permalink to this definition">¶</a></dt>
+<dd>Get object in ROR registry of <em>name</em>.</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="castile-protocol">
+<h1>Castile Protocol<a class="headerlink" href="#castile-protocol" title="Permalink to this headline">¶</a></h1>
+<p>This the primary API for Castile is an HTTP REST API. Other APIs like the Comet API are defined in terms of the REST API.</p>
+<p>New Castile Node implementations are expected to implement the Rest API and not the Comet <em>push</em> API used to overcome browser limitations for the JavaScript node.</p>
+<p><strong>/</strong> is defined as the base Castile namespace. Nodes register with a URI that implements the Castile protocol beginning at <strong>/</strong>.</p>
+<div class="section" id="put-eventname">
+<h2>PUT /$eventName<a class="headerlink" href="#put-eventname" title="Permalink to this headline">¶</a></h2>
+<p><strong>PUT</strong> is used exclusively for firing Events</p>
+<p><strong>BODY</strong></p>
+<blockquote>
+Any valid JSON object</blockquote>
+<p>The $eventName should begin with the namespace the node registered.</p>
+</div>
+<div class="section" id="post">
+<h2>POST  /<a class="headerlink" href="#post" title="Permalink to this headline">¶</a></h2>
+<p><strong>BODY</strong></p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s1">&#39;events-uri&#39;</span><span class="o">:</span> <span class="s1">&#39;http://localhost:8889/&#39;</span><span class="o">,</span>
+<span class="s1">&#39;event-node-type&#39;</span><span class="o">:</span> <span class="s1">&#39;http-rest-api&#39;</span><span class="o">,</span>
+<span class="s1">&#39;client-namespace&#39;</span><span class="o">:</span><span class="s1">&#39;node1&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Register a new castile node.</p>
+</div>
+<div class="section" id="post-clientns-listeners">
+<h2>POST /$clientNS/listeners<a class="headerlink" href="#post-clientns-listeners" title="Permalink to this headline">¶</a></h2>
+<p><strong>BODY</strong></p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s1">&#39;namespace&#39;</span><span class="o">:</span><span class="s1">&#39;node2.ui&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Adds a remote listener. A listener is subscribed to all the events in that namespace, so the above listener would receive and event name node2.ui.output.pass . Nodes are expected to send each event to subscribed nodes only once regardless of how many listeners they&#8217;ve attached.</p>
+</div>
+<div class="section" id="get">
+<h2>GET /<a class="headerlink" href="#get" title="Permalink to this headline">¶</a></h2>
+<p>Returns list of registered clients.</p>
+</div>
+<div class="section" id="get-clientns">
+<h2>GET /$clientNS<a class="headerlink" href="#get-clientns" title="Permalink to this headline">¶</a></h2>
+<p>Returns the info object for that remote node.</p>
+</div>
+<div class="section" id="get-clientns-jsonstream">
+<h2>GET /$clientNS/jsonstream<a class="headerlink" href="#get-clientns-jsonstream" title="Permalink to this headline">¶</a></h2>
+<p>Returns a stream of JSON objects for clients the require this &#8220;push&#8221; solution, namely: JavaScript.</p>
+</div>
+<div class="section" id="get-clientns-listeners">
+<h2>GET /$clientNS/listeners<a class="headerlink" href="#get-clientns-listeners" title="Permalink to this headline">¶</a></h2>
+<p>Returns a list of listeners for the given client.</p>
+</div>
+<div class="section" id="get-clientns-ror-describe-objectname-depth-0">
+<h2>GET /$clientNS/ror/describe/$objectName?depth=0<a class="headerlink" href="#get-clientns-ror-describe-objectname-depth-0" title="Permalink to this headline">¶</a></h2>
+<p>Returns a description of the given objectName. Depth is a recursion in to that objects attributes.</p>
+</div>
+<div class="section" id="post-clientns-ror-callfunction-objectname">
+<h2>POST /$clientNS/ror/callFunction/$objectName<a class="headerlink" href="#post-clientns-ror-callfunction-objectname" title="Permalink to this headline">¶</a></h2>
+<p><strong>BODY</strong></p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;args&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;asdf&quot;</span><span class="p">]</span><span class="o">,</span> <span class="s2">&quot;kwargs&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;asdf&quot;</span><span class="o">:</span><span class="mi">4</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>Calls the given function and returns a remote reference to the returned value.</p>
+</div>
+<div class="section" id="post-clientns-ror-createinstance-objectname">
+<h2>POST /$clientNS/ror/createInstance/$objectName<a class="headerlink" href="#post-clientns-ror-createinstance-objectname" title="Permalink to this headline">¶</a></h2>
+<p><strong>BODY</strong></p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;args&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;asdf&quot;</span><span class="p">]</span><span class="o">,</span> <span class="s2">&quot;kwargs&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;asdf&quot;</span><span class="o">:</span><span class="mi">4</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>Create a new instance of a classobject and return a remote reference.</p>
+</div>
+<div class="section" id="post-clientns-ror-setattribute-objectname">
+<h2>POST /$clientNS/ror/setAttribute/$objectName<a class="headerlink" href="#post-clientns-ror-setattribute-objectname" title="Permalink to this headline">¶</a></h2>
+<p><strong>BODY</strong></p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="o">:</span><span class="s2">&quot;attr&quot;</span><span class="o">,</span> <span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="nx">$obj</span><span class="o">,</span> <span class="s2">&quot;reference&quot;</span><span class="o">:</span><span class="kc">false</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Set &#8220;attribute&#8221; of $objectName to &#8220;value&#8221;. If reference is true then &#8220;value&#8221; is a string containing an objectName for a foreign object on that client.</p>
+</div>
+<div class="section" id="post-clientns-ror-setitem-objectname">
+<h2>POST /$clientNS/ror/setItem/$objectName<a class="headerlink" href="#post-clientns-ror-setitem-objectname" title="Permalink to this headline">¶</a></h2>
+<p><strong>BODY</strong></p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span><span class="s2">&quot;attribute&quot;</span><span class="o">:</span><span class="s2">&quot;attr&quot;</span><span class="o">,</span> <span class="s2">&quot;value&quot;</span><span class="o">:</span><span class="nx">$obj</span><span class="o">,</span> <span class="s2">&quot;reference&quot;</span><span class="o">:</span><span class="kc">false</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Set item &#8220;attribute&#8221; of $objectName to &#8220;value&#8221;. If reference is true then &#8220;value&#8221; is a string containing an objectName for a foreign object on that client. This is for common array and hash syntax.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href=""><tt class="docutils literal"><span class="pre">windmill</span></tt> &#8212; Browser Automation Tool</a></li>
+<li><a class="reference external" href="#module-windmill.castile"><tt class="docutils literal"><span class="pre">windmill.castile</span></tt> &#8212; Remote Object Representation and Event Serialization</a><ul>
+<li><a class="reference external" href="#remote-object-representation">Remote Object Representation</a></li>
+<li><a class="reference external" href="#event-bridging">Event Bridging</a></li>
+<li><a class="reference external" href="#node-based-event-propogation">Node Based Event Propogation</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#module-windmill.castile.events"><tt class="docutils literal"><span class="pre">windmill.castile.events</span></tt> &#8212; Event Node Implementation</a></li>
+<li><a class="reference external" href="#castile-protocol">Castile Protocol</a><ul>
+<li><a class="reference external" href="#put-eventname">PUT /$eventName</a></li>
+<li><a class="reference external" href="#post">POST  /</a></li>
+<li><a class="reference external" href="#post-clientns-listeners">POST /$clientNS/listeners</a></li>
+<li><a class="reference external" href="#get">GET /</a></li>
+<li><a class="reference external" href="#get-clientns">GET /$clientNS</a></li>
+<li><a class="reference external" href="#get-clientns-jsonstream">GET /$clientNS/jsonstream</a></li>
+<li><a class="reference external" href="#get-clientns-listeners">GET /$clientNS/listeners</a></li>
+<li><a class="reference external" href="#get-clientns-ror-describe-objectname-depth-0">GET /$clientNS/ror/describe/$objectName?depth=0</a></li>
+<li><a class="reference external" href="#post-clientns-ror-callfunction-objectname">POST /$clientNS/ror/callFunction/$objectName</a></li>
+<li><a class="reference external" href="#post-clientns-ror-createinstance-objectname">POST /$clientNS/ror/createInstance/$objectName</a></li>
+<li><a class="reference external" href="#post-clientns-ror-setattribute-objectname">POST /$clientNS/ror/setAttribute/$objectName</a></li>
+<li><a class="reference external" href="#post-clientns-ror-setitem-objectname">POST /$clientNS/ror/setItem/$objectName</a></li>
+</ul>
+</li>
+</ul>
+
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/index.txt">Show Source</a></li>
+            </ul>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li><a href="">windmill v2.0a1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, Mikeal Rogers.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,3 @@
+content windmill content/
+
+overlay chrome://browser/content/browser.xul chrome://windmill/content/overlay.xul

@@ -1,0 +1,17 @@
+# Sphinx inventory version 1
+# Project: windmill
+# Version: 2.0a1
+windmill mod index.html
+windmill.castile mod index.html
+windmill.castile.events mod index.html
+windmill.castile.events.EventNode class index.html
+windmill.castile.events.EventApplication class index.html
+windmill.castile.events.EventNode.get_application method index.html
+windmill.castile.events.ROR.get_object method index.html
+windmill.castile.events.EventNode.add_listener method index.html
+windmill.castile.events.ROR.add_object method index.html
+windmill.castile.events.ROR class index.html
+windmill.castile.events.EventNode.fire_event method index.html
+windmill.castile.events.EventNode.start_cherrypy_server method index.html
+windmill.castile.events.EventNode.get_cherrypy_server method index.html
+windmill.castile.events.EventNode.register_with_node method index.html
