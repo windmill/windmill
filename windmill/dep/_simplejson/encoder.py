@@ -2,14 +2,8 @@
 """
 import re
 
-try:
-    from simplejson._speedups import encode_basestring_ascii as c_encode_basestring_ascii
-except ImportError:
-    c_encode_basestring_ascii = None
-try:
-    from simplejson._speedups import make_encoder as c_make_encoder
-except ImportError:
-    c_make_encoder = None
+c_encode_basestring_ascii = None
+c_make_encoder = None
 
 ESCAPE = re.compile(r'[\x00-\x1f\\"\b\f\n\r\t]')
 ESCAPE_ASCII = re.compile(r'([\\"]|[^\ -~])')
