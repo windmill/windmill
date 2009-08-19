@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
 Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 
@@ -13,7 +14,6 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="*"
     layout="vertical"
     applicationComplete="initApp()">
