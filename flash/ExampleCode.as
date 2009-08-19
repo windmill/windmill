@@ -1,4 +1,20 @@
-﻿package {
+﻿/*
+Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+package {
   import mx.core.Application;
   import flash.display.MovieClip;
   import flash.events.*
@@ -7,6 +23,8 @@
   import mx.events.*
   import flash.net.URLRequest;
   import flash.display.Sprite;
+	import flash.geom.Rectangle;
+  import util.DOMEventDrag;
   import org.windmill.*;
 
   public class ExampleCode extends MovieClip {
@@ -14,6 +32,7 @@
     private var draggable:Sprite;
     private var context:*;
     private var elems:Object = {};
+    private var foo:Sprite;
 
     public function init(ctxt:Application):void {
       context = ctxt;
@@ -73,8 +92,8 @@
       spr.graphics.beginFill(0x00ff00);
       spr.graphics.drawRect(0,0,100,100);
       subPanel.stage.addChild(spr);
+
       spr.addEventListener(MouseEvent.MOUSE_DOWN, beginDrag);
-      subPanel.stage.addEventListener(MouseEvent.MOUSE_MOVE, doDrag);
       subPanel.stage.addEventListener(MouseEvent.MOUSE_UP, endDrag);
 
       context.doubleClickEnabled = true;
@@ -123,7 +142,8 @@
     }
 
 		private function beginDrag(e:MouseEvent):void {
-      draggable = spr;
+      DOMEventDrag.startDrag(spr);
+      //spr.startDrag();
     }
     private function doDrag(e:MouseEvent):void {
       if (draggable) {
@@ -133,7 +153,8 @@
       }
     }
     private function endDrag(e:MouseEvent):void {
-      draggable = null;
+      DOMEventDrag.stopDrag(spr);
+      //spr.stopDrag();
     }
   }
 }
