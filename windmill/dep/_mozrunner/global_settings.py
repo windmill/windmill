@@ -111,7 +111,9 @@ elif os.name == 'nt' or sys.platform == 'cygwin':
     firefoxBin = findInPath('firefox')
     
     if sys.platform == 'cygwin':
-        program_files = os.environ['PROGRAMFILES']
+        program_files = os.environ['PROGRAMFILES'].replace("\\", os.path.sep).replace(':', '')
+        program_files = program_files[0].lower() + program_files[1:]
+        program_files = '/cygdrive/'+program_files.replace("\\", os.path.sep)
     else:
         program_files = os.environ['ProgramFiles']
     
