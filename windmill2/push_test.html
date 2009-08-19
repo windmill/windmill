@@ -1,0 +1,95 @@
+<!DOCTYPE html
+   PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>
+      Push Test
+    </title>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        pushTest.req()
+      });
+      var pushTest = new function () {
+        // Private vars
+        var _this = this;
+        var mode = 'print'//'log' // 'print' || 'log'
+        // Private methods
+        // The XHR object factory
+        var _spawnXhr = function () {
+          var i = 0;
+          var t = [
+            'Msxml2.XMLHTTP.6.0',
+            'MSXML2.XMLHTTP.3.0',
+            'Microsoft.XMLHTTP'
+          ];
+          var xhrObj = null;
+          if (window.XMLHttpRequest) {
+            xhrObj = new XMLHttpRequest();
+          }
+          else if (window.ActiveXObject) {
+            if (_msProgId) {
+              xhrObj = new ActiveXObject(_msProgId);
+            }
+            else {
+              for (var i = 0; i < t.length; i++) {
+                try {
+                  xhrObj = new ActiveXObject(t[i]);
+                  // Cache the prog ID, break the loop
+                  _msProgId = t[i]; break;
+                }
+                catch(e) {}
+              }
+            }
+          }
+          // Instantiate XHR obj
+          if (xhrObj) {
+            return xhrObj;
+          }
+          else {
+            throw new Error('Could not create XMLHttpRequest object.');
+          }
+        };
+        this.req = function () {
+          var req = _spawnXhr();
+          var pos = 0;
+          var res;
+          req.open('GET', '/push_test', true);
+          req.onreadystatechange = function () {
+            if (req.readyState == 3) {
+              res = req.responseText;
+              _this.handleObj(res.substr(pos));
+              pos = res.length;
+            }
+            else if (req.readyState == 4) {
+              _this.req();
+            };
+          };
+          req.send(null);
+        };
+        this.handleObj = function (s) {
+          var obj;
+          try {
+            obj = eval('(' + s + ')');
+          }
+          catch (e) {
+            throw new Error("Couldn't deserialize object");
+          }
+          if (mode == 'print') {
+            var node = document.getElementById('output');
+            var d = document.createElement('div');
+            d.appendChild(document.createTextNode(s));
+            node.appendChild(d);
+          }
+          else if (mode == 'log') {
+            console.log(obj);
+          }
+        };
+      }
+    </script>
+  </head>
+  <body>
+    <div id="output"></div>
+  </body>
+</html>
