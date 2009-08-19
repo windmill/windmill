@@ -4,11 +4,9 @@ import re
 import sys
 import struct
 
-from simplejson.scanner import make_scanner
-try:
-    from simplejson._speedups import scanstring as c_scanstring
-except ImportError:
-    c_scanstring = None
+from windmill.dep._simplejson.scanner import make_scanner
+
+c_scanstring = None
 
 __all__ = ['JSONDecoder']
 
