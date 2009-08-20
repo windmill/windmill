@@ -21,26 +21,58 @@ package org.windmill {
   public class Windmill {
     public static var context:*; // May be Stage or Application
     public static var controllerMethods:Array = [];
+    public static var assertMethods:Array = [];
+    public static var packages:Object = {
+      controller: {
+        packageRef: org.windmill.WMController,
+        methodNames: []
+      },
+      assert: {
+        packageRef: org.windmill.WMAssert,
+        methodNames: []
+      }
+    };
 
     public function Windmill():void {}
 
     public static function init(config:Object):void {
+      var methodName:String;
+      var item:*;
+      var descr:XML;
+      // Returns a wrapped version of the method
+      // which returns the Error obj instead of throwing
+      var genExtFunc:Function = function (k:String,
+          m:String):Function {
+        return function (...args):* {
+          try {
+            return packages[k].packageRef[m].apply(null, args);
+          }
+          catch (e:Error) {
+            return e;
+          }
+        }
+      }
       // Search context for locators -- can be either
       // Stage or Application, but usually a Stage
       context = config.context;
 
-      // Introspect all the public controller methods
-      // to expose via ExternalInterface
-      var descr:XML = flash.utils.describeType(
-          org.windmill.WMController);
-      for each (var item:* in descr..method) {
-        controllerMethods.push(item.@name.toXMLString());
-      }
-      // Expose public methods via ExternalInterface
-      // 'dragDropOnCoords' becomes 'wm_dragDropOnCoords'
-      for each (var methodName:String in controllerMethods) {
-        ExternalInterface.addCallback('wm_' + methodName,
-            org.windmill.WMController[methodName]);
+      // controller, assert
+      for (var key:String in packages) {
+        // Introspect all the public packages
+        // to expose via ExternalInterface
+        descr = flash.utils.describeType(
+            packages[key].packageRef);
+        for each (item in descr..method) {
+          packages[key].methodNames.push(item.@name.toXMLString());
+        }
+        // Expose public packages via ExternalInterface
+        // 'dragDropOnCoords' becomes 'wm_dragDropOnCoords'
+        // The exposed method is wrapped in a try/catch
+        // that returns the Error obj to JS instead of throwing
+        for each (methodName in packages[key].methodNames) {
+          ExternalInterface.addCallback('wm_' + methodName,
+              genExtFunc(key, methodName));
+        }
       }
     }
   }
