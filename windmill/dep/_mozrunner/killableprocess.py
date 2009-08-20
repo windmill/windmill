@@ -201,7 +201,7 @@ class Popen(subprocess.Popen):
             else:
                 self.returncode = winprocess.GetExitCodeProcess(self._handle)
         else:
-            if sys.platform == 'linux2':
+            if sys.platform == 'linux2' or sys.platform == 'cygwin':
                 def group_wait():
                     os.waitpid(self.pid, 0)
                     return self.returncode

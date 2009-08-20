@@ -49,8 +49,11 @@ import subprocess
 from datetime import datetime
 from datetime import timedelta
 
-from windmill.dep import mozrunner 
-killableprocess = mozrunner.killableprocess
+if sys.platform != 'cygwin':
+    from windmill.dep import mozrunner 
+    killableprocess = mozrunner.killableprocess
+else:
+    import subprocess as killableprocess
 
 logger = logging.getLogger(__name__)
 
