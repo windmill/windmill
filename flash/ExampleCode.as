@@ -55,6 +55,13 @@ package {
       button.label = 'Howdy';
       panel.addChild(button);
 
+      // Text input
+      var txtInput:TextInput = new TextInput();
+      txtInput.name = 'testTextInput';
+      panel.addChild(txtInput);
+      txtInput.htmlText = 'This is a test.';
+      elems.txtInput = txtInput
+
       var subPanel:Panel = new Panel();
       panel.addChild(subPanel);
       subPanel.id = 'subPanel';
