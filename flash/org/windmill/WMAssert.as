@@ -32,8 +32,8 @@ package org.windmill {
         return true;
       }
       else {
-        throw new Error('Object ' + obj.toString() + '
-            does not exist.');
+        throw new Error('Object ' + obj.toString() +
+            ' does not exist.');
       }
     }
 
