@@ -16,10 +16,11 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 
 package org.windmill {
   import flash.utils.*;
+  import flash.display.Stage;
   import flash.external.ExternalInterface;
 
   public class Windmill {
-    public static var context:*; // May be Stage or Application
+    public static var context:Stage; // A reference to the Stage
     public static var controllerMethods:Array = [];
     public static var assertMethods:Array = [];
     public static var packages:Object = {
@@ -39,8 +40,8 @@ package org.windmill {
       var methodName:String;
       var item:*;
       var descr:XML;
-      // Returns a wrapped version of the method
-      // which returns the Error obj instead of throwing
+      // Returns a wrapped version of the method that returns
+      // the Error obj to JS-land instead of actually throwing
       var genExtFunc:Function = function (k:String,
           m:String):Function {
         return function (...args):* {
@@ -52,11 +53,15 @@ package org.windmill {
           }
         }
       }
-      // Search context for locators -- can be either
-      // Stage or Application, but usually a Stage
+      // A reference to the Stage
+      // ----------------
+      if (!config.context is Stage) {
+        throw new Error('Windmill.context must be a reference to the Stage.');
+      }
       context = config.context;
 
-      // controller, assert
+      // Expose controller and assert methods
+      // ----------------
       for (var key:String in packages) {
         // Introspect all the public packages
         // to expose via ExternalInterface
@@ -74,6 +79,11 @@ package org.windmill {
               genExtFunc(key, methodName));
         }
       }
+
+      // Expose explorer start/stop
+      // ----------------
+      ExternalInterface.addCallback('wm_explorerStart', WMExplorer.start);
+      ExternalInterface.addCallback('wm_explorerStop', WMExplorer.stop);
     }
   }
 }

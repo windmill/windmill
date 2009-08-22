@@ -25,6 +25,8 @@ package {
   import flash.display.Sprite;
 	import flash.geom.Rectangle;
   import util.DOMEventDrag;
+  import flash.display.Sprite;
+  import flash.geom.Point;
   import org.windmill.*;
 
   public class ExampleCode extends MovieClip {
@@ -102,14 +104,15 @@ package {
 
       spr.addEventListener(MouseEvent.MOUSE_DOWN, beginDrag);
       subPanel.stage.addEventListener(MouseEvent.MOUSE_UP, endDrag);
-
+     
+      /*
       context.doubleClickEnabled = true;
       // Focus
       context.addEventListener(FocusEvent.FOCUS_IN, evHandler);
       context.addEventListener(FocusEvent.FOCUS_OUT, evHandler);
       // Keyboard
-      //context.addEventListener(KeyboardEvent.KEY_DOWN, evHandler);
-      //context.addEventListener(KeyboardEvent.KEY_UP, evHandler);
+      context.addEventListener(KeyboardEvent.KEY_DOWN, evHandler);
+      context.addEventListener(KeyboardEvent.KEY_UP, evHandler);
       // Mouse
       context.addEventListener(MouseEvent.MOUSE_DOWN, evHandler);
       context.addEventListener(MouseEvent.MOUSE_UP, evHandler);
@@ -126,8 +129,9 @@ package {
       box.addEventListener(DropdownEvent.OPEN, evHandler);
       box.addEventListener(DropdownEvent.CLOSE, evHandler);
       box.addEventListener(ScrollEvent.SCROLL, evHandler);
+      */
 
-      org.windmill.Windmill.init({ context: context.stage });
+      Windmill.init({ context: context.stage });
 
       /*
       org.windmill.WMController.click({
@@ -145,6 +149,7 @@ package {
       */
     }
     private function evHandler(e:Event):void {
+      var targ:* = e.target;
       WMLogger.log(e.toString());
     }
 
