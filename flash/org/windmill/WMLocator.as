@@ -21,6 +21,25 @@ package org.windmill {
   import flash.display.DisplayObjectContainer;
 
   public class WMLocator {
+    // Stupid AS3 doesn't iterate over Object keys
+    // in insertion order
+    // null for the finder func means use the default
+    // of findBySimpleAttr
+    private static var locatorMap:Array = [
+      ['name', null],
+      ['id', null],
+      ['link', WMLocator.findLink],
+      ['label', null]
+    ];
+
+    private static var locatorMapObj:Object = {};
+
+    private static function init():void {
+      for each (var arr:Array in WMLocator.locatorMap) {
+        WMLocator.locatorMapObj[arr[0]] = arr[1];
+      }
+    }
+
     public function WMLocator():void {}
 
     public static function lookupDisplayObject(
@@ -162,25 +181,5 @@ package org.windmill {
       }
       return '';
     }
-
-    // Stupid AS3 doesn't iterate over Object keys
-    // in insertion order
-    // null for the finder func means use the default
-    // of findBySimpleAttr
-    private static var locatorMap:Array = [
-      ['name', null],
-      ['id', null],
-      ['link', WMLocator.findLink],
-      ['label', null]
-    ];
-
-    private static var locatorMapObj:Object = {};
-
-    private static function init():void {
-      for each (var arr:Array in WMLocator.locatorMap) {
-        WMLocator.locatorMapObj[arr[0]] = arr[1];
-      }
-    }
-
   }
 }

@@ -17,6 +17,7 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 package org.windmill {
   import org.windmill.Windmill;
   import org.windmill.WMLocator;
+  import org.windmill.WMLogger;
   import flash.display.Stage;
   import flash.display.Sprite;
   import flash.events.MouseEvent;
@@ -62,6 +63,34 @@ package org.windmill {
     }
 
     public static function select(e:MouseEvent):void {
+      var item:* = e.target;
+      WMLogger.log(item.toString());
+      var expr:String = '';
+      var locatorPriority:Array = [
+        'automationId',
+        'id',
+        'name',
+        'label'
+      ];
+      do {
+        for each (var lookup:String in locatorPriority) {
+          // If we find one of the lookuup keys, prepend
+          // on the locator expression
+          if (lookup in item) {
+            expr = lookup + ':' + item[lookup] + '/' + expr;
+            break;
+          }
+        }
+        item = item.parent;
+      } while (!(item is Stage) && item.parent) 
+      if (expr.length) {
+        // Strip off trailing slash
+        expr = expr.replace(/\/$/, '');
+        WMLogger.log(expr);
+      }
+      else {
+        WMLogger.log('Nothing found.');
+      }
     }
 
     public static function stop():void {
