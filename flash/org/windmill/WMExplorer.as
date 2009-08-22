@@ -62,10 +62,11 @@ package org.windmill {
       spr.graphics.drawRect(0, 0, targ.width, targ.height);
     }
 
+    // Generates a chained-locator expression for the clicked-on item
     public static function select(e:MouseEvent):void {
       var item:* = e.target;
-      WMLogger.log(item.toString());
       var expr:String = '';
+      // Look for these items, in this priority
       var locatorPriority:Array = [
         'automationId',
         'id',
@@ -76,7 +77,7 @@ package org.windmill {
         for each (var lookup:String in locatorPriority) {
           // If we find one of the lookuup keys, prepend
           // on the locator expression
-          if (lookup in item) {
+          if (lookup in item && item[lookup]) {
             expr = lookup + ':' + item[lookup] + '/' + expr;
             break;
           }
@@ -86,10 +87,13 @@ package org.windmill {
       if (expr.length) {
         // Strip off trailing slash
         expr = expr.replace(/\/$/, '');
-        WMLogger.log(expr);
+        var res:* = ExternalInterface.call('wm_explorerSelect', expr);
+        if (!res) {
+          WMLogger.log(expr + ' (Windmill Flash bridge not found.)');
+        }
       }
       else {
-        WMLogger.log('Nothing found.');
+        throw new Error('Could not find any usable attributes for locator.');
       }
     }
 
