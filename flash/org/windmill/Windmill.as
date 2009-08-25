@@ -15,6 +15,9 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 */
 
 package org.windmill {
+  // FIXME:
+  // Relying on implicit imports of org.windmill.*
+  // to avoid infinite recursion in build script
   import flash.utils.*;
   import flash.display.Stage;
   import flash.external.ExternalInterface;
@@ -102,6 +105,11 @@ package org.windmill {
       // ----------------
       ExternalInterface.addCallback('wm_explorerStart', WMExplorer.start);
       ExternalInterface.addCallback('wm_explorerStop', WMExplorer.stop);
+
+      // Expose recorder start/stop
+      // ----------------
+      ExternalInterface.addCallback('wm_recorderStart', WMRecorder.start);
+      ExternalInterface.addCallback('wm_recorderStop', WMRecorder.stop);
     }
   }
 }

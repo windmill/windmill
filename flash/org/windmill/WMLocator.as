@@ -32,7 +32,7 @@ package org.windmill {
       ['label', null]
     ];
     private static var locatorMapObj:Object = {};
-    private static var locatorMapCreated = false;
+    private static var locatorMapCreated:Boolean = false;
 
     private static function init():void {
       for each (var arr:Array in WMLocator.locatorMap) {

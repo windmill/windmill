@@ -21,7 +21,9 @@ package {
   import mx.controls.*
   import mx.containers.Panel
   import mx.events.*
+  import flash.utils.*;
   import flash.net.URLRequest;
+  import flash.display.Stage;
   import flash.display.Sprite;
 	import flash.geom.Rectangle;
   import util.DOMEventDrag;
@@ -104,7 +106,7 @@ package {
 
       spr.addEventListener(MouseEvent.MOUSE_DOWN, beginDrag);
       subPanel.stage.addEventListener(MouseEvent.MOUSE_UP, endDrag);
-     
+
       /*
       context.doubleClickEnabled = true;
       // Focus
@@ -151,6 +153,8 @@ package {
     private function evHandler(e:Event):void {
       var targ:* = e.target;
       WMLogger.log(e.toString());
+      WMLogger.log(e.target.toString());
+      WMLogger.log(getQualifiedClassName(e.target));
     }
 
 		private function beginDrag(e:MouseEvent):void {
