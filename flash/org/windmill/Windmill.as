@@ -25,7 +25,12 @@ package org.windmill {
     public static var assertMethods:Array = [];
     public static var packages:Object = {
       controller: {
+        // Ref to the namespace, since you can't
+        // do it via string lookup
         packageRef: org.windmill.WMController,
+        // Gets filled with the list of public methods --
+        // used to generate the wrapped methods exposed
+        // via ExternalInterface
         methodNames: []
       },
       assert: {
@@ -36,6 +41,19 @@ package org.windmill {
 
     public function Windmill():void {}
 
+    // Initializes the Windmill Flash code
+    // 1. Saves a reference to the stage in 'context'
+    //    this is the equivalent of the window obj in
+    //    Windmill's JS impl. See WMLocator to see how
+    //    it's used
+    // 2. Does some introspection/metaprogramming to
+    //    expose all the public methods in WMController
+    //    and WMAsserts through the ExternalInterface
+    //    as wrapped functions that return either the
+    //    Boolean true, or the Error object if an error
+    //    happens (as in the case of all failed tests)
+    // 3. Exposes the start/stop method of WMExplorer
+    //    to turn on and off the explorer
     public static function init(config:Object):void {
       var methodName:String;
       var item:*;
