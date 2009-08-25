@@ -25,6 +25,17 @@ package org.windmill {
   import flash.external.ExternalInterface;
 
   public class WMExplorer {
+    // This is the list of attrs we like to use for the 
+    // locators, in order of preference
+    // FIXME: Need to add some regex fu for pawing through
+    // text containers for Flash's janky anchor-tag impl
+    private static var locatorLookupPriority:Array = [
+      'automationId',
+      'id',
+      'name',
+      'label'
+    ];
+    
     // Sprite which gets superimposed on the moused-over element
     // and provides the border effect
     private static var borderSprite:Sprite = new Sprite();
@@ -66,13 +77,8 @@ package org.windmill {
     public static function select(e:MouseEvent):void {
       var item:* = e.target;
       var expr:String = '';
-      // Look for these items, in this priority
-      var locatorPriority:Array = [
-        'automationId',
-        'id',
-        'name',
-        'label'
-      ];
+      // Attrs to look for, ordered by priority
+      var locatorPriority:Array = WMExplorer.locatorLookupPriority; 
       do {
         for each (var lookup:String in locatorPriority) {
           // If we find one of the lookuup keys, prepend
