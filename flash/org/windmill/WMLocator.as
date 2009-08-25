@@ -31,20 +31,23 @@ package org.windmill {
       ['link', WMLocator.findLink],
       ['label', null]
     ];
-
     private static var locatorMapObj:Object = {};
+    private static var locatorMapCreated = false;
 
     private static function init():void {
       for each (var arr:Array in WMLocator.locatorMap) {
         WMLocator.locatorMapObj[arr[0]] = arr[1];
       }
+      WMLocator.locatorMapCreated = true;
     }
 
     public function WMLocator():void {}
 
     public static function lookupDisplayObject(
         params:Object):DisplayObject {
-      WMLocator.init();
+      if (!WMLocator.locatorMapCreated) {
+        WMLocator.init();
+      }
       var locators:Array = [];
       var queue:Array = [];
       var obj:* = params.context || Windmill.context;
@@ -52,6 +55,7 @@ package org.windmill {
           item:*, pos:int):DisplayObject {
         var map:Object = WMLocator.locatorMapObj;
         var loc:Object = locators[pos];
+        // If nothing specific exists for that attr, use the basic one
         var finder:Function = map[loc.attr] || WMLocator.findBySimpleAttr;
         var next:int = pos + 1;
         if (!!finder(item, loc.attr, loc.val)) {
