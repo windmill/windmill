@@ -32,6 +32,7 @@ package {
   import org.windmill.*;
 
   public class ExampleCode extends MovieClip {
+    private var stg:Stage;
     private var spr:Sprite = new Sprite();
     private var draggable:Sprite;
     private var context:*;
@@ -40,6 +41,7 @@ package {
 
     public function init(ctxt:Application):void {
       context = ctxt;
+      stg = context.stage;
 
       // Panel
       var panel:Panel = new Panel();
@@ -107,23 +109,23 @@ package {
       spr.addEventListener(MouseEvent.MOUSE_DOWN, beginDrag);
       subPanel.stage.addEventListener(MouseEvent.MOUSE_UP, endDrag);
 
-      /*
       context.doubleClickEnabled = true;
+      /*
       // Focus
-      context.addEventListener(FocusEvent.FOCUS_IN, evHandler);
-      context.addEventListener(FocusEvent.FOCUS_OUT, evHandler);
+      stg.addEventListener(FocusEvent.FOCUS_IN, evHandler);
+      stg.addEventListener(FocusEvent.FOCUS_OUT, evHandler);
       // Keyboard
-      context.addEventListener(KeyboardEvent.KEY_DOWN, evHandler);
-      context.addEventListener(KeyboardEvent.KEY_UP, evHandler);
+      stg.addEventListener(KeyboardEvent.KEY_DOWN, evHandler);
+      stg.addEventListener(KeyboardEvent.KEY_UP, evHandler);
       // Mouse
-      context.addEventListener(MouseEvent.MOUSE_DOWN, evHandler);
-      context.addEventListener(MouseEvent.MOUSE_UP, evHandler);
-      //context.addEventListener(MouseEvent.MOUSE_MOVE, evHandler);
-      context.addEventListener(MouseEvent.DOUBLE_CLICK, evHandler);
-      context.addEventListener(MouseEvent.CLICK, evHandler);
+      stg.addEventListener(MouseEvent.MOUSE_DOWN, evHandler);
+      stg.addEventListener(MouseEvent.MOUSE_UP, evHandler);
+      //stg.addEventListener(MouseEvent.MOUSE_MOVE, evHandler);
+      stg.addEventListener(MouseEvent.DOUBLE_CLICK, evHandler);
+      stg.addEventListener(MouseEvent.CLICK, evHandler);
       // Text
-      context.addEventListener(TextEvent.TEXT_INPUT, evHandler);
-      context.addEventListener(TextEvent.LINK, evHandler);
+      stg.addEventListener(TextEvent.TEXT_INPUT, evHandler);
+      stg.addEventListener(TextEvent.LINK, evHandler);
       // ComboBox
       box.addEventListener(ListEvent.CHANGE, evHandler);
       box.addEventListener(ListEvent.ITEM_ROLL_OVER, evHandler);
@@ -133,7 +135,7 @@ package {
       box.addEventListener(ScrollEvent.SCROLL, evHandler);
       */
 
-      Windmill.init({ context: context.stage });
+      Windmill.init({ context: context });
 
       /*
       org.windmill.WMController.click({

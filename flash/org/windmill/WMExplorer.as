@@ -18,6 +18,7 @@ package org.windmill {
   import org.windmill.Windmill;
   import org.windmill.WMLocator;
   import org.windmill.WMLogger;
+  //import org.windmill.WMRecorder;
   import flash.display.Stage;
   import flash.display.Sprite;
   import flash.events.MouseEvent;
@@ -25,37 +26,36 @@ package org.windmill {
   import flash.external.ExternalInterface;
 
   public class WMExplorer {
-    // This is the list of attrs we like to use for the 
-    // locators, in order of preference
-    // FIXME: Need to add some regex fu for pawing through
-    // text containers for Flash's janky anchor-tag impl
-    private static var locatorLookupPriority:Array = [
-      'automationId',
-      'id',
-      'name',
-      'label'
-    ];
-    
     // Sprite which gets superimposed on the moused-over element
     // and provides the border effect
     private static var borderSprite:Sprite = new Sprite();
+    private static var running:Boolean = false;
 
     public function WMExplorer():void {}
 
     public static function start():void {
-      var context:Stage = Windmill.context;
+      // Stop the recorder if it's going
+      WMRecorder.stop();
+
+      var stage:Stage = Windmill.getStage();
       var spr:Sprite = WMExplorer.borderSprite;
-      if (!context || !context is Stage) {
-        throw new Error('Windmill.context must be a reference to the Stage.' +
-            ' Perhaps Windmill.init has not run yet.');
-      }
       // Add the border-sprite to the stage
       spr.name = 'borderSprite';
-      context.addChild(spr);
+      stage.addChild(spr);
       // Highlight every element on mouseover
-      context.addEventListener(MouseEvent.MOUSE_OVER, WMExplorer.highlight, true);
+      stage.addEventListener(MouseEvent.MOUSE_OVER, WMExplorer.highlight, true);
       // Clicks should pass the lookup expression to JS
-      context.addEventListener(MouseEvent.MOUSE_DOWN, WMExplorer.select, true);
+      stage.addEventListener(MouseEvent.MOUSE_DOWN, WMExplorer.select, true);
+      WMExplorer.running = true;
+    }
+
+    public static function stop():void {
+      if (!WMExplorer.running) { return; }
+      var stage:Stage = Windmill.getStage();
+      stage.removeChild(WMExplorer.borderSprite);
+      stage.removeEventListener(MouseEvent.MOUSE_OVER, WMExplorer.highlight);
+      stage.removeEventListener(MouseEvent.MOUSE_DOWN, WMExplorer.select);
+      WMExplorer.running = false;
     }
 
     public static function highlight(e:MouseEvent):void {
@@ -74,22 +74,9 @@ package org.windmill {
     }
 
     // Generates a chained-locator expression for the clicked-on item
-    public static function select(e:MouseEvent):void {
+    public static function select(e:*):void {
       var item:* = e.target;
-      var expr:String = '';
-      // Attrs to look for, ordered by priority
-      var locatorPriority:Array = WMExplorer.locatorLookupPriority; 
-      do {
-        for each (var lookup:String in locatorPriority) {
-          // If we find one of the lookuup keys, prepend
-          // on the locator expression
-          if (lookup in item && item[lookup]) {
-            expr = lookup + ':' + item[lookup] + '/' + expr;
-            break;
-          }
-        }
-        item = item.parent;
-      } while (!(item is Stage) && item.parent) 
+      var expr:String = WMLocator.generateLocator(item);
       if (expr.length) {
         // Strip off trailing slash
         expr = expr.replace(/\/$/, '');
@@ -103,11 +90,5 @@ package org.windmill {
       }
     }
 
-    public static function stop():void {
-      var context:Stage = Windmill.context;
-      context.removeChild(WMExplorer.borderSprite);
-      context.removeEventListener(MouseEvent.MOUSE_OVER, WMExplorer.highlight);
-      context.removeEventListener(MouseEvent.MOUSE_DOWN, WMExplorer.select);
-    }
   }
 }

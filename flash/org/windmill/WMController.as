@@ -222,19 +222,20 @@ package org.windmill {
       var obj:* = WMLocator.lookupDisplayObject(params);
       var sel:* = obj.selectedItem;
       var item:*;
+      var subParams:Object = params.params;
       // Give the item focus
       Events.triggerFocusEvent(obj, FocusEvent.FOCUS_IN);
       // Set by index
       switch (true) {
-        case ('index' in params):
-          if (obj.selectedIndex != params.index) {
+        case ('index' in subParams):
+          if (obj.selectedIndex != subParams.index) {
             Events.triggerListEvent(obj, ListEvent.CHANGE);
-            obj.selectedIndex = params.index;
+            obj.selectedIndex = subParams.index;
           }
           break;
-        case ('label' in params):
-        case ('text' in params):
-          var targetLabel:String = params.label || params.text;
+        case ('label' in subParams):
+        case ('text' in subParams):
+          var targetLabel:String = subParams.label || subParams.text;
           // Can set a custom label field via labelField attr
           var labelField:String = obj.labelField ?
               obj.labelField : 'label';
@@ -247,9 +248,9 @@ package org.windmill {
             }
           }
           break;
-        case ('data' in params):
-        case ('value' in params):
-          var targetData:String = params.data || params.value;
+        case ('data' in subParams):
+        case ('value' in subParams):
+          var targetData:String = subParams.data || subParams.value;
           if (sel.data != targetData) {
             Events.triggerListEvent(obj, ListEvent.CHANGE);
             for each (item in obj.dataProvider) {

@@ -19,11 +19,13 @@ package org.windmill {
   // Relying on implicit imports of org.windmill.*
   // to avoid infinite recursion in build script
   import flash.utils.*;
+  import mx.core.Application;
   import flash.display.Stage;
+  import flash.display.DisplayObject;
   import flash.external.ExternalInterface;
 
   public class Windmill {
-    public static var context:Stage; // A reference to the Stage
+    public static var context:*; // A reference to the Stage
     public static var controllerMethods:Array = [];
     public static var assertMethods:Array = [];
     public static var packages:Object = {
@@ -63,11 +65,10 @@ package org.windmill {
       var descr:XML;
       // Returns a wrapped version of the method that returns
       // the Error obj to JS-land instead of actually throwing
-      var genExtFunc:Function = function (k:String,
-          m:String):Function {
+      var genExtFunc:Function = function (func:Function):Function {
         return function (...args):* {
           try {
-            return packages[k].packageRef[m].apply(null, args);
+            return func.apply(null, args);
           }
           catch (e:Error) {
             return e;
@@ -76,8 +77,8 @@ package org.windmill {
       }
       // A reference to the Stage
       // ----------------
-      if (!config.context is Stage) {
-        throw new Error('Windmill.context must be a reference to the Stage.');
+      if (!(config.context is Stage || config.context is Application)) {
+        throw new Error('Windmill.context must be a reference to the Application or Stage.');
       }
       context = config.context;
 
@@ -97,19 +98,54 @@ package org.windmill {
         // that returns the Error obj to JS instead of throwing
         for each (methodName in packages[key].methodNames) {
           ExternalInterface.addCallback('wm_' + methodName,
-              genExtFunc(key, methodName));
+              genExtFunc(packages[key].packageRef[methodName]));
         }
       }
 
-      // Expose explorer start/stop
-      // ----------------
-      ExternalInterface.addCallback('wm_explorerStart', WMExplorer.start);
-      ExternalInterface.addCallback('wm_explorerStop', WMExplorer.stop);
+      // Other misc ExternalInterface methods
+      var miscMethods:Object = {
+        explorerStart: WMExplorer.start,
+        explorerStop: WMExplorer.stop,
+        recorderStart: WMRecorder.start,
+        recorderStop: WMRecorder.stop
+      }
+      // Don't care what order these happen in
+      for (methodName in miscMethods) {
+        ExternalInterface.addCallback('wm_' + methodName,
+            genExtFunc(miscMethods[methodName]));
+      }
+    }
 
-      // Expose recorder start/stop
-      // ----------------
-      ExternalInterface.addCallback('wm_recorderStart', WMRecorder.start);
-      ExternalInterface.addCallback('wm_recorderStop', WMRecorder.stop);
+    public static function getStage():Stage {
+      var context:* = Windmill.context;
+      var stage:Stage;
+      if (context is Application) {
+        stage = context.stage;
+      }
+      else if (context is Stage) {
+        stage = context;
+      }
+      else {
+        throw new Error('Windmill.context must be a reference to an Application or Stage.' +
+            ' Perhaps Windmill.init has not run yet.');
+      }
+      return stage; 
+    }
+    
+    public static function getTopLevel():DisplayObject {
+      var topLevel:*;
+      var context:* = Windmill.context;
+      if (context is Application) {
+        topLevel = context.parent;
+      }
+      else if (context is Stage) {
+        topLevel = context;
+      }
+      else {
+        throw new Error('Windmill.context must be a reference to an Application or Stage.' +
+            ' Perhaps Windmill.init has not run yet.');
+      }
+      return topLevel; 
     }
   }
 }

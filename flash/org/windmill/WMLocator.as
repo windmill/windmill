@@ -29,10 +29,24 @@ package org.windmill {
       ['name', null],
       ['id', null],
       ['link', WMLocator.findLink],
-      ['label', null]
+      ['label', null],
+      ['htmlText', WMLocator.findHTML],
+      ['automationName', null]
     ];
     private static var locatorMapObj:Object = {};
     private static var locatorMapCreated:Boolean = false;
+
+    // This is the list of attrs we like to use for the
+    // locators, in order of preference
+    // FIXME: Need to add some regex fu for pawing through
+    // text containers for Flash's janky anchor-tag impl
+    private static var locatorLookupPriority:Array = [
+      'automationName',
+      'id',
+      'name',
+      'label',
+      'htmlText'
+    ];
 
     private static function init():void {
       for each (var arr:Array in WMLocator.locatorMap) {
@@ -50,7 +64,7 @@ package org.windmill {
       }
       var locators:Array = [];
       var queue:Array = [];
-      var obj:* = params.context || Windmill.context;
+      var obj:* = Windmill.getTopLevel();
       var checkWMLocatorChain:Function = function (
           item:*, pos:int):DisplayObject {
         var map:Object = WMLocator.locatorMapObj;
@@ -162,6 +176,17 @@ package org.windmill {
       return res;
     }
 
+    // Custom locator for links embedded in htmlText
+    private static function findHTML(
+        obj:*, attr:String, val:*):Boolean {
+      var res:Boolean = false;
+      if ('htmlText' in obj) {
+        var text:String = WMLocator.cleanHTML(obj.htmlText);
+        return val == text;
+      }
+      return res;
+    }
+
     // Used by the custom locator for links, above
     public static function locateLinkHref(linkText:String,
         htmlText:String):String {
@@ -170,8 +195,7 @@ package org.windmill {
       var linkPlain:String = '';
       while (!!(res = pat.exec(htmlText))) {
         // Remove HTML tags and linebreaks; and trim
-        linkPlain = res[2].replace(/<.+?>/g, '').
-            replace(/\s+/g, ' ').replace(/^ | $/g, '');
+        linkPlain = WMLocator.cleanHTML(res[2]);
         if (linkPlain == linkText) {
           var evPat:RegExp = /href="event:(.*?)"/i;
           var arr:Array = evPat.exec(res[1]);
@@ -184,6 +208,41 @@ package org.windmill {
         }
       }
       return '';
+    }
+
+    private static function cleanHTML(markup:String):String {
+      return markup.replace(/<.+?>/g, '').replace(
+          /\s+/g, ' ').replace(/^ | $/g, '');
+    }
+
+    // Generates a chained-locator expression for the clicked-on item
+    public static function generateLocator(item:*):String {
+      var expr:String = '';
+      var attr:String;
+      var attrVal:String;
+      // Attrs to look for, ordered by priority
+      var locatorPriority:Array = WMLocator.locatorLookupPriority;
+      do {
+        for each (attr in locatorPriority) {
+          // If we find one of the lookuup keys, prepend
+          // on the locator expression
+          if (attr in item && item[attr]) {
+            attrVal = attr == 'htmlText' ?
+                WMLocator.cleanHTML(item[attr]) : item[attr];
+            expr = attr + ':' + attrVal + '/' + expr;
+            break;
+          }
+        }
+        item = item.parent;
+      } while (item.parent)
+      if (expr.length) {
+        // Strip off trailing slash
+        expr = expr.replace(/\/$/, '');
+        return expr;
+      }
+      else {
+        throw new Error('Could not find any usable attributes for locator.');
+      }
     }
   }
 }
