@@ -29,7 +29,7 @@ package {
   import util.DOMEventDrag;
   import flash.display.Sprite;
   import flash.geom.Point;
-  import org.windmill.*;
+  import org.windmill.WMBootstrap;
 
   public class ExampleCode extends MovieClip {
     private var stg:Stage;
@@ -42,6 +42,8 @@ package {
     public function init(ctxt:Application):void {
       context = ctxt;
       stg = context.stage;
+
+      WMBootstrap.init(context);
 
       // Panel
       var panel:Panel = new Panel();
@@ -135,7 +137,6 @@ package {
       box.addEventListener(ScrollEvent.SCROLL, evHandler);
       */
 
-      Windmill.init({ context: context });
 
       /*
       org.windmill.WMController.click({
@@ -154,9 +155,9 @@ package {
     }
     private function evHandler(e:Event):void {
       var targ:* = e.target;
-      WMLogger.log(e.toString());
-      WMLogger.log(e.target.toString());
-      WMLogger.log(getQualifiedClassName(e.target));
+      trace(e.toString());
+      trace(e.target.toString());
+      trace(getQualifiedClassName(e.target));
     }
 
 		private function beginDrag(e:MouseEvent):void {
@@ -165,7 +166,7 @@ package {
     }
     private function doDrag(e:MouseEvent):void {
       if (draggable) {
-        //WMLogger.log(e.toString());
+        //trace(e.toString());
         draggable.x = e.stageX;
         draggable.y = e.stageY;
       }
