@@ -20,11 +20,12 @@ package org.windmill {
   // to avoid infinite recursion in build script
   import flash.utils.*;
   import mx.core.Application;
+  import flash.display.Sprite;
   import flash.display.Stage;
   import flash.display.DisplayObject;
   import flash.external.ExternalInterface;
 
-  public class Windmill {
+  public class Windmill extends Sprite {
     public static var context:*; // A reference to the Stage
     public static var controllerMethods:Array = [];
     public static var assertMethods:Array = [];
