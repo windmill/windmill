@@ -15,9 +15,9 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 */
 
 package org.windmill {
-  // FIXME:
-  // Relying on implicit imports of org.windmill.*
-  // to avoid infinite recursion in build script
+  import org.windmill.astest.ASTest;
+  import org.windmill.WMController;
+  import org.windmill.WMAssert;
   import flash.utils.*;
   import mx.core.Application;
   import flash.display.Sprite;
@@ -108,7 +108,8 @@ package org.windmill {
         explorerStart: WMExplorer.start,
         explorerStop: WMExplorer.stop,
         recorderStart: WMRecorder.start,
-        recorderStop: WMRecorder.stop
+        recorderStop: WMRecorder.stop,
+        runASTests: ASTest.run
       }
       // Don't care what order these happen in
       for (methodName in miscMethods) {
