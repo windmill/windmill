@@ -16,25 +16,28 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 
 package org.windmill {
   import flash.display.Loader;
-	import flash.net.URLRequest;
-	import flash.events.Event;
-	import flash.system.ApplicationDomain;
-	import flash.system.LoaderContext;
-  
+  import flash.net.URLRequest;
+  import flash.events.Event;
+  import flash.system.ApplicationDomain;
+  import flash.system.LoaderContext;
+
   public class WMBootstrap {
     public function WMBootstrap():void {}
-    
+
     public static function init(context:*):void {
       var loader:Loader = new Loader();
-			var url:String = '/flash/org/windmill/Windmill.swf';
-			var req:URLRequest = new URLRequest(url);
-			var con:LoaderContext = new LoaderContext(false, ApplicationDomain.currentDomain);
-			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function ():void {
-		    var Windmill:*;
-        Windmill = ApplicationDomain.currentDomain.getDefinition("org.windmill.Windmill") as Class;
+      var url:String = '/flash/org/windmill/Windmill.swf';
+      var req:URLRequest = new URLRequest(url);
+      var con:LoaderContext = new LoaderContext(false,
+          ApplicationDomain.currentDomain);
+      loader.contentLoaderInfo.addEventListener(
+          Event.COMPLETE, function ():void {
+        var Windmill:*;
+        Windmill = ApplicationDomain.currentDomain.getDefinition(
+            "org.windmill.Windmill") as Class;
         Windmill.init({ context: context });
       });
-			loader.load(req, con);
+      loader.load(req, con);
     }
   }
 }
