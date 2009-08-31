@@ -54,7 +54,6 @@ package org.windmill {
       if (!WMExplorer.running) { return; }
       var stage:Stage = Windmill.getStage();
       stage.removeChild(WMExplorer.borderSprite);
-      WMLogger.log('removing event listeners');
       stage.removeEventListener(MouseEvent.MOUSE_OVER, WMExplorer.highlight);
       stage.removeEventListener(MouseEvent.MOUSE_OVER, WMExplorer.select);
       stage.removeEventListener(MouseEvent.MOUSE_DOWN, WMExplorer.stop);
