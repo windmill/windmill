@@ -36,25 +36,28 @@ package org.windmill {
     public static function start():void {
       // Stop the recorder if it's going
       WMRecorder.stop();
+      WMExplorer.running = true;
 
       var stage:Stage = Windmill.getStage();
       var spr:Sprite = WMExplorer.borderSprite;
       // Add the border-sprite to the stage
       spr.name = 'borderSprite';
       stage.addChild(spr);
-      // Highlight every element on mouseover
-      stage.addEventListener(MouseEvent.MOUSE_OVER, WMExplorer.highlight, true);
-      // Clicks should pass the lookup expression to JS
-      stage.addEventListener(MouseEvent.MOUSE_DOWN, WMExplorer.select, true);
-      WMExplorer.running = true;
+      // Highlight every element, create locator chain on mouseover
+      stage.addEventListener(MouseEvent.MOUSE_OVER, WMExplorer.highlight);
+      stage.addEventListener(MouseEvent.MOUSE_OVER, WMExplorer.select);
+      // Stop on click 
+      stage.addEventListener(MouseEvent.MOUSE_DOWN, WMExplorer.stop);
     }
 
-    public static function stop():void {
+    public static function stop(e:MouseEvent = null):void {
       if (!WMExplorer.running) { return; }
       var stage:Stage = Windmill.getStage();
       stage.removeChild(WMExplorer.borderSprite);
+      WMLogger.log('removing event listeners');
       stage.removeEventListener(MouseEvent.MOUSE_OVER, WMExplorer.highlight);
-      stage.removeEventListener(MouseEvent.MOUSE_DOWN, WMExplorer.select);
+      stage.removeEventListener(MouseEvent.MOUSE_OVER, WMExplorer.select);
+      stage.removeEventListener(MouseEvent.MOUSE_DOWN, WMExplorer.stop);
       WMExplorer.running = false;
     }
 
