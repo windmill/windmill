@@ -17,14 +17,152 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 package org.windmill {
   import org.windmill.WMLocator;
   import org.windmill.WMLogger;
+  import flash.utils.getQualifiedClassName;
 
-  public class WMAssert {
-    public function WMAssert():void {}
+  public dynamic class WMAssert {
+
+    public static var assertTemplates:Object = {
+      assertTrue: {
+        expr: function (a:Boolean):Boolean {
+            return a === true;
+          },
+        errMsg: 'expected true but was false.'
+      },
+      assertFalse: {
+        expr: function (a:Boolean):Boolean {
+            return a === false;
+        },
+        errMsg: 'expected false but was true.'
+      },
+      assertEquals: {
+        expr: function (a:*, b:*):Boolean { return a === b; },
+        errMsg: 'expected $1 but was $2.'
+      },
+      assertNotEquals: {
+        expr: function (a:*, b:*):Boolean { return a !== b; },
+        errMsg: 'expected one of the two values not to be $1.'
+      },
+      assertGreaterThan: {
+        expr: function (a:*, b:*):Boolean { return a > b; },
+        errMsg: 'expected a value greater than $2 but was $1.'
+      },
+      assertLessThan: {
+        expr: function (a:*, b:*):Boolean { return a < b; },
+        errMsg: 'expected a value less than $2 but was $1.'
+      },
+      assertNull: {
+        expr: function (a:*):Boolean { return a === null; },
+        errMsg: 'expected to be null but was $1.'
+      },
+      assertNotNull: {
+        expr: function (a:*):Boolean { return a !== null; },
+        errMsg: 'expected not to be null but was null.'
+      },
+      assertUndefined: {
+        expr: function (a:*):Boolean { return typeof a == 'undefined'; },
+        errMsg: 'expected to be undefined but was $1.'
+      },
+      assertNotUndefined: {
+        expr: function (a:*):Boolean { return typeof a != 'undefined'; },
+        errMsg: 'expected not to be undefined but was undefined.'
+      },
+      assertNaN: {
+        expr: function (a:*):Boolean { return isNaN(a); },
+        errMsg: 'expected $1 to be NaN, but was not NaN.'
+      },
+      assertNotNaN: {
+        expr: function (a:*):Boolean { return !isNaN(a); },
+        errMsg: 'expected $1 not to be NaN, but was NaN.'
+      },
+      assertEvaluatesToTrue: {
+        expr: function (a:*):Boolean { return !!a; },
+        errMsg: 'value of $1 does not evaluate to true.'
+      },
+      assertEvaluatesToFalse: {
+        expr: function (a:*):Boolean { return !a; },
+        errMsg: 'value of $1 does not evaluate to false.'
+      },
+      assertContains: {
+        expr: function (a:*, b:*):Boolean {
+            if (typeof a != 'string' || typeof b != 'string') {
+              throw('Bad argument to assertContains.');
+            }
+            return (a.indexOf(b) > -1);
+        },
+        errMsg: 'value of $1 does not contain $2.'
+      }
+    };
 
     private static var matchTypes:Object = {
       EXACT: 'exact',
       CONTAINS: 'contains'
     };
+
+    public static function init():void {
+      for (var p:String in WMAssert.assertTemplates) {
+        WMAssert[p] = WMAssert.createAssert(p);
+      }
+    }
+
+    private static function createAssert(meth:String):Function {
+      // Makes sure each assert is called with the right
+      // number of args
+      // -------
+      var validateArgs:Function = function(count:int,
+          args:Array):Boolean {
+        if (!(args.length == count ||
+        (args.length == count + 1 && typeof(args[0]) == 'string') )) {
+          throw('Incorrect arguments passed to assert function');
+        }
+        return true;
+      }
+      // Creates error message for each assert
+      // -------
+      var createErrMsg:Function = function (msg:String, arr:Array):String {
+        var str:String = msg;
+        for (var i:int = 0; i < arr.length; i++) {
+          // When calling jum functions arr is an array with a null entry
+          if (arr[i] != null){
+            var val:* = arr[i];
+            var display:String = '<' + val.toString().replace(/\n/g, '') +
+              '> (' + getQualifiedClassName(val) + ')';
+            str = str.replace('$' + (i + 1).toString(), display);
+          }
+        }
+        return str;
+      }
+      // Function that runs the dynamically generated asserts
+      // -------
+      var doAssert:Function = function(...args):Boolean {
+        // The actual assert method, e.g, 'equals'
+        var meth:String = args.shift();
+        // The assert object
+        var asrt:Object = WMAssert.assertTemplates[meth]; 
+        // The assert expresion
+        var expr:Function = asrt.expr;
+        // Validate the args passed
+        var valid:Boolean = validateArgs(expr.length, args);
+        // Pull off additional comment which may be first arg
+        //var comment = args.length > expr.length ?
+        //  args.shift() : null;
+        // Run the assert
+        var res:Boolean = expr.apply(null, args);
+        if (res) {
+          return true;
+        }
+        else {
+          var message:String = meth + ' -- ' +
+              createErrMsg(asrt.errMsg, args);
+          throw new Error(message);
+        }
+      }
+      // Return a function for each dynamically generated
+      // assert in the assertTemplates list
+      return function (...args):Boolean {
+        args.unshift(meth);
+        return doAssert.apply(null, args);
+      }
+    }
 
     public static function assertDisplayObject(params:Object):Boolean {
       var obj:* = WMLocator.lookupDisplayObject(params);
@@ -38,7 +176,7 @@ package org.windmill {
     }
 
     public static function assertProperty(params:Object):Boolean {
-      return WMAssert.doAssert(params);
+      return WMAssert.doBaseAssert(params);
     }
 
     public static function assertText(params:Object):Boolean {
@@ -51,7 +189,7 @@ package org.windmill {
     
     private static function assertTextGeneric(params:Object,
         exact:Boolean):Boolean {
-      return WMAssert.doAssert(params, {
+      return WMAssert.doBaseAssert(params, {
         attrName: ['htmlText', 'label'],
         preMatchProcess: function (str:String):String {
           return str.replace(/^\s*|\s*$/g, '');
@@ -63,7 +201,7 @@ package org.windmill {
     
     // Workhorse function that does all the main work for
     // most asserts
-    private static function doAssert(params:Object,
+    private static function doBaseAssert(params:Object,
         opts:Object = null):Boolean {
       // Ref to the object to do the lookup on
       var obj:* = WMLocator.lookupDisplayObject(params);
