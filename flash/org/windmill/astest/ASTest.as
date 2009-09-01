@@ -17,6 +17,7 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 package org.windmill.astest {
   import org.windmill.WMLogger;
   import flash.utils.*;
+  import flash.external.ExternalInterface;
 
   public class ASTest {
     public static var testClassList:Array = [];
@@ -55,13 +56,23 @@ package org.windmill.astest {
       }
       else {
         var test:Object = ASTest.testList.shift();
+        var res:*;
+        WMLogger.log('Running ' + test.className + '.' + test.methodName + ' ...');
         try {
-          WMLogger.log('Running ' + test.className + '.' + test.methodName);
           test.instance[test.methodName].call(test.instance);
-          WMLogger.log('SUCCESS');
+          res = ExternalInterface.call('wm_asTestResult', {
+            className: test.className,
+            methodName: test.methodName
+          });
+          if (!res) {
+            WMLogger.log('SUCCESS');
+          }
         }
         catch (e:Error) {
-          WMLogger.log('ERROR: ' + e.message);
+          res = ExternalInterface.call('wm_asTestResult', e);
+          if (!res) {
+            WMLogger.log('FAILURE: ' + e.message);
+          }
         }
         setTimeout(function ():void {
           ASTest.runNextTest.call(ASTest);
@@ -113,7 +124,6 @@ package org.windmill.astest {
         // it contains in the defined order
         var key:String;
         if ('order' in item.instance) {
-          WMLogger.log('ordering ...');
           for each (key in item.instance.order) {
             currTestList.push(createTestItem(methods[key], key));
             delete methods[key];
