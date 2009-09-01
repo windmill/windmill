@@ -36,6 +36,7 @@ package org.windmill.astest {
   
     public static function loadTestFiles(files:Array):void {
       ASTest.testClassList = [];
+      ASTest.testList = [];
       WMLoader.load(files);
     }
 
