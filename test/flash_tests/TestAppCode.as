@@ -31,7 +31,7 @@ package {
   import flash.geom.Point;
   import org.windmill.WMBootstrap;
 
-  public class ExampleCode extends MovieClip {
+  public class TestAppCode extends MovieClip {
     private var stg:Stage;
     private var spr:Sprite = new Sprite();
     private var draggable:Sprite;

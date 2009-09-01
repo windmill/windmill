@@ -20,7 +20,7 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
     <mx:Script>
         <![CDATA[
             public function initApp():void {
-                new ExampleCode().init(this);
+                new TestAppCode().init(this);
             }
         ]]>
     </mx:Script>
