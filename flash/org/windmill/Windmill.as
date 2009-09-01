@@ -83,7 +83,7 @@ package org.windmill {
       }
       context = config.context;
 
-      // Expose controller and assert methods
+      // Expose controller and non-dynamic assert methods
       // ----------------
       for (var key:String in packages) {
         // Introspect all the public packages
@@ -102,8 +102,24 @@ package org.windmill {
               genExtFunc(packages[key].packageRef[methodName]));
         }
       }
-
+      
+      // Expose dynamic asserts
+      // ----------------
+      // Create all the dynamic assert methods
+      WMAssert.init();
+      // Dynamically generated asserts -- these *will not*
+      // show up via introspection with describeType, but
+      // they *are there* -- add them manually by iterating
+      // through the same list that used to build them
+      var asserts:* = WMAssert;
+      for (methodName in asserts.assertTemplates) {
+        ExternalInterface.addCallback('wm_' + methodName,
+            genExtFunc(asserts[methodName]));
+        
+      }
+      
       // Other misc ExternalInterface methods
+      // ----------------
       var miscMethods:Object = {
         explorerStart: WMExplorer.start,
         explorerStop: WMExplorer.stop,
@@ -111,11 +127,11 @@ package org.windmill {
         recorderStop: WMRecorder.stop,
         runASTests: ASTest.run
       }
-      // Don't care what order these happen in
       for (methodName in miscMethods) {
         ExternalInterface.addCallback('wm_' + methodName,
             genExtFunc(miscMethods[methodName]));
       }
+
     }
 
     public static function getStage():Stage {
