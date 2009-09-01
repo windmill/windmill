@@ -20,7 +20,9 @@ package org.windmill.astest {
 
   public class ASTest {
     public static var testClassList:Array = [];
-    public static var testList:Array = [];
+    private static var testListComplete:Array = [];
+    private static var testList:Array = [];
+
     public static function run(files:Array = null):void {
       //['/flash/TestFoo.swf', '/flash/TestBar.swf']
       // If we're passed some files, load 'em up first
@@ -41,14 +43,29 @@ package org.windmill.astest {
     }
 
     public static function start():void {
-      for each (var obj:Object in ASTest.testList) {
+      ASTest.testList = ASTest.testListComplete.slice();
+      // Run recursively in a setTimeout loop so
+      // we can implement sleeps and waits
+      ASTest.runNextTest();
+    }
+
+    public static function runNextTest():void {
+      if (ASTest.testList.length == 0) {
+        // Bail
+      }
+      else {
+        var test:Object = ASTest.testList.shift();
         try {
-          WMLogger.log('Running ' + obj.className + '.' + obj.methodName);
-          obj.instance[obj.methodName].call(obj.instance);
+          WMLogger.log('Running ' + test.className + '.' + test.methodName);
+          test.instance[test.methodName].call(test.instance);
+          WMLogger.log('SUCCESS');
         }
         catch (e:Error) {
-          WMLogger.log(e.message);
+          WMLogger.log('ERROR: ' + e.message);
         }
+        setTimeout(function ():void {
+          ASTest.runNextTest.call(ASTest);
+        }, 50);
       }
     }
 
@@ -66,7 +83,6 @@ package org.windmill.astest {
       // No args -- this is being re-invoked from WMLoader
       // now that we have our tests loaded
       for each (var item:Object in ASTest.testClassList) {
-        WMLogger.log('className: ' + item.className);
         var currTestList:Array = [];
         var descr:XML;
         var hasSetup:Boolean = false;
@@ -74,10 +90,11 @@ package org.windmill.astest {
         descr = flash.utils.describeType(
             item.classDescription);
         var meth:*;
+        var methods:Object = {};
         for each (meth in descr..method) {
           var methodName:String = meth.@name.toXMLString();
           if (/^test/.test(methodName)) {
-            currTestList.push(createTestItem(item, methodName)); 
+            methods[methodName] = item;
           }
           // If there's a setup or teardown somewhere in there
           // flag them so we can prepend/append after adding all
@@ -89,6 +106,26 @@ package org.windmill.astest {
             hasTeardown = true;
           }
         }
+
+        // Normal test methods
+        // -----
+        // If there's an 'order' array defined, run any tests
+        // it contains in the defined order
+        var key:String;
+        if ('order' in item.instance) {
+          WMLogger.log('ordering ...');
+          for each (key in item.instance.order) {
+            currTestList.push(createTestItem(methods[key], key));
+            delete methods[key];
+          }
+        }
+        // Run any other methods in whatever order
+        for (key in methods) {
+          currTestList.push(createTestItem(methods[key], key));
+        }
+
+        
+        // -----
         // Prepend list with setup if one exists
         if (hasSetup) {
           currTestList.unshift(createTestItem(item, 'setup'));
@@ -99,8 +136,7 @@ package org.windmill.astest {
         }
         testList = testList.concat.apply(testList, currTestList);
       }
-      ASTest.testList = testList;
-
+      ASTest.testListComplete = testList;
     }
   }
 }

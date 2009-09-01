@@ -1,9 +1,9 @@
 package {
   import org.windmill.TestCase;
-
   public class TestFoo extends TestCase {
+    public var order:Array = ['testAsdf', 'testAssertEqualsString', 'testAssertEqualsNumber'];
+    
     public function setup():void {
-      trace('Set up this bitch.');      
     }
     public function testAsdf():void {
       asserts.assertDisplayObject({id: 'mainPane'});
@@ -17,7 +17,6 @@ package {
       asserts.assertEquals(2112, num);
     }
     public function teardown():void {
-      trace('Set up this bitch.');      
     }
   }
 }
