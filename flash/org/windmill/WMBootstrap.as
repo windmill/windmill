@@ -22,11 +22,10 @@ package org.windmill {
   import flash.system.LoaderContext;
 
   public class WMBootstrap {
-    public function WMBootstrap():void {}
-
+    public static var windmillLibPath:String = '/flash/org/windmill/Windmill.swf'; 
     public static function init(context:*):void {
       var loader:Loader = new Loader();
-      var url:String = '/flash/org/windmill/Windmill.swf';
+      var url:String = WMBootstrap.windmillLibPath;
       var req:URLRequest = new URLRequest(url);
       var con:LoaderContext = new LoaderContext(false,
           ApplicationDomain.currentDomain);
