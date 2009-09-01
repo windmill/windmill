@@ -161,8 +161,10 @@ package {
     }
 
 		private function beginDrag(e:MouseEvent):void {
-      DOMEventDrag.startDrag(spr);
-      //spr.startDrag();
+      if (e.target is Sprite) {
+        DOMEventDrag.startDrag(spr);
+        //spr.startDrag();
+      }
     }
     private function doDrag(e:MouseEvent):void {
       if (draggable) {
