@@ -3,7 +3,6 @@ package {
 
   public class TestBar extends TestCase {
     public function testUiop():void {
-      trace('w00t');
     }
   }
 }

@@ -31,7 +31,7 @@ package {
   import flash.geom.Point;
   import org.windmill.WMBootstrap;
 
-  public class ExampleCode extends MovieClip {
+  public class TestAppCode extends MovieClip {
     private var stg:Stage;
     private var spr:Sprite = new Sprite();
     private var draggable:Sprite;
@@ -161,8 +161,10 @@ package {
     }
 
 		private function beginDrag(e:MouseEvent):void {
-      DOMEventDrag.startDrag(spr);
-      //spr.startDrag();
+      if (e.target is Sprite) {
+        DOMEventDrag.startDrag(spr);
+        //spr.startDrag();
+      }
     }
     private function doDrag(e:MouseEvent):void {
       if (draggable) {
