@@ -20,6 +20,7 @@ package org.windmill {
   import org.windmill.WMAssert;
   public class TestCase extends Sprite {
     public var asserts:* = WMAssert; 
+    public var waits:* = WMWait; 
     // Get a reference to the Stage in the base class
     // before the tests actually load so tests can all
     // reference it

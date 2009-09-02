@@ -23,6 +23,8 @@ package org.windmill.astest {
     public static var testClassList:Array = [];
     private static var testListComplete:Array = [];
     private static var testList:Array = [];
+    public static var inProgress:Boolean = false;
+    public static var waiting:Boolean = false;
 
     public static function run(files:Array = null):void {
       //['/flash/TestFoo.swf', '/flash/TestBar.swf']
@@ -45,6 +47,7 @@ package org.windmill.astest {
 
     public static function start():void {
       ASTest.testList = ASTest.testListComplete.slice();
+      ASTest.inProgress = true;
       // Run recursively in a setTimeout loop so
       // we can implement sleeps and waits
       ASTest.runNextTest();
@@ -52,9 +55,15 @@ package org.windmill.astest {
 
     public static function runNextTest():void {
       if (ASTest.testList.length == 0) {
-        // Bail
+        ASTest.inProgress = false;
       }
       else {
+        if (ASTest.waiting) {
+          setTimeout(function ():void {
+            ASTest.runNextTest.call(ASTest);
+          }, 1000);
+          return; 
+        }
         var test:Object = ASTest.testList.shift();
         var res:*;
         WMLogger.log('Running ' + test.className + '.' + test.methodName + ' ...');
