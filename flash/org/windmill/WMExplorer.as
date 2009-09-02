@@ -18,7 +18,7 @@ package org.windmill {
   import org.windmill.Windmill;
   import org.windmill.WMLocator;
   import org.windmill.WMLogger;
-  //import org.windmill.WMRecorder;
+  import org.windmill.WMRecorder;
   import flash.display.Stage;
   import flash.display.Sprite;
   import flash.events.MouseEvent;

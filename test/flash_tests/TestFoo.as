@@ -1,9 +1,12 @@
 package {
   import org.windmill.TestCase;
   public class TestFoo extends TestCase {
-    public var order:Array = ['testAsdf', 'testAssertEqualsString', 'testAssertEqualsNumber'];
+    public var order:Array = ['testWait', 'testAsdf', 'testAssertEqualsString', 'testAssertEqualsNumber'];
     
     public function setup():void {
+    }
+    public function testWait():void {
+      waits.sleep({milliseconds: 5000});
     }
     public function testAsdf():void {
       asserts.assertDisplayObject({id: 'mainPane'});

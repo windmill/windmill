@@ -18,7 +18,7 @@ package org.windmill {
   import org.windmill.Windmill;
   import org.windmill.WMLogger;
   import org.windmill.WMLocator;
-  //import org.windmill.WMExplorer;
+  import org.windmill.WMExplorer;
   import flash.utils.*;
   import flash.display.Stage;
   import flash.display.DisplayObject;

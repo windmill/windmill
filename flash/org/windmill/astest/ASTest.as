@@ -17,11 +17,14 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 package org.windmill.astest {
   import org.windmill.WMLogger;
   import flash.utils.*;
+  import flash.external.ExternalInterface;
 
   public class ASTest {
     public static var testClassList:Array = [];
     private static var testListComplete:Array = [];
     private static var testList:Array = [];
+    public static var inProgress:Boolean = false;
+    public static var waiting:Boolean = false;
 
     public static function run(files:Array = null):void {
       //['/flash/TestFoo.swf', '/flash/TestBar.swf']
@@ -44,6 +47,7 @@ package org.windmill.astest {
 
     public static function start():void {
       ASTest.testList = ASTest.testListComplete.slice();
+      ASTest.inProgress = true;
       // Run recursively in a setTimeout loop so
       // we can implement sleeps and waits
       ASTest.runNextTest();
@@ -51,17 +55,33 @@ package org.windmill.astest {
 
     public static function runNextTest():void {
       if (ASTest.testList.length == 0) {
-        // Bail
+        ASTest.inProgress = false;
       }
       else {
+        if (ASTest.waiting) {
+          setTimeout(function ():void {
+            ASTest.runNextTest.call(ASTest);
+          }, 1000);
+          return; 
+        }
         var test:Object = ASTest.testList.shift();
+        var res:*;
+        WMLogger.log('Running ' + test.className + '.' + test.methodName + ' ...');
         try {
-          WMLogger.log('Running ' + test.className + '.' + test.methodName);
           test.instance[test.methodName].call(test.instance);
-          WMLogger.log('SUCCESS');
+          res = ExternalInterface.call('wm_asTestResult', {
+            className: test.className,
+            methodName: test.methodName
+          });
+          if (!res) {
+            WMLogger.log('SUCCESS');
+          }
         }
         catch (e:Error) {
-          WMLogger.log('ERROR: ' + e.message);
+          res = ExternalInterface.call('wm_asTestResult', e);
+          if (!res) {
+            WMLogger.log('FAILURE: ' + e.message);
+          }
         }
         setTimeout(function ():void {
           ASTest.runNextTest.call(ASTest);
@@ -113,7 +133,6 @@ package org.windmill.astest {
         // it contains in the defined order
         var key:String;
         if ('order' in item.instance) {
-          WMLogger.log('ordering ...');
           for each (key in item.instance.order) {
             currTestList.push(createTestItem(methods[key], key));
             delete methods[key];

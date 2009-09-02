@@ -15,21 +15,15 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 */
 
 package org.windmill {
-  import flash.external.ExternalInterface;
+  import org.windmill.astest.ASTest;
+  import flash.utils.*;
 
-  public class WMLogger {
-    public static var modes:Object = {
-      TRACE: 'trace',
-      BROWSER: 'browser'
-    };
-    public static var mode:String = WMLogger.modes.TRACE;
-    public static function log(msg:*):void {
-      if (WMLogger.mode == 'browser') {
-        ExternalInterface.call("console.log", msg);
-      }
-      else {
-        trace(msg.toString());
-      }
+  public class WMWait {
+    public static function sleep(params:Object):void {
+      ASTest.waiting = true;
+      setTimeout(function ():void {
+        ASTest.waiting = false;
+      }, params.milliseconds);
     }
   }
 }
