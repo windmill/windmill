@@ -20,9 +20,12 @@ package org.windmill.astest {
   import flash.external.ExternalInterface;
 
   public class ASTest {
+    private static const TEST_INTERVAL:int = 10;
     public static var testClassList:Array = [];
     private static var testListComplete:Array = [];
     private static var testList:Array = [];
+    private static var previousTest:Object = null;
+    public static var previousError:Object = false;
     public static var inProgress:Boolean = false;
     public static var waiting:Boolean = false;
 
@@ -54,21 +57,23 @@ package org.windmill.astest {
     }
 
     public static function runNextTest():void {
-      if (ASTest.testList.length == 0) {
-        ASTest.inProgress = false;
+      var test:Object = null;
+      if (ASTest.waiting) {
+        setTimeout(function ():void {
+          ASTest.runNextTest.call(ASTest);
+        }, 1000);
+        return; 
       }
-      else {
-        if (ASTest.waiting) {
-          setTimeout(function ():void {
-            ASTest.runNextTest.call(ASTest);
-          }, 1000);
-          return; 
+      if (ASTest.previousTest) {
+        test = ASTest.previousTest;
+        if (ASTest.previousError) {
+          res = ExternalInterface.call('wm_asTestResult', ASTest.previousError);
+          if (!res) {
+            WMLogger.log('FAILURE: ' + ASTest.previousError.message);
+          }
         }
-        var test:Object = ASTest.testList.shift();
-        var res:*;
-        WMLogger.log('Running ' + test.className + '.' + test.methodName + ' ...');
-        try {
-          test.instance[test.methodName].call(test.instance);
+        else {
+          // Success
           res = ExternalInterface.call('wm_asTestResult', {
             className: test.className,
             methodName: test.methodName
@@ -77,15 +82,26 @@ package org.windmill.astest {
             WMLogger.log('SUCCESS');
           }
         }
+        ASTest.previousTest = null;
+        ASTest.previousError = null;
+      }
+      if (ASTest.testList.length == 0) {
+        ASTest.inProgress = false;
+      }
+      else {
+        test = ASTest.testList.shift();
+        ASTest.previousTest = test;
+        var res:*;
+        WMLogger.log('Running ' + test.className + '.' + test.methodName + ' ...');
+        try {
+          test.instance[test.methodName].call(test.instance);
+        }
         catch (e:Error) {
-          res = ExternalInterface.call('wm_asTestResult', e);
-          if (!res) {
-            WMLogger.log('FAILURE: ' + e.message);
-          }
+          ASTest.previousError = e;
         }
         setTimeout(function ():void {
           ASTest.runNextTest.call(ASTest);
-        }, 50);
+        }, ASTest.TEST_INTERVAL);
       }
     }
 
@@ -134,6 +150,9 @@ package org.windmill.astest {
         var key:String;
         if ('order' in item.instance) {
           for each (key in item.instance.order) {
+            if (!key in methods) {
+              throw new Error(key + ' is not a method in ' + item.className);
+            }
             currTestList.push(createTestItem(methods[key], key));
             delete methods[key];
           }

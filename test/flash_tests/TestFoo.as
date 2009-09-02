@@ -1,15 +1,37 @@
 package {
   import org.windmill.TestCase;
   public class TestFoo extends TestCase {
-    public var order:Array = ['testWait', 'testAsdf', 'testAssertEqualsString', 'testAssertEqualsNumber'];
+    public var order:Array = ['testWaitCondition', 'testWaitConditionTimeout',
+        'testWaitSleep', 'testAssertDisplayObject', 'testWaitDisplayObject', 'testAssertEqualsString',
+        'testAssertEqualsNumber'];
     
     public function setup():void {
     }
-    public function testWait():void {
+    public function testWaitCondition():void {
+      var now:Date = new Date();
+      var nowTime:Number = now.getTime();
+      var thenTime:Number = nowTime + 5000; // Five seconds from now
+      waits.forCondition({test: function ():Boolean {
+          var dt:Date = new Date();
+          var dtTime:Number = dt.getTime();
+          // Wait until the current date is greater
+          // the thenTime, set above
+          return (dtTime > thenTime);
+      }});
+    }
+    public function testWaitConditionTimeout():void {
+      waits.forCondition({test: function ():Boolean {
+          return false;
+      }, timeout: 3000});
+    }
+    public function testWaitSleep():void {
       waits.sleep({milliseconds: 5000});
     }
-    public function testAsdf():void {
+    public function testAssertDisplayObject():void {
       asserts.assertDisplayObject({id: 'mainPane'});
+    }
+    public function testWaitDisplayObject():void {
+      waits.forDisplayObject({id: 'mainPanel', timeout: 5000});
     }
     public function testAssertEqualsString():void {
       var foo:String = 'foo';

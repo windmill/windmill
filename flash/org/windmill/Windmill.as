@@ -27,6 +27,7 @@ package org.windmill {
 
   public class Windmill extends Sprite {
     public static var context:*; // A reference to the Stage
+    public static var timeout:int = 20000; 
     public static var controllerMethods:Array = [];
     public static var assertMethods:Array = [];
     public static var packages:Object = {
