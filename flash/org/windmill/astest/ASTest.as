@@ -103,6 +103,7 @@ package org.windmill.astest {
 
     public static function runNextTest():void {
       var test:Object = null;
+      var res:*; // Result from ExternalInterface calls
       // If we're idling in a wait, just move along ...
       // Nothing to see here
       if (ASTest.waiting) {
@@ -117,27 +118,31 @@ package org.windmill.astest {
       // and we only know when it has finished by when the next
       // test actually starts
       if (ASTest.previousTest) {
-        var res:*;
         test = ASTest.previousTest;
-        // Error
-        if (ASTest.previousError) {
-          res = ExternalInterface.call('wm_asTestResult', ASTest.previousError);
-          if (!res) {
-            WMLogger.log('FAILURE: ' + ASTest.previousError.message);
-          }
-        }
-        // Success
-        else {
-          res = ExternalInterface.call('wm_asTestResult', {
+        var data:Object = {
+          test: {
             className: test.className,
             methodName: test.methodName
-          });
-          if (!res) {
+          },
+          error: null
+        };
+        // Error
+        if (ASTest.previousError) {
+          data.error = ASTest.previousError;
+          ASTest.previousError = null;
+        }
+        
+        // Report via ExternalInterface, or log results
+        res = ExternalInterface.call('wm_asTestResult', data);
+        if (!res) {
+          if (data.error) {
+            WMLogger.log('FAILURE: ' + data.error.message);
+          }
+          else {
             WMLogger.log('SUCCESS');
           }
         }
         ASTest.previousTest = null;
-        ASTest.previousError = null;
       }
 
       // If we're out of tests, we're all done
@@ -152,7 +157,11 @@ package org.windmill.astest {
         // Save a ref to this test to use for reporting
         // at the beginning of the next call
         ASTest.previousTest = test;
-        WMLogger.log('Running ' + test.className + '.' + test.methodName + ' ...');
+        
+        res = ExternalInterface.call('wm_asTestStart', data);
+        if (!res) {
+          WMLogger.log('Running ' + test.className + '.' + test.methodName + ' ...');
+        }
 
         // Run the test
         // -----------
