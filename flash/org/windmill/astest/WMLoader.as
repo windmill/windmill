@@ -42,6 +42,10 @@ package org.windmill.astest {
         var loader:Loader = new Loader();
         var url:String = WMLoader.urls.shift();
         var req:URLRequest = new URLRequest(url);
+        // checkPolicyFile is true so it knows to grab the crossdomain.xml
+        // for wherever it's grabbing tests from
+        // Need to spoon-feed it the ApplicationDomain and SecurityDomain
+        // so it knows to load the test SWFs in the the current app context
         var con:LoaderContext = new LoaderContext(true,
             ApplicationDomain.currentDomain,
             SecurityDomain.currentDomain);

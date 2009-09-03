@@ -30,9 +30,19 @@ package org.windmill.astest {
     // Copy of the list of tests -- items are popped
     // of to run the tests
     private static var testList:Array = [];
+    // The last test action -- used to do reporting on
+    // success/failure of each test. Waits happen
+    // async in a setTimeout loop, so reporting happens
+    // for the *previous* test at the beginning of each
+    // runNextTest call, before grabbing and running the
+    // next test
     private static var previousTest:Object = null;
+    // Error for the previous test if it was unsuccessful
+    // Used in the reporting as described above
     public static var previousError:Object = false;
+    // Tests are running or not
     public static var inProgress:Boolean = false;
+    // In waiting mode, the runNextTest loop just idles
     public static var waiting:Boolean = false;
 
     public static function run(files:Array = null):void {
@@ -47,14 +57,17 @@ package org.windmill.astest {
       ASTest.getCompleteListOfTests();
       ASTest.start();
     }
-  
+
     public static function loadTestFiles(files:Array):void {
+      // Clear out the list of tests before loading
       ASTest.testClassList = [];
       ASTest.testList = [];
+      // Load the shit
       WMLoader.load(files);
     }
 
     public static function start():void {
+      // Make a copy of the tests to work on
       ASTest.testList = ASTest.testListComplete.slice();
       ASTest.inProgress = true;
       // Run recursively in a setTimeout loop so
@@ -64,22 +77,31 @@ package org.windmill.astest {
 
     public static function runNextTest():void {
       var test:Object = null;
+      // If we're idling in a wait, just move along ...
+      // Nothing to see here
       if (ASTest.waiting) {
+        // Let's try again in a second or so
         setTimeout(function ():void {
           ASTest.runNextTest.call(ASTest);
         }, 1000);
-        return; 
+        return;
       }
+      // Do reporting for the previous test -- we do this here
+      // because waits happen async in a setTimeout loop,
+      // and we only know when it has finished by when the next
+      // test actually starts
       if (ASTest.previousTest) {
+        var res:*;
         test = ASTest.previousTest;
+        // Error
         if (ASTest.previousError) {
           res = ExternalInterface.call('wm_asTestResult', ASTest.previousError);
           if (!res) {
             WMLogger.log('FAILURE: ' + ASTest.previousError.message);
           }
         }
+        // Success
         else {
-          // Success
           res = ExternalInterface.call('wm_asTestResult', {
             className: test.className,
             methodName: test.methodName
@@ -91,20 +113,35 @@ package org.windmill.astest {
         ASTest.previousTest = null;
         ASTest.previousError = null;
       }
+
+      // If we're out of tests, we're all done
+      // TODO: Add some kind of final report
       if (ASTest.testList.length == 0) {
         ASTest.inProgress = false;
       }
+      // If we still have tests to run, grab the next one
+      // and run that bitch
       else {
         test = ASTest.testList.shift();
+        // Save a ref to this test to use for reporting
+        // at the beginning of the next call
         ASTest.previousTest = test;
-        var res:*;
         WMLogger.log('Running ' + test.className + '.' + test.methodName + ' ...');
+
+        // Run the test
+        // -----------
         try {
           test.instance[test.methodName].call(test.instance);
         }
         catch (e:Error) {
+          // Save a ref to the error to use for reporting
+          // at the beginning of the next call
           ASTest.previousError = e;
         }
+
+        // Recurse until done -- note this is not actually a
+        // tail call because the setTimeout invokes the function
+        // in the global execution context
         setTimeout(function ():void {
           ASTest.runNextTest.call(ASTest);
         }, ASTest.TEST_INTERVAL);
@@ -168,7 +205,7 @@ package org.windmill.astest {
           currTestList.push(createTestItem(methods[key], key));
         }
 
-        
+        // Setup/teardown
         // -----
         // Prepend list with setup if one exists
         if (hasSetup) {
