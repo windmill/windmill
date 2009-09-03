@@ -20,9 +20,15 @@ package org.windmill.astest {
   import flash.external.ExternalInterface;
 
   public class ASTest {
+    // How long to wait between each test action
     private static const TEST_INTERVAL:int = 10;
+    // List of all the test classes for this test run
     public static var testClassList:Array = [];
+    // The complete list of all methods for each class
+    // in this test run
     private static var testListComplete:Array = [];
+    // Copy of the list of tests -- items are popped
+    // of to run the tests
     private static var testList:Array = [];
     private static var previousTest:Object = null;
     public static var previousError:Object = false;

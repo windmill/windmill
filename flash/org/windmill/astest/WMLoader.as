@@ -20,8 +20,10 @@ package org.windmill.astest {
   import flash.display.LoaderInfo;
 	import flash.net.URLRequest;
 	import flash.events.Event;
+	import flash.events.ProgressEvent;
   import flash.events.IOErrorEvent;
 	import flash.system.ApplicationDomain;
+	import flash.system.SecurityDomain;
 	import flash.system.LoaderContext;
   import flash.external.ExternalInterface;
   import flash.utils.getQualifiedClassName;
@@ -40,8 +42,9 @@ package org.windmill.astest {
         var loader:Loader = new Loader();
         var url:String = WMLoader.urls.shift();
         var req:URLRequest = new URLRequest(url);
-        var con:LoaderContext = new LoaderContext(false,
-            ApplicationDomain.currentDomain);
+        var con:LoaderContext = new LoaderContext(true,
+            ApplicationDomain.currentDomain,
+            SecurityDomain.currentDomain);
         // Catch any error that occurs during async load
         loader.contentLoaderInfo.addEventListener(
             IOErrorEvent.IO_ERROR, function (e:IOErrorEvent):void {
