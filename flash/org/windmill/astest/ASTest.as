@@ -51,9 +51,32 @@ package org.windmill.astest {
       // the loader will call back to this again when
       // it's done, with no args
       if (files) {
-        if (!files is Array) {
-          files = Array.prototype.slice.call(files);
+        // **** Ugly hack ****
+        // -------------
+        if (!(files is Array)) {
+          // The files param passed in from XPCOM trusted JS
+          // loses its Array-ness -- fails the 'is Array' test,
+          // and has no 'length' property. It's just a generic
+          // Object with integers for keys
+          // In that case, reconstitute the Array by manually
+          // stepping through it until we run out of items
+          var filesTemp:Array = [];
+          var incr:int = 0;
+          var item:*;
+          var keepGoing:Boolean = true;
+          while (keepGoing) {
+            item = files[incr];
+            if (item) {
+              filesTemp.push(item);
+            }
+            else {
+              keepGoing = false;
+            }
+            incr++;
+          }
+          files = filesTemp;
         }
+        // -------------
         ASTest.loadTestFiles(files);
         return;
       }
