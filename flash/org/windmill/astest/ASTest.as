@@ -45,12 +45,15 @@ package org.windmill.astest {
     // In waiting mode, the runNextTest loop just idles
     public static var waiting:Boolean = false;
 
-    public static function run(files:Array = null):void {
+    public static function run(files:* = null):void {
       //['/flash/TestFoo.swf', '/flash/TestBar.swf']
       // If we're passed some files, load 'em up first
       // the loader will call back to this again when
       // it's done, with no args
       if (files) {
+        if (!files is Array) {
+          files = Array.prototype.slice.call(files);
+        }
         ASTest.loadTestFiles(files);
         return;
       }
