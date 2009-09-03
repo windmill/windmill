@@ -104,6 +104,7 @@ package org.windmill.astest {
     public static function runNextTest():void {
       var test:Object = null;
       var res:*; // Result from ExternalInterface calls
+      var data:Object;
       // If we're idling in a wait, just move along ...
       // Nothing to see here
       if (ASTest.waiting) {
@@ -119,7 +120,7 @@ package org.windmill.astest {
       // test actually starts
       if (ASTest.previousTest) {
         test = ASTest.previousTest;
-        var data:Object = {
+        data = {
           test: {
             className: test.className,
             methodName: test.methodName
@@ -158,6 +159,12 @@ package org.windmill.astest {
         // at the beginning of the next call
         ASTest.previousTest = test;
         
+        data = {
+          test: {
+            className: test.className,
+            methodName: test.methodName
+          }
+        };
         res = ExternalInterface.call('wm_asTestStart', data);
         if (!res) {
           WMLogger.log('Running ' + test.className + '.' + test.methodName + ' ...');
