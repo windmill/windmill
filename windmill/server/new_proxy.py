@@ -1,8 +1,14 @@
-from webenv import Application, Response, Request
+import socket
+import httplib
+import logging
+import urllib
 from copy import copy
 from urlparse import urlparse
-import urllib
-import uuid
+
+from webenv import Application, Response, Request, Response302, HtmlResponse
+import httplib2
+
+logger = logging.getLogger()
 
 global_exclude = ['http://sb-ssl.google.com',
                   'https://sb-ssl.google.com', 
@@ -28,7 +34,29 @@ cache_headers = {'Pragma':'no-cache', 'Cache-Control': 'post-check=0, pre-check=
 cache_removal = [k.lower() for k in cache_headers.keys()]
 cache_additions = cache_headers.items()
 
-class WindmillHttp(httplib.Http):
+class ProxyResponse(Response):
+    def __init__(self, resp):
+        self.http2lib_response = resp
+        self.status = resp['status']
+        self.httplib_response = resp._response
+        # Anything under .5 meg just return
+        # Anything over .5 meg return in 100 chunked reads
+        if self.httplib_response.length > 512000:
+            self.read_size = self.httplib_response.length / 100
+        else:
+            self.read_size = self.httplib_response.length
+        self.content_type = resp['content-type']
+    
+    def __iter__(self):
+        yield self.httplib_response.read(self.read_size)
+        while self.httplib_response.chunk_left is not None:
+            if self.httplib_response.chunk_left < self.read_size:
+                yield self.httplib_response.read()
+                self.httplib_response.chunk_left = None
+            else:
+                yield self.httplib_response.read(self.read_size)
+        
+class WindmillHttp(httplib2.Http):
     def _conn_request(self, conn, request_uri, method, body, headers):
         """Customized response code for Windmill."""
         for i in range(2):
@@ -36,7 +64,7 @@ class WindmillHttp(httplib.Http):
                 conn.request(method, request_uri, body, headers)
             except socket.gaierror:
                 conn.close()
-                raise ServerNotFoundError("Unable to find the server at %s" % conn.host)
+                raise httplib2.ServerNotFoundError("Unable to find the server at %s" % conn.host)
             except (socket.error, httplib.HTTPException):
                 # Just because the server closed the connection doesn't apparently mean
                 # that the server didn't send a response.
@@ -53,24 +81,42 @@ class WindmillHttp(httplib.Http):
             else:
                 # Decompression was removed from this section as was HEAD request checks.
                 resp = httplib2.Response(response)
+                resp._response = response
             break
         # Since content is never checked in the rest of the httplib code we can safely return
         # our own windmill response class here.
-        response = ProxyResponse(resp)
-        return (resp, response)
+        proxy_response = ProxyResponse(resp)
+        return (resp, proxy_response)
 
 class ProxyClient(object):
-    def __init__(self):
+    def __init__(self, fm):
         self.http = WindmillHttp()
+        self.fm = fm
 
     def is_hop_by_hop(self, header):
       """check if the given header is hop_by_hop"""
       return hoppish_headers.has_key(header.lower())
     
+    def clean_request_headers(self, request, host):
+        headers = {}
+        for key, value in request.headers.items():
+            if '/windmill-serv' in value:
+                value = value.split('/windmill-serv')[-1]
+            if not self.is_hop_by_hop(key):
+                headers[key] = value
+        if 'host' not in headers:
+            headers['host'] = request.environ['SERVER_NAME']   
+    
+    def set_response_headers(self, resp, response, request_host, proxy_host):
+        # TODO: Cookie handler on headers
+        response.headers = [(k,v.replace(proxy_host, request_host),) for k,v in resp.items()]
+    
     def make_request(self, request, host):
         uri = request.full_uri.replace(request.host, host, 1)
-        # TODO, headers
-        resp, response = self.http.request(uri, method=request,method, headers=headers, redirections=0)
+        headers = self.clean_headers(request, host)
+        resp, response = self.http.request(uri, method=request.method, body=str(request.body),
+                                           headers=headers, redirections=0)
+        self.set_response_headers(resp, response, request.host, host)
         return response
     
 
@@ -238,7 +284,7 @@ class ProxyApplication(Application):
                 new_uri = self.fm.initial_forward(request)
                 if hasattr(request.body, 'form'): # form objects are only created for http forms
                     self.fm.create_redirect_form(request, new_uri)
-                logger.debug('Domain change, forwarded to ' + redirect_url)
+                logger.debug('Domain change, forwarded to ' + new_uri)
                 return InitialForwardResponse(new_uri)
             elif self.fm.is_form_forward(request):
                 form = self.fm.form_forward(request)
@@ -274,15 +320,3 @@ class ProxyApplication(Application):
 
 # 
 # class IterativeResponse(object):
-#     def __init__(self, response_instance):
-#         self.response_instance = response_instance
-#         self.read_size = response_instance.length / 100
-# 
-#     def __iter__(self):
-#         yield self.response_instance.read(self.read_size)
-#         while self.response_instance.chunk_left is not None:
-#             if self.response_instance.chunk_left < self.read_size:
-#                 yield self.response_instance.read()
-#                 self.response_instance.chunk_left = None
-#             else:
-#                 yield self.response_instance.read(self.read_size)
