@@ -2,6 +2,7 @@ from webenv import Application, Response, Request
 from copy import copy
 from urlparse import urlparse
 import urllib
+import uuid
 
 global_exclude = ['http://sb-ssl.google.com',
                   'https://sb-ssl.google.com', 
@@ -27,17 +28,51 @@ cache_headers = {'Pragma':'no-cache', 'Cache-Control': 'post-check=0, pre-check=
 cache_removal = [k.lower() for k in cache_headers.keys()]
 cache_additions = cache_headers.items()
 
+class WindmillHttp(httplib.Http):
+    def _conn_request(self, conn, request_uri, method, body, headers):
+        """Customized response code for Windmill."""
+        for i in range(2):
+            try:
+                conn.request(method, request_uri, body, headers)
+            except socket.gaierror:
+                conn.close()
+                raise ServerNotFoundError("Unable to find the server at %s" % conn.host)
+            except (socket.error, httplib.HTTPException):
+                # Just because the server closed the connection doesn't apparently mean
+                # that the server didn't send a response.
+                pass
+            try:
+                response = conn.getresponse()
+            except (socket.error, httplib.HTTPException):
+                if i == 0:
+                    conn.close()
+                    conn.connect()
+                    continue
+                else:
+                    raise
+            else:
+                # Decompression was removed from this section as was HEAD request checks.
+                resp = httplib2.Response(response)
+            break
+        # Since content is never checked in the rest of the httplib code we can safely return
+        # our own windmill response class here.
+        response = ProxyResponse(resp)
+        return (resp, response)
 
 class ProxyClient(object):
+    def __init__(self):
+        self.http = WindmillHttp()
 
     def is_hop_by_hop(self, header):
       """check if the given header is hop_by_hop"""
       return hoppish_headers.has_key(header.lower())
     
     def make_request(self, request, host):
-        pass
-    def clean_response(self, http_response):
-        pass
+        uri = request.full_uri.replace(request.host, host, 1)
+        # TODO, headers
+        resp, response = self.http.request(uri, method=request,method, headers=headers, redirections=0)
+        return response
+    
 
 class ForwardMap(dict):
     def __init__(self, *args, **kwargs):
@@ -89,9 +124,12 @@ class ForwardingManager(object):
         return False
     
     def get_forward_host(self, request):
+        """Check if a request uri is in the forward map by uri and referer"""
         if request.full_uri in self.forward_map:
             return self.forward_map[request.full_uri]
-        if request.environ.get('HTTP_REFERER', None) in self.forward_map:
+        # Check referer, use tripple false tuple in case someone added a constant to 
+        # the forward map
+        if request.environ.get('HTTP_REFERER', (False, False, False)) in self.forward_map:
             return self.forward_map[request.environ['HTTP_REFERER']]
         return None
     
@@ -141,7 +179,7 @@ class ForwardingManager(object):
         
     def response_conditions_pass(self, request, target_host, client_response, mapped):
         for condition in self.response_conditions:
-            result = condition(request, target_host, client_response, mapped):
+            result = condition(request, target_host, client_response, mapped)
             if result is not None:
                 return result
         if mapped: g = 'mapped_'
@@ -154,7 +192,7 @@ class ForwardingManager(object):
             return True
             
     def get_retry_hosts(self, request):
-        
+        return self.forward_map.known_hosts(self.first_forward_hosts, self.exclude_from_retry)
 
 class Response(object):
     """WSGI Response Abstraction. Requires that the request object is set to it before being returned in a wsgi application."""
@@ -180,13 +218,18 @@ class InitialForwardResponse(Response302):
         super(InitialForwardResponse, self).__init__(request.uri)
         self.headers = cache_headers
 
-class ProxyResponse(Response):
-    def __init__(self, forwarding_manager, request):
-        Response.__init__(self)
-        self.fm = forwarding_manager
-        self.request = request
+# class ProxyResponse(Response):
+#     def __init__(self, forwarding_manager, request):
+#         Response.__init__(self)
+#         self.fm = forwarding_manager
+#         self.request = request
     
 class ProxyApplication(Application):
+    def __init__(self):
+        super(ProxyApplication, self).__init__()
+        self.fm = ForwardingManager()
+        self.client = ProxyClient(self.fm)
+    
     def handler(self, request):
         if self.fm.enabled() and self.fm.forwardable(request):
             hosts = self.fm.get_hosts(request)
@@ -204,30 +247,42 @@ class ProxyApplication(Application):
                 return response
             
             # At this point we are 100% sure we will be needing to send a proxy request
-            client = ProxyClient(request, self.fm)
             
+            # If the host has been mapped by uri or referrer go with that
             target_host = self.fm.get_forward_host(request)
             if target_host is not None:
-                client_response = client.make_client_request(target_host)
-                if self.fm.response_conditions_pass(request, target_host, client_response, mapped=True):
-                    return ProxyResponse(request, self.fm, client_response)
+                targeted_client_response = self.client.make_client_request(request, target_host)
+                if self.fm.response_conditions_pass(request, target_host, 
+                                                    targeted_client_response, mapped=True):
+                    return targeted_client_response
+            else:
+                targeted_client_response = None
             
             # Now we've hit the retry loop
             for host in self.fm.get_retry_hosts(request):
-                    
-        
-
-
-class IterativeResponse(object):
-    def __init__(self, response_instance):
-        self.response_instance = response_instance
-        self.read_size = response_instance.length / 100
-
-    def __iter__(self):
-        yield self.response_instance.read(self.read_size)
-        while self.response_instance.chunk_left is not None:
-            if self.response_instance.chunk_left < self.read_size:
-                yield self.response_instance.read()
-                self.response_instance.chunk_left = None
+                client_response = self.client.make_client_request(request, host)
+                if self.fm.response_conditions_pass(request, host, client_response, mapped=False):
+                    return response
+                
+            # At this point all requests have failed
+            if targeted_client_response:
+                # If we had a mapped response return it even if it failed
+                return targeted_client_response
             else:
-                yield self.response_instance.read(self.read_size)
+                # If we don't even have a mapped response, return it form test host
+                return self.client.make_client_request(request, request.host)
+
+# 
+# class IterativeResponse(object):
+#     def __init__(self, response_instance):
+#         self.response_instance = response_instance
+#         self.read_size = response_instance.length / 100
+# 
+#     def __iter__(self):
+#         yield self.response_instance.read(self.read_size)
+#         while self.response_instance.chunk_left is not None:
+#             if self.response_instance.chunk_left < self.read_size:
+#                 yield self.response_instance.read()
+#                 self.response_instance.chunk_left = None
+#             else:
+#                 yield self.response_instance.read(self.read_size)
