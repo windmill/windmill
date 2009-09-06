@@ -26,7 +26,6 @@ import urllib
 import SocketServer
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from StringIO import StringIO
-from proxy import WindmillProxyApplication
 from httplib import HTTPConnection, HTTPException
 import traceback
 import sys
@@ -475,8 +474,3 @@ class WindmillConnection(HTTPConnection):
         sock = _socket_create_connection((self.host, self.port), self.timeout)
         self.sock = _ssl_wrap_socket(sock, self.key_file, self.cert_file)
        
-class WindmillHTTPSProxyApplication(WindmillProxyApplication):
-    ConnectionClass = WindmillConnection
-
-    def get_connection(self, url):
-        return self.ConnectionClass(url.scheme, url.netloc)

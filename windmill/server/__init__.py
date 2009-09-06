@@ -36,6 +36,7 @@ import windmill
 import https
 from proxy import ProxyApplication
 from jsonrpc import JSONRPCApplication
+from xmlrpc import XMLRPCApplication
 from convergence import XMLRPCMethods, JSONRPCMethods, TestResolutionSuite, CommandResolutionSuite, ControllerQueue
 from compressor import CompressorApplication
 
@@ -49,7 +50,7 @@ from compressor import CompressorApplication
 #         
 
 class WindmillApplication(RestApplication):
-    def __init__(self, js_path=None, compressor_enabled=None):
+    def __init__(self, js_path=None, compression_enabled=None):
         super(WindmillApplication, self).__init__()
         
         if js_path is None:
@@ -62,9 +63,11 @@ class WindmillApplication(RestApplication):
         self.command_resolution_suite = CommandResolutionSuite()
         self.queue = ControllerQueue(self.command_resolution_suite, self.test_resolution_suite)
         self.xmlrpc_methods_instance = XMLRPCMethods(self.queue, self.test_resolution_suite, 
-                                                     self.command_resolution_suite)
+                                                     self.command_resolution_suite, 
+                                                     proxy=self.proxy_application)
         self.jsonrpc_methods_instance = JSONRPCMethods(self.queue, self.test_resolution_suite, 
-                                                       self.command_resolution_suite)
+                                                       self.command_resolution_suite, 
+                                                       proxy=self.proxy_application)
         
         self.add_resource('windmill-jsonrpc', JSONRPCApplication(instance=self.jsonrpc_methods_instance))
         self.add_resource('windmill-serv', FileServerApplication(js_path))
@@ -74,7 +77,7 @@ class WindmillApplication(RestApplication):
     def handler(self, request, *path):
         return self.proxy_application(request)
 
-def make_wsgi_server(http_port=None, js_path=None, compression_enabled=None):
+def make_server(http_port=None, js_path=None, compression_enabled=None):
     if http_port is None:
         http_port = windmill.settings['SERVER_HTTP_PORT']
             

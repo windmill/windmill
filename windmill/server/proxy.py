@@ -159,8 +159,10 @@ class ForwardingManager(object):
             self.enabled = True
             self.forwarding_test_url = test_url
             self.test_url = urlparse(test_url)
-            self.test_host = self.test_url.scheme+"://"+self.test_url.netflow
-    
+            self.test_host = self.test_url.scheme+"://"+self.test_url.netloc
+            # This is for reverse compat with old debugging
+            import windmill
+            windmill.settings['FORWARDING_TEST_URL'] = test_url     
     def is_mapped(self, request):
         if (request.full_uri in self.forward_map):
             return True

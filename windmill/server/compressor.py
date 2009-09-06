@@ -9,7 +9,7 @@ import jsmin
 class JavascriptResponse(Response):
     content_type = 'application/x-javascript'
 
-class WindmillCompressor(Application):
+class CompressorApplication(Application):
     """Full JavaScript Compression Library"""
     js_file_list = [
         ('lib', 'firebug', 'pi.js',),

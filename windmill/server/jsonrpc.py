@@ -16,7 +16,8 @@
 import logging
 
 from windmill.dep import json
-from webenv import RestApplication, Response, Response500
+from webenv import Response, Response500
+from webenv.rest import RestApplication
 
 logger = logging.getLogger(__name__)
 
