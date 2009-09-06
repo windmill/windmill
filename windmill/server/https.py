@@ -21,9 +21,7 @@
     and WindmillProxyApplication that are drop-in replacements for the standard
     non-ssl-enabled ones.
 """
-import time
 import socket
-import select
 import urllib
 import SocketServer
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
@@ -183,20 +181,24 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
                 request.close()
 
     def handle_ALL(self):
-        namespaces = self.server.namespaces
-        proxy = self.server.proxy
-        found = None
-        path = self.path.split('?', 1)[0]
-        for key in namespaces:
-            if path.find('/'+key+'/') is not -1:
-                found = key
-                environ = self.get_environ()
-                result = namespaces[found](environ, self.start_response)
-                break
-        else:
-            found = None
-            environ = self.get_environ()
-            result = proxy(environ, self.start_response)
+        # == Old Windmill specific handler code == #
+        # namespaces = self.server.application
+        # proxy = self.server.proxy
+        # found = None
+        # path = self.path.split('?', 1)[0]
+        # for key in namespaces:
+        #     if path.find('/'+key+'/') is not -1:
+        #         found = key
+        #         environ = self.get_environ()
+        #         result = application(environ, self.start_response)
+        #         break
+        # else:
+        #     found = None
+        #     environ = self.get_environ()
+        #     result = application(environ, self.start_response)
+        # == New WSGI conforming handler code == #    
+        result = self.server.application(self.get_environ(), self.start_response)
+            
         # == Old blocking code ==
         # out = list(result)
         # # send data back to browser
@@ -363,18 +365,17 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
         logger.debug(format % args)
 
 class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
-    def __init__(self, address, handler, cert_creator, apps, proxy):
+    def __init__(self, address, handler, cert_creator, application):
         # all we want from this method is to register a pem file
         # $ openssl req -x509 -nodes -days 365 -newkey rsa:1024
         #                     -keyout mycert.pem -out mycert.pem
         self.cert_creator = cert_creator
-        self.namespaces = dict([ (arg.ns, arg) for arg in apps ])
-        self.proxy = proxy
 
         # the rest is the same
         HTTPServer.__init__(self, address, handler)
         self.setup_environ()
         self.threads = []
+        self.application = application
         
     daemon_threads = True
 

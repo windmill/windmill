@@ -17,7 +17,6 @@ global_exclude = ['http://sb-ssl.google.com',
                   'http://www.google-analytics.com',
                   ]
 
-
 # Note that hoppish conntains proxy-connection, which is pre-HTTP-1.1 and
 # is somewhat nebulous
 hoppish_headers = {'connection':1, 'keep-alive':1, 'proxy-authenticate':1,
