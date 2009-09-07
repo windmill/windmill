@@ -75,7 +75,7 @@ class WindmillApplication(RestApplication):
         self.add_resource('windmill-compressor', CompressorApplication(os.path.join(js_path, 'js'), 
                                                                        compression_enabled))
     def handler(self, request, *path):
-        return self.proxy_application(request)
+        return self.proxy_application.handler(request)
 
 def make_server(http_port=None, js_path=None, compression_enabled=None):
     if http_port is None:

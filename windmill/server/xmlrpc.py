@@ -66,7 +66,3 @@ class XMLRPCApplication(RestApplication):
         else:
             # got a valid XML RPC response
             return XMLResponse(response)
-            
-
-    def __call__(self, environ, start_response):
-        return self.handler(environ, start_response)

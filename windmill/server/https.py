@@ -115,14 +115,47 @@ except ImportError:
         socket.setdefaulttimeout(oldtimeout)
         return sock
 
+class StartResponse(object):
+    def __init__(self, request_handler, environ):
+        self.request_handler = request_handler
+        self.environ = environ
+        self.start_response_called = False
+    def __call__(self, status, headers, exc_info=None):
+        if not self.request_handler.ready:
+            raise AssertionError("start_response is being called before the http handler is ready")
+        if self.start_response_called:
+            raise AssertionError("this start_response was already called")
+        self.start_response_called = True
+        
+        if exc_info:
+            try:
+                if self.request_handler.headers_sent:
+                    raise exc_info[0], exc_info[1], exc_info[2]
+            finally:
+                exc_info = None
+
+        self.request_handler.headers_set[:] = [status, headers]
+        status, response_headers = self.request_handler.headers_sent[:] = self.request_handler.headers_set
+        if ' ' in status:
+            code, message = status.split(' ', 1)
+        else:
+            code, message = (status, '')
+        self.request_handler.send_response(int(code), message)
+        self.request_handler.send_headers(response_headers)
+        return self.request_handler.write
+        
 
 class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHandler):
     def __init__(self, request, client_address, server):
+        self.reset()
+        BaseHTTPRequestHandler.__init__(self, request, client_address, server)
+
+    def reset(self):
         self.headers_set = []
         self.headers_sent = []
         self.header_buffer = ''
-        BaseHTTPRequestHandler.__init__(self, request, client_address,
-                                             server)
+        self.ready = True
+        self.start_response = None
 
     def _sock_connect_to(self, netloc, soc):
         """Parse netloc string and establish connection on socket."""
@@ -180,34 +213,15 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
                 request.close()
 
     def handle_ALL(self):
-        # == Old Windmill specific handler code == #
-        # namespaces = self.server.application
-        # proxy = self.server.proxy
-        # found = None
-        # path = self.path.split('?', 1)[0]
-        # for key in namespaces:
-        #     if path.find('/'+key+'/') is not -1:
-        #         found = key
-        #         environ = self.get_environ()
-        #         result = application(environ, self.start_response)
-        #         break
-        # else:
-        #     found = None
-        #     environ = self.get_environ()
-        #     result = application(environ, self.start_response)
-        # == New WSGI conforming handler code == #    
-        result = self.server.application(self.get_environ(), self.start_response)
-            
-        # == Old blocking code ==
-        # out = list(result)
-        # # send data back to browser
-        # try:
-        #     self.write(''.join(out))
-        # except socket.error, err:
-        #     logger.debug("%s while serving (%s) %s" % (err,
-        #                                       self.command, self.path))
+        if not self.ready:
+            raise AssertionError("This handler is not ready.")
+        if self.start_response is not None:
+            raise AssertionError("This handler is already waiting on a start_response instance to finish.")
+        environ = self.get_environ()
+        self.start_response = StartResponse(self, environ)
+        result = self.server.application(environ, self.start_response)
+        self.ready = False
         
-        # == New non-blocking code ==
         try:
             for out in result:
                 self.write(out)
@@ -215,29 +229,15 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
             logger.debug("%s while serving (%s) %s" % (err,self.command, self.path))
         
         self.wfile.flush()
-        self.connection.close()
+        self.reset()
+        if self.close_connection:
+            self.connection.close()
 
     do_GET = handle_ALL
     do_POST = handle_ALL
-
-    def start_response(self, status, headers, exc_info=None):
-        if exc_info:
-            try:
-                if self.headers_sent:
-                    raise exc_info[0], exc_info[1], exc_info[2]
-            finally:
-                exc_info = None
-        elif self.headers_set:
-            raise AssertionError("Headers already set!")
-
-        self.headers_set[:] = [status, headers]
-        status, response_headers = self.headers_sent[:] = self.headers_set
-        code, message = status.split(' ', 1)
-        self.send_response(int(code), message)
-        
-        self.send_headers(response_headers)
-        
-        return self.write
+    do_PUT = handle_ALL
+    do_HEAD = handle_ALL
+    do_DELETE = handle_ALL
         
     def send_headers(self, response_headers):
         for header in response_headers:
@@ -256,9 +256,9 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
             self.header_buffer += "%s: %s\r\n" % (keyword, value)
         if keyword.lower() == 'connection':
             if value.lower() == 'close':
-                self.close_connection = 1
-            elif value.lower() == 'keep-alive':
-                self.close_connection = 0
+                self.close_connection = True
+            else:
+                self.close_connection = False
 
     def send_response(self, code, message=None):
         """Send the response header and log the response code.
@@ -280,7 +280,6 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
         if not self.headers_set:
             raise AssertionError("write() before start_response()")
 
-        
         # elif not self.headers_sent:
         #     # Before the first output, send the stored headers
         #     status, response_headers = self.headers_sent[:] = self.headers_set
@@ -303,13 +302,22 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
             path, query = self.path.split('?', 1)
         else:
             path, query = self.path,''
+        
+        scheme = urlparse(self.path).scheme
+        env['wsgi.url_scheme'] = scheme
+        
+        host = self.address_string()
+        remote_addr = self.client_address[0]
+        if host != remote_addr:
+            env['REMOTE_HOST'] = host
+        env['REMOTE_ADDR'] = remote_addr
+        
+        if path.startswith(scheme+'://'):
+            path = path[len(scheme) + 3:]
+            path = path[path.index('/'):]
+
         env['PATH_INFO'] = urllib.unquote(path)
         env['QUERY_STRING'] = query
-
-        host = self.address_string()
-        if host != self.client_address[0]:
-            env['REMOTE_HOST'] = host
-        env['REMOTE_ADDR'] = self.client_address[0]
 
         if self.headers.typeheader is not None:
             env['CONTENT_TYPE'] = self.headers.typeheader
@@ -328,7 +336,7 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
                 env['HTTP_' + key] += ',' + value
             else:
                 env['HTTP_' + key] = value
-        env['wsgi.url_scheme'] = urlparse(self.path).scheme
+        
 
         clen = self.headers.getheader('content-length')
         if clen is not None and int(clen) > 0:
@@ -336,29 +344,29 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
             env['wsgi.input'] = StringIO(i)
         else:
             env['wsgi.input'] = self.rfile
-        self.reconstruct_url(env)
+        # self.reconstruct_url(env)
         return env
 
-    def reconstruct_url(self, environ):
-        """ This can be done much faster and in a tidier way."""
-        url = environ['wsgi.url_scheme']+'://'
-        if environ.get('HTTP_HOST'):
-            url += environ['HTTP_HOST']
-        else:
-            url += environ['SERVER_NAME']
-            if environ['wsgi.url_scheme'] == 'https':
-                if environ['SERVER_PORT'] != '443':
-                    url += ':' + environ['SERVER_PORT']
-            else:
-                if environ['SERVER_PORT'] != '80':
-                    url += ':' + environ['SERVER_PORT']
-        url += environ.get('SCRIPT_NAME','')
-        if '://' in self.path:
-            url = self.path
-        else:
-            url += self.path
-        environ['reconstructed_url'] = url
-        return url
+    # def reconstruct_url(self, environ):
+    #     """ This can be done much faster and in a tidier way."""
+    #     url = environ['wsgi.url_scheme']+'://'
+    #     if environ.get('HTTP_HOST'):
+    #         url += environ['HTTP_HOST']
+    #     else:
+    #         url += environ['SERVER_NAME']
+    #         if environ['wsgi.url_scheme'] == 'https':
+    #             if environ['SERVER_PORT'] != '443':
+    #                 url += ':' + environ['SERVER_PORT']
+    #         else:
+    #             if environ['SERVER_PORT'] != '80':
+    #                 url += ':' + environ['SERVER_PORT']
+    #     url += environ.get('SCRIPT_NAME','')
+    #     if '://' in self.path:
+    #         url = self.path
+    #     else:
+    #         url += self.path
+    #     environ['reconstructed_url'] = url
+    #     return url
 
     def log_message(self, format, *args):
         logger.debug(format % args)
@@ -376,7 +384,8 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
         self.threads = []
         self.application = application
         
-    daemon_threads = True
+    # daemon_threads = True
+    daemon_thread = False # For debugging
 
     def setup_environ(self):
         # Set up base environment
@@ -438,19 +447,23 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
 
     def handle_error(self, request, client_address):
         try:
-            args = sys.exec_info()
-        except:
-            return
-            
-        print '-' * 40
-        print 'Exception happened during processing of request from',
-        print client_address
-        # traceback doesn't appear to be always be thread safe
-        try:
-            traceback.print_exception(*args)
-        except TypeError:
-            print "Traceback cannot be printed, probably do to a thread safety issue."
-        print '-' * 40
+            print 'Exception happened during processing of request from', client_address
+        except: pass
+        traceback.print_exc()        
+        # try:
+        #     args = sys.exec_info()
+        # except:
+        #     return
+        #     
+        # print '-' * 40
+        # print 'Exception happened during processing of request from',
+        # print client_address
+        # # traceback doesn't appear to be always be thread safe
+        # try:
+        #     traceback.print_exception(*args)
+        # except TypeError:
+        #     print "Traceback cannot be printed, probably do to a thread safety issue."
+        # print '-' * 40
 
 class WindmillConnection(HTTPConnection):
     """ Decide on the run if we should do HTTP or HTTPS """

@@ -2,14 +2,15 @@ import os
 import threading
 from time import sleep
 
-from webenv import Application, Response, Response404
+from webenv import Response, Response404
+from webenv.rest import RestApplication
 
 import jsmin
 
 class JavascriptResponse(Response):
     content_type = 'application/x-javascript'
 
-class CompressorApplication(Application):
+class CompressorApplication(RestApplication):
     """Full JavaScript Compression Library"""
     js_file_list = [
         ('lib', 'firebug', 'pi.js',),
@@ -42,6 +43,7 @@ class CompressorApplication(Application):
     ]
     
     def __init__(self, js_path, enabled=True):
+        super(CompressorApplication, self).__init__()
         self.enabled = enabled
         self.js_path = js_path
         self.compressed_windmill = None
