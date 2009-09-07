@@ -66,7 +66,6 @@ class ProxyResponse(Response):
                 yield body
             else:
                 body = self.httplib_response.read()
-                print self.request.full_uri, self.http2lib_response
                 yield body
         self.httplib_response.conn.busy = False
         
@@ -109,20 +108,15 @@ class WindmillHttp(httplib2.Http):
                 headers = {}
             else:
                 headers = httplib2._normalize_headers(headers)
-
             if not headers.has_key('user-agent'):
                 headers['user-agent'] = "Python-httplib2/%s" % httplib2.__version__
-
             uri = httplib2.iri2uri(uri)
-
             (scheme, authority, request_uri, defrag_uri) = httplib2.urlnorm(uri)
             domain_port = authority.split(":")[0:2]
             if len(domain_port) == 2 and domain_port[1] == '443' and scheme == 'http':
                 scheme = 'https'
                 authority = domain_port[0]
-
             conn_key = scheme+":"+authority
-            
             def get_conn(conn_key):
                 if conn_key in self.connections:
                     conn = self.connections[conn_key]
@@ -133,9 +127,7 @@ class WindmillHttp(httplib2.Http):
                     else: return c
                     if type(conn) is list:
                         return None
-            
             conn = get_conn(conn_key)
-
             if conn is None:
                 if not connection_type:
                     connection_type = (scheme == 'https') and httplib2.HTTPSConnectionWithTimeout or httplib2.HTTPConnectionWithTimeout
@@ -151,18 +143,12 @@ class WindmillHttp(httplib2.Http):
             conn.busy = True
             if method in ["GET", "HEAD"] and 'range' not in headers and 'accept-encoding' not in headers:
                 headers['accept-encoding'] = 'deflate, gzip'
-
             info = httplib2.email.Message.Message()
             cached_value = None
             if self.cache:
                 cachekey = defrag_uri
                 cached_value = self.cache.get(cachekey)
                 if cached_value:
-                    # info = email.message_from_string(cached_value)
-                    #
-                    # Need to replace the line above with the kludge below
-                    # to fix the non-existent bug not fixed in this
-                    # bug report: http://mail.python.org/pipermail/python-bugs-list/2005-September/030289.html
                     try:
                         info, content = cached_value.split('\r\n\r\n', 1)
                         feedparser = httplib2.email.FeedParser.FeedParser()
@@ -173,34 +159,20 @@ class WindmillHttp(httplib2.Http):
                         self.cache.delete(cachekey)
                         cachekey = None
                         cached_value = None
-            else:
-                cachekey = None
-
+            else: cachekey = None
             if method in self.optimistic_concurrency_methods and self.cache and info.has_key('etag') and not self.ignore_etag and 'if-match' not in headers:
                 # http://www.w3.org/1999/04/Editing/
                 headers['if-match'] = info['etag']
-
             if method not in ["GET", "HEAD"] and self.cache and cachekey:
                 # RFC 2616 Section 13.10
                 self.cache.delete(cachekey)
-
             if cached_value and method in ["GET", "HEAD"] and self.cache and 'range' not in headers:
                 if info.has_key('-x-permanent-redirect-url'):
-                    # Should cached permanent redirects be counted in our redirection count? For now, yes.
                     (response, new_content) = self.request(info['-x-permanent-redirect-url'], "GET", headers = headers, redirections = redirections - 1)
                     response.previous = Response(info)
                     response.previous.fromcache = True
                 else:
-                    # Determine our course of action:
-                    #   Is the cached entry fresh or stale?
-                    #   Has the client requested a non-cached response?
-                    #   
-                    # There seems to be three possible answers: 
-                    # 1. [FRESH] Return the cache entry w/o doing a GET
-                    # 2. [STALE] Do the GET (but add in cache validators if available)
-                    # 3. [TRANSPARENT] Do a GET w/o any cache validators (Cache-Control: no-cache) on the request
                     entry_disposition = httplib2._entry_disposition(info, headers) 
-
                     if entry_disposition == "FRESH":
                         if not cached_value:
                             info['status'] = '504'
@@ -209,17 +181,13 @@ class WindmillHttp(httplib2.Http):
                         if cached_value:
                             response.fromcache = True
                         return (response, content)
-
                     if entry_disposition == "STALE":
                         if info.has_key('etag') and not self.ignore_etag and not 'if-none-match' in headers:
                             headers['if-none-match'] = info['etag']
                         if info.has_key('last-modified') and not 'last-modified' in headers:
                             headers['if-modified-since'] = info['last-modified']
-                    elif entry_disposition == "TRANSPARENT":
-                        pass
-
+                    elif entry_disposition == "TRANSPARENT": pass
                     (response, new_content) = self._request(conn, authority, uri, request_uri, method, body, headers, redirections, cachekey)
-
                 if response.status == 304 and method == "GET":
                     # Rewrite the cache entry with the new end-to-end headers
                     # Take all headers that are in response 
@@ -272,10 +240,7 @@ class WindmillHttp(httplib2.Http):
                             "content-length": len(content)
                             })
                     response.reason = "Bad Request" 
-            else:
-                raise
-
-
+            else: raise
         return (response, content)
 
 class ProxyClient(object):
