@@ -34,11 +34,9 @@ def get_save_url(suite_name, extension):
 def create_saves_path():
     directory = tempfile.mkdtemp(suffix='.windmill-saves')
     # Mount the fileserver application for tests
-    from windmill.dep import wsgi_fileserver 
-    WSGIFileServerApplication = wsgi_fileserver.WSGIFileServerApplication
-    application = WSGIFileServerApplication(root_path=os.path.abspath(directory), mount_point='/windmill-saves/')
-    from windmill.server import wsgi
-    wsgi.add_namespace('windmill-saves', application)
+    from webenv.applications.file_server import FileServerApplication
+    application = FileServerApplication(os.path.dirname(__file__))
+    windmill.server.add_namespace('windmill-unittests', application)
     windmill.settings['SAVES_PATH'] = directory
     windmill.teardown_directories.append(directory)
 

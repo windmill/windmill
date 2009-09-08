@@ -143,11 +143,9 @@ def run_js_tests(js_dir, test_filter=None, phase=None):
     import windmill
     windmill.js_framework_active = True
     js_dir = os.path.abspath(os.path.expanduser(js_dir))
-    from windmill.dep import wsgi_fileserver  
-    WSGIFileServerApplication = wsgi_fileserver.WSGIFileServerApplication
-    application = WSGIFileServerApplication(root_path=os.path.abspath(js_dir), mount_point='/windmill-jstest/')
-    from windmill.server import wsgi
-    wsgi.add_namespace('windmill-jstest', application)
+    from webenv.applications.file_server import FileServerApplication
+    application = FileServerApplication(os.path.abspath(js_dir))
+    windmill.server.add_namespace('windmill-jstests', application)
     # Build list of files and send to IDE
     base_url = windmill.settings['TEST_URL']+'/windmill-jstest'
     
@@ -171,11 +169,9 @@ def run_js_tests(js_dir, test_filter=None, phase=None):
 def load_extensions_dir(dirname):
    """Mount the directory and send all javascript file links to the IDE in order to execute those test urls under the jsUnit framework"""
    # Mount the fileserver application for tests
-   from windmill.dep import wsgi_fileserver
-   WSGIFileServerApplication = wsgi_fileserver.WSGIFileServerApplication
-   application = WSGIFileServerApplication(root_path=os.path.abspath(dirname), mount_point='/windmill-extentions/')
-   from windmill.server import wsgi
-   wsgi.add_namespace('windmill-extentions', application)
+   from webenv.applications.file_server import FileServerApplication
+   application = FileServerApplication(os.path.abspath(dirname))
+   windmill.server.add_namespace('windmill-extensions', application)
    # Build list of files and send to IDE
    base_url = windmill.settings['TEST_URL']+'/windmill-extentions'
 
