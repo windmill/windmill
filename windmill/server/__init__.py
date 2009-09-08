@@ -13,12 +13,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-# forwarding_conditions = [
-#     lambda e : 'google.com/safebrowsing/downloads' not in e['reconstructed_url'],
-#     lambda e : 'mozilla.org/en-US/firefox/livebookmarks.html' not in e['reconstructed_url'],
-#     lambda e : e.get('CONTENT_TYPE') != 'application/x-shockwave-flash',
-#     lambda e : not e['reconstructed_url'].endswith(".mozilla.com/firefox/headlines.xml")
-#     ]
+initial_forwarding_conditions = [
+    lambda e : 'google.com/safebrowsing/downloads' not in e['reconstructed_url'],
+    lambda e : 'mozilla.org/en-US/firefox/livebookmarks.html' not in e['reconstructed_url'],
+    lambda e : e.get('CONTENT_TYPE') != 'application/x-shockwave-flash',
+    lambda e : not e['reconstructed_url'].endswith(".mozilla.com/firefox/headlines.xml")
+    ]
 # 
 # def add_forward_condition(condition):
 #     forwarding_conditions.append(condition)
@@ -111,6 +111,7 @@ def make_server(http_port=None, js_path=None, compression_enabled=None):
     global remove_forward_condition
     remove_forward_condition = application.proxy_application.fm.remove_environ_condition
 
-    
+    for c in initial_forwarding_conditions:
+        add_forward_condition(c)
 
     return httpd

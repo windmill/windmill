@@ -293,11 +293,14 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
 
     def get_environ(self):
         """ Put together a wsgi environment """
+        env = self.server.base_environ.copy()
+        env['RAW_PATH'] = self.path
+        
         if hasattr(self, 'base_path'):
             self.path = self.base_path + self.path
-        env = self.server.base_environ.copy()
         env['SERVER_PROTOCOL'] = self.request_version
         env['REQUEST_METHOD'] = self.command
+        
         if '?' in self.path:
             path, query = self.path.split('?', 1)
         else:

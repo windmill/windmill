@@ -14,7 +14,8 @@ logger = logging.getLogger()
 global_exclude = ['http://sb-ssl.google.com',
                   'https://sb-ssl.google.com', 
                   'http://en-us.fxfeeds.mozilla.com',
-                  'fxfeeds.mozilla.com',
+                  'http://fxfeeds.mozilla.com',
+                  'https://fxfeeds.mozilla.com',
                   'http://www.google-analytics.com',
                   ]
 
@@ -262,6 +263,7 @@ class ProxyClient(object):
                 headers[key] = value
         if 'host' not in headers:
             headers['host'] = request.environ['SERVER_NAME']   
+        return headers
     
     def set_response_headers(self, resp, response, request_host, proxy_host):
         # TODO: Cookie handler on headers
@@ -270,12 +272,13 @@ class ProxyClient(object):
         response.headers = [(k,v.replace(proxy_host, request_host),) for k,v in resp.items()]
     
     def make_request(self, request, host):
-        uri = request.full_uri.replace(request.host, host, 1)
+        uri = request.proxy_uri.replace(request.host, host, 1)
         headers = self.clean_request_headers(request, host)
         resp, response = self.http.request(uri, method=request.method, body=str(request.body),
                                            headers=headers)
         self.set_response_headers(resp, response, request.host, host)
         response.request = request
+        print resp.status, uri
         return response
     
 
@@ -288,16 +291,16 @@ class ForwardMap(dict):
         self.ordered_hosts.append(value)
     def known_hosts(self, first_forward_hosts, exclude_hosts):
         hosts = first_forward_hosts
-        for host in self.ordered_hosts:
+        for host in reversed(self.ordered_hosts):
             if host not in hosts and host not in exclude_hosts:
                 hosts.append(host)
         return hosts
         
 class ForwardingManager(object):
     mapped_response_pass_codes = [200]
-    mapped_response_pass_threshold = 399
+    mapped_response_pass_threshold = 299
     unmapped_response_pass_codes = [200]
-    unmapped_response_pass_threshold = 399
+    unmapped_response_pass_threshold = 299
     first_forward_hosts = []
     exclude_from_retry = copy(global_exclude)
     
@@ -306,7 +309,6 @@ class ForwardingManager(object):
         self.request_conditions = []
         self.response_conditions = []
         self.initial_forward_map = {}
-        self.forward_map = ForwardMap()
         self.redirect_forms = {}
         self.forwarding_test_url = None
         
@@ -322,14 +324,17 @@ class ForwardingManager(object):
             self.test_url = None
             self.test_host = None
         else:
+            url = urlparse(test_url)
+            self.forward_map = ForwardMap()
             self.forwarding_test_url = test_url
             self.test_url = urlparse(test_url)
             self.test_host = self.test_url.scheme+"://"+self.test_url.netloc
+            self.forward_map[self.test_host] = self.test_host
             # This is for reverse compat with old debugging
             import windmill
             windmill.settings['FORWARDING_TEST_URL'] = test_url     
     def is_mapped(self, request):
-        if (request.full_uri in self.forward_map):
+        if (request.proxy_uri in self.forward_map):
             return True
         if (request.environ.get('HTTP_REFERER', None) in self.forward_map):
             return True
@@ -337,8 +342,8 @@ class ForwardingManager(object):
     
     def get_forward_host(self, request):
         """Check if a request uri is in the forward map by uri and referer"""
-        if request.full_uri in self.forward_map:
-            return self.forward_map[request.full_uri]
+        if request.proxy_uri in self.forward_map:
+            return self.forward_map[request.proxy_uri]
         # Check referer, use tripple false tuple in case someone added a constant to 
         # the forward map
         if request.environ.get('HTTP_REFERER', (False, False, False)) in self.forward_map:
@@ -357,16 +362,16 @@ class ForwardingManager(object):
         self.redirect_forms[uri] = form.encode('utf-8')
     
     def is_form_forward(self, request):
-        if self.redirect_forms.has_key(request.full_uri):
+        if self.redirect_forms.has_key(request.proxy_uri):
             return True
         return False
         
     def form_forward(self, request):
-        form = self.redirect_forms.pop(request.full_uri)
+        form = self.redirect_forms.pop(request.proxy_uri)
         return form
     
     def initial_forward(self, request):
-        new_uri = request.full_uri.replace(request.host, self.test_host)
+        new_uri = request.proxy_uri.replace(request.host, self.test_host)
         self.forward_map[new_uri] = request.host
         return new_uri
     
@@ -402,9 +407,9 @@ class ForwardingManager(object):
                 return result
         if mapped: g = 'mapped_'
         else: g = 'unmapped_' 
-        if client_response.status in getattr(self, g+'response_pass_codes'):
+        if client_response.http2lib_response.status in getattr(self, g+'response_pass_codes'):
             return True
-        if client_response > getattr(self, g+'response_pass_threshold'):
+        if client_response.http2lib_response.status > getattr(self, g+'response_pass_threshold'):
             return False
         else:
             return True
@@ -424,6 +429,7 @@ class ProxyApplication(Application):
         self.client = ProxyClient(self.fm)
     
     def handler(self, request):
+        request.proxy_uri = request.environ['RAW_PATH']
         if self.fm.enabled and self.fm.forwardable(request):
             if request.host != self.fm.test_host:
                 # request host is not the same as the test host, we need to do an initial forward
@@ -454,7 +460,7 @@ class ProxyApplication(Application):
             for host in self.fm.get_retry_hosts(request):
                 client_response = self.client.make_request(request, host)
                 if self.fm.response_conditions_pass(request, host, client_response, mapped=False):
-                    return response
+                    return client_response
 
             # At this point all requests have failed
             if targeted_client_response:
