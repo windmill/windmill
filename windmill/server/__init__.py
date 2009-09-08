@@ -20,12 +20,21 @@ initial_forwarding_conditions = [
     lambda e : not e['reconstructed_url'].endswith(".mozilla.com/firefox/headlines.xml")
     ]
 
+current_add_forward_condition = None
+current_remove_forward_condition = None
+
 def add_forward_condition(condition):
-    initial_forwarding_conditions.append(condition)
+    if not current_add_forward_condition:
+        initial_forwarding_conditions.append(condition)
+    else:
+        current_add_forward_condition(condition)
     
 def remove_forward_condition(condition):
-    while condition in initial_forwarding_conditions:
-        initial_forwarding_conditions.remove(condition)
+    if not current_remove_forward_condition:
+        while condition in initial_forwarding_conditions:
+            initial_forwarding_conditions.remove(condition)
+    else:
+        current_remove_forward_condition(condition)
 
 import os
 
@@ -106,12 +115,12 @@ def make_server(http_port=None, js_path=None, compression_enabled=None):
     add_namespace = application.add_resource
     
     # These globals are renamed for reverse compatibility
-    global add_forward_condition
-    add_forward_condition = application.proxy_application.fm.add_environ_condition
-    global remove_forward_condition
-    remove_forward_condition = application.proxy_application.fm.remove_environ_condition
+    global current_add_forward_condition
+    current_add_forward_condition = application.proxy_application.fm.add_environ_condition
+    global current_remove_forward_condition
+    current_remove_forward_condition = application.proxy_application.fm.remove_environ_condition
 
     for c in initial_forwarding_conditions:
-        add_forward_condition(c)
+        current_add_forward_condition(c)
 
     return httpd
