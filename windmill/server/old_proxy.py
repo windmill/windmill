@@ -1,4 +1,4 @@
-#   Copyright (c) 2006-2007 Open Source Applications Foundation
+    #   Copyright (c) 2006-2007 Open Source Applications Foundation
 #   Copyright (c) 2008-2009 Mikeal Rogers <mikeal.rogers@gmail.com>
 #   Copyright (c) 2009 Canonical Ltd.
 #   Copyright (c) 2009 Domen Kozar <domen@dev.si>

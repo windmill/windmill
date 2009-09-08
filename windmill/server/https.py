@@ -389,6 +389,7 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
         
     # daemon_threads = True
     daemon_thread = False # For debugging
+    protocol_version = '1.1'
 
     def setup_environ(self):
         # Set up base environment

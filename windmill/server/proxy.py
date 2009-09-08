@@ -269,11 +269,18 @@ class ProxyClient(object):
         # TODO: Cookie handler on headers
         for k in ['status', 'reason']:
             if k in resp: del resp[k]
+        headers = {}
+        proxy_netloc = proxy_host[proxy_host.rindex('/')+1:]
+        request_netloc = request_host[request_host.rindex('/')+1:]
+        for k,v in resp.items():
+            headers[k] = v.replace(request_host, proxy_host).replace(request_netloc, proxy_netloc)
+            
         response.headers = [(k,v.replace(proxy_host, request_host),) for k,v in resp.items()]
     
     def make_request(self, request, host):
         uri = request.proxy_uri.replace(request.host, host, 1)
         headers = self.clean_request_headers(request, host)
+        headers['host'] = host[host.rindex('/')+1:]
         resp, response = self.http.request(uri, method=request.method, body=str(request.body),
                                            headers=headers)
         self.set_response_headers(resp, response, request.host, host)
@@ -294,6 +301,7 @@ class ForwardMap(dict):
         for host in reversed(self.ordered_hosts):
             if host not in hosts and host not in exclude_hosts:
                 hosts.append(host)
+        # print hosts
         return hosts
         
 class ForwardingManager(object):
@@ -460,6 +468,7 @@ class ProxyApplication(Application):
             for host in self.fm.get_retry_hosts(request):
                 client_response = self.client.make_request(request, host)
                 if self.fm.response_conditions_pass(request, host, client_response, mapped=False):
+                    self.fm.forward_map[request.proxy_uri] = host
                     return client_response
 
             # At this point all requests have failed
@@ -469,6 +478,7 @@ class ProxyApplication(Application):
             else:
                 # If we don't even have a mapped response, return it form test host
                 return self.client.make_request(request, request.host)
+            print 'waaaa haaaapen'
 
-# 
+#
 # class IterativeResponse(object):
