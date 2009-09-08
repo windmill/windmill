@@ -98,5 +98,19 @@ def make_server(http_port=None, js_path=None, compression_enabled=None):
     httpd.command_resolution_suite = application.command_resolution_suite
     httpd.xmlrpc_methods_instance = application.xmlrpc_methods_instance
     httpd.jsonrpc_methods_instance = application.jsonrpc_methods_instance
+    
+    # Global declarations.
+    # Eventually it would be great to get rid of these provided we have some way of passing 
+    # the current server instance to test modules.
+    global add_namespace
+    add_namespace = application.add_resource
+    
+    # These globals are renamed for reverse compatibility
+    global add_forward_condition
+    add_forward_condition = application.proxy_application.fm.add_environ_condition
+    global remove_forward_condition
+    remove_forward_condition = application.proxy_application.fm.remove_environ_condition
+
+    
 
     return httpd

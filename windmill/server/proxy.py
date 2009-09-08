@@ -379,6 +379,12 @@ class ForwardingManager(object):
     add_environ_condition = lambda self, condition: self.environ_conditions.append(condition)
     add_request_condition = lambda self, condition: self.request_conditions.append(condition)
     add_response_condition = lambda self, condition: self.response_conditions.append(condition)
+    def remove_environ_condition(self, condition):
+        while condition in self.environ_conditions:
+            self.environ_conditions.remove(condition)
+    def remove_request_condition(self, condition):
+        while condition in self.request_conditions:
+            self.request_conditions.remove(condition)
          
     def proxy_conditions_pass(self, request):
         for condition in self.environ_conditions:
