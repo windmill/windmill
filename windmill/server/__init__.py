@@ -19,14 +19,14 @@ initial_forwarding_conditions = [
     lambda e : e.get('CONTENT_TYPE') != 'application/x-shockwave-flash',
     lambda e : not e['reconstructed_url'].endswith(".mozilla.com/firefox/headlines.xml")
     ]
-# 
-# def add_forward_condition(condition):
-#     forwarding_conditions.append(condition)
-#     
-# def remove_forward_condition(condition):
-#     while condition in forwarding_conditions:
-#         forwarding_conditions.remove(condition)
-# 
+
+def add_forward_condition(condition):
+    initial_forwarding_conditions.append(condition)
+    
+def remove_forward_condition(condition):
+    while condition in initial_forwarding_conditions:
+        initial_forwarding_conditions.remove(condition)
+
 import os
 
 from webenv.rest import RestApplication
