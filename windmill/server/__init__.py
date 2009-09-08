@@ -76,7 +76,7 @@ class WindmillApplication(RestApplication):
                                                                        compression_enabled))
     def handler(self, request, *path):
         return self.proxy_application.handler(request)
-
+        
 def make_server(http_port=None, js_path=None, compression_enabled=None):
     if http_port is None:
         http_port = windmill.settings['SERVER_HTTP_PORT']

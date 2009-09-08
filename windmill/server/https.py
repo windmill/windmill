@@ -149,7 +149,9 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
     def __init__(self, request, client_address, server):
         self.reset()
         BaseHTTPRequestHandler.__init__(self, request, client_address, server)
-
+    
+    protocol_version = "HTTP/1.0"
+        
     def reset(self):
         self.headers_set = []
         self.headers_sent = []
@@ -212,7 +214,18 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
             if request is not None:
                 request.close()
 
-    def handle_ALL(self):
+    def handle_one_request(self):
+        self.raw_requestline = self.rfile.readline()
+        if not self.raw_requestline:
+            self.close_connection = 1
+            self.connection.close()
+            return
+        if not self.parse_request(): # An error code has been sent, just exit
+            return
+        
+        if self.command == 'CONNECT':
+            return self.do_CONNECT()
+        
         if not self.ready:
             raise AssertionError("This handler is not ready.")
         if self.start_response is not None:
@@ -227,17 +240,18 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
                 self.write(out)
         except socket.error, err:
             logger.debug("%s while serving (%s) %s" % (err,self.command, self.path))
-        
+
         self.wfile.flush()
         self.reset()
         if self.close_connection:
             self.connection.close()
-
-    do_GET = handle_ALL
-    do_POST = handle_ALL
-    do_PUT = handle_ALL
-    do_HEAD = handle_ALL
-    do_DELETE = handle_ALL
+    
+    
+    # do_GET = handle_ALL
+    # do_POST = handle_ALL
+    # do_PUT = handle_ALL
+    # do_HEAD = handle_ALL
+    # do_DELETE = handle_ALL
         
     def send_headers(self, response_headers):
         for header in response_headers:
@@ -294,10 +308,10 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
     def get_environ(self):
         """ Put together a wsgi environment """
         env = self.server.base_environ.copy()
-        env['RAW_PATH'] = self.path
         
         if hasattr(self, 'base_path'):
             self.path = self.base_path + self.path
+        env['RAW_PATH'] = self.path
         env['SERVER_PROTOCOL'] = self.request_version
         env['REQUEST_METHOD'] = self.command
         
@@ -389,7 +403,6 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
         
     # daemon_threads = True
     daemon_thread = False # For debugging
-    protocol_version = '1.1'
 
     def setup_environ(self):
         # Set up base environment

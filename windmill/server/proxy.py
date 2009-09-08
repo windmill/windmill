@@ -6,7 +6,7 @@ from time import sleep
 from copy import copy
 from urlparse import urlparse
 
-from webenv import Application, Response, Response302, HtmlResponse
+from webenv import Application, Response, Response302, HtmlResponse, Response404
 import httplib2
 
 logger = logging.getLogger()
@@ -261,21 +261,14 @@ class ProxyClient(object):
                 value = value.split('/windmill-serv')[-1]
             if not self.is_hop_by_hop(key):
                 headers[key] = value
-        if 'host' not in headers:
-            headers['host'] = request.environ['SERVER_NAME']   
         return headers
     
     def set_response_headers(self, resp, response, request_host, proxy_host):
         # TODO: Cookie handler on headers
         for k in ['status', 'reason']:
             if k in resp: del resp[k]
-        headers = {}
-        proxy_netloc = proxy_host[proxy_host.rindex('/')+1:]
-        request_netloc = request_host[request_host.rindex('/')+1:]
-        for k,v in resp.items():
-            headers[k] = v.replace(request_host, proxy_host).replace(request_netloc, proxy_netloc)
-            
-        response.headers = [(k,v.replace(proxy_host, request_host),) for k,v in resp.items()]
+        #[(k,v.replace(proxy_host, request_host),) for k,v in resp.items()]        
+        response.headers = resp.items() + cache_additions
     
     def make_request(self, request, host):
         uri = request.proxy_uri.replace(request.host, host, 1)
@@ -285,7 +278,7 @@ class ProxyClient(object):
                                            headers=headers)
         self.set_response_headers(resp, response, request.host, host)
         response.request = request
-        print resp.status, uri
+        # print resp.status, uri
         return response
     
 
@@ -306,9 +299,9 @@ class ForwardMap(dict):
         
 class ForwardingManager(object):
     mapped_response_pass_codes = [200]
-    mapped_response_pass_threshold = 299
+    mapped_response_pass_threshold = 399
     unmapped_response_pass_codes = [200]
-    unmapped_response_pass_threshold = 299
+    unmapped_response_pass_threshold = 399
     first_forward_hosts = []
     exclude_from_retry = copy(global_exclude)
     
@@ -438,6 +431,8 @@ class ProxyApplication(Application):
     
     def handler(self, request):
         request.proxy_uri = request.environ['RAW_PATH']
+        if not request.proxy_uri.startswith('http'):
+            return Response404("Cannot proxy relative requests")
         if self.fm.enabled and self.fm.forwardable(request):
             if request.host != self.fm.test_host:
                 # request host is not the same as the test host, we need to do an initial forward
@@ -478,7 +473,8 @@ class ProxyApplication(Application):
             else:
                 # If we don't even have a mapped response, return it form test host
                 return self.client.make_request(request, request.host)
-            print 'waaaa haaaapen'
+        else:
+            return self.client.make_request(request, request.host)
 
 #
 # class IterativeResponse(object):

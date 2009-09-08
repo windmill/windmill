@@ -229,4 +229,3 @@ class JSONRPCApplication(JSONRPCDispatcher, RestApplication):
         except Exception, e:
             logger.exception('WSGIJSONRPCApplication Dispatcher excountered exception')
             return Response500(str(e))
-
