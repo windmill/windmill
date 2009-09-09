@@ -81,19 +81,20 @@ windmill.xhr = new function() {
                   windmill.pauseLoop();
                   _this.action.params.aid = action.id;
               }
+              
               if (_this.methodArr.length > 1){
                   //if asserts.assertNotSomething we need to set the result to !result
                   if (_this.action.method.indexOf('asserts.assertNot') != -1) {
                       var m = _this.methodArr[1].replace('Not', '');
-                        try { 
-                          output = windmill.controller[_this.methodArr[0]][m](_this.action.params);
-                        } catch(err){
-                          var assertNotErr = true;
-                        }
-                        //If the not call didn't error, it's an error
-                        if (!assertNotErr){
-                          throw "returned true.";
-                        }
+                      try { 
+                        output = windmill.controller[_this.methodArr[0]][m](_this.action.params);
+                      } catch(err){
+                        var assertNotErr = true;
+                      }
+                      //If the not call didn't error, it's an error
+                      if (!assertNotErr){
+                        throw "returned true.";
+                      }
                   }
                   //Normal asserts and waits
                   else {

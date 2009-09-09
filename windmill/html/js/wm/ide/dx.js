@@ -15,7 +15,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 */
 
 //DOM Explorer Functions
-windmill.ui.domexplorer = new function() {
+windmill.ui.dx = new function() {
   var exploreState = false;
   
   this.setExploreState = function() {
@@ -30,12 +30,6 @@ windmill.ui.domexplorer = new function() {
   this.setIdInRemote = function(e) {
     if ($(windmill.ui.remote.selectedElement) == null){
       windmill.ui.remote.selectedElement = null;
-    }
-    if (windmill.ui.remote.selectedElement != null) {
-      $("domExp").style.display = 'none';
-    }
-    if (windmill.ui.remote.selectedElementOption != null) {
-      $("domExp").style.display = 'none';
     }
     
     //if absolute xpath is not wanted try our best to get a better locater
@@ -93,65 +87,57 @@ windmill.ui.domexplorer = new function() {
       }
       
       //trying to keep old borders from getting left all over the page
-      if (windmill.ui.domexplorer.currElem){
-          //sometimes IE doesn't like this
-          try{
-            windmill.ui.domexplorer.currElem.style[windmill.ui.hilightProp] = "";
-          }
-          catch(err){}
+      if (windmill.ui.dx.currElem){
+        //sometimes IE doesn't like this
+        try {
+          windmill.ui.dx.currElem.style[windmill.ui.hilightProp] = "";
+        } catch(err){}
       }
       
       e.target.style[windmill.ui.hilightProp] = windmill.ui.borderHilight;
-      windmill.ui.domexplorer.currElem = e.target;
+      windmill.ui.dx.currElem = e.target;
       
       this.explorerUpdate(e);
   };
-
+  
+  this.parseDOMExp = function(){
+    var a = $("domExp").innerHTML.split(': ');
+    //If the element is a link, get rid of the all the garbage
+    if (a[0] == 'link') {
+      a[1] = a[1].replace(/(<([^>]+)>)/ig, "");
+      a[1] = a[1].replace(/\n/g, "");
+    }
+    return a;
+  };
+  
+  this.updateAction = function(){
+    var a = this.parseDOMExp();
+    a[0] = a[0].toLowerCase();
+    
+    if (windmill.ui.remote.selectedElementOption) {
+      var id = windmill.ui.remote.selectedElementOption.replace('option', '');
+      $(id + 'optionType').value = 'opt'+a[0];
+      $(id + 'option').value = a[1];
+      $(id + 'option').focus();
+    }
+    if (windmill.ui.remote.selectedElement) {
+      var id = windmill.ui.remote.selectedElement.replace('locator', '');
+      $(id + 'locatorType').value = a[0];
+      $(id + 'locator').value = a[1];
+      $(id + 'locator').focus();
+    }
+  };
+  
   this.explorerUpdate = function(e) {
     e.cancelBubble = true;
     if (windmill.browser.isIE == false) {
+      try {
         e.stopPropagation();
         e.preventDefault();
-    }
-    if (windmill.ui.remote.selectedElementOption != null && e.altKey == false) {
-        var id = windmill.ui.remote.selectedElementOption.replace('option', '');
-        //Incase if that node has been removed somehow
-        try {
-          var a = $("domExp").innerHTML.split(': ');
-          //If the element is a link, get rid of the all the garbage
-          if (a[0] == 'link') {
-              a[1] = a[1].replace(/(<([^>]+)>)/ig, "");
-              a[1] = a[1].replace(/\n/g, "");
-          }
-          $(id + 'optionType').value = 'opt'+a[0].toLowerCase();
-          $(id + 'option').value = a[1];
-          $(id + 'option').focus();
-        }
-        catch(error) {
-          windmill.err('Error in dom explorer');
-        }
+      } catch(err){}
     }
     
-    if (windmill.ui.remote.selectedElement != null) {
-        var id = windmill.ui.remote.selectedElement.replace('locator', '');
-        
-        //Incase if that node has been removed somehow
-        try {
-          var a = $("domExp").innerHTML.split(': ');
-          //If the element is a link, get rid of the all the garbage
-          if (a[0] == 'link') {
-              a[1] = a[1].replace(/(<([^>]+)>)/ig, "");
-              a[1] = a[1].replace(/\n/g, "");
-          }
-          $(id + 'locatorType').value = a[0].toLowerCase();
-          $(id + 'locator').value = a[1];
-          $(id + 'locator').focus();
-        }
-        catch(error) {
-          windmill.err('Error in dom explorer');
-        }
-    }
-    
+    this.updateAction();
   };
   
   this.showMouseCoords = function(e){
@@ -176,11 +162,10 @@ windmill.ui.domexplorer = new function() {
       }
     }
     else {
-      if ($("domExp").style.display == 'none'){
-        windmill.ui.domexplorer.domExplorerOff();
-      } else {
-        windmill.ui.domexplorer.dxRecursiveUnBind(windmill.testWin());
-      }
+      var toggleButton = jQuery(":button").filter(":contains(Pause)")[0];
+      windmill.events.triggerMouseEvent(toggleButton, 'click', true);
+      
+      this.domExplorerOff();
       window.focus();
     }
   };
@@ -188,14 +173,14 @@ windmill.ui.domexplorer = new function() {
   //Set the listeners for the dom explorer
   this.domExplorerOn = function() {
     
-    //Display the mouse coords in the IDE
-    fleegix.event.listen(windmill.testWin().document.body, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
+    jQuery("#domInspector").dialog('open');
     
+    //Display the mouse coords in the IDE
+    fleegix.event.listen(windmill.testWin().document.body, 'onmousemove', windmill.ui.dx, 'showMouseCoords');
     
     this.exploreState = true;
     try {
       $('explorer').src = 'img/xoff.png';
-      $('domExp').style.display = 'block';
       $('domExp').innerHTML = '';
       this.dxRecursiveBind(windmill.testWin());
     }
@@ -208,9 +193,18 @@ windmill.ui.domexplorer = new function() {
 
   //Remove the listeners for the dom explorer
   this.domExplorerOff = function() {
+    window.focus();
+    
+    try {
+      var toggleButton = jQuery(":button").filter(":contains(Pause)")[0];
+    
+      if (toggleButton.innerHTML == "Pause"){
+        windmill.events.triggerMouseEvent(toggleButton, 'click', true);
+      }
+    } catch(err){}
+    
     //Mouse coords display off
-    fleegix.event.unlisten(windmill.testWin().document.body, 'onmousemove', windmill.ui.domexplorer, 'showMouseCoords');
-    $('mouseExp').innerHTML = "";
+    fleegix.event.unlisten(windmill.testWin().document.body, 'onmousemove', windmill.ui.dx, 'showMouseCoords');
     this.exploreState = false;
 
     try {
@@ -219,8 +213,6 @@ windmill.ui.domexplorer = new function() {
       windmill.ui.remote.selectedElementOption = null;
       
       $('explorer').src = 'img/xon.png';
-      $('domExp').style.display = 'none';
-      $('domExp').innerHTML = '';
       this.dxRecursiveUnBind(windmill.testWin());
     }
     catch(error) {
@@ -229,7 +221,39 @@ windmill.ui.domexplorer = new function() {
       this.exploreState = false;
     }
   };
-
+  
+  this.enableFlashExplorer = function(win){
+    //turn on flash explorer if it's available
+    var embeds = win.document.getElementsByTagName("embed");
+    //only add the explorer call back method if we have some flash on the page
+    if (embeds.length > 0){
+      win.wm_explorerSelect = function(obj){
+        $("domExp").innerHTML = "chain: "+obj;
+        return true;
+      };
+      win.wm_explorerStopped = function(obj){
+        windmill.ui.dx.domExplorerOff();
+        return true;
+      }
+    }
+    
+    //star the explorers on the page
+    for (var i=0;i<embeds.length;i++){
+        embeds[i].wm_explorerStart();
+    }
+  };
+  
+  this.disableFlashExplorer = function(win){
+    //turn on flash explorer if it's available
+    var embeds = win.document.getElementsByTagName("embed");
+    //only add the explorer call back method if we have some flash on the page
+    
+    //star the explorers on the page
+    for (var i=0;i<embeds.length;i++){
+        embeds[i].wm_explorerStop();
+    }
+  };
+  
   //Recursively bind to all the iframes and frames within
   this.dxRecursiveBind = function(frame) {
     var exitEvent = "onclick";
@@ -238,11 +262,13 @@ windmill.ui.domexplorer = new function() {
     }
     
     this.dxRecursiveUnBind(frame);
-
+    
     fleegix.event.listen(frame.document, 'onmouseover', this, 'setIdInRemote');
     fleegix.event.listen(frame.document, 'onmouseout', this, 'resetBorder');
     fleegix.event.listen(frame.document, exitEvent, this, 'explorerClick');
-
+    
+    this.enableFlashExplorer(frame);
+    
     var iframeCount = frame.window.frames.length;
     var iframeArray = frame.window.frames;
 
@@ -252,6 +278,7 @@ windmill.ui.domexplorer = new function() {
         fleegix.event.listen(iframeArray[i].document, 'onmouseout', this, 'resetBorder');
         fleegix.event.listen(iframeArray[i].document, exitEvent, this, 'explorerClick');
         this.dxRecursiveBind(iframeArray[i]);
+        this.enableFlashExplorer(iframeArray[i]);
       }
       catch(error) {
         windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
@@ -264,6 +291,8 @@ windmill.ui.domexplorer = new function() {
     if (!$('domInspectorExit').checked){
       exitEvent = "ondblclick";
     }
+    
+    this.disableFlashExplorer(frame);
     
     fleegix.event.unlisten(frame.document, 'onmouseover', this, 'setIdInRemote');
     fleegix.event.unlisten(frame.document, 'onmouseout', this, 'resetBorder');
@@ -278,6 +307,7 @@ windmill.ui.domexplorer = new function() {
         fleegix.event.unlisten(iframeArray[i].document, 'onmouseout', this, 'resetBorder');
         fleegix.event.unlisten(iframeArray[i].document, exitEvent, this, 'explorerClick');
         this.dxRecursiveUnBind(iframeArray[i]);
+        this.disableFlashExplorer(iframeArray[i]);
       }
       catch(error) {
         windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');

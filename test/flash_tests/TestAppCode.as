@@ -42,7 +42,7 @@ package {
     public function init(ctxt:Application):void {
       context = ctxt;
       stg = context.stage;
-
+      trace('Foo');
       WMBootstrap.init(context);
 
       // Panel

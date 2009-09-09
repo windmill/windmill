@@ -14,24 +14,24 @@ Copyright 2006-2007, Open Source Applications Foundation
  limitations under the License.
 */
 
-windmill.registry = new function () {
+flashunit = new function () {
   this.methods  = {};
   this.locator = [];
   this.option  = [];
 };
 
 //Setup all the current methods supported
-windmill.registry.locator = ['id','link','xpath','jsid', 'name','value','classname', 'tagname','label','jquery', 'rteID'];
-//windmill.registry.locator.push('id','link','xpath','jsid', 'name','classname', 'tagname');
+flashunit.locator = ['id','link','xpath','jsid', 'name','value','classname', 'tagname','label','jquery', 'rteID','chain'];
+//flashunit.locator.push('id','link','xpath','jsid', 'name','classname', 'tagname');
 
-for( var i=0; i<windmill.registry.locator.length;i++ ){
-  windmill.registry.option.push('opt'+windmill.registry.locator[i]);
+for( var i=0; i<flashunit.locator.length;i++ ){
+  flashunit.option.push('opt'+flashunit.locator[i]);
 }
 
-windmill.registry.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js', 'status','domain', 'coords', 'pixels', 'val');
+flashunit.option.push('text','url','option','validator','destination','stopOnFailure', 'milliseconds', 'timeout','js', 'status','domain', 'coords', 'pixels', 'val');
 
 //Setup method registry
-windmill.registry.methods = {
+flashunit.methods = {
   '-- Mouse --': {'locator': false, 'option': false, 'section': true},
   'click': {'locator': true, 'option': false},
   'doubleClick': {'locator': true, 'option': false},
@@ -83,6 +83,8 @@ windmill.registry.methods = {
   'storeVarFromIDEJS': {'locator': false, 'option': 'options' },
   'storeVarFromLocAttrib': {'locator': true, 'option': 'options' },
   'triggerEvent': {'locator': true, 'option': 'option' },
+  '-- Flash --': {'locator': false, 'option': false, 'section': true},
+  'flash.click': {'locator': true, 'option': true, 'optionIsLocator': true},
   '-- Asserts --': {'locator': false, 'option': false, 'section': true},
   'asserts.assertJS': {'locator': false, 'option': 'js' },
   'asserts.assertIDEJS': {'locator': false, 'option': 'js' },

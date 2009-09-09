@@ -138,7 +138,7 @@ windmill.ui.playback = new function() {
   this.sendPlayBack = function(uuid, suiteOnly) {
       //Turn off explorers and recorder
       windmill.ui.recorder.recordOff();
-      windmill.ui.domexplorer.domExplorerOff();
+      windmill.ui.dx.domExplorerOff();
       windmill.ui.assertexplorer.assertExplorerOff();
       windmill.runTests = true;
       
@@ -198,12 +198,12 @@ windmill.ui.playback = new function() {
                           var paramsObj = {};
                           paramsObj.uuid = suites[i].childNodes[j].id;
 
-                          if (windmill.registry.methods[actionObj.method].locator) {
+                          if (flashunit.methods[actionObj.method].locator) {
                               var si = $(suites[i].childNodes[j].id + 'locatorType').selectedIndex;
                               paramsObj[$(suites[i].childNodes[j].id + 'locatorType')[si].value] = $(suites[i].childNodes[j].id + 'locator').value;
 
                           }
-                          if (windmill.registry.methods[actionObj.method].option) {
+                          if (flashunit.methods[actionObj.method].option) {
                               var optionNode = $(suites[i].childNodes[j].id + 'optionType');
                               //if we have a drop down, get the selected element
                               if (optionNode.tagName.toLowerCase() == "select"){

@@ -257,11 +257,11 @@ windmill.ui.remote = new function() {
                   var paramsObj = {};
                   paramsObj.uuid = suite.childNodes[j].id;
 
-                  if (windmill.registry.methods[actionObj.method].locator) {
+                  if (flashunit.methods[actionObj.method].locator) {
                     var si = $(suite.childNodes[j].id + 'locatorType').selectedIndex;
                     paramsObj[$(suite.childNodes[j].id + 'locatorType')[si].value] = $(suite.childNodes[j].id + 'locator').value;
                   }
-                  if (windmill.registry.methods[actionObj.method].option) {
+                  if (flashunit.methods[actionObj.method].option) {
                     var optNode = $(suite.childNodes[j].id + 'optionType');
                     //if we have a select vs a span (1 option)
                     if (optNode.tagName.toLowerCase() == "select"){
@@ -303,7 +303,7 @@ windmill.ui.remote = new function() {
     };
     
     this.getMethods = function(state){
-      var reg = windmill.registry;
+      var reg = flashunit;
       
       var select = document.createElement('select');
       select.className = 'smalloption';
@@ -327,12 +327,14 @@ windmill.ui.remote = new function() {
       }
       select.setAttribute("onchange", "windmill.ui.remote.methodChange('" + state.action.id + "');");
       select.title = "Controller method to execute.";
-      jQuery(select).tooltip({showURL: false});
+      if ($('showToolTips').checked){
+        jQuery(select).tooltip({showURL: false});
+      }
       return select;  
     };
     
     this.getOptions = function(state){
-      var reg = windmill.registry;
+      var reg = flashunit;
       
       var select = document.createElement('select');
       select.className = 'smalloption';
@@ -384,12 +386,14 @@ windmill.ui.remote = new function() {
       }
       
       select.title = "Optional parameters.";
-      jQuery(select).tooltip({showURL: false});
+      if ($('showToolTips').checked){
+        jQuery(select).tooltip({showURL: false});
+      }
       return select;
     };
     
     this.getLocatorType = function(params){
-      var reg = windmill.registry;
+      var reg = flashunit;
       var locator = null;
       //Get the locator from all available
       for (var loc = 0; loc < reg.locator.length; loc++){
@@ -402,7 +406,7 @@ windmill.ui.remote = new function() {
     
     this.getLocators = function(state){
       var _this = windmill.ui.remote;
-      var reg = windmill.registry;
+      var reg = flashunit;
       
       if (!reg.methods[state.method].locator){
         return false;
@@ -430,13 +434,14 @@ windmill.ui.remote = new function() {
          select.appendChild(option);
       }
       select.title = "Locator used to lookup node.";
-      jQuery(select).tooltip({showURL: false});
-      
+      if ($('showToolTips').checked){
+        jQuery(select).tooltip({showURL: false});
+      }
       return select;
     };
     
     this.getLocatorInput = function(state){
-      var reg = windmill.registry;
+      var reg = flashunit;
       var _this = windmill.ui.remote;
       var locator = _this.getLocatorType(state.params);
       
@@ -462,7 +467,7 @@ windmill.ui.remote = new function() {
     };
     
     this.getOptionInput = function(state){
-      var reg = windmill.registry;
+      var reg = flashunit;
       
       var input = document.createElement('input');
       input.name = 'optValue';
@@ -534,7 +539,7 @@ windmill.ui.remote = new function() {
     //Element representing that action for the UI
     this.buildAction = function(method, params) {
         var _this = windmill.ui.remote;
-        var reg = windmill.registry;
+        var reg = flashunit;
         //if we just want a blank action
         //default to type for now so everything gets displayed
         if (method == null) {
