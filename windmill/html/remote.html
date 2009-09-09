@@ -51,9 +51,17 @@
           });
         });
     });
+    
+    var ideLoad = function(){
+      $('execSpeed').value = windmill.serviceDelay;
+    };
+    var updateSpeed = function(){
+      windmill.serviceDelay = $('execSpeed').value;
+    };
+    
 	</script>
 </head>
-<body>
+<body onload="ideLoad();">
   <img style="position:absolute;" id="icon" src="img/wmIcon.png" alt="Welcome to Windmill!">
   
   <div id="menu" style="position:relative;height:20px;z-index:99;font-size:11px">
@@ -169,12 +177,16 @@
 
     </div>
         
-    <div id="dialog" style="padding-top:0px;margin-top:0px;">
+    <div id="dialog" title="Windmill Settings" style="padding-top:0px;margin-top:0px;">
       <div id="settings" style="font-size:12px;">
        		<form id='settingsForm' name='settingsForm'>
-       			<h3 style="color:#25444e">Windmill Settings</h3>
+            <br>
        		  <strong>System</strong><br>
        		<table>
+       		  <tr>
+       				<td>Test Execution Speed:</td>
+       				<td> <input type="text" name="execSpeed" value="0" id="execSpeed" size="4" onchange="updateSpeed()"></td>
+       			</tr>
        			<tr>
        				<td>Throw JavaScript errors, full debug:</td>
        				<td> <INPUT TYPE=checkbox UNCHECKED ID='throwDebug'></td>

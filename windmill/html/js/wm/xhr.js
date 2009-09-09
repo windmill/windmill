@@ -188,7 +188,7 @@ windmill.xhr = new function() {
             if (_this.action.method != 'defer') {
               _this.runAction();
             } else {
-              windmill.serviceDelay = windmill.serviceDelayDefer;
+              //windmill.serviceDelay = windmill.serviceDelayDefer;
               windmill.ui.playback.resetPlayBack();
               windmill.stat("Ready, Waiting for tests...");
             }
