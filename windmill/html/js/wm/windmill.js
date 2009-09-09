@@ -28,7 +28,7 @@ var windmill = new function() {
 
     this.serviceDelay = 0;
     this.serviceDelayRunning = 0;
-    this.serviceDelayDefer = 0;
+    this.serviceDelayDefer = 800;
 
     this.safeWaits = true;
     
