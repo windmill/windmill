@@ -30,6 +30,14 @@ var jsonCall = function(version, method, params) {
 //Translates from the way we are passing objects to functions to the lookups
 var lookupNode = function (paramObject, scroll){
   
+  //if the node passed in is actually a DOM node, just return it.
+  try {
+    if (paramObject.attachEvent || paramObject.nodeType ||
+      paramObject.addEventListener) {
+      return paramObject;
+    }
+  } catch(err){}
+  
   var s = null;
   var element = null;
   

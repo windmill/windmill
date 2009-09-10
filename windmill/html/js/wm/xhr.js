@@ -26,6 +26,7 @@ windmill.xhr = new function() {
     
     //Keep track of the loop state, running or paused
     this.loopState = false;
+    this.actionQueued = false;
     
     //If the are variables passed we need to do our lex and replace
     this.processVar = function(str){
@@ -38,11 +39,16 @@ windmill.xhr = new function() {
       return str;
     }
     
+    this.goWait = function(){
+      windmill.xhr.actionQueued = true;
+      windmill.controller.waits.forElement(windmill.xhr.action.params, windmill.xhr.action);
+    };
+    
     this.runAction = function(){
       var _this = windmill.xhr;
       
       //setup state
-      windmill.serviceDelay = windmill.serviceDelayRunning;
+      //windmill.serviceDelay = windmill.serviceDelayRunning;
       windmill.stat("Running " + _this.action.method + "...");
       windmill.ui.playback.setPlaying();
       //Put on windmill main page that we are running something
@@ -77,10 +83,34 @@ windmill.xhr = new function() {
             //Start the action running timer
               windmill.xhr.action_timer.startTime();
               //Wait/open needs to not grab the next action immediately
-              if ((_this.methodArr[0] == 'waits')) {
+              //waits and nodes that have a lookup that isn't returning
+              //if there is no node, this will be false
+              //if there is a node, but it doesn't return it will throw
+              //else we have a node
+              try {
+                _this.node = lookupNode(_this.action.params);
+              } catch(err){
+                _this.node = null;
+              }
+              
+              //auto wait for only UI actions
+              //where the lookup fails.
+              if ((_this.node == null) && 
+                  (_this.methodArr[0] != 'waits') &&
+                  (_this.methodArr[0] != 'asserts')){
+                    
+                windmill.pauseLoop();
+                _this.action.params.aid = action.id;
+                _this.goWait();
+                return;
+              }
+              
+                            
+              if (_this.methodArr[0] == 'waits'){
                   windmill.pauseLoop();
                   _this.action.params.aid = action.id;
               }
+              //asserts., waits.
               if (_this.methodArr.length > 1){
                   //if asserts.assertNotSomething we need to set the result to !result
                   if (_this.action.method.indexOf('asserts.assertNot') != -1) {
@@ -128,7 +158,7 @@ windmill.xhr = new function() {
               //Sometimes this is a huge dom exception which can't be serialized
               //so what we want to use is the message property
               if (error.message){
-                _this.action.params.error = error.message;
+                _this.action.params.error = error.message + "" + error.lineNumber;
               } else { 
                 _this.action.params.error = error; 
               }
@@ -320,7 +350,17 @@ windmill.xhr = new function() {
         }
     };
     this.setWaitBgAndReport = function(aid, result, obj) {
-        if (!obj) { return false; }
+        if (windmill.xhr.actionQueued){
+          windmill.xhr.actionQueued = false;
+          windmill.xhr.runAction();
+          windmill.continueLoop();
+          return;
+        }
+        
+        if (!obj) { 
+          windmill.continueLoop();
+          return false; 
+        }
         
         var action = $(aid);
         var output = $(aid+"result");
@@ -362,5 +402,6 @@ windmill.xhr = new function() {
           windmill.xhr.sendReport(obj.method, result, windmill.xhr.action_timer, undefined);
         }
         windmill.xhr.action_timer.write(obj.params);
+        windmill.continueLoop();
     };
 };
