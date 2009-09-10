@@ -32,9 +32,9 @@ var lookupNode = function (paramObject, scroll){
   
   //if the node passed in is actually a DOM node, just return it.
   try {
-    if (paramObject.attachEvent || paramObject.nodeType ||
-      paramObject.addEventListener) {
-      return paramObject;
+    if (paramObject.node.attachEvent || paramObject.node.nodeType ||
+      paramObject.node.addEventListener) {
+      return paramObject.node;
     }
   } catch(err){}
   
