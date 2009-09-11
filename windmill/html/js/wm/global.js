@@ -30,14 +30,6 @@ var jsonCall = function(version, method, params) {
 //Translates from the way we are passing objects to functions to the lookups
 var lookupNode = function (paramObject, scroll){
   
-  //if the node passed in is actually a DOM node, just return it.
-  try {
-    if (paramObject.node.attachEvent || paramObject.node.nodeType ||
-      paramObject.node.addEventListener) {
-      return paramObject.node;
-    }
-  } catch(err){}
-  
   var s = null;
   var element = null;
   
@@ -211,12 +203,16 @@ var busyOff = function(){
 //     $('ide').style.display = 'block';
 // };
 
+var updateSpeed = function(){
+  windmill.serviceDelay = $('execSpeed').value;
+};
+
 var openSettings = function() {
     //Turn off explorers and recorder
     windmill.ui.recorder.recordOff();
     windmill.ui.domexplorer.domExplorerOff();
     windmill.ui.assertexplorer.assertExplorerOff();
-
+    $('execSpeed').value = windmill.serviceDelay;
     //$(id).style.display = 'block';
     jQuery("#dialog").dialog('open');
     // $('ide').style.display = 'none';
