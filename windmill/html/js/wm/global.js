@@ -203,12 +203,16 @@ var busyOff = function(){
 //     $('ide').style.display = 'block';
 // };
 
+var updateSpeed = function(){
+  windmill.serviceDelay = $('execSpeed').value;
+};
+
 var openSettings = function() {
     //Turn off explorers and recorder
     windmill.ui.recorder.recordOff();
     windmill.ui.domexplorer.domExplorerOff();
     windmill.ui.assertexplorer.assertExplorerOff();
-
+    $('execSpeed').value = windmill.serviceDelay;
     //$(id).style.display = 'block';
     jQuery("#dialog").dialog('open');
     // $('ide').style.display = 'none';
