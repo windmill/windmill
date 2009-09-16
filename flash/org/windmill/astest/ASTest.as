@@ -173,6 +173,10 @@ package org.windmill.astest {
         // Run the test
         // -----------
         try {
+          if (!(test.methodName in test.instance)) {
+            throw new Error('"' + test.methodName +
+                '" is not a valid method in' + test.instance.toString());
+          }
           test.instance[test.methodName].call(test.instance);
         }
         catch (e:Error) {
@@ -235,11 +239,13 @@ package org.windmill.astest {
         var key:String;
         if ('order' in item.instance) {
           for each (key in item.instance.order) {
-            if (!key in methods) {
-              throw new Error(key + ' is not a method in ' + item.className);
+            // If the item specified in the 'order' list is an actual
+            // method, add it to the list -- if it doesn't actually exist
+            // (e.g., if the method has been commented out), just ignore it
+            if (key in methods) {
+              currTestList.push(createTestItem(methods[key], key));
+              delete methods[key];
             }
-            currTestList.push(createTestItem(methods[key], key));
-            delete methods[key];
           }
         }
         // Run any other methods in whatever order
