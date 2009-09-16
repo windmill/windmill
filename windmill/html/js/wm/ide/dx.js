@@ -28,8 +28,8 @@ windmill.ui.dx = new function() {
   
   //Display the id in the remote
   this.setIdInRemote = function(e) {
-    if ($(windmill.ui.remote.selectedElement) == null){
-      windmill.ui.remote.selectedElement = null;
+    if ($(windmill.ui.remote.selectedInputID) == null){
+      windmill.ui.remote.selectedInputID = null;
     }
     
     //if absolute xpath is not wanted try our best to get a better locater
@@ -113,18 +113,18 @@ windmill.ui.dx = new function() {
   this.updateAction = function(){
     var a = this.parseDOMExp();
     a[0] = a[0].toLowerCase();
-    
-    if (windmill.ui.remote.selectedElementOption) {
-      var id = windmill.ui.remote.selectedElementOption.replace('option', '');
-      $(id + 'optionType').value = 'opt'+a[0];
-      $(id + 'option').value = a[1];
-      $(id + 'option').focus();
-    }
-    if (windmill.ui.remote.selectedElement) {
-      var id = windmill.ui.remote.selectedElement.replace('locator', '');
-      $(id + 'locatorType').value = a[0];
-      $(id + 'locator').value = a[1];
-      $(id + 'locator').focus();
+
+    if (windmill.ui.remote.selectedInputID) {
+      var id = windmill.ui.remote.selectedInputID;
+      var input = $(id);
+      
+      if (id.indexOf("option") == -1){
+        var dd = $(id+"Type");
+        dd.value = a[0];
+      }
+      
+      input.value = a[1];
+      input.focus();
     }
   };
   
@@ -151,7 +151,7 @@ windmill.ui.dx = new function() {
       e.preventDefault();
     }
     
-    var optId = windmill.ui.remote.selectedElementOption;
+    var optId = windmill.ui.remote.selectedInputID;
     //if an option section is selected and the altKey is down append the mouse coords
     if ((optId != null) && (e.altKey)){
       if ($(optId).value == ""){
@@ -209,8 +209,7 @@ windmill.ui.dx = new function() {
 
     try {
       //Reset the selected element
-      windmill.ui.remote.selectedElement = null;
-      windmill.ui.remote.selectedElementOption = null;
+      windmill.ui.remote.selectedInputID = null;
       
       $('explorer').src = 'img/xon.png';
       this.dxRecursiveUnBind(windmill.testWin());

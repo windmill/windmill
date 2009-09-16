@@ -43,7 +43,7 @@ windmill.controller.extensions.assertFormMethod = function (paramObject) {
 // This makes it show up in the IDE -- note: it needs to be
 // an object key *string* of "extensions.yourAsserName"
 // You have to pass it as a string, since it contains a dot
-flashunit.methods['extensions.assertFormMethod'] = {
+windmill.registry.methods['extensions.assertFormMethod'] = {
   locator: true,
   option: 'validator'
 };

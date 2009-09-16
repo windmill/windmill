@@ -18,7 +18,7 @@ var _f = windmill.controller.flash;
 
 _f.click = function (paramObj) {
   var movie = lookupNode(paramObj);
-  var res = movie['wm_click']({chain:paramObj.optchain});
+  var res = movie['wm_click']({chain:paramObj['swf.chain']});
   
   if (res){
     throw (JSON.stringify(res));

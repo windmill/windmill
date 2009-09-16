@@ -23,9 +23,9 @@ windmill.service = new function() {
             if ((meth.charAt(0) != '_') && (!windmill.controller.asserts[meth].jsUnitAssert) && (typeof(windmill.controller.asserts[meth]) != 'object')) {
 
                 var newMethName = meth.replace('assert', '');
-                flashunit.methods['asserts.assertNot' + newMethName] = {
-                    'locator': flashunit.methods['asserts.' + meth].locator,
-                    'option': flashunit.methods['asserts.' + meth].option
+                windmill.registry.methods['asserts.assertNot' + newMethName] = {
+                    'locator': windmill.registry.methods['asserts.' + meth].locator,
+                    'option': windmill.registry.methods['asserts.' + meth].option
                 };
             }
         }

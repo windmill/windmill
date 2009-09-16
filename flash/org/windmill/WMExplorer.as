@@ -58,6 +58,11 @@ package org.windmill {
       stage.removeEventListener(MouseEvent.MOUSE_OVER, WMExplorer.select);
       stage.removeEventListener(MouseEvent.MOUSE_DOWN, WMExplorer.stop);
       WMExplorer.running = false;
+      
+      var res:* = ExternalInterface.call('wm_explorerStopped');
+      if (!res) {
+        WMLogger.log('(Windmill Flash bridge not found.)');
+      }
     }
 
     public static function highlight(e:MouseEvent):void {
