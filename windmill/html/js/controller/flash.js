@@ -16,10 +16,121 @@ Copyright 2009, Adam Christian (adam.christian@gmail.com) and Slide, Inc.
 
 var _f = windmill.controller.flash;
 
+var findSWFLocator = function(paramObj){
+  for (prop in paramObj){
+    if (prop.indexOf("swf") != -1){
+      return prop;
+    }
+  }
+  throw ("Could not find a flash locator in the provided object");
+};
+
 _f.click = function (paramObj) {
   var movie = lookupNode(paramObj);
-  var res = movie['wm_click']({chain:paramObj['swf.chain']});
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf.","");
   
+  var params = {};
+  params[loc] = paramObj[prop];
+  
+  var res = movie['wm_click'](params);
+    
+  if (res){
+    throw (JSON.stringify(res));
+  }
+};
+
+_f.check = function (paramObj) {
+  _f.click(paramObj);
+};
+
+_f.radio = function (paramObj) {
+  _f.click(paramObj);
+};
+
+_f.doubleClick = function (paramObj) {
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf.","");
+  
+  var params = {};
+  params[loc] = paramObj[prop];
+  
+  var res = movie['wm_click'](params);
+    
+  if (res){
+    throw (JSON.stringify(res));
+  }
+};
+
+_f.type = function (paramObj) {
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf.","");
+  
+  var params = {};
+  params[loc] = paramObj[prop];
+  params.text = paramObj.text;
+  
+  var res = movie['wm_type'](params);
+    
+  if (res){
+    throw (JSON.stringify(res));
+  }
+};
+
+var findSWFOptions = function(paramObj){
+  var arr = ["index", "label", "text", "data", "value"];
+
+  for (var z=0; z < arr.length; z++){
+      var val = paramObj[arr[z]];
+      if (val != undefined){
+        return arr[z]; 
+      }
+  }
+  
+  throw "We could not find a suitable option for the select";
+};
+
+_f.select = function (paramObj) {
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf.","");
+  
+  var params = {};
+  params[loc] = paramObj[prop];
+  
+  var val = findSWFOptions(paramObj);
+  params[val] = paramObj[val];
+    
+  var res = movie['wm_type'](params);
+    
+  if (res){
+    throw (JSON.stringify(res));
+  }
+};
+
+var findOpt = function(paramObj){
+  for (prop in paramObj){
+    if (prop.indexOf("opt") != -1){
+      return prop;
+    }
+  }
+  throw ("Could not find a flash locator in the provided object");
+};
+
+_f.dragDropElemToElem = function (paramObj) {  
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var opt = findOpt(paramObj);
+  var loc = prop.replace("swf.","");
+  
+  var params = {};
+  params[loc] = paramObj[prop];
+  params[opt] = paramObj[opt];
+  
+  var res = movie['wm_click'](params);
+    
   if (res){
     throw (JSON.stringify(res));
   }
