@@ -21,6 +21,7 @@ package org.windmill {
   public class TestCase extends Sprite {
     public var asserts:* = WMAssert; 
     public var waits:* = WMWait; 
+    public var controller:* = WMController; 
     // Get a reference to the Stage in the base class
     // before the tests actually load so tests can all
     // reference it
