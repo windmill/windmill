@@ -23,4 +23,4 @@ _f.click = function (paramObj) {
   if (res){
     throw (JSON.stringify(res));
   }
-}
+};
