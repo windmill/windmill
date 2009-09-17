@@ -231,8 +231,10 @@ windmill.ui.dx = new function() {
   this.enableFlashExplorer = function(win){
     //turn on flash explorer if it's available
     var embeds = win.document.getElementsByTagName("embed");
+    var objects = win.document.getElementsByTagName("object");
+    
     //only add the explorer call back method if we have some flash on the page
-    if (embeds.length > 0){
+    if ((embeds.length > 0) || (objects.length > 0)){
       win.wm_explorerSelect = function(obj){
         $("domExp").innerHTML = "chain: "+obj;
         return true;
@@ -245,18 +247,26 @@ windmill.ui.dx = new function() {
     
     //star the explorers on the page
     for (var i=0;i<embeds.length;i++){
-        embeds[i].wm_explorerStart();
+      embeds[i].wm_explorerStart();
+    }
+    for (var i=0;i<objects.length;i++){
+      objects[i].wm_explorerStart();
     }
   };
   
   this.disableFlashExplorer = function(win){
     //turn on flash explorer if it's available
     var embeds = win.document.getElementsByTagName("embed");
+    var objects = win.document.getElementsByTagName("object");
+    
     //only add the explorer call back method if we have some flash on the page
     
-    //star the explorers on the page
+    //start the explorers on the page
     for (var i=0;i<embeds.length;i++){
         embeds[i].wm_explorerStop();
+    }
+    for (var i=0;i<objects.length;i++){
+      objects[i].wm_explorerStart();
     }
   };
   
