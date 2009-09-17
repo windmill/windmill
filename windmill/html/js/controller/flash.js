@@ -16,6 +16,7 @@ Copyright 2009, Adam Christian (adam.christian@gmail.com) and Slide, Inc.
 
 var _f = windmill.controller.flash;
 
+//find the swf locator if its there and return it
 var findSWFLocator = function(paramObj){
   for (prop in paramObj){
     if (prop.indexOf("swf") != -1){
@@ -23,6 +24,30 @@ var findSWFLocator = function(paramObj){
     }
   }
   throw ("Could not find a flash locator in the provided object");
+};
+
+//find an opt locator if its there and return it
+var findOpt = function(paramObj){
+  for (prop in paramObj){
+    if (prop.indexOf("opt") != -1){
+      return prop;
+    }
+  }
+  throw ("Could not find a flash locator in the provided object");
+};
+
+//find any of the provided options for a select and return it
+var findSWFOptions = function(paramObj){
+  var arr = ["index", "label", "text", "data", "value"];
+
+  for (var z=0; z < arr.length; z++){
+      var val = paramObj[arr[z]];
+      if (val != undefined){
+        return arr[z]; 
+      }
+  }
+  
+  throw "We could not find a suitable option for the select";
 };
 
 _f.click = function (paramObj) {
@@ -79,19 +104,6 @@ _f.type = function (paramObj) {
   }
 };
 
-var findSWFOptions = function(paramObj){
-  var arr = ["index", "label", "text", "data", "value"];
-
-  for (var z=0; z < arr.length; z++){
-      var val = paramObj[arr[z]];
-      if (val != undefined){
-        return arr[z]; 
-      }
-  }
-  
-  throw "We could not find a suitable option for the select";
-};
-
 _f.select = function (paramObj) {
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
@@ -110,14 +122,6 @@ _f.select = function (paramObj) {
   }
 };
 
-var findOpt = function(paramObj){
-  for (prop in paramObj){
-    if (prop.indexOf("opt") != -1){
-      return prop;
-    }
-  }
-  throw ("Could not find a flash locator in the provided object");
-};
 
 _f.dragDropElemToElem = function (paramObj) {  
   var movie = lookupNode(paramObj);
@@ -129,7 +133,23 @@ _f.dragDropElemToElem = function (paramObj) {
   params[loc] = paramObj[prop];
   params[opt] = paramObj[opt];
   
-  var res = movie['wm_click'](params);
+  var res = movie['wm_dragDropElemToElem'](params);
+    
+  if (res){
+    throw (JSON.stringify(res));
+  }
+};
+
+_f.dragDropToCoords = function (paramObj) {  
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf.","");
+  
+  var params = {};
+  params[loc] = paramObj[prop];
+  params['coords'] = paramObj['coords'];
+  
+  var res = movie['wm_dragDropToCoords'](params);
     
   if (res){
     throw (JSON.stringify(res));

@@ -19,22 +19,24 @@ package org.windmill {
   import flash.net.URLRequest;
   import flash.events.Event;
   import flash.system.ApplicationDomain;
+  import flash.system.SecurityDomain;
   import flash.system.LoaderContext;
 
   public class WMBootstrap {
-    public static var windmillLibPath:String = '/flash/org/windmill/Windmill.swf'; 
-    public static function init(context:*):void {
+    public static var windmillLibPath:String = '/flash/org/windmill/Windmill.swf';
+    public static var wm:*;
+    public static function init(context:*, domains:* = null):void {
       var loader:Loader = new Loader();
       var url:String = WMBootstrap.windmillLibPath;
       var req:URLRequest = new URLRequest(url);
       var con:LoaderContext = new LoaderContext(false,
-          ApplicationDomain.currentDomain);
+          ApplicationDomain.currentDomain,
+          SecurityDomain.currentDomain);
       loader.contentLoaderInfo.addEventListener(
           Event.COMPLETE, function ():void {
-        var Windmill:*;
-        Windmill = ApplicationDomain.currentDomain.getDefinition(
+        wm = ApplicationDomain.currentDomain.getDefinition(
             "org.windmill.Windmill") as Class;
-        Windmill.init({ context: context });
+        wm.init({ context: context, domains: domains });
       });
       loader.load(req, con);
     }

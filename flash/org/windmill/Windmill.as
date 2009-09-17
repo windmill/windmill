@@ -20,6 +20,7 @@ package org.windmill {
   import org.windmill.WMAssert;
   import flash.utils.*;
   import mx.core.Application;
+  import flash.system.Security;
   import flash.display.Sprite;
   import flash.display.Stage;
   import flash.display.DisplayObject;
@@ -27,7 +28,7 @@ package org.windmill {
 
   public class Windmill extends Sprite {
     public static var context:*; // A reference to the Stage
-    public static var timeout:int = 20000; 
+    public static var timeout:int = 20000;
     public static var controllerMethods:Array = [];
     public static var assertMethods:Array = [];
     public static var packages:Object = {
@@ -103,7 +104,7 @@ package org.windmill {
               genExtFunc(packages[key].packageRef[methodName]));
         }
       }
-      
+
       // Expose dynamic asserts
       // ----------------
       // Create all the dynamic assert methods
@@ -116,9 +117,9 @@ package org.windmill {
       for (methodName in asserts.assertTemplates) {
         ExternalInterface.addCallback('wm_' + methodName,
             genExtFunc(asserts[methodName]));
-        
+
       }
-      
+
       // Other misc ExternalInterface methods
       // ----------------
       var miscMethods:Object = {
@@ -133,38 +134,44 @@ package org.windmill {
             genExtFunc(miscMethods[methodName]));
       }
 
+      // Allow script access to talk to the Windmill API
+      // via ExternalInterface from the following domains
+      if ('domains' in config) {
+        var domainsArr:Array = config.domain is Array ?
+          config.domains : [config.domains];
+        for each (var d:String in domainsArr) {
+          Windmill.addDomain(d);
+        }
+      }
+    }
+
+    public static function addDomain(domain:String):void {
+      flash.system.Security.allowDomain(domain);
+    }
+
+    public static function contextIsStage():Boolean {
+      return (context is Stage);
+    }
+
+    public static function contextIsApplication():Boolean {
+      return (context is Application);
     }
 
     public static function getStage():Stage {
       var context:* = Windmill.context;
       var stage:Stage;
-      if (context is Application) {
+      if (contextIsApplication()) {
         stage = context.stage;
       }
-      else if (context is Stage) {
+      else if (contextIsStage()) {
         stage = context;
       }
       else {
         throw new Error('Windmill.context must be a reference to an Application or Stage.' +
             ' Perhaps Windmill.init has not run yet.');
       }
-      return stage; 
+      return stage;
     }
-    
-    public static function getTopLevel():DisplayObject {
-      var topLevel:*;
-      var context:* = Windmill.context;
-      if (context is Application) {
-        topLevel = context.parent;
-      }
-      else if (context is Stage) {
-        topLevel = context;
-      }
-      else {
-        throw new Error('Windmill.context must be a reference to an Application or Stage.' +
-            ' Perhaps Windmill.init has not run yet.');
-      }
-      return topLevel; 
-    }
+
   }
 }

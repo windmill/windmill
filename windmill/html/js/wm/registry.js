@@ -90,6 +90,7 @@ windmill.registry.methods = {
   'flash.type': {'swf':true, 'locator': true, 'option': 'text'},
   'flash.select': {'swf':true, 'locator': true, 'option': 'text,index,label,data,value'},
   'flash.dragDropElemToElem': {'swf':true, 'locator': true, 'option': true, 'optionIsLocator': true},
+  'flash.dragDropToCoords': {'swf':true, 'locator': true, 'option': 'coords'},
   '-- Asserts --': {'locator': false, 'option': false, 'section': true},
   'asserts.assertJS': {'locator': false, 'option': 'js' },
   'asserts.assertIDEJS': {'locator': false, 'option': 'js' },

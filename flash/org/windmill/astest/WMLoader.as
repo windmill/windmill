@@ -18,13 +18,13 @@ package org.windmill.astest {
   import org.windmill.WMLogger;
   import flash.display.Loader;
   import flash.display.LoaderInfo;
-	import flash.net.URLRequest;
-	import flash.events.Event;
-	import flash.events.ProgressEvent;
+  import flash.net.URLRequest;
+  import flash.events.Event;
+  import flash.events.ProgressEvent;
   import flash.events.IOErrorEvent;
-	import flash.system.ApplicationDomain;
-	import flash.system.SecurityDomain;
-	import flash.system.LoaderContext;
+  import flash.system.ApplicationDomain;
+  import flash.system.SecurityDomain;
+  import flash.system.LoaderContext;
   import flash.external.ExternalInterface;
   import flash.utils.getQualifiedClassName;
 
@@ -46,7 +46,7 @@ package org.windmill.astest {
         // for wherever it's grabbing tests from
         // Need to spoon-feed it the ApplicationDomain and SecurityDomain
         // so it knows to load the test SWFs in the the current app context
-        var con:LoaderContext = new LoaderContext(true,
+        var ctxt:LoaderContext = new LoaderContext(true,
             ApplicationDomain.currentDomain,
             SecurityDomain.currentDomain);
         // Catch any error that occurs during async load
@@ -69,7 +69,7 @@ package org.windmill.astest {
           loader.unload();
           WMLoader.loadNext();
         });
-        loader.load(req, con);
+        loader.load(req, ctxt);
       }
     }
   }

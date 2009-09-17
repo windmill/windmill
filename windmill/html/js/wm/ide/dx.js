@@ -118,10 +118,17 @@ windmill.ui.dx = new function() {
       var id = windmill.ui.remote.selectedInputID;
       var input = $(id);
       
-      if (id.indexOf("option") == -1){
+      //Sometimes there isnt a drop down, just a span
+      try {
         var dd = $(id+"Type");
-        dd.value = a[0];
+        if (dd.value.indexOf('opt') != -1){
+          dd.value = "opt"+a[0];
+        }
+        else {
+          dd.value = a[0];
+        }
       }
+      catch(err){ alert(err); }
       
       input.value = a[1];
       input.focus();

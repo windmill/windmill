@@ -6,7 +6,7 @@ import re
 import shutil
 
 # Location of compiler
-MXMLC_PATH = '/Users/adam/Documents/projects/flex_sdk/bin/mxmlc'
+MXMLC_PATH = 'mxmlc'
 
 # For replacing .as with .swf
 as_re = re.compile('\.as$|\.mxml$')
