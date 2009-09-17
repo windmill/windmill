@@ -247,10 +247,14 @@ windmill.ui.dx = new function() {
     
     //star the explorers on the page
     for (var i=0;i<embeds.length;i++){
-      embeds[i].wm_explorerStart();
+      try {
+        embeds[i].wm_explorerStart();
+      } catch(err){};
     }
     for (var i=0;i<objects.length;i++){
-      objects[i].wm_explorerStart();
+      try {
+        objects[i].wm_explorerStart();
+      } catch(err){}
     }
   };
   
@@ -263,10 +267,14 @@ windmill.ui.dx = new function() {
     
     //start the explorers on the page
     for (var i=0;i<embeds.length;i++){
+      try {
         embeds[i].wm_explorerStop();
+      } catch(err){}
     }
     for (var i=0;i<objects.length;i++){
-      objects[i].wm_explorerStart();
+      try {
+        objects[i].wm_explorerStart();
+      } catch(err){}
     }
   };
   

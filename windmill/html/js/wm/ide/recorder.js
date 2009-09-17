@@ -31,17 +31,16 @@ windmill.ui.recorder = new function() {
     this.recordState = false;
     var lastLocValue = null;
     var lastLocator = null;
+    this.lastSWF = null;
     
     this.setRecState = function() {
-        if (windmill.ui.recorder.recordState == true) {
-            this.recordOn();
-        }
-    }
-    //write json to the remote from the click events
-    this.writeJsonClicks = function(e) {
-        if (windmill.ui.recorder.recordState == false) { return; }
-
-        var locator = '';
+      if (windmill.ui.recorder.recordState == true) {
+        this.recordOn();
+      }
+    };
+    
+    this.analyzeNode = function(e){
+       var locator = '';
         var locValue = '';
         try {
           if ($('useXpath').checked == false) {
@@ -102,6 +101,17 @@ windmill.ui.recorder = new function() {
         }
         catch(err){}
         
+        return {"desc":locator, "val": locValue};
+    };
+    
+    //write json to the remote from the click events
+    this.writeJsonClicks = function(e) {
+        if (windmill.ui.recorder.recordState == false) { return; }
+
+        var loc =  this.analyzeNode(e);
+        var locator = loc.desc;
+        var locValue = loc.val;
+        
         //to keep from generating multiple actions for the same click
         if ((lastLocValue == locValue) && (lastLocator == locator) && (e.type != 'dblclick')){ return; }
         lastLocValue = locValue;
@@ -112,7 +122,7 @@ windmill.ui.recorder = new function() {
         windmill.ui.recorder.resetLoc = function(){
           windmill.ui.recorder.lastLocValue = null;
           windmill.ui.recorder.lastLocator = null;
-        }
+        };
         setTimeout('windmill.ui.recorder.resetLoc()', 1000);
 
         
@@ -157,7 +167,7 @@ windmill.ui.recorder = new function() {
         }
         //scroll the actions in the ide to the bottom for user convenience
         windmill.ui.remote.scrollRecorderTextArea();
-    }
+    };
 
     //Writing json to the remote for the change events
     this.writeJsonChange = function(e) {
@@ -220,7 +230,7 @@ windmill.ui.recorder = new function() {
     }
   */
         windmill.ui.remote.scrollRecorderTextArea();
-    }
+    };
 
     //Turn on the recorder
     //Since the click event does things like firing twice when a double click goes also
@@ -239,7 +249,7 @@ windmill.ui.recorder = new function() {
             $('record').src = 'img/record.png';
             this.recordState = false;
         }
-    }
+    };
 
     this.recordOff = function() {      
         windmill.ui.recorder.recordState = false;
@@ -251,8 +261,82 @@ windmill.ui.recorder = new function() {
           windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
         }
 
-    }
+    };
+    
+    this.enableFlashRecorder = function(win){
+      //turn on flash explorer if it's available
+      var embeds = win.document.getElementsByTagName("embed");
+      var objects = win.document.getElementsByTagName("object");
 
+      //only add the explorer call back method if we have some flash on the page
+      if ((embeds.length > 0) || (objects.length > 0)){
+        win.wm_recorderAction = function(obj){
+          var method = "flash."+obj.method;
+          var params = obj.params || {};
+          //params.chain = obj.chain;
+          
+          var loc = windmill.ui.recorder.analyzeNode({target:windmill.ui.recorder.lastSWF});
+          params[loc.desc] = loc.val;
+          windmill.ui.remote.addAction(windmill.ui.remote.buildAction(method, params));
+          return true;
+        };
+      }
+      
+      //star the explorers on the page
+      for (var i=0;i<embeds.length;i++){
+        try {
+          embeds[i].wm_recorderStart();
+        } catch(err){};
+      }
+      for (var i=0;i<objects.length;i++){
+        try {
+          objects[i].wm_recorderStart();
+        } catch(err){}
+      }
+    };
+
+    this.disableFlashRecorder = function(win){
+      //turn on flash explorer if it's available
+      var embeds = win.document.getElementsByTagName("embed");
+      var objects = win.document.getElementsByTagName("object");
+
+      //only add the explorer call back method if we have some flash on the page
+
+      //start the explorers on the page
+      for (var i=0;i<embeds.length;i++){
+        try {
+          embeds[i].wm_recorderStop();
+        } catch(err){}
+      }
+      for (var i=0;i<objects.length;i++){
+        try {
+          objects[i].wm_recorderStop();
+        } catch(err){}
+      }
+    };
+    
+    this.recorderMouseOver = function(e){
+      if (e.target.tagName.toLowerCase() == "object"){
+        this.lastSWF = e.target;
+        return;
+      }
+      if (e.target.tagName.toLowerCase() == "embed"){
+        this.lastSWF = e.target;
+        return;
+      }
+    };
+    
+    this.recorderMouseOut = function(e){
+      if (e.target.tagName.toLowerCase() == "object"){
+        this.lastSWF = e.target;
+        return;
+      }
+      if (e.target.tagName.toLowerCase() == "embed"){
+        this.lastSWF = e.target;
+        return;
+      }
+    };
+    
     //Recursively bind to all the iframes and frames within
     this.recRecursiveBind = function(frame) {
         //Make sure we haven't already bound anything to this frame yet
@@ -285,6 +369,11 @@ windmill.ui.recorder = new function() {
         jQuery(frame.document).bind("dblclick", this.writeJsonClicks);
         jQuery(frame.document).bind("change", this.writeJsonChange);
         jQuery(frame.document).bind("click", this.writeJsonClicks);
+        fleegix.event.listen(frame.document, 'onmouseover', this, 'recorderMouseOver');
+        fleegix.event.listen(frame.document, 'onmouseout', this, 'recorderMouseOut');
+        
+        this.enableFlashRecorder(frame);
+        
 
         var iframeCount = frame.window.frames.length;
         var iframeArray = frame.window.frames;
@@ -294,14 +383,17 @@ windmill.ui.recorder = new function() {
                 jQuery(iframeArray[i].document).bind("dblclick", this.writeJsonClicks);
                 jQuery(iframeArray[i].document).bind("change", this.writeJsonChange);
                 jQuery(iframeArray[i].document).bind("click", this.writeJsonClicks);
+                fleegix.event.listen(iframeArray[i].document, 'onmouseover', this, 'recorderMouseOver');
+                fleegix.event.listen(iframeArray[i].document, 'onmouseout', this, 'recorderMouseOut');
+                      
                 this.recRecursiveBind(iframeArray[i]);
-
+                this.enableFlashRecorder(iframeArray[i]);
+                
             } catch(error) {
               windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
             }
         }
-
-    }
+    };
 
     //Recursively bind to all the iframes and frames within
     this.recRecursiveUnBind = function(frame) {
@@ -329,7 +421,11 @@ windmill.ui.recorder = new function() {
         jQuery(frame.document).unbind("dblclick", this.writeJsonClicks);
         jQuery(frame.document).unbind("change", this.writeJsonChange);
         jQuery(frame.document).unbind("click", this.writeJsonClicks);
-
+        fleegix.event.unlisten(frame.document, 'onmouseover', this, 'recorderMouseOver');
+        fleegix.event.unlisten(frame.document, 'onmouseout', this, 'recorderMouseOut');
+        
+        this.disableFlashRecorder(frame);
+        
         var iframeCount = frame.window.frames.length;
         var iframeArray = frame.window.frames;
 
@@ -338,10 +434,15 @@ windmill.ui.recorder = new function() {
                 jQuery(iframeArray[i].document).unbind("dblclick", this.writeJsonClicks);
                 jQuery(iframeArray[i].document).unbind("change", this.writeJsonChange);
                 jQuery(iframeArray[i].document).unbind("click", this.writeJsonClicks);
+                fleegix.event.unlisten(iframeArray[i].document, 'onmouseover', this, 'recorderMouseOver');
+                fleegix.event.unlisten(iframeArray[i].document, 'onmouseout', this, 'recorderMouseOut');
+                
                 this.recRecursiveUnBind(iframeArray[i]);
+                this.disableFlashRecorder(iframeArray[i]);
+                
             } catch(error) {
               windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
             }
         }
-    }
+    };
 };
