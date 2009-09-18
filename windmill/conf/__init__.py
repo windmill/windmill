@@ -94,12 +94,13 @@ def mergeSettings(windmillSettings, globalSettings, localSettings):
 
         windmillSettings[key] = _get(globalSettings, globalDict, key)
 
-def configure_settings(localSettings=None, windmill_settings={}):
+def configure_settings(localSettings=None, windmill_settings=None):
     """
     Override global settings with any locals and configure the windmill_settings dict.
     """
 
-    
+    if windmill_settings is None:
+        windmill_settings = {}
     globalSettings, localSettings = _load(localSettings=localSettings)
 
     mergeSettings(windmill_settings, globalSettings, localSettings)

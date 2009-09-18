@@ -416,12 +416,16 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
     def stop(self):
         self.xmlrpc_methods_instance.stop_runserver()
         WindmillHTTPServer.ready = False
-        try:
-            s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-            s.connect(self.server_address)
-            s.send("\n")
-        except socket.error:
-            pass
+        while True:
+            # Wait for the server to shut down, before killing the threads.
+            try:
+                s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+                s.connect(self.server_address)
+                s.send("\n")
+            except socket.error:
+                # We can't talk to the server anymore, so it should be
+                # closed.
+                break
             
         for t in [t for t in self.threads if t.isAlive()]:
             t.terminate()

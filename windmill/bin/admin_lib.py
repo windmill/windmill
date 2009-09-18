@@ -121,6 +121,8 @@ def configure_global_settings(logging_on=True):
         local_settings = None
 
     windmill.settings = windmill.conf.configure_settings(localSettings=local_settings)
+    if 'controllers' not in windmill.settings:
+        windmill.settings['controllers'] = []
     
     port = windmill.settings['SERVER_HTTP_PORT']
     
