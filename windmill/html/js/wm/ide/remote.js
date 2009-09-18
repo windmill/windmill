@@ -51,7 +51,7 @@ windmill.ui.remote = new function() {
           var oldLocator = $(id + "locator").value;
           var oldLocatorType = $(id + "locatorType").value;
         }
-        catch(err) { }
+        catch(err) { windmill.err(err); }
         var newAction = this.buildAction(method, {
             'uuid': id
         });
@@ -70,7 +70,7 @@ windmill.ui.remote = new function() {
             $(id + "locatorType").value = oldLocatorType;
           }
         }
-        catch(err) {}
+        catch(err) { windmill.err(err); }
 
         //safari hack for resizing the suite div to accomodate the new action
         $(id).style.height = '';
@@ -147,7 +147,7 @@ windmill.ui.remote = new function() {
         }
         else {
           try { $(action.id + "locator").focus(); }
-          catch(err){}
+          catch(err){ windmill.err(err); }
         }
         //this.addCSSBG();
         return action.id;
@@ -225,7 +225,7 @@ windmill.ui.remote = new function() {
               if (h != '22px') { 
                 windmill.ui.toggleCollapse($(suite.id).previousSibling.id); 
               }
-            } catch(err) { }
+            } catch(err) { windmill.err(err);  }
         }
         return suite;
     };
@@ -393,6 +393,7 @@ windmill.ui.remote = new function() {
       for (var loc = 0; loc < reg.locator.length; loc++){
        if (params[reg.locator[loc]]){
          locator = reg.locator[loc];
+         return locator;
        }
       }
       return locator;
@@ -415,6 +416,7 @@ windmill.ui.remote = new function() {
 
       var option = document.createElement('option');
       option.selected = 'selected';
+      
       if (locator) {
          option.value = locator;
          option.innerHTML += locator;
@@ -449,7 +451,7 @@ windmill.ui.remote = new function() {
       
       //Dont know why I have to do this.. but it wont work if its not setattrib
       if (state.params[locator]) { 
-        input.setAttribute('value', state.params[locator]); 
+        input.setAttribute('value', state.params[locator]);
       }
       input.id = state.action.id + 'locator';
       //in firefox there was a bug moving the focus to the element we clicked, not sure why
@@ -479,13 +481,13 @@ windmill.ui.remote = new function() {
         if (reg.methods[state.method].option.indexOf(',') != -1) {
           var opts = reg.methods[state.method].option.split(',');
             for (i=0; i<opts.length; i++){
-            if (params[opts[i]]){
-              input.setAttribute("value", params[opts[i]]);
+            if (state.params[opts[i]]){
+              input.setAttribute("value", state.params[opts[i]]);
             }
           }
         }
       }
-      catch(err){}
+      catch(err){ windmill.err(err); }
       //for the single option case
       if (typeof(state.params[reg.methods[state.method].option]) != 'undefined') {
         input.setAttribute("value", state.params[reg.methods[state.method].option]);
@@ -530,16 +532,28 @@ windmill.ui.remote = new function() {
     };
     
     this.getSWF = function(state){
+      var _this = windmill.ui.remote;
+      var swfCont = document.createElement('div');
+      var swfLoc = _this.getLocators(state);
+      swfLoc.id = state.action.id +"swfType";
       
       var input = document.createElement('input');
       input.id = state.action.id + 'swf';
       input.className = 'texta';
       
+      if (state.params["swf.chain"]){
+        input.setAttribute("value", state.params["swf.chain"]);
+        swfLoc.value = "chain";
+      }
+      
       if (!windmill.browser.isIE6x) {
         input.setAttribute('onFocus', 'windmill.ui.remote.setInputID(\'' + input.id + '\')');
       }
       
-      return input;
+      swfCont.appendChild(swfLoc);
+      swfCont.appendChild(input);
+
+      return swfCont;
     };
     
     //This function takes a method and it's params and returns a DOM
@@ -591,14 +605,8 @@ windmill.ui.remote = new function() {
         
         //if we have a flash action swf is true
         //build the swf UI
-        if (reg.methods[method].swf){
-         var swfCont = document.createElement('div');
-         var swfLoc = _this.getLocators(state);
-         swfLoc.id = state.action.id +"swfType";
-         var swfInput = _this.getSWF(state);
-         swfCont.appendChild(swfLoc);
-         swfCont.appendChild(swfInput);
-         
+        if (reg.methods[method].swf){          
+         var swfCont = _this.getSWF(state);
          jQuery(action).append(jQuery(swfCont));
         }
         

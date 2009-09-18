@@ -99,7 +99,7 @@ windmill.ui.recorder = new function() {
             }
           }
         }
-        catch(err){}
+        catch(err){ windmill.err(err); }
         
         return {"desc":locator, "val": locValue};
     };
@@ -108,7 +108,7 @@ windmill.ui.recorder = new function() {
     this.writeJsonClicks = function(e) {
         if (windmill.ui.recorder.recordState == false) { return; }
 
-        var loc =  this.analyzeNode(e);
+        var loc =  windmill.ui.recorder.analyzeNode(e);
         var locator = loc.desc;
         var locValue = loc.val;
         
@@ -149,7 +149,7 @@ windmill.ui.recorder = new function() {
                     var lastNode = suiteActions[suiteActions.length-1];
                     var method = null;
                     try{ method = $(lastNode.id+'method').value;}
-                    catch(err){}
+                    catch(err){ windmill.err(err); }
                     if (method == "waits.forPageLoad"){
                       var newParams = {timeout:8000};
                       newParams[locator] = locValue;
@@ -273,10 +273,11 @@ windmill.ui.recorder = new function() {
         win.wm_recorderAction = function(obj){
           var method = "flash."+obj.method;
           var params = obj.params || {};
-          //params.chain = obj.chain;
-          
+          params["swf.chain"] = obj.chain;
+                  
           var loc = windmill.ui.recorder.analyzeNode({target:windmill.ui.recorder.lastSWF});
-          params[loc.desc] = loc.val;
+          params[loc.desc] = loc.val;          
+          
           windmill.ui.remote.addAction(windmill.ui.remote.buildAction(method, params));
           return true;
         };
@@ -286,12 +287,12 @@ windmill.ui.recorder = new function() {
       for (var i=0;i<embeds.length;i++){
         try {
           embeds[i].wm_recorderStart();
-        } catch(err){};
+        } catch(err){ windmill.err(err); };
       }
       for (var i=0;i<objects.length;i++){
         try {
           objects[i].wm_recorderStart();
-        } catch(err){}
+        } catch(err){ windmill.err(err); }
       }
     };
 
@@ -306,12 +307,12 @@ windmill.ui.recorder = new function() {
       for (var i=0;i<embeds.length;i++){
         try {
           embeds[i].wm_recorderStop();
-        } catch(err){}
+        } catch(err){ windmill.err(err); }
       }
       for (var i=0;i<objects.length;i++){
         try {
           objects[i].wm_recorderStop();
-        } catch(err){}
+        } catch(err){ windmill.err(err); }
       }
     };
     
@@ -389,7 +390,7 @@ windmill.ui.recorder = new function() {
                 this.recRecursiveBind(iframeArray[i]);
                 this.enableFlashRecorder(iframeArray[i]);
                 
-            } catch(error) {
+            } catch(error){
               windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
             }
         }
@@ -400,9 +401,9 @@ windmill.ui.recorder = new function() {
       
       var links = frame.document.getElementsByTagName('a');
        for (var i = 0; i < links.length; i++) {
-            jQuery(links[i]).unbind("click", this.writeJsonChange);
+            jQuery(links[i]).unbind("click", this.writeJsonClicks);
            for (var z=0; z < links[i].childNodes.length; z++){
-             jQuery(links[i].childNodes[z]).unbind("click", this.writeJsonChange);
+             jQuery(links[i].childNodes[z]).unbind("click", this.writeJsonClicks);
            }
        }
         //IE's onChange support doesn't bubble so we have to manually
@@ -440,7 +441,7 @@ windmill.ui.recorder = new function() {
                 this.recRecursiveUnBind(iframeArray[i]);
                 this.disableFlashRecorder(iframeArray[i]);
                 
-            } catch(error) {
+            } catch(error){
               windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
             }
         }
