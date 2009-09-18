@@ -176,7 +176,7 @@ windmill.ui.assertexplorer = new function() {
 
       try {
         //Reset the selected element
-        windmill.ui.remote.selectedElement = null;
+        windmill.ui.remote.selectedInputID = null;
         $('assertx').src = 'img/axon.png';
         $('domExp').style.visibility = 'hidden';
         $('domExp').innerHTML = '';

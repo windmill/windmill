@@ -55,16 +55,23 @@ package org.windmill {
       WMLocator.locatorMapCreated = true;
     }
 
-    public function WMLocator():void {}
-
     public static function lookupDisplayObject(
         params:Object):DisplayObject {
+        var res:DisplayObject;
+        res = lookupDisplayObjectForContext(params, Windmill.context);
+        if (!res && Windmill.contextIsApplication()) {
+          res = lookupDisplayObjectForContext(params, Windmill.getStage());
+        }
+        return res;
+    }
+
+    public static function lookupDisplayObjectForContext(
+        params:Object, obj:*):DisplayObject {
       if (!WMLocator.locatorMapCreated) {
         WMLocator.init();
       }
       var locators:Array = [];
       var queue:Array = [];
-      var obj:* = Windmill.getTopLevel();
       var checkWMLocatorChain:Function = function (
           item:*, pos:int):DisplayObject {
         var map:Object = WMLocator.locatorMapObj;

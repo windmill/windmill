@@ -29,6 +29,7 @@ package {
   import util.DOMEventDrag;
   import flash.display.Sprite;
   import flash.geom.Point;
+  import flash.external.ExternalInterface;
   import org.windmill.WMBootstrap;
 
   public class TestAppCode extends MovieClip {
@@ -42,8 +43,6 @@ package {
     public function init(ctxt:Application):void {
       context = ctxt;
       stg = context.stage;
-
-      WMBootstrap.init(context);
 
       // Panel
       var panel:Panel = new Panel();
@@ -106,12 +105,14 @@ package {
       spr.graphics.clear()
       spr.graphics.beginFill(0x00ff00);
       spr.graphics.drawRect(0,0,100,100);
-      subPanel.stage.addChild(spr);
+      stg.addChild(spr);
 
       spr.addEventListener(MouseEvent.MOUSE_DOWN, beginDrag);
-      subPanel.stage.addEventListener(MouseEvent.MOUSE_UP, endDrag);
+      stg.addEventListener(MouseEvent.MOUSE_UP, endDrag);
 
       context.doubleClickEnabled = true;
+      
+      WMBootstrap.init(context);
       /*
       // Focus
       stg.addEventListener(FocusEvent.FOCUS_IN, evHandler);
@@ -152,6 +153,7 @@ package {
         text: 'Howdy, sir.'
       });
       */
+
     }
     private function evHandler(e:Event):void {
       var targ:* = e.target;
@@ -161,20 +163,15 @@ package {
     }
 
 		private function beginDrag(e:MouseEvent):void {
-      if (e.target is Sprite) {
+      if (e.target.name == 'dragSprite') {
         DOMEventDrag.startDrag(spr);
         //spr.startDrag();
       }
     }
-    private function doDrag(e:MouseEvent):void {
-      if (draggable) {
-        //trace(e.toString());
-        draggable.x = e.stageX;
-        draggable.y = e.stageY;
-      }
-    }
     private function endDrag(e:MouseEvent):void {
-      DOMEventDrag.stopDrag(spr);
+      if (e.target.name == 'dragSprite') {
+        DOMEventDrag.stopDrag(spr);
+      }
       //spr.stopDrag();
     }
   }

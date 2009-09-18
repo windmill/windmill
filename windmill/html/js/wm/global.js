@@ -210,7 +210,7 @@ var updateSpeed = function(){
 var openSettings = function() {
     //Turn off explorers and recorder
     windmill.ui.recorder.recordOff();
-    windmill.ui.domexplorer.domExplorerOff();
+    windmill.ui.dx.domExplorerOff();
     windmill.ui.assertexplorer.assertExplorerOff();
     $('execSpeed').value = windmill.serviceDelay;
     //$(id).style.display = 'block';
@@ -259,7 +259,7 @@ var resetDD = function(){
 
 var toggleRec = function() {
     if ($('record').src.indexOf("img/record.png") != -1) {
-        windmill.ui.domexplorer.domExplorerOff();
+        windmill.ui.dx.domExplorerOff();
         windmill.ui.assertexplorer.assertExplorerOff();
         windmill.ui.recorder.recordOn();
         windmill.testWin().focus();
@@ -304,13 +304,13 @@ var toggleExplore = function() {
         if (windmill.ui.recorder.recordState == true) { toggleRec(); }
         $('domExp').style.visibility = 'visible';
         $('domExp').innerHTML = '';
-        windmill.ui.domexplorer.domExplorerOn();
+        windmill.ui.dx.domExplorerOn();
         windmill.testWin().focus();
         $('explorer').src = 'img/xoff.png';
     }
     else {
         $('domExp').style.visibility = 'hidden';
-        windmill.ui.domexplorer.domExplorerOff();
+        windmill.ui.dx.domExplorerOff();
         $('explorer').src = 'img/xon.png';
         $('domExp').innerHTML = '';
     }

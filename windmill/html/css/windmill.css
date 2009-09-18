@@ -167,19 +167,6 @@ img {
  right:5px;
 }
 
-#domExp {
- display:none;
- position:absolute;
- background:white;
- left:50px;
- top:60px;
- width:100%;
- z-index:100;
- font-size:15px;
- color:#3f6d75;
- border:1px solid #aaa; 
- overflow:auto;
-}
 
 #ideForm {
   position:relative;

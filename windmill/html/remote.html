@@ -42,6 +42,31 @@
           }
         });
         
+         jQuery("#domInspector").dialog({
+            modal:false,
+            autoOpen: false,
+            buttons: {
+             "Close": function() { 
+               jQuery(this).dialog("close");
+               windmill.ui.dx.domExplorerOff();
+             },
+             "Use": function() {
+               windmill.ui.dx.updateAction();
+               jQuery(this).dialog("close");
+             },             
+             "Pause": function(e) {
+               if (e.target.innerHTML == "Pause"){
+                 windmill.ui.dx.dxRecursiveUnBind(windmill.testWin());
+                 e.target.innerHTML = "Resume";
+               } else {
+                 windmill.ui.dx.domExplorerOn();
+                 windmill.testWin().focus();
+                 e.target.innerHTML = "Pause";
+               }
+              }
+            }
+          });
+        
         jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
           ui.panel.style.height = "95%";
           jQuery('ul.sf-menu').superfish({
@@ -142,7 +167,11 @@
   		</a>
   	</div>
 	
-  	<div id="domExp"></div>
+	  <div id="domInspector" title="DOM Inspector">
+  	  <div id="domExp"></div><br><br>
+  	  <div style="float:right" id="mouseExp"></div>
+  	</div>
+  	
     <div id="tabs">
       <ul>
           <li class="ui-tabs-nav-item tabHead"><a href="#actionsTab">Actions</a></li>
@@ -209,6 +238,10 @@
        				<td> <INPUT TYPE=checkbox CHECKED ID='autoScroll'></td>
        			</tr>
        			<tr>
+       				<td>Show Large Tooltips:</td>
+       				<td><INPUT TYPE=checkbox UNCHECKED ID='showToolTips'></td>
+       			</tr>
+       			<tr>
        				<td>Absolute click sensitivity when recording:</td>
        				<td><INPUT TYPE=checkbox CHECKED ID='clickOn'></td>
        			</tr>
@@ -246,10 +279,9 @@
          	</center>
        	</form>
        </div>
-      
     </div>
-    	<div style="position:absolute;left:85%;top:95%;background:#FFF" id="mouseExp"></div>
 </body>
+
 <script type="text/javascript">
   jQuery("#progressbar").progressBar({ width: '120', barImage: '/windmill-serv/img/progressbar/progressbg_black.gif'} );
 	
@@ -290,6 +322,7 @@
     scriptsArr.push('js/controller/commands.js');
     scriptsArr.push('js/controller/asserts.js');
     scriptsArr.push('js/controller/waits.js');
+    scriptsArr.push('js/controller/flash.js');
     scriptsArr.push('js/wm/registry.js');
     scriptsArr.push('js/extensions/extensions.js');
     scriptsArr.push('js/wm/utils.js');
