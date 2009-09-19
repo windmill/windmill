@@ -26,7 +26,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 windmill.ui = new function() {
     var _this = this;
     //global settings for highlight color for explorers
-    this.borderHilight = '1px solid #003366';
+    this.borderHilight = '2px solid #3875d7';
     
     //variable to decide whether to use outline or border
      if (windmill.browser.isIE){

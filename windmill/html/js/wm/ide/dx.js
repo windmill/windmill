@@ -128,7 +128,7 @@ windmill.ui.dx = new function() {
           dd.value = a[0];
         }
       }
-      catch(err){ alert(err); }
+      catch(err){ windmill.err(err); }
       
       input.value = a[1];
       input.focus();
@@ -174,6 +174,7 @@ windmill.ui.dx = new function() {
       
       this.domExplorerOff();
       window.focus();
+      this.resetBorder(e);
     }
   };
   
