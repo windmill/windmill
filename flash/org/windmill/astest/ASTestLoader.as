@@ -28,19 +28,19 @@ package org.windmill.astest {
   import flash.external.ExternalInterface;
   import flash.utils.getQualifiedClassName;
 
-  public class WMLoader {
+  public class ASTestLoader {
     private static var urls:Array = [];
-    public static function load(urls:Array):void {
-      WMLoader.urls = urls;
-      WMLoader.loadNext();
+    public static function load(u:Array):void {
+      urls = u;
+      loadNext();
     }
     private static function loadNext():void {
-      if (WMLoader.urls.length == 0) {
+      if (urls.length == 0) {
         ASTest.run();
       }
       else {
         var loader:Loader = new Loader();
-        var url:String = WMLoader.urls.shift();
+        var url:String = urls.shift();
         var req:URLRequest = new URLRequest(url);
         // checkPolicyFile is true so it knows to grab the crossdomain.xml
         // for wherever it's grabbing tests from
@@ -67,7 +67,7 @@ package org.windmill.astest {
             instance: new c()
           });
           loader.unload();
-          WMLoader.loadNext();
+          loadNext();
         });
         loader.load(req, ctxt);
       }

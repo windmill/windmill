@@ -79,7 +79,7 @@ package org.windmill {
           }
         }
       }
-      recurseAttach(Windmill.context);
+      recurseAttach(Windmill.getContext());
       var stage:Stage = Windmill.getStage();
       stage.addEventListener(MouseEvent.CLICK, WMRecorder.handleEvent);
       stage.addEventListener(MouseEvent.DOUBLE_CLICK, WMRecorder.handleEvent);

@@ -48,7 +48,7 @@ package org.windmill {
       'htmlText'
     ];
 
-    private static function init():void {
+    public static function init():void {
       for each (var arr:Array in WMLocator.locatorMap) {
         WMLocator.locatorMapObj[arr[0]] = arr[1];
       }
@@ -58,7 +58,7 @@ package org.windmill {
     public static function lookupDisplayObject(
         params:Object):DisplayObject {
         var res:DisplayObject;
-        res = lookupDisplayObjectForContext(params, Windmill.context);
+        res = lookupDisplayObjectForContext(params, Windmill.getContext());
         if (!res && Windmill.contextIsApplication()) {
           res = lookupDisplayObjectForContext(params, Windmill.getStage());
         }
@@ -67,9 +67,6 @@ package org.windmill {
 
     public static function lookupDisplayObjectForContext(
         params:Object, obj:*):DisplayObject {
-      if (!WMLocator.locatorMapCreated) {
-        WMLocator.init();
-      }
       var locators:Array = [];
       var queue:Array = [];
       var checkWMLocatorChain:Function = function (
