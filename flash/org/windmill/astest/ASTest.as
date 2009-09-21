@@ -112,7 +112,7 @@ package org.windmill.astest {
       ASTest.testClassList = [];
       ASTest.testList = [];
       // Load the shit
-      WMLoader.load(files);
+      ASTestLoader.load(files);
     }
 
     public static function start():void {
@@ -228,7 +228,7 @@ package org.windmill.astest {
         };
       }
       var testList:Array = [];
-      // No args -- this is being re-invoked from WMLoader
+      // No args -- this is being re-invoked from ASTestLoader 
       // now that we have our tests loaded
       for each (var item:Object in ASTest.testClassList) {
         var currTestList:Array = [];
