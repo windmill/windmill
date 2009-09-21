@@ -46,7 +46,7 @@ package org.windmill {
       spr.name = 'borderSprite';
       stage.addChild(spr);
       // Highlight every element, create locator chain on mouseover
-      stage.addEventListener(MouseEvent.MOUSE_OVER, select);
+      stage.addEventListener(MouseEvent.MOUSE_OVER, select, false);
       // Stop on click
       stage.addEventListener(MouseEvent.MOUSE_DOWN, annihilateEvent, true);
       stage.addEventListener(MouseEvent.MOUSE_UP, annihilateEvent, true);
@@ -59,7 +59,11 @@ package org.windmill {
       var stage:Stage = Windmill.getStage();
       stage.removeChild(borderSprite);
       stage.removeEventListener(MouseEvent.MOUSE_OVER, select);
-      stage.removeEventListener(MouseEvent.MOUSE_DOWN, stop);
+      // Call removeEventListener with useCapture of 'true', since
+      // the listener was added with true
+      stage.removeEventListener(MouseEvent.MOUSE_DOWN, annihilateEvent, true);
+      stage.removeEventListener(MouseEvent.MOUSE_UP, annihilateEvent, true);
+      stage.removeEventListener(MouseEvent.CLICK, stop, true);
       running = false;
       // Pass off to annihilateEvent to prevent the app from responding
       annihilateEvent(e);
@@ -90,7 +94,7 @@ package org.windmill {
         expr = expr.replace(/\/$/, '');
         var res:* = ExternalInterface.call('wm_explorerSelect', expr);
         if (!res) {
-          WMLogger.log('Locator chain: ' expr);
+          WMLogger.log('Locator chain: ' + expr);
         }
       }
       else {
@@ -99,6 +103,7 @@ package org.windmill {
     }
 
     public static function annihilateEvent(e:MouseEvent):void {
+      trace('Annihilating ' + e.type);
       e.preventDefault();
       e.stopImmediatePropagation();
     }
