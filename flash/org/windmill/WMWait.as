@@ -36,7 +36,7 @@ package org.windmill {
     // from a test function (params.test)
     // All other waits should simply define a test function
     // and hand off to this
-    // Default timeout (Windmill.timeout) is 20 seconds --
+    // Default timeout (Windmill.config.timeout) is 20 seconds --
     // can be overridden with params.timeout
     public static function forCondition(params:Object,
         callback:Function = null):void {
