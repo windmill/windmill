@@ -45,6 +45,29 @@ package org.windmill.astest {
     // In waiting mode, the runNextTest loop just idles
     public static var waiting:Boolean = false;
 
+    public static var wrappedControllerMethods:Object = {};
+
+    public static function init():void {
+      var methodNames:Array = Windmill.packages.controller.methodNames;
+      // Returns a controller action wrapped in a wait for the
+      // desired DisplayObject -- action is passed as a callback
+      // to WMWait.forDisplayObject
+      var wrapAutoWait:Function = function (key:String):Function {
+        return function (params:Object):void {
+          WMWait.forDisplayObject(params, function ():void {
+            WMController[key](params);
+          });
+        }
+      }
+      // For each controller-action method in WMController,
+      // create an auto-wait-wrapped version to call from the
+      // AS tests. 'controller' in the TestCase base class
+      // points to wrappedControllerMethods
+      for each (var key:String in methodNames) {
+        wrappedControllerMethods[key] = wrapAutoWait(key); 
+      }
+    }
+
     public static function run(files:* = null):void {
       //['/flash/TestFoo.swf', '/flash/TestBar.swf']
       // If we're passed some files, load 'em up first
