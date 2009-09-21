@@ -1,11 +1,17 @@
 package {
   import org.windmill.TestCase;
   public class TestFoo extends TestCase {
-    public var order:Array = ['testWaitCondition', 'testWaitConditionTimeout',
+    public var order:Array = ['testClick', 'testClickTimeout', 'testWaitCondition', 'testWaitConditionTimeout',
         'testWaitSleep', 'testAssertDisplayObject', 'testWaitDisplayObject', 'testAssertEqualsString',
         'testAssertEqualsNumber'];
     
     public function setup():void {
+    }
+    public function testClick():void {
+      controller.click({id: 'howdyButton'});
+    }
+    public function testClickTimeout():void {
+      controller.click({id: 'howdyButton', timeout: 3000});
     }
     public function testWaitCondition():void {
       var now:Date = new Date();
