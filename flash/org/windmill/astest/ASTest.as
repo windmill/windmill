@@ -15,6 +15,10 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 */
 
 package org.windmill.astest {
+  import org.windmill.Windmill;
+  import org.windmill.WMLocator;
+  import org.windmill.WMController;
+  import org.windmill.WMWait;
   import org.windmill.WMLogger;
   import flash.utils.*;
   import flash.external.ExternalInterface;
