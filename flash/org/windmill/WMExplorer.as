@@ -31,11 +31,19 @@ package org.windmill {
     // and provides the border effect
     private static var borderSprite:Sprite = new Sprite();
     private static var running:Boolean = false;
+    private static var strictLocators:* = null; // true, false, or null
 
     public static function init():void {
     }
 
-    public static function start():void {
+    public static function start(...args):void {
+      if (args.length) {
+        strictLocators = args[0];
+      }
+      else {
+        strictLocators = null;
+      }
+
       // Stop the recorder if it's going
       WMRecorder.stop();
       running = true;
@@ -91,7 +99,12 @@ package org.windmill {
       spr.graphics.lineStyle(2, 0x3875d7, 1);
       spr.graphics.drawRect(0, 0, targ.width, targ.height);
       // Generate the expression
-      var expr:String = WMLocator.generateLocator(targ);
+      var args:Array = [];
+      args.push(targ);
+      if (strictLocators is Boolean) {
+        args.push(strictLocators);
+      }
+      var expr:String = WMLocator.generateLocator.apply(WMLocator, args);
       if (expr && expr.length) {
         var res:* = ExternalInterface.call('wm_explorerSelect', expr);
         if (!res) {
