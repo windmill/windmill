@@ -84,7 +84,7 @@ windmill.xhr = new function() {
               } catch(err){ windmill.err(err); }
               
               //Wait/open needs to not grab the next action immediately
-              if ((_this.methodArr[0] == 'waits')) {
+              if (_this.action.method.indexOf('waits') != -1) {
                   windmill.pauseLoop();
                   _this.action.params.aid = action.id;
               }
@@ -163,7 +163,7 @@ windmill.xhr = new function() {
 
       //Send the report if it's not in the commands namespace, we only call report for test actions
       if ((_this.methodArr[0] != 'commands') 
-        && (_this.methodArr[0] != 'waits') 
+        && (_this.action.method.indexOf('waits') == -1) 
         && (windmill.runTests == true)) {
         
           var newParams = copyObj(_this.action.params);

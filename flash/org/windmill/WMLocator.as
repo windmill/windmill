@@ -55,6 +55,17 @@ package org.windmill {
       WMLocator.locatorMapCreated = true;
     }
 
+    public static function lookupDisplayObjectBool(
+        params:Object):Boolean {
+        
+        var res:DisplayObject;
+        res = WMLocator.lookupDisplayObject(params);
+        if (res){
+          return true;
+        }
+        return false;
+    }
+
     public static function lookupDisplayObject(
         params:Object):DisplayObject {
         var res:DisplayObject;
@@ -62,6 +73,7 @@ package org.windmill {
         if (!res && Windmill.contextIsApplication()) {
           res = lookupDisplayObjectForContext(params, Windmill.getStage());
         }
+        
         return res;
     }
 

@@ -171,7 +171,6 @@ _f.asserts.assertProperty = function (paramObj){
   var params = {};
   params[loc] = paramObj[prop];
   params.validator = paramObj.validator;
-  alert(JSON.stringify(params));
   
   var res = movie['wm_assertProperty'](params);
   validate(res);
@@ -185,7 +184,6 @@ _f.asserts.assertText = function (paramObj){
   var params = {};
   params[loc] = paramObj[prop];
   params.validator = paramObj.validator;
-  alert(JSON.stringify(params));
   
   var res = movie['wm_assertText'](params);
   validate(res);
@@ -199,8 +197,18 @@ _f.asserts.assertTextIn = function (paramObj){
   var params = {};
   params[loc] = paramObj[prop];
   params.validator = paramObj.validator;
-  alert(JSON.stringify(params));
   
   var res = movie['wm_assertTextIn'](params);
   validate(res);
+};
+
+_f.waits.forDisplayObject = function (paramObj, obj){
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf.","");
+  var params = {};
+  params[loc] = paramObj[prop];
+  
+  windmill.controller.waits.forDisplayObject({'aid': paramObj.aid, 'movie':movie, 'params':params}, obj);
+  return true;
 };
