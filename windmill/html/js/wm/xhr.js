@@ -168,7 +168,10 @@ windmill.xhr = new function() {
               //Sometimes this is a huge dom exception which can't be serialized
               //so what we want to use is the message property
               if (error.message){
-                _this.action.params.error = error.message + "" + error.lineNumber;
+                _this.action.params.error = error.message;
+								if (error.lineNumber){
+									error.message += "" + error.lineNumber;
+								}
               } else { 
                 _this.action.params.error = error; 
               }
@@ -364,6 +367,7 @@ windmill.xhr = new function() {
           windmill.xhr.actionQueued = false;
           windmill.xhr.runAction();
           windmill.continueLoop();
+          windmill.actOut(windmill.xhr.action.method, windmill.xhr.action.params, result);
           return;
         }
         

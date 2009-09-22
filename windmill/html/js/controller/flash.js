@@ -120,8 +120,7 @@ _f.select = function (paramObj) {
   
   var val = findSWFOptions(paramObj);
   params[val] = paramObj[val];
-  
-  var res = movie['wm_type'](params);    
+  var res = movie['wm_select'](params);    
   validate(res);
 };
 
