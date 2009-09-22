@@ -141,7 +141,7 @@ class ForwardingManager(object):
         
     def response_conditions_pass(self, request, target_host, client_response, mapped):
         for condition in self.response_conditions:
-            result = condition(request, target_host, client_response, mapped):
+            result = condition(request, target_host, client_response, mapped)
             if result is not None:
                 return result
         if mapped: g = 'mapped_'

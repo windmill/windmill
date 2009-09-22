@@ -116,6 +116,36 @@ var lookupNode = function (paramObject, scroll){
   else { throw s + ", failed."; }
 };
 
+var arrayToJSPath = function(arr){
+  var s = arr.toString();
+  var path = windmill.helpers.replaceAll(s, ",", ".");
+  return path;
+};
+
+var stringToFunc = function (objPathString) {
+  var arr = objPathString.split('.');
+  var win = windmill.controller;
+  var baseObj;
+  var parseObjPath = function (name) {
+    baseObj = !name ? win : baseObj[name];
+    if (!baseObj) {
+      var errMsg = 'Method "' + objPathString + '" does not exist.';
+      // The syntax-error possibility is only for browsers with
+      // a broken eval (IE, Safari 2) -- the script-append hack
+      // blindly sets the text of the script without checking syntax
+      throw new Error(errMsg);
+    }
+    return arr.length ? parseObjPath(arr.shift()) : baseObj;
+  };
+  // call parseObjPath recursively to append each
+  // property/key onto the window obj from the array
+  // 'foo.bar.baz' => arr = ['foo', 'bar', 'baz']
+  // baseObj = window['foo'] =>
+  // baseObj = window['foo']['bar'] =>
+  // baseObj = window['foo']['bar']['baz']
+  return parseObjPath();
+};
+
 //visually display a node on the page
 var show = function(obj){
   //if we receive a node, use that

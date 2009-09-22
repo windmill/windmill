@@ -15,6 +15,10 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 */
 
 package org.windmill.astest {
+  import org.windmill.Windmill;
+  import org.windmill.WMLocator;
+  import org.windmill.WMController;
+  import org.windmill.WMWait;
   import org.windmill.WMLogger;
   import flash.utils.*;
   import flash.external.ExternalInterface;
@@ -44,6 +48,29 @@ package org.windmill.astest {
     public static var inProgress:Boolean = false;
     // In waiting mode, the runNextTest loop just idles
     public static var waiting:Boolean = false;
+
+    public static var wrappedControllerMethods:Object = {};
+
+    public static function init():void {
+      var methodNames:Array = Windmill.packages.controller.methodNames;
+      // Returns a controller action wrapped in a wait for the
+      // desired DisplayObject -- action is passed as a callback
+      // to WMWait.forDisplayObject
+      var wrapAutoWait:Function = function (key:String):Function {
+        return function (params:Object):void {
+          WMWait.forDisplayObject(params, function ():void {
+            WMController[key](params);
+          });
+        }
+      }
+      // For each controller-action method in WMController,
+      // create an auto-wait-wrapped version to call from the
+      // AS tests. 'controller' in the TestCase base class
+      // points to wrappedControllerMethods
+      for each (var key:String in methodNames) {
+        wrappedControllerMethods[key] = wrapAutoWait(key); 
+      }
+    }
 
     public static function run(files:* = null):void {
       //['/flash/TestFoo.swf', '/flash/TestBar.swf']
@@ -89,7 +116,7 @@ package org.windmill.astest {
       ASTest.testClassList = [];
       ASTest.testList = [];
       // Load the shit
-      WMLoader.load(files);
+      ASTestLoader.load(files);
     }
 
     public static function start():void {
@@ -205,7 +232,7 @@ package org.windmill.astest {
         };
       }
       var testList:Array = [];
-      // No args -- this is being re-invoked from WMLoader
+      // No args -- this is being re-invoked from ASTestLoader 
       // now that we have our tests loaded
       for each (var item:Object in ASTest.testClassList) {
         var currTestList:Array = [];

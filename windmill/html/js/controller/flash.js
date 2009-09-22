@@ -15,6 +15,8 @@ Copyright 2009, Adam Christian (adam.christian@gmail.com) and Slide, Inc.
 */
 
 var _f = windmill.controller.flash;
+_f.asserts = {};
+_f.waits = {};
 
 //find the swf locator if its there and return it
 var findSWFLocator = function(paramObj){
@@ -50,6 +52,16 @@ var findSWFOptions = function(paramObj){
   throw "We could not find a suitable option for the select";
 };
 
+var validate = function(res){
+  if (res && res.message){
+    throw res;
+  }
+  if (res == false){
+    throw res;
+  }
+  return true;
+};
+
 _f.click = function (paramObj) {
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
@@ -59,10 +71,7 @@ _f.click = function (paramObj) {
   params[loc] = paramObj[prop];
   
   var res = movie['wm_click'](params);
-    
-  if (res){
-    throw (JSON.stringify(res));
-  }
+  validate(res);
 };
 
 _f.check = function (paramObj) {
@@ -83,9 +92,7 @@ _f.doubleClick = function (paramObj) {
   
   var res = movie['wm_click'](params);
     
-  if (res){
-    throw (JSON.stringify(res));
-  }
+  validate(res);
 };
 
 _f.type = function (paramObj) {
@@ -99,11 +106,10 @@ _f.type = function (paramObj) {
   
   var res = movie['wm_type'](params);
     
-  if (res){
-    throw (JSON.stringify(res));
-  }
+  validate(res);
 };
 
+//breaks when you use a label instead of text
 _f.select = function (paramObj) {
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
@@ -116,11 +122,8 @@ _f.select = function (paramObj) {
   params[val] = paramObj[val];
   
   var res = movie['wm_type'](params);    
-  if (res){
-    throw (JSON.stringify(res));
-  }
+  validate(res);
 };
-
 
 _f.dragDropElemToElem = function (paramObj) {  
   var movie = lookupNode(paramObj);
@@ -133,10 +136,7 @@ _f.dragDropElemToElem = function (paramObj) {
   params[opt] = paramObj[opt];
   
   var res = movie['wm_dragDropElemToElem'](params);
-    
-  if (res){
-    throw (JSON.stringify(res));
-  }
+  validate(res);
 };
 
 _f.dragDropToCoords = function (paramObj) {  
@@ -149,8 +149,66 @@ _f.dragDropToCoords = function (paramObj) {
   params['coords'] = paramObj['coords'];
   
   var res = movie['wm_dragDropToCoords'](params);
-    
-  if (res){
-    throw (JSON.stringify(res));
-  }
+  validate(res);
+};
+
+_f.asserts.assertDisplayObject = function (paramObj){
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf.","");
+  
+  var params = {};
+  params[loc] = paramObj[prop];
+  var res = movie['wm_assertDisplayObject'](params);
+  validate(res);
+};
+
+//breaking
+_f.asserts.assertProperty = function (paramObj){
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf.","");
+  var params = {};
+  params[loc] = paramObj[prop];
+  params.validator = paramObj.validator;
+  
+  var res = movie['wm_assertProperty'](params);
+  validate(res);
+};
+
+//breaking
+_f.asserts.assertText = function (paramObj){
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf.","");
+  var params = {};
+  params[loc] = paramObj[prop];
+  params.validator = paramObj.validator;
+  
+  var res = movie['wm_assertText'](params);
+  validate(res);
+};
+
+//breaking
+_f.asserts.assertTextIn = function (paramObj){
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf.","");
+  var params = {};
+  params[loc] = paramObj[prop];
+  params.validator = paramObj.validator;
+  
+  var res = movie['wm_assertTextIn'](params);
+  validate(res);
+};
+
+_f.waits.forDisplayObject = function (paramObj, obj){
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf.","");
+  var params = {};
+  params[loc] = paramObj[prop];
+  
+  windmill.controller.waits.forDisplayObject({'aid': paramObj.aid, 'movie':movie, 'params':params}, obj);
+  return true;
 };

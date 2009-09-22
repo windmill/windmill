@@ -23,6 +23,7 @@ package org.windmill {
   import flash.display.Sprite;
   import flash.events.MouseEvent;
   import flash.geom.Point;
+  import flash.geom.Rectangle;
   import flash.external.ExternalInterface;
 
   public class WMExplorer {
@@ -31,33 +32,42 @@ package org.windmill {
     private static var borderSprite:Sprite = new Sprite();
     private static var running:Boolean = false;
 
-    public function WMExplorer():void {}
+    public static function init():void {
+    }
 
     public static function start():void {
       // Stop the recorder if it's going
       WMRecorder.stop();
-      WMExplorer.running = true;
+      running = true;
 
       var stage:Stage = Windmill.getStage();
-      var spr:Sprite = WMExplorer.borderSprite;
+      var spr:Sprite = borderSprite;
       // Add the border-sprite to the stage
       spr.name = 'borderSprite';
       stage.addChild(spr);
       // Highlight every element, create locator chain on mouseover
-      stage.addEventListener(MouseEvent.MOUSE_OVER, WMExplorer.highlight);
-      stage.addEventListener(MouseEvent.MOUSE_OVER, WMExplorer.select);
-      // Stop on click 
-      stage.addEventListener(MouseEvent.MOUSE_DOWN, WMExplorer.stop);
+      stage.addEventListener(MouseEvent.MOUSE_OVER, select, false);
+      // Stop on click
+      stage.addEventListener(MouseEvent.MOUSE_DOWN, annihilateEvent, true);
+      stage.addEventListener(MouseEvent.MOUSE_UP, annihilateEvent, true);
+      // This passes off to annihilateEvent to kill clicks too
+      stage.addEventListener(MouseEvent.CLICK, stop, true);
     }
 
     public static function stop(e:MouseEvent = null):void {
-      if (!WMExplorer.running) { return; }
+      if (!running) { return; }
       var stage:Stage = Windmill.getStage();
-      stage.removeChild(WMExplorer.borderSprite);
-      stage.removeEventListener(MouseEvent.MOUSE_OVER, WMExplorer.highlight);
-      stage.removeEventListener(MouseEvent.MOUSE_OVER, WMExplorer.select);
-      stage.removeEventListener(MouseEvent.MOUSE_DOWN, WMExplorer.stop);
-      WMExplorer.running = false;
+      
+      stage.removeChild(borderSprite);
+      stage.removeEventListener(MouseEvent.MOUSE_OVER, select);
+      // Call removeEventListener with useCapture of 'true', since
+      // the listener was added with true
+      stage.removeEventListener(MouseEvent.MOUSE_DOWN, annihilateEvent, true);
+      stage.removeEventListener(MouseEvent.MOUSE_UP, annihilateEvent, true);
+      stage.removeEventListener(MouseEvent.CLICK, stop, true);
+      running = false;
+      // Pass off to annihilateEvent to prevent the app from responding
+      annihilateEvent(e);
       
       var res:* = ExternalInterface.call('wm_explorerStopped');
       if (!res) {
@@ -65,36 +75,43 @@ package org.windmill {
       }
     }
 
-    public static function highlight(e:MouseEvent):void {
+    // Highlights the clicked-on itema and generates a chained-locator
+    // expression for it
+    public static function select(e:MouseEvent):void {
       var targ:* = e.target;
-      var spr:Sprite = WMExplorer.borderSprite;
-      var p:Point = new Point(0, 0);
+      // Bordered sprite for highlighting
+      var spr:Sprite = borderSprite;
       // Get the global coords of the moused-over elem
-      p = targ.localToGlobal(p);
+      // Overlay the border sprite in the same position
+      var bounds:Rectangle = targ.getBounds(targ.parent);
+      var p:Point = new Point(bounds.x, bounds.y);
+      p = targ.parent.localToGlobal(p);
       spr.x = p.x;
       spr.y = p.y;
       // Clear any previous border, and draw a new border
       // the same size as the moused-over elem
       spr.graphics.clear()
-      spr.graphics.lineStyle(0, 0xff0000, 0.5);
+      spr.graphics.lineStyle(2, 0x3875d7, 1);
       spr.graphics.drawRect(0, 0, targ.width, targ.height);
-    }
-
-    // Generates a chained-locator expression for the clicked-on item
-    public static function select(e:*):void {
-      var item:* = e.target;
-      var expr:String = WMLocator.generateLocator(item);
+      // Generate the expression
+      var expr:String = WMLocator.generateLocator(targ);
       if (expr.length) {
         // Strip off trailing slash
         expr = expr.replace(/\/$/, '');
         var res:* = ExternalInterface.call('wm_explorerSelect', expr);
         if (!res) {
-          WMLogger.log(expr + ' (Windmill Flash bridge not found.)');
+          WMLogger.log('Locator chain: ' + expr);
         }
       }
       else {
         throw new Error('Could not find any usable attributes for locator.');
       }
+    }
+
+    public static function annihilateEvent(e:MouseEvent):void {
+      trace('Annihilating ' + e.type);
+      e.preventDefault();
+      e.stopImmediatePropagation();
     }
 
   }

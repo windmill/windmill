@@ -82,7 +82,14 @@ windmill.xhr = new function() {
           try {
             //Start the action running timer
               windmill.xhr.action_timer.startTime();
-              //Wait/open needs to not grab the next action immediately
+              
+              //Get access to the function according to the method array
+              //not's don't actually exist
+              try {
+                var func = stringToFunc(arrayToJSPath(_this.methodArr));
+              } catch(err){ windmill.err(err); }
+              
+
               //waits and nodes that have a lookup that isn't returning
               //if there is no node, this will be false
               //if there is a node, but it doesn't return it will throw
@@ -105,19 +112,21 @@ windmill.xhr = new function() {
                 return;
               }
               
-                            
-              if (_this.methodArr[0] == 'waits'){
+              //Wait/open needs to not grab the next action immediately
+              if (_this.action.method.indexOf('waits') != -1) {
                   windmill.pauseLoop();
                   _this.action.params.aid = action.id;
               }
 
               //asserts., waits.
               if (_this.methodArr.length > 1){
+                
                   //if asserts.assertNotSomething we need to set the result to !result
                   if (_this.action.method.indexOf('asserts.assertNot') != -1) {
-                      var m = _this.methodArr[1].replace('Not', '');
-                      try { 
-                        output = windmill.controller[_this.methodArr[0]][m](_this.action.params);
+                      _this.methodArr[1] = _this.methodArr[1].replace('Not', '');
+                      try {
+                        var func = stringToFunc(arrayToJSPath(_this.methodArr));
+                        output = func(_this.action.params);
                       } catch(err){
                         var assertNotErr = true;
                       }
@@ -128,12 +137,12 @@ windmill.xhr = new function() {
                   }
                   //Normal asserts and waits
                   else {
-                    output = windmill.controller[_this.methodArr[0]][_this.methodArr[1]](_this.action.params, _this.action);
+                    output = func(_this.action.params, _this.action);
                   }
               }                        
               //Every other action that isn't namespaced
               else {
-                output = windmill.controller[_this.action.method](_this.action.params);
+                output = func(_this.action.params);
               }
               
               //End the timer
@@ -184,7 +193,7 @@ windmill.xhr = new function() {
 
       //Send the report if it's not in the commands namespace, we only call report for test actions
       if ((_this.methodArr[0] != 'commands') 
-        && (_this.methodArr[0] != 'waits') 
+        && (_this.action.method.indexOf('waits') == -1) 
         && (windmill.runTests == true)) {
         
           var newParams = copyObj(_this.action.params);

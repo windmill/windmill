@@ -176,6 +176,23 @@ windmill.controller.waits.forElement = function (paramObj,obj) {
     return windmill.controller.waits.forJS(p, obj);
 };
 
+
+//wait for an element to show up on the page
+//if it doesn't after a provided timeout, defaults to 20 seconds
+windmill.controller.waits.forDisplayObject = function (paramObj,obj) { 
+    var p = paramObj || {};
+    var f = function () {
+      try { 
+        var b = p.movie['wm_lookupFlash'](p.params); 
+        return b;
+      }
+      catch(err){}
+    };
+    p.test = f;
+    return windmill.controller.waits.forJS(p, obj);
+};
+
+
 //wait for an element to show up on the page
 //if it doesn't after a provided timeout, defaults to 20 seconds
 windmill.controller.waits.forElementProperty = function (paramObj,obj) { 
