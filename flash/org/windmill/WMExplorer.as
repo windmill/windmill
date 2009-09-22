@@ -43,7 +43,7 @@ package org.windmill {
       var stage:Stage = Windmill.getStage();
       var spr:Sprite = borderSprite;
       // Add the border-sprite to the stage
-      spr.name = 'borderSprite';
+      spr.name = 'windmillBorderSprite';
       stage.addChild(spr);
       // Highlight every element, create locator chain on mouseover
       stage.addEventListener(MouseEvent.MOUSE_OVER, select, false);
@@ -69,10 +69,13 @@ package org.windmill {
       annihilateEvent(e);
     }
 
-    // Highlights the clicked-on itema and generates a chained-locator
+    // Highlights the rolled-over item and generates a chained-locator
     // expression for it
     public static function select(e:MouseEvent):void {
       var targ:* = e.target;
+      if ('name' in targ && targ.name == 'windmillBorderSprite') {
+        return;
+      }
       // Bordered sprite for highlighting
       var spr:Sprite = borderSprite;
       // Get the global coords of the moused-over elem
@@ -89,9 +92,7 @@ package org.windmill {
       spr.graphics.drawRect(0, 0, targ.width, targ.height);
       // Generate the expression
       var expr:String = WMLocator.generateLocator(targ);
-      if (expr.length) {
-        // Strip off trailing slash
-        expr = expr.replace(/\/$/, '');
+      if (expr && expr.length) {
         var res:* = ExternalInterface.call('wm_explorerSelect', expr);
         if (!res) {
           WMLogger.log('Locator chain: ' + expr);
@@ -103,7 +104,6 @@ package org.windmill {
     }
 
     public static function annihilateEvent(e:MouseEvent):void {
-      trace('Annihilating ' + e.type);
       e.preventDefault();
       e.stopImmediatePropagation();
     }
