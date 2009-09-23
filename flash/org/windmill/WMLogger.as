@@ -22,9 +22,9 @@ package org.windmill {
       TRACE: 'trace',
       BROWSER: 'browser'
     };
-    public static var mode:String = WMLogger.modes.TRACE;
+    public static var mode:String = modes.BROWSER;
     public static function log(msg:*):void {
-      if (WMLogger.mode == 'browser') {
+      if (WMLogger.mode == modes.BROWSER) {
         ExternalInterface.call("console.log", msg);
       }
       else {
