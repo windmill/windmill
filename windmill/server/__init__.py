@@ -13,6 +13,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from urlparse import urlparse
+from webenv import Response500
+
 initial_forwarding_conditions = [
     lambda e : 'google.com/safebrowsing/downloads' not in e['reconstructed_url'],
     lambda e : 'mozilla.org/en-US/firefox/livebookmarks.html' not in e['reconstructed_url'],
@@ -49,16 +52,8 @@ from xmlrpc import XMLRPCApplication
 from convergence import XMLRPCMethods, JSONRPCMethods, TestResolutionSuite, CommandResolutionSuite, ControllerQueue
 from compressor import CompressorApplication
 
-# 
-# class RestIntegrator(object):
-#     def __init__(self, name, application):
-#         application.ns = name
-#         
-#     
-#     def rest_handler(self, request, *path):
-#         
-
 class WindmillApplication(RestApplication):
+    
     def __init__(self, js_path=None, compression_enabled=None):
         super(WindmillApplication, self).__init__()
         
@@ -83,6 +78,46 @@ class WindmillApplication(RestApplication):
         self.add_resource('windmill-xmlrpc', XMLRPCApplication(instance=self.xmlrpc_methods_instance))
         self.add_resource('windmill-compressor', CompressorApplication(os.path.join(js_path, 'js'), 
                                                                        compression_enabled))
+
+    def __call__(self, environ, start_response):
+        """Special subclass __call__ method that finds windmill-serv anywhere in path"""
+        request = self.request_class(environ, start_response)
+    
+        path = environ['SCRIPT_NAME'] + environ['PATH_INFO']
+    
+        if len(path) is 0:
+            path = '/'
+    
+        if path.startswith('/'):
+            path = [p for p in path.split('/') if len(p) is not 0]
+        elif environ['PATH_INFO'].startswith('http'):
+            path = [p for p in urlparse(path).path.split('/') if len(p) is not 0]
+        else:
+            raise Exception('Cannot read PATH_INFO '+request.full_uri+str(request.environ))
+    
+        if len(path) is 0:
+            response = self.handler(request)
+            if response is None:    
+                response = Response500(str(type(self))+".handler() did not return a response object")
+            response.request = request
+            response.start_response()
+            return response
+        elif 'windmill-serv' in path:
+            path = path[path.index('windmill-serv'):]
+            response = self.rest_handler(request, *path)
+            if response is None:
+                response = Response500(str(type(self))+".rest_handler() did not return a response object")
+            response.request = request
+            response.start_response()
+            return response
+        else:
+            response = self.rest_handler(request, *path)
+            if response is None:
+                response = Response500(str(type(self))+".rest_handler() did not return a response object") 
+            response.request = request
+            response.start_response()
+            return response
+
     def handler(self, request, *path):
         return self.proxy_application.handler(request)
         
