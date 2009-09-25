@@ -1,4 +1,6 @@
-# from http://sebulba.wikispaces.com/recipe+thread2
+#   Orginally from http://sebulba.wikispaces.com/recipe+thread2
+#
+#   Changes Copyright (c) 2009 Canonical Ltd.
 
 import threading
 import inspect
