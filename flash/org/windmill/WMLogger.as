@@ -18,15 +18,18 @@ package org.windmill {
   import flash.external.ExternalInterface;
 
   public class WMLogger {
-    public static var mode:String = 'browser';
+    public static var modes:Object = {
+      TRACE: 'trace',
+      BROWSER: 'browser'
+    };
+    public static var mode:String = modes.BROWSER;
     public static function log(msg:*):void {
-      if (WMLogger.mode == 'browser') {
+      if (WMLogger.mode == modes.BROWSER) {
         ExternalInterface.call("console.log", msg);
       }
       else {
         trace(msg.toString());
       }
     }
-    public function WMLogger():void {}
   }
 }

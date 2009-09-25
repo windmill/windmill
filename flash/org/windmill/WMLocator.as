@@ -16,22 +16,64 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 
 package org.windmill {
   import org.windmill.Windmill;
+  import org.windmill.WMLogger;
   import flash.display.DisplayObject;
   import flash.display.DisplayObjectContainer;
 
   public class WMLocator {
-    public function WMLocator():void {}
+    // Stupid AS3 doesn't iterate over Object keys
+    // in insertion order
+    // null for the finder func means use the default
+    // of findBySimpleAttr
+    private static var locatorMap:Array = [
+      ['name', null],
+      ['id', null],
+      ['link', WMLocator.findLink],
+      ['label', null],
+      ['htmlText', WMLocator.findHTML],
+      ['automationName', null]
+    ];
+    private static var locatorMapObj:Object = {};
+    private static var locatorMapCreated:Boolean = false;
+
+    // This is the list of attrs we like to use for the
+    // locators, in order of preference
+    // FIXME: Need to add some regex fu for pawing through
+    // text containers for Flash's janky anchor-tag impl
+    private static var locatorLookupPriority:Array = [
+      'automationName',
+      'id',
+      'name',
+      'label',
+      'htmlText'
+    ];
+
+    public static function init():void {
+      for each (var arr:Array in WMLocator.locatorMap) {
+        WMLocator.locatorMapObj[arr[0]] = arr[1];
+      }
+      WMLocator.locatorMapCreated = true;
+    }
 
     public static function lookupDisplayObject(
         params:Object):DisplayObject {
-      WMLocator.init();
+        var res:DisplayObject;
+        res = lookupDisplayObjectForContext(params, Windmill.getContext());
+        if (!res && Windmill.contextIsApplication()) {
+          res = lookupDisplayObjectForContext(params, Windmill.getStage());
+        }
+        return res;
+    }
+
+    public static function lookupDisplayObjectForContext(
+        params:Object, obj:*):DisplayObject {
       var locators:Array = [];
       var queue:Array = [];
-      var obj:* = params.context || Windmill.context;
       var checkWMLocatorChain:Function = function (
           item:*, pos:int):DisplayObject {
         var map:Object = WMLocator.locatorMapObj;
         var loc:Object = locators[pos];
+        // If nothing specific exists for that attr, use the basic one
         var finder:Function = map[loc.attr] || WMLocator.findBySimpleAttr;
         var next:int = pos + 1;
         if (!!finder(item, loc.attr, loc.val)) {
@@ -138,6 +180,17 @@ package org.windmill {
       return res;
     }
 
+    // Custom locator for links embedded in htmlText
+    private static function findHTML(
+        obj:*, attr:String, val:*):Boolean {
+      var res:Boolean = false;
+      if ('htmlText' in obj) {
+        var text:String = WMLocator.cleanHTML(obj.htmlText);
+        return val == text;
+      }
+      return res;
+    }
+
     // Used by the custom locator for links, above
     public static function locateLinkHref(linkText:String,
         htmlText:String):String {
@@ -146,8 +199,7 @@ package org.windmill {
       var linkPlain:String = '';
       while (!!(res = pat.exec(htmlText))) {
         // Remove HTML tags and linebreaks; and trim
-        linkPlain = res[2].replace(/<.+?>/g, '').
-            replace(/\s+/g, ' ').replace(/^ | $/g, '');
+        linkPlain = WMLocator.cleanHTML(res[2]);
         if (linkPlain == linkText) {
           var evPat:RegExp = /href="event:(.*?)"/i;
           var arr:Array = evPat.exec(res[1]);
@@ -162,24 +214,110 @@ package org.windmill {
       return '';
     }
 
-    // Stupid AS3 doesn't iterate over Object keys
-    // in insertion order
-    // null for the finder func means use the default
-    // of findBySimpleAttr
-    private static var locatorMap:Array = [
-      ['name', null],
-      ['id', null],
-      ['link', WMLocator.findLink],
-      ['label', null]
-    ];
-
-    private static var locatorMapObj:Object = {};
-
-    private static function init():void {
-      for each (var arr:Array in WMLocator.locatorMap) {
-        WMLocator.locatorMapObj[arr[0]] = arr[1];
-      }
+    private static function cleanHTML(markup:String):String {
+      return markup.replace(/<.+?>/g, '').replace(
+          /\s+/g, ' ').replace(/^ | $/g, '');
     }
 
+    // Generates a chained-locator expression for the clicked-on item
+    public static function generateLocator(item:*, ...args):String {
+      var strictLocators:Boolean = Windmill.config.strictLocators;
+      if (args.length) {
+        strictLocators = args[0];
+      }
+      var expr:String = '';
+      var exprArr:Array = [];
+      var attr:String;
+      var attrVal:String;
+      // Verifies the property exists, and that the child can
+      // be found from the parent (in some cases there is a parent
+      // which does not have the item in its list of children)
+      var weHaveAWinner:Function = function (item:*, attr:String):Boolean {
+        var winner:Boolean = false;
+        // Get an attribute that actually has a value
+        if (usableAttr(item, attr)) {
+          // Make sure that the parent can actually see
+          // this item in its list of children
+          var par:* = item.parent;
+          var count:int = 0;
+          if (par is DisplayObjectContainer) {
+            count = par.numChildren;
+          }
+          if (count > 0) {
+            var index:int = 0;
+            while (index < count) {
+              var kid:DisplayObject = par.getChildAt(index);
+              if (kid == item) {
+                winner = true;
+                break;
+              }
+              index++;
+            }
+          }
+        }
+        return winner;
+      };
+      var usableAttr:Function = function (item:*, attr:String):Boolean {
+        // Item has to have an attribute of that name
+        if (!(attr in item)) {
+          return false;
+        }
+        // Attribute's value cannot be null
+        if (!item[attr]) {
+          return false;
+        }
+        // If strict locators are on, don't accept an auto-generated
+        // 'name' attribute ending in a number -- e.g., TextField05
+        // These are often unreliable as locators
+        if (strictLocators &&
+            attr == 'name' && /\d+$/.test(item[attr])) {
+          return false;
+        }
+        return true;
+      };
+      var isValidLookup:Function = function (exprArr:Array):Boolean {
+        expr = exprArr.join('/');
+        // Make sure that the expression actually looks up a
+        // valid object
+        var validLookup:DisplayObject = lookupDisplayObject({
+          chain: expr
+        });
+        return !!validLookup;
+      };
+      // Attrs to look for, ordered by priority
+      var locatorPriority:Array = WMLocator.locatorLookupPriority;
+      do {
+        // Try looking up a value for each attribute in order
+        // of preference
+        for each (attr in locatorPriority) {
+          // If we find one of the lookuup keys, we may have a winner
+          if (weHaveAWinner(item, attr)) {
+            // Prepend onto the locator expression, then check to
+            // see if the chain still results in a valid lookup
+            attrVal = attr == 'htmlText' ?
+                WMLocator.cleanHTML(item[attr]) : item[attr];
+            exprArr.unshift(attr + ':' + attrVal);
+            // If this chain looks up an object correct, keeps going
+            if (isValidLookup(exprArr)) {
+              break;
+            }
+            // Otherwise throw out this attr/value pair and keep
+            // trying
+            else {
+              exprArr.shift();
+            }
+          }
+        }
+        item = item.parent;
+      } while (item.parent && !(item.parent == Windmill.getContext() ||
+          item.parent == Windmill.getStage()))
+      if (exprArr.length) {
+        expr = exprArr.join('/');
+        return expr;
+      }
+      else {
+        return null;
+      }
+    }
   }
 }

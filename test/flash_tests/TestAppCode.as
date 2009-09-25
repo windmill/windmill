@@ -21,13 +21,19 @@ package {
   import mx.controls.*
   import mx.containers.Panel
   import mx.events.*
+  import flash.utils.*;
   import flash.net.URLRequest;
+  import flash.display.Stage;
   import flash.display.Sprite;
 	import flash.geom.Rectangle;
   import util.DOMEventDrag;
-  import org.windmill.*;
+  import flash.display.Sprite;
+  import flash.geom.Point;
+  import flash.external.ExternalInterface;
+  import org.windmill.WMBootstrap;
 
-  public class ExampleCode extends MovieClip {
+  public class TestAppCode extends MovieClip {
+    private var stg:Stage;
     private var spr:Sprite = new Sprite();
     private var draggable:Sprite;
     private var context:*;
@@ -36,6 +42,8 @@ package {
 
     public function init(ctxt:Application):void {
       context = ctxt;
+      stg = context.stage;
+
 
       // Panel
       var panel:Panel = new Panel();
@@ -54,6 +62,13 @@ package {
       button.id = 'howdyButton';
       button.label = 'Howdy';
       panel.addChild(button);
+
+      // Text input
+      var txtInput:TextInput = new TextInput();
+      txtInput.name = 'testTextInput';
+      panel.addChild(txtInput);
+      txtInput.htmlText = 'This is a test.';
+      elems.txtInput = txtInput
 
       var subPanel:Panel = new Panel();
       panel.addChild(subPanel);
@@ -91,27 +106,30 @@ package {
       spr.graphics.clear()
       spr.graphics.beginFill(0x00ff00);
       spr.graphics.drawRect(0,0,100,100);
-      subPanel.stage.addChild(spr);
+      stg.addChild(spr);
 
       spr.addEventListener(MouseEvent.MOUSE_DOWN, beginDrag);
-      subPanel.stage.addEventListener(MouseEvent.MOUSE_UP, endDrag);
+      stg.addEventListener(MouseEvent.MOUSE_UP, endDrag);
 
       context.doubleClickEnabled = true;
+      
+      WMBootstrap.init(context);
+      /*
       // Focus
-      context.addEventListener(FocusEvent.FOCUS_IN, evHandler);
-      context.addEventListener(FocusEvent.FOCUS_OUT, evHandler);
+      stg.addEventListener(FocusEvent.FOCUS_IN, evHandler);
+      stg.addEventListener(FocusEvent.FOCUS_OUT, evHandler);
       // Keyboard
-      //context.addEventListener(KeyboardEvent.KEY_DOWN, evHandler);
-      //context.addEventListener(KeyboardEvent.KEY_UP, evHandler);
+      stg.addEventListener(KeyboardEvent.KEY_DOWN, evHandler);
+      stg.addEventListener(KeyboardEvent.KEY_UP, evHandler);
       // Mouse
-      context.addEventListener(MouseEvent.MOUSE_DOWN, evHandler);
-      context.addEventListener(MouseEvent.MOUSE_UP, evHandler);
-      //context.addEventListener(MouseEvent.MOUSE_MOVE, evHandler);
-      context.addEventListener(MouseEvent.DOUBLE_CLICK, evHandler);
-      context.addEventListener(MouseEvent.CLICK, evHandler);
+      stg.addEventListener(MouseEvent.MOUSE_DOWN, evHandler);
+      stg.addEventListener(MouseEvent.MOUSE_UP, evHandler);
+      //stg.addEventListener(MouseEvent.MOUSE_MOVE, evHandler);
+      stg.addEventListener(MouseEvent.DOUBLE_CLICK, evHandler);
+      stg.addEventListener(MouseEvent.CLICK, evHandler);
       // Text
-      context.addEventListener(TextEvent.TEXT_INPUT, evHandler);
-      context.addEventListener(TextEvent.LINK, evHandler);
+      stg.addEventListener(TextEvent.TEXT_INPUT, evHandler);
+      stg.addEventListener(TextEvent.LINK, evHandler);
       // ComboBox
       box.addEventListener(ListEvent.CHANGE, evHandler);
       box.addEventListener(ListEvent.ITEM_ROLL_OVER, evHandler);
@@ -119,8 +137,8 @@ package {
       box.addEventListener(DropdownEvent.OPEN, evHandler);
       box.addEventListener(DropdownEvent.CLOSE, evHandler);
       box.addEventListener(ScrollEvent.SCROLL, evHandler);
+      */
 
-      org.windmill.Windmill.init({ context: context.stage });
 
       /*
       org.windmill.WMController.click({
@@ -136,24 +154,25 @@ package {
         text: 'Howdy, sir.'
       });
       */
+
     }
     private function evHandler(e:Event):void {
-      WMLogger.log(e.toString());
+      var targ:* = e.target;
+      trace(e.toString());
+      trace(e.target.toString());
+      trace(getQualifiedClassName(e.target));
     }
 
 		private function beginDrag(e:MouseEvent):void {
-      DOMEventDrag.startDrag(spr);
-      //spr.startDrag();
-    }
-    private function doDrag(e:MouseEvent):void {
-      if (draggable) {
-        //WMLogger.log(e.toString());
-        draggable.x = e.stageX;
-        draggable.y = e.stageY;
+      if (e.target.name == 'dragSprite') {
+        DOMEventDrag.startDrag(spr);
+        //spr.startDrag();
       }
     }
     private function endDrag(e:MouseEvent):void {
-      DOMEventDrag.stopDrag(spr);
+      if (e.target.name == 'dragSprite') {
+        DOMEventDrag.stopDrag(spr);
+      }
       //spr.stopDrag();
     }
   }
