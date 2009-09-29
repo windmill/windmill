@@ -45,7 +45,6 @@ from webenv.rest import RestApplication
 from webenv.applications.file_server import FileServerApplication
 
 import windmill
-import https
 from proxy import ProxyApplication
 from jsonrpc import JSONRPCApplication
 from xmlrpc import XMLRPCApplication
@@ -131,7 +130,8 @@ def make_server(http_port=None, js_path=None, compression_enabled=None):
     else:
         cc = None
     
-    application = WindmillApplication(js_path=js_path, compression_enabled=compression_enabled)    
+    application = WindmillApplication(js_path=js_path, compression_enabled=compression_enabled)  
+    import https  
     httpd = https.WindmillHTTPServer(('0.0.0.0', http_port),
                                      https.WindmillHTTPRequestHandler, cc,
                                      application)
