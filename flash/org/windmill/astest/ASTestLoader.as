@@ -18,35 +18,35 @@ package org.windmill.astest {
   import org.windmill.WMLogger;
   import flash.display.Loader;
   import flash.display.LoaderInfo;
-	import flash.net.URLRequest;
-	import flash.events.Event;
-	import flash.events.ProgressEvent;
+  import flash.net.URLRequest;
+  import flash.events.Event;
+  import flash.events.ProgressEvent;
   import flash.events.IOErrorEvent;
-	import flash.system.ApplicationDomain;
-	import flash.system.SecurityDomain;
-	import flash.system.LoaderContext;
+  import flash.system.ApplicationDomain;
+  import flash.system.SecurityDomain;
+  import flash.system.LoaderContext;
   import flash.external.ExternalInterface;
   import flash.utils.getQualifiedClassName;
 
-  public class WMLoader {
+  public class ASTestLoader {
     private static var urls:Array = [];
-    public static function load(urls:Array):void {
-      WMLoader.urls = urls;
-      WMLoader.loadNext();
+    public static function load(u:Array):void {
+      urls = u;
+      loadNext();
     }
     private static function loadNext():void {
-      if (WMLoader.urls.length == 0) {
+      if (urls.length == 0) {
         ASTest.run();
       }
       else {
         var loader:Loader = new Loader();
-        var url:String = WMLoader.urls.shift();
+        var url:String = urls.shift();
         var req:URLRequest = new URLRequest(url);
         // checkPolicyFile is true so it knows to grab the crossdomain.xml
         // for wherever it's grabbing tests from
         // Need to spoon-feed it the ApplicationDomain and SecurityDomain
         // so it knows to load the test SWFs in the the current app context
-        var con:LoaderContext = new LoaderContext(true,
+        var ctxt:LoaderContext = new LoaderContext(true,
             ApplicationDomain.currentDomain,
             SecurityDomain.currentDomain);
         // Catch any error that occurs during async load
@@ -67,9 +67,9 @@ package org.windmill.astest {
             instance: new c()
           });
           loader.unload();
-          WMLoader.loadNext();
+          loadNext();
         });
-        loader.load(req, con);
+        loader.load(req, ctxt);
       }
     }
   }

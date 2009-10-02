@@ -48,23 +48,27 @@ package org.windmill {
       'htmlText'
     ];
 
-    private static function init():void {
+    public static function init():void {
       for each (var arr:Array in WMLocator.locatorMap) {
         WMLocator.locatorMapObj[arr[0]] = arr[1];
       }
       WMLocator.locatorMapCreated = true;
     }
 
-    public function WMLocator():void {}
-
     public static function lookupDisplayObject(
         params:Object):DisplayObject {
-      if (!WMLocator.locatorMapCreated) {
-        WMLocator.init();
-      }
+        var res:DisplayObject;
+        res = lookupDisplayObjectForContext(params, Windmill.getContext());
+        if (!res && Windmill.contextIsApplication()) {
+          res = lookupDisplayObjectForContext(params, Windmill.getStage());
+        }
+        return res;
+    }
+
+    public static function lookupDisplayObjectForContext(
+        params:Object, obj:*):DisplayObject {
       var locators:Array = [];
       var queue:Array = [];
-      var obj:* = Windmill.getTopLevel();
       var checkWMLocatorChain:Function = function (
           item:*, pos:int):DisplayObject {
         var map:Object = WMLocator.locatorMapObj;
@@ -216,32 +220,103 @@ package org.windmill {
     }
 
     // Generates a chained-locator expression for the clicked-on item
-    public static function generateLocator(item:*):String {
+    public static function generateLocator(item:*, ...args):String {
+      var strictLocators:Boolean = Windmill.config.strictLocators;
+      if (args.length) {
+        strictLocators = args[0];
+      }
       var expr:String = '';
+      var exprArr:Array = [];
       var attr:String;
       var attrVal:String;
+      // Verifies the property exists, and that the child can
+      // be found from the parent (in some cases there is a parent
+      // which does not have the item in its list of children)
+      var weHaveAWinner:Function = function (item:*, attr:String):Boolean {
+        var winner:Boolean = false;
+        // Get an attribute that actually has a value
+        if (usableAttr(item, attr)) {
+          // Make sure that the parent can actually see
+          // this item in its list of children
+          var par:* = item.parent;
+          var count:int = 0;
+          if (par is DisplayObjectContainer) {
+            count = par.numChildren;
+          }
+          if (count > 0) {
+            var index:int = 0;
+            while (index < count) {
+              var kid:DisplayObject = par.getChildAt(index);
+              if (kid == item) {
+                winner = true;
+                break;
+              }
+              index++;
+            }
+          }
+        }
+        return winner;
+      };
+      var usableAttr:Function = function (item:*, attr:String):Boolean {
+        // Item has to have an attribute of that name
+        if (!(attr in item)) {
+          return false;
+        }
+        // Attribute's value cannot be null
+        if (!item[attr]) {
+          return false;
+        }
+        // If strict locators are on, don't accept an auto-generated
+        // 'name' attribute ending in a number -- e.g., TextField05
+        // These are often unreliable as locators
+        if (strictLocators &&
+            attr == 'name' && /\d+$/.test(item[attr])) {
+          return false;
+        }
+        return true;
+      };
+      var isValidLookup:Function = function (exprArr:Array):Boolean {
+        expr = exprArr.join('/');
+        // Make sure that the expression actually looks up a
+        // valid object
+        var validLookup:DisplayObject = lookupDisplayObject({
+          chain: expr
+        });
+        return !!validLookup;
+      };
       // Attrs to look for, ordered by priority
       var locatorPriority:Array = WMLocator.locatorLookupPriority;
       do {
+        // Try looking up a value for each attribute in order
+        // of preference
         for each (attr in locatorPriority) {
-          // If we find one of the lookuup keys, prepend
-          // on the locator expression
-          if (attr in item && item[attr]) {
+          // If we find one of the lookuup keys, we may have a winner
+          if (weHaveAWinner(item, attr)) {
+            // Prepend onto the locator expression, then check to
+            // see if the chain still results in a valid lookup
             attrVal = attr == 'htmlText' ?
                 WMLocator.cleanHTML(item[attr]) : item[attr];
-            expr = attr + ':' + attrVal + '/' + expr;
-            break;
+            exprArr.unshift(attr + ':' + attrVal);
+            // If this chain looks up an object correct, keeps going
+            if (isValidLookup(exprArr)) {
+              break;
+            }
+            // Otherwise throw out this attr/value pair and keep
+            // trying
+            else {
+              exprArr.shift();
+            }
           }
         }
         item = item.parent;
-      } while (item.parent)
-      if (expr.length) {
-        // Strip off trailing slash
-        expr = expr.replace(/\/$/, '');
+      } while (item.parent && !(item.parent == Windmill.getContext() ||
+          item.parent == Windmill.getStage()))
+      if (exprArr.length) {
+        expr = exprArr.join('/');
         return expr;
       }
       else {
-        throw new Error('Could not find any usable attributes for locator.');
+        return null;
       }
     }
   }

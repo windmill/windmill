@@ -17,10 +17,15 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 package org.windmill {
   import flash.display.Sprite;
   import flash.display.Stage;
+  import org.windmill.Windmill;
   import org.windmill.WMAssert;
+  import org.windmill.WMWait;
+  import org.windmill.astest.ASTest;
   public class TestCase extends Sprite {
+    public var windmill:* = Windmill;
     public var asserts:* = WMAssert; 
     public var waits:* = WMWait; 
+    public var controller:* = ASTest.wrappedControllerMethods; 
     // Get a reference to the Stage in the base class
     // before the tests actually load so tests can all
     // reference it

@@ -14,6 +14,7 @@
 #   limitations under the License.
 
 import windmill
+from windmill import conf, server
 import logging
 from time import sleep
 import os, sys
@@ -85,7 +86,7 @@ def setup_servers(console_level=logging.INFO):
     if len(logging.getLogger().handlers) > 0:
         console_handler = logging.getLogger().handlers[0]
         console_handler.setLevel(console_level)
-    httpd = windmill.server.make_server()
+    httpd = server.make_server()
     return httpd
 
 def run_threaded(console_level=logging.INFO):
@@ -120,7 +121,7 @@ def configure_global_settings(logging_on=True):
     else:
         local_settings = None
 
-    windmill.settings = windmill.conf.configure_settings(localSettings=local_settings)
+    windmill.settings = conf.configure_settings(localSettings=local_settings)
     
     port = windmill.settings['SERVER_HTTP_PORT']
     

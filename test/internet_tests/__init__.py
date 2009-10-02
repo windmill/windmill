@@ -4,13 +4,13 @@
 # hit a forward
 
 from windmill.bin import admin_lib
-import windmill
+from windmill import server, authoring
 import os, sys
 from webenv.applications.file_server import FileServerApplication
 
 def setup_module(module):
-    windmill.authoring.setup_module(module)
+    authoring.setup_module(module)
     application = FileServerApplication(os.path.dirname(__file__))
-    windmill.server.add_namespace('windmill-unittests', application)
+    server.add_namespace('windmill-unittests', application)
     
 from windmill.authoring import teardown_module

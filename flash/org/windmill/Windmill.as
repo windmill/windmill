@@ -16,18 +16,24 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
 
 package org.windmill {
   import org.windmill.astest.ASTest;
+  import org.windmill.WMLocator;
   import org.windmill.WMController;
   import org.windmill.WMAssert;
   import flash.utils.*;
   import mx.core.Application;
+  import flash.system.Security;
   import flash.display.Sprite;
   import flash.display.Stage;
   import flash.display.DisplayObject;
   import flash.external.ExternalInterface;
 
   public class Windmill extends Sprite {
-    public static var context:*; // A reference to the Stage
-    public static var timeout:int = 20000; 
+    public static var config:Object = {
+      context: null, // Ref to the Stage or Application
+      timeout: 20000, // Default timeout for waits
+      domains: [],
+      strictLocators: false 
+    };
     public static var controllerMethods:Array = [];
     public static var assertMethods:Array = [];
     public static var packages:Object = {
@@ -46,10 +52,8 @@ package org.windmill {
       }
     };
 
-    public function Windmill():void {}
-
     // Initializes the Windmill Flash code
-    // 1. Saves a reference to the stage in 'context'
+    // 1. Saves a reference to the stage in config.context
     //    this is the equivalent of the window obj in
     //    Windmill's JS impl. See WMLocator to see how
     //    it's used
@@ -61,10 +65,35 @@ package org.windmill {
     //    happens (as in the case of all failed tests)
     // 3. Exposes the start/stop method of WMExplorer
     //    to turn on and off the explorer
-    public static function init(config:Object):void {
+    public static function init(params:Object):void {
       var methodName:String;
       var item:*;
       var descr:XML;
+      // A reference to the Stage
+      // ----------------
+      if (!(params.context is Stage || params.context is Application)) {
+        throw new Error('Windmill.config.context must be a reference to the Application or Stage.');
+      }
+      config.context = params.context;
+
+      // Allow script access to talk to the Windmill API
+      // via ExternalInterface from the following domains
+      if ('domains' in params) {
+        var domainsArr:Array = params.domain is Array ?
+          params.domains : [params.domains];
+        config.domains = domainsArr;
+        for each (var d:String in config.domains) {
+          Windmill.addDomain(d);
+        }
+      }
+
+      // Set up the locator map
+      // ========
+      WMLocator.init();
+      // Create dynamic asserts
+      // ========
+      WMAssert.init();
+
       // Returns a wrapped version of the method that returns
       // the Error obj to JS-land instead of actually throwing
       var genExtFunc:Function = function (func:Function):Function {
@@ -77,12 +106,6 @@ package org.windmill {
           }
         }
       }
-      // A reference to the Stage
-      // ----------------
-      if (!(config.context is Stage || config.context is Application)) {
-        throw new Error('Windmill.context must be a reference to the Application or Stage.');
-      }
-      context = config.context;
 
       // Expose controller and non-dynamic assert methods
       // ----------------
@@ -103,12 +126,10 @@ package org.windmill {
               genExtFunc(packages[key].packageRef[methodName]));
         }
       }
-      
+
       // Expose dynamic asserts
       // ----------------
-      // Create all the dynamic assert methods
-      WMAssert.init();
-      // Dynamically generated asserts -- these *will not*
+      // These *will not*
       // show up via introspection with describeType, but
       // they *are there* -- add them manually by iterating
       // through the same list that used to build them
@@ -116,9 +137,9 @@ package org.windmill {
       for (methodName in asserts.assertTemplates) {
         ExternalInterface.addCallback('wm_' + methodName,
             genExtFunc(asserts[methodName]));
-        
+
       }
-      
+
       // Other misc ExternalInterface methods
       // ----------------
       var miscMethods:Object = {
@@ -133,38 +154,42 @@ package org.windmill {
             genExtFunc(miscMethods[methodName]));
       }
 
+      // Wrap controller methods for AS tests to do auto-wait
+      // ========
+      ASTest.init();
+    }
+
+    public static function addDomain(domain:String):void {
+      flash.system.Security.allowDomain(domain);
+    }
+
+    public static function contextIsStage():Boolean {
+      return (config.context is Stage);
+    }
+
+    public static function contextIsApplication():Boolean {
+      return (config.context is Application);
+    }
+
+    public static function getContext():* {
+      return config.context;
     }
 
     public static function getStage():Stage {
-      var context:* = Windmill.context;
+      var context:* = config.context;
       var stage:Stage;
-      if (context is Application) {
+      if (contextIsApplication()) {
         stage = context.stage;
       }
-      else if (context is Stage) {
+      else if (contextIsStage()) {
         stage = context;
       }
       else {
-        throw new Error('Windmill.context must be a reference to an Application or Stage.' +
+        throw new Error('Windmill.config.context must be a reference to an Application or Stage.' +
             ' Perhaps Windmill.init has not run yet.');
       }
-      return stage; 
+      return stage;
     }
-    
-    public static function getTopLevel():DisplayObject {
-      var topLevel:*;
-      var context:* = Windmill.context;
-      if (context is Application) {
-        topLevel = context.parent;
-      }
-      else if (context is Stage) {
-        topLevel = context;
-      }
-      else {
-        throw new Error('Windmill.context must be a reference to an Application or Stage.' +
-            ' Perhaps Windmill.init has not run yet.');
-      }
-      return topLevel; 
-    }
+
   }
 }
