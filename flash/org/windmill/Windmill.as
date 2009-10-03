@@ -31,7 +31,8 @@ package org.windmill {
     public static var config:Object = {
       context: null, // Ref to the Stage or Application
       timeout: 20000, // Default timeout for waits
-      domains: []
+      domains: [],
+      strictLocators: false 
     };
     public static var controllerMethods:Array = [];
     public static var assertMethods:Array = [];
@@ -50,8 +51,6 @@ package org.windmill {
         methodNames: []
       }
     };
-
-    public function Windmill():void {}
 
     // Initializes the Windmill Flash code
     // 1. Saves a reference to the stage in config.context
