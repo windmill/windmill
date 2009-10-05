@@ -1,4 +1,6 @@
-# from http://sebulba.wikispaces.com/recipe+thread2
+#   Orginally from http://sebulba.wikispaces.com/recipe+thread2
+#
+#   Changes Copyright (c) 2009 Canonical Ltd.
 
 import threading
 import inspect
@@ -43,4 +45,8 @@ class Thread(threading.Thread):
     def terminate(self):
         """raises SystemExit in the context of the given thread, which should 
         cause the thread to exit silently (unless caught)"""
+        if self not in threading._active.items():
+            # The thread isn't active anymore, so it should have
+            # terminated already.
+            return
         self.raise_exc(SystemExit)
