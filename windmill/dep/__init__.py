@@ -11,6 +11,11 @@ try:
 except:
     import _uuid as uuid
 
+try:
+    import mechanize
+except:
+    import _mechanize as mechanize
+
 import _simplesettings as simplesettings
 import _mozrunner as mozrunner
 import _functest as functest

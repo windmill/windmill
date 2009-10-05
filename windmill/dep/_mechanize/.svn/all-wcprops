@@ -1,0 +1,167 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/62424/wwwsearch/mechanize/trunk/mechanize
+END
+_lwpcookiejar.py
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/36209/wwwsearch/mechanize/trunk/mechanize/_lwpcookiejar.py
+END
+_pullparser.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/46246/wwwsearch/mechanize/trunk/mechanize/_pullparser.py
+END
+_useragent.py
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/60274/wwwsearch/mechanize/trunk/mechanize/_useragent.py
+END
+_mozillacookiejar.py
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/51828/wwwsearch/mechanize/trunk/mechanize/_mozillacookiejar.py
+END
+_response.py
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/61618/wwwsearch/mechanize/trunk/mechanize/_response.py
+END
+_sockettimeout.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/60310/wwwsearch/mechanize/trunk/mechanize/_sockettimeout.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/62423/wwwsearch/mechanize/trunk/mechanize/__init__.py
+END
+_auth.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/60274/wwwsearch/mechanize/trunk/mechanize/_auth.py
+END
+_mechanize.py
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/62424/wwwsearch/mechanize/trunk/mechanize/_mechanize.py
+END
+_html.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/48480/wwwsearch/mechanize/trunk/mechanize/_html.py
+END
+_rfc3986.py
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/48480/wwwsearch/mechanize/trunk/mechanize/_rfc3986.py
+END
+_clientcookie.py
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/60286/wwwsearch/mechanize/trunk/mechanize/_clientcookie.py
+END
+_headersutil.py
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/59645/wwwsearch/mechanize/trunk/mechanize/_headersutil.py
+END
+_gzip.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/48480/wwwsearch/mechanize/trunk/mechanize/_gzip.py
+END
+_testcase.py
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/61618/wwwsearch/mechanize/trunk/mechanize/_testcase.py
+END
+_urllib2.py
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/60274/wwwsearch/mechanize/trunk/mechanize/_urllib2.py
+END
+_firefox3cookiejar.py
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/!svn/ver/58410/wwwsearch/mechanize/trunk/mechanize/_firefox3cookiejar.py
+END
+_util.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/58106/wwwsearch/mechanize/trunk/mechanize/_util.py
+END
+_http.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/60286/wwwsearch/mechanize/trunk/mechanize/_http.py
+END
+_file.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/60274/wwwsearch/mechanize/trunk/mechanize/_file.py
+END
+_msiecookiejar.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/60274/wwwsearch/mechanize/trunk/mechanize/_msiecookiejar.py
+END
+_debug.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/36209/wwwsearch/mechanize/trunk/mechanize/_debug.py
+END
+_beautifulsoup.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/44118/wwwsearch/mechanize/trunk/mechanize/_beautifulsoup.py
+END
+_seek.py
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/41346/wwwsearch/mechanize/trunk/mechanize/_seek.py
+END
+_upgrade.py
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/59641/wwwsearch/mechanize/trunk/mechanize/_upgrade.py
+END
+_opener.py
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/60274/wwwsearch/mechanize/trunk/mechanize/_opener.py
+END
+_request.py
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/60274/wwwsearch/mechanize/trunk/mechanize/_request.py
+END
