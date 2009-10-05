@@ -353,14 +353,18 @@ class ForwardingManager(object):
     
     def create_redirect_form(self, request, uri):
         inputs = ['<input type="hidden" name="%s" value="%s" />' % 
-                  (urllib.unquote(k), urllib.unquote(v),) for k, v in request.body.form.items()
-                  ]            
+                   (urllib.unquote(k), urllib.unquote(v),) for k, v in request.body.form.items() if type(v) is not list
+                   ]
+        for k, v in ((k, v) for k, v in request.body.form.items() if type(v) is list):
+            inputs += ['<input type="checkbox" checked name="%s" value="%s" />' % 
+                      (urllib.unquote(k), urllib.unquote(value),) for value in v
+                      ]
         form = """<html><head><title>There is no spoon.</title></head>
     <body onload="document.getElementById('redirect').submit();"
           style="text-align: center;">
       <form id="redirect" action="%s" method="POST">%s</form>
-    </body></html>""" % (uri, '\n'.join(inputs))
-        self.redirect_forms[uri] = form.encode('utf-8')
+    </body></html>""" % (str(uri), '\n'.join(inputs))
+        self.redirect_forms[uri] = form
     
     def is_form_forward(self, request):
         if self.redirect_forms.has_key(request.proxy_uri):
