@@ -260,7 +260,14 @@ class ProxyClient(object):
             if '/windmill-serv' in value:
                 value = value.split('/windmill-serv')[-1]
             if not self.is_hop_by_hop(key):
-                headers[key] = value.replace(request.host, host)
+                if request.host in value:
+                    headers[key] = value.replace(request.host, host)
+                elif request.url.netloc in value:
+                    headers[key] = value.replace(request.url.netloc, host.split('://')[-1])
+                elif request.url.scheme in value:
+                    headers[key] = value.replace(request.url.scheme, host.split('://')[0])
+                else:
+                    headers[key] = value
         return headers
     
     def set_response_headers(self, resp, response, request_host, proxy_host):
