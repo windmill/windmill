@@ -271,6 +271,10 @@ class ProxyClient(object):
         response.headers = resp.items() + cache_additions
     
     def make_request(self, request, host):
+        if request.proxy_uri in self.fm.form_headers:
+            h = self.fm.form_headers.pop(request.proxy_uri)
+            h.pop('content-length')
+            request.headers.update(h)
         uri = request.proxy_uri.replace(request.host, host, 1)
         headers = self.clean_request_headers(request, host)
         headers['host'] = host[host.rindex('/')+1:]
@@ -312,6 +316,7 @@ class ForwardingManager(object):
         self.initial_forward_map = {}
         self.redirect_forms = {}
         self.forwarding_test_url = None
+        self.form_headers = {}
         
     @property
     def enabled(self):
@@ -365,6 +370,7 @@ class ForwardingManager(object):
       <form id="redirect" action="%s" method="POST">%s</form>
     </body></html>""" % (str(uri), '\n'.join(inputs))
         self.redirect_forms[uri] = form
+        self.form_headers[uri] = request.headers
     
     def is_form_forward(self, request):
         if self.redirect_forms.has_key(request.proxy_uri):
@@ -447,6 +453,7 @@ class ProxyApplication(Application):
                 return InitialForwardResponse(new_uri)
             elif self.fm.is_form_forward(request):
                 form = self.fm.form_forward(request)
+                
                 response = HtmlResponse(form)
                 response.headers += cache_additions
                 return response
