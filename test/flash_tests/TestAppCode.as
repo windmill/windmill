@@ -33,6 +33,11 @@ package {
   import org.windmill.WMBootstrap;
 
   public class TestAppCode extends MovieClip {
+
+    public var publicInt:int = 2112;
+    public var publicString:String = 'Geddy Lee';
+    public var publicArray:Array = ['By-Tor', 'Snow Dog'];
+
     private var stg:Stage;
     private var spr:Sprite = new Sprite();
     private var draggable:Sprite;
