@@ -19,8 +19,9 @@ Copyright 2009, Matthew Eernisse (mde@fleegix.org) and Slide, Inc.
     applicationComplete="initApp()">
     <mx:Script>
         <![CDATA[
+            public var testAppCode:TestAppCode = new TestAppCode();
             public function initApp():void {
-                new TestAppCode().init(this);
+                testAppCode.init(this);
             }
         ]]>
     </mx:Script>

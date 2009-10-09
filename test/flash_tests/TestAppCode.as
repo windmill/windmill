@@ -111,7 +111,7 @@ package {
       stg.addEventListener(MouseEvent.MOUSE_UP, endDrag);
 
       context.doubleClickEnabled = true;
-      
+
       WMBootstrap.init(context);
       /*
       // Focus
