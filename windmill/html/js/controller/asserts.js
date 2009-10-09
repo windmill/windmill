@@ -116,7 +116,7 @@ windmill.controller.asserts.assertRegistry = {
 windmill.controller.asserts.assertText = function (paramObject) {
   var n = lookupNode(paramObject, false);
   var validator = paramObject.validator;
-    
+  
   var inner = n.innerHTML;
   if (n.textContent){
     inner = n.textContent;
@@ -142,7 +142,12 @@ windmill.controller.asserts.assertTextIn = function (paramObject) {
   var n = lookupNode(paramObject, false);
   var validator = paramObject.validator;
   
-  var inner = n.innerHTML;
+	//If no lookup was provided, search the whole document
+	if (n == false){
+		n = windmill.testWin().document.body;	
+	}
+  
+	var inner = n.innerHTML;
   if (n.textContent){
     inner = n.textContent;
   }
@@ -156,12 +161,13 @@ windmill.controller.asserts.assertTextIn = function (paramObject) {
   if (iHTML.indexOf(validator) != -1){
     return true;
   }
-  
-  // var found = n.textContent;
-  // if (found == undefined)
-  //   found = n.innerText;
-  throw "Text '" + validator +
+  else { 
+ 	 // var found = n.textContent;
+ 	 // if (found == undefined)
+  	//   found = n.innerText;
+  	throw "Text '" + validator +
         "' was not found in the provided node.  Found instead: " + inner;
+	}
 };
 
 
