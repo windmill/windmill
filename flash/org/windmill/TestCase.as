@@ -26,6 +26,9 @@ package org.windmill {
     public var asserts:* = WMAssert; 
     public var waits:* = WMWait; 
     public var controller:* = ASTest.wrappedControllerMethods; 
+    // Reference to either an Application (Flex)
+    // or the Stage (Flash)
+    public var context:* = Windmill.getContext();
     // Get a reference to the Stage in the base class
     // before the tests actually load so tests can all
     // reference it
