@@ -124,7 +124,7 @@ windmill.xhr = new function() {
                   //if asserts.assertNotSomething we need to set the result to !result
                   if (_this.action.method.indexOf('asserts.assertNot') != -1) {
                       _this.methodArr[1] = _this.methodArr[1].replace('Not', '');
-											var assertNotError = false;
+											var assertNotErr = false;
                       try {
                         var func = stringToFunc(arrayToJSPath(_this.methodArr));
                         output = func(_this.action.params);
