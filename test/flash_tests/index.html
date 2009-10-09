@@ -7,19 +7,20 @@
       var testApp;
       function init() {
         var html = '';
-      if (document.all) {
-        html = '<object type="application/x-shockwave-flash"' +
-        '    width="100%" height="100%" id="testApp">' +
-        '  <param name="movie" value="TestApp.swf">' +
-        '  <param name="quality" value="high">' +
-        '  <param name="bgcolor" value="#ffffff">' +
-        '</object>';
-      }
-      else {
-        html = '<embed id="testApp" height="100%" width="100%"' +
-        '    name="testApp" src="TestApp.swf"' +
-        '    type="application/x-shockwave-flash"/>';
-      }
+        var swfName = 'TestApp.swf';
+        if (document.all) {
+          html = '<object type="application/x-shockwave-flash"' +
+          '    width="100%" height="100%" id="testApp">' +
+          '  <param name="movie" value="' + swfName + '">' +
+          '  <param name="quality" value="high">' +
+          '  <param name="bgcolor" value="#ffffff">' +
+          '</object>';
+        }
+        else {
+          html = '<embed id="testApp" height="100%" width="100%"' +
+          '    name="testApp" src="' + swfName + '"' +
+          '    type="application/x-shockwave-flash"/>';
+        }
         document.getElementById('testAppContainer').innerHTML = html;
         testApp = document.getElementById('testApp')
       }
@@ -35,8 +36,8 @@
   </style>
   </head>
   <body>
-    <div id="testAppContainer" style="width: 740px;
-        height: 440px; border: 1px solid #ccc;">
+    <div id="testAppContainer" style="width: 760px;
+        height: 640px; border: 1px solid #ccc;">
     </div>
   </body>
 </html>
