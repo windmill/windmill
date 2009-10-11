@@ -94,6 +94,11 @@ var lookupNode = function (paramObject, scroll){
     var theRest = paramObject.jquery.replace(chain[0],'');
     element = eval('start'+theRest);
   }
+  else if(typeof paramObject.string != "undefined"){
+  	s = "Looking up nodes containing text "+ paramObject.string;
+    var nodes = jQuery(windmill.testWin().document.body).find("*:contains('"+paramObject.string+"')");
+		element = nodes[nodes.length - 1];
+	}
   else if(typeof paramObject.rteID != "undefined"){
     s = 'Looking up rte selector '+ paramObject.rte;
     element = lookupNode({id:paramObject.rteID}).contentWindow.document.body; 
