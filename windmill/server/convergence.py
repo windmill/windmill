@@ -328,14 +328,15 @@ class JSONRPCMethods(RPCMethods):
             self.add_test(test, suite_name=test.get('suite_name'))
                 
     def create_save_file(self, transformer, suite_name, tests):
+        from windmill.authoring import transforms
         if not windmill.settings['SAVES_PATH']:
-            windmill.authoring.transforms.create_saves_path()
+            transforms.create_saves_path()
         for test in tests:
             if test.get('suite_name'):
                 test.pop('suite_name')
             if test['params'].get('uuid'): 
                 test['params'].pop('uuid')
-        return windmill.authoring.transforms.registry[transformer](suite_name, tests)
+        return transforms.registry[transformer](suite_name, tests)
         
     def teardown(self, tests):
         """teardown_module function for functest based python tests"""

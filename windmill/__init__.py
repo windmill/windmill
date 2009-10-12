@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import authoring, bin, browser, server, conf, tools, sys
+import bin, browser, server, conf, tools, sys
 if not sys.version.startswith('2.4'):
     from urlparse import urlparse
 else:
