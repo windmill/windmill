@@ -33,6 +33,11 @@ package {
   import org.windmill.WMBootstrap;
 
   public class TestAppCode extends MovieClip {
+
+    public var publicInt:int = 2112;
+    public var publicString:String = 'Geddy Lee';
+    public var publicArray:Array = ['By-Tor', 'Snow Dog'];
+
     private var stg:Stage;
     private var spr:Sprite = new Sprite();
     private var draggable:Sprite;
@@ -43,7 +48,6 @@ package {
     public function init(ctxt:Application):void {
       context = ctxt;
       stg = context.stage;
-
 
       // Panel
       var panel:Panel = new Panel();
@@ -112,7 +116,7 @@ package {
       stg.addEventListener(MouseEvent.MOUSE_UP, endDrag);
 
       context.doubleClickEnabled = true;
-      
+
       WMBootstrap.init(context);
       /*
       // Focus

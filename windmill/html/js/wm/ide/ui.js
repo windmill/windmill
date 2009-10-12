@@ -26,7 +26,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 windmill.ui = new function() {
     var _this = this;
     //global settings for highlight color for explorers
-    this.borderHilight = '1px solid #003366';
+    this.borderHilight = '2px solid #3875d7';
     
     //variable to decide whether to use outline or border
      if (windmill.browser.isIE){
@@ -138,7 +138,7 @@ windmill.ui.playback = new function() {
   this.sendPlayBack = function(uuid, suiteOnly) {
       //Turn off explorers and recorder
       windmill.ui.recorder.recordOff();
-      windmill.ui.domexplorer.domExplorerOff();
+      windmill.ui.dx.domExplorerOff();
       windmill.ui.assertexplorer.assertExplorerOff();
       windmill.runTests = true;
       
@@ -197,12 +197,14 @@ windmill.ui.playback = new function() {
 
                           var paramsObj = {};
                           paramsObj.uuid = suites[i].childNodes[j].id;
-
+                          
+                          //if there is a locator
                           if (windmill.registry.methods[actionObj.method].locator) {
                               var si = $(suites[i].childNodes[j].id + 'locatorType').selectedIndex;
                               paramsObj[$(suites[i].childNodes[j].id + 'locatorType')[si].value] = $(suites[i].childNodes[j].id + 'locator').value;
 
                           }
+                          //if there is an option
                           if (windmill.registry.methods[actionObj.method].option) {
                               var optionNode = $(suites[i].childNodes[j].id + 'optionType');
                               //if we have a drop down, get the selected element
@@ -215,7 +217,20 @@ windmill.ui.playback = new function() {
                                 paramsObj[$(suites[i].childNodes[j].id + 'optionType').innerHTML] = $(suites[i].childNodes[j].id + 'option').value;
                               }
                           }
-
+                          //if there is a swf
+                           if (windmill.registry.methods[actionObj.method].swf) {
+                                var optionNode = $(suites[i].childNodes[j].id + 'swfType');
+                                //if we have a drop down, get the selected element
+                                if (optionNode.tagName.toLowerCase() == "select"){
+                                  var si = optionNode.selectedIndex;
+                                  paramsObj['swf.'+$(suites[i].childNodes[j].id + 'swfType')[si].value] = $(suites[i].childNodes[j].id + 'swf').value; 
+                                }
+                                //if there is only one option, it's a span, get the innerHTML
+                                else{
+                                  paramsObj['swf.'+$(suites[i].childNodes[j].id + 'swfType').innerHTML] = $(suites[i].childNodes[j].id + 'swf').value;
+                                }
+                            }
+                          
                           actionObj.params = paramsObj;
                       }
 

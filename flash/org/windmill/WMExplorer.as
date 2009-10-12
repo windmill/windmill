@@ -65,6 +65,7 @@ package org.windmill {
     public static function stop(e:MouseEvent = null):void {
       if (!running) { return; }
       var stage:Stage = Windmill.getStage();
+      
       stage.removeChild(borderSprite);
       stage.removeEventListener(MouseEvent.MOUSE_OVER, select);
       // Call removeEventListener with useCapture of 'true', since
@@ -75,6 +76,11 @@ package org.windmill {
       running = false;
       // Pass off to annihilateEvent to prevent the app from responding
       annihilateEvent(e);
+      
+      var res:* = ExternalInterface.call('wm_explorerStopped');
+      if (!res) {
+        WMLogger.log('(Windmill Flash bridge not found.)');
+      }
     }
 
     // Highlights the rolled-over item and generates a chained-locator

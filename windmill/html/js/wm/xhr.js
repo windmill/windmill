@@ -26,6 +26,7 @@ windmill.xhr = new function() {
     
     //Keep track of the loop state, running or paused
     this.loopState = false;
+    this.actionQueued = false;
     
     //If the are variables passed we need to do our lex and replace
     this.processVar = function(str){
@@ -38,11 +39,16 @@ windmill.xhr = new function() {
       return str;
     }
     
+    this.goWait = function(){
+      windmill.xhr.actionQueued = true;
+      windmill.controller.waits.forElement(windmill.xhr.action.params, windmill.xhr.action);
+    };
+    
     this.runAction = function(){
       var _this = windmill.xhr;
       
       //setup state
-      windmill.serviceDelay = windmill.serviceDelayRunning;
+      //windmill.serviceDelay = windmill.serviceDelayRunning;
       windmill.stat("Running " + _this.action.method + "...");
       windmill.ui.playback.setPlaying();
       //Put on windmill main page that we are running something
@@ -76,33 +82,68 @@ windmill.xhr = new function() {
           try {
             //Start the action running timer
               windmill.xhr.action_timer.startTime();
+              
+              //Get access to the function according to the method array
+              //not's don't actually exist
+              try {
+                var func = stringToFunc(arrayToJSPath(_this.methodArr));
+              } catch(err){ windmill.err(err); }
+              
+
+              //waits and nodes that have a lookup that isn't returning
+              //if there is no node, this will be false
+              //if there is a node, but it doesn't return it will throw
+              //else we have a node
+              try {
+                _this.node = lookupNode(_this.action.params);
+              } catch(err){
+                _this.node = null;
+              }
+              
+              //auto wait for only UI actions
+              //where the lookup fails.
+              if ((_this.node == null) && 
+                  (_this.methodArr[0] != 'waits') &&
+                  (_this.methodArr[0] != 'asserts')){
+                    
+                windmill.pauseLoop();
+                _this.action.params.aid = action.id;
+                _this.goWait();
+                return;
+              }
+              
               //Wait/open needs to not grab the next action immediately
-              if ((_this.methodArr[0] == 'waits')) {
+              if (_this.action.method.indexOf('waits') != -1) {
                   windmill.pauseLoop();
                   _this.action.params.aid = action.id;
               }
+
+              //asserts., waits.
               if (_this.methodArr.length > 1){
+                
                   //if asserts.assertNotSomething we need to set the result to !result
                   if (_this.action.method.indexOf('asserts.assertNot') != -1) {
-                      var m = _this.methodArr[1].replace('Not', '');
-                        try { 
-                          output = windmill.controller[_this.methodArr[0]][m](_this.action.params);
-                        } catch(err){
-                          var assertNotErr = true;
-                        }
-                        //If the not call didn't error, it's an error
-                        if (!assertNotErr){
-                          throw "returned true.";
-                        }
+                      _this.methodArr[1] = _this.methodArr[1].replace('Not', '');
+											var assertNotErr = false;
+                      try {
+                        var func = stringToFunc(arrayToJSPath(_this.methodArr));
+                        output = func(_this.action.params);
+                      } catch(err){
+                        assertNotErr = true;
+                      }
+                      //If the not call didn't error, it's an error
+                      if (!assertNotErr){
+                        throw "AssertNot returned true, thus a fail.";
+                      }
                   }
                   //Normal asserts and waits
                   else {
-                    output = windmill.controller[_this.methodArr[0]][_this.methodArr[1]](_this.action.params, _this.action);
+                    output = func(_this.action.params, _this.action);
                   }
               }                        
               //Every other action that isn't namespaced
               else {
-                output = windmill.controller[_this.action.method](_this.action.params);
+                output = func(_this.action.params);
               }
               
               //End the timer
@@ -129,6 +170,9 @@ windmill.xhr = new function() {
               //so what we want to use is the message property
               if (error.message){
                 _this.action.params.error = error.message;
+								if (error.lineNumber){
+									error.message += "" + error.lineNumber;
+								}
               } else { 
                 _this.action.params.error = error; 
               }
@@ -153,7 +197,7 @@ windmill.xhr = new function() {
 
       //Send the report if it's not in the commands namespace, we only call report for test actions
       if ((_this.methodArr[0] != 'commands') 
-        && (_this.methodArr[0] != 'waits') 
+        && (_this.action.method.indexOf('waits') == -1) 
         && (windmill.runTests == true)) {
         
           var newParams = copyObj(_this.action.params);
@@ -188,7 +232,7 @@ windmill.xhr = new function() {
             if (_this.action.method != 'defer') {
               _this.runAction();
             } else {
-              windmill.serviceDelay = windmill.serviceDelayDefer;
+              //windmill.serviceDelay = windmill.serviceDelayDefer;
               windmill.ui.playback.resetPlayBack();
               windmill.stat("Ready, Waiting for tests...");
             }
@@ -320,7 +364,18 @@ windmill.xhr = new function() {
         }
     };
     this.setWaitBgAndReport = function(aid, result, obj) {
-        if (!obj) { return false; }
+        if (windmill.xhr.actionQueued){
+          windmill.xhr.actionQueued = false;
+          windmill.xhr.runAction();
+          windmill.continueLoop();
+          windmill.actOut(windmill.xhr.action.method, windmill.xhr.action.params, result);
+          return;
+        }
+        
+        if (!obj) { 
+          windmill.continueLoop();
+          return false; 
+        }
         
         var action = $(aid);
         var output = $(aid+"result");
@@ -362,5 +417,6 @@ windmill.xhr = new function() {
           windmill.xhr.sendReport(obj.method, result, windmill.xhr.action_timer, undefined);
         }
         windmill.xhr.action_timer.write(obj.params);
+        windmill.continueLoop();
     };
 };

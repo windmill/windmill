@@ -6,7 +6,7 @@ import re
 import shutil
 
 # Location of compiler
-MXMLC_PATH = 'mxmlc'
+MXMLC_PATH = 'mxmlc -debug -verbose-stacktraces -incremental=true -compiler.strict -compiler.show-actionscript-warnings'
 
 # For replacing .as with .swf
 as_re = re.compile('\.as$|\.mxml$')

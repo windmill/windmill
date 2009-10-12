@@ -21,7 +21,7 @@ windmill.registry = new function () {
 };
 
 //Setup all the current methods supported
-windmill.registry.locator = ['id','link','xpath','jsid', 'name','value','classname', 'tagname','label','jquery', 'rteID'];
+windmill.registry.locator = ['id','link','xpath','jsid', 'name','value','classname', 'tagname','label','jquery', 'string', 'rteID','chain','--'];
 //windmill.registry.locator.push('id','link','xpath','jsid', 'name','classname', 'tagname');
 
 for( var i=0; i<windmill.registry.locator.length;i++ ){
@@ -83,6 +83,17 @@ windmill.registry.methods = {
   'storeVarFromIDEJS': {'locator': false, 'option': 'options' },
   'storeVarFromLocAttrib': {'locator': true, 'option': 'options' },
   'triggerEvent': {'locator': true, 'option': 'option' },
+  '-- Flash --': {'locator': false, 'option': false, 'section': true},
+  'flash.click': {'swf':true, 'locator': true, 'option': false},
+  'flash.check': {'swf':true, 'locator': true, 'option': false},
+  'flash.radio': {'swf':true, 'locator': true, 'option': false},  
+  'flash.type': {'swf':true, 'locator': true, 'option': 'text'},
+  'flash.select': {'swf':true, 'locator': true, 'option': 'text,index,label,data,value'},
+  'flash.dragDropElemToElem': {'swf':true, 'locator': true, 'option': true, 'optionIsLocator': true},
+  'flash.dragDropToCoords': {'swf':true, 'locator': true, 'option': 'coords'},
+  'flash.asserts.assertDisplayObject': {'swf':true, 'locator': true, 'option': false},
+  'flash.asserts.assertProperty': {'swf':true, 'locator': true, 'option': 'validator'},
+  'flash.waits.forDisplayObject': {'swf':true, 'locator': true, 'option': false},
   '-- Asserts --': {'locator': false, 'option': false, 'section': true},
   'asserts.assertJS': {'locator': false, 'option': 'js' },
   'asserts.assertIDEJS': {'locator': false, 'option': 'js' },

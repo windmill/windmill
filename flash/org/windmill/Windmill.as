@@ -147,7 +147,8 @@ package org.windmill {
         explorerStop: WMExplorer.stop,
         recorderStart: WMRecorder.start,
         recorderStop: WMRecorder.stop,
-        runASTests: ASTest.run
+        runASTests: ASTest.run,
+        lookupFlash: WMLocator.lookupDisplayObjectBool
       }
       for (methodName in miscMethods) {
         ExternalInterface.addCallback('wm_' + methodName,

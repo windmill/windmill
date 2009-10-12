@@ -6,13 +6,14 @@ import re
 import shutil
 
 # Location of compiler
-MXMLC_PATH = '/Users/mde/flex_sdk_3/bin/mxmlc'
+MXMLC_PATH = 'mxmlc -debug -verbose-stacktraces -incremental=true -compiler.strict -compiler.show-actionscript-warnings'
 
 # For replacing .as with .swf
 as_re = re.compile('\.as$|\.mxml$')
 
 def app():
     cmd = MXMLC_PATH + ' -source-path=. -source-path+=../../flash ./TestApp.mxml -o ./TestApp.swf'
+    #print cmd
     os.system(cmd)
 
 def tests():

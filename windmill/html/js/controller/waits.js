@@ -33,7 +33,9 @@ windmill.controller.waits.sleep = function (paramObj, obj) {
   }    
   setTimeout('done()', paramObj.milliseconds);
 };
-  
+
+
+
 windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) { 
   _this = this;
   
@@ -47,6 +49,20 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
   var isJsTest = (p.origin == 'js');
   var jsCode = p.js || p.test;
 
+
+  // var runMethod = function(){
+  //   var _xhr = windmill.xhr;
+  //   var meth = windmill.xhr.methodArr[0];
+  //   if ((meth != "waits") && (meth != 'asserts')){
+  //     try {
+  //       var output = windmill.controller[_xhr.action.method](_xhr.action.params);
+  //       
+  //     } catch(err){
+  //       
+  //     }
+  //   }
+  // };
+  // 
   // If we get the weird string "NaN" (yes, the actual 
   // string, "NaN" :)) value from the IDE, or some other 
   // unusable string , just use the default value of 20 seconds
@@ -78,7 +94,6 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
           windmill.loaded();
           windmill.continueLoop();
         }
-        else { windmill.continueLoop(); }
       }
       windmill.xhr.setWaitBgAndReport(aid,false,obj);
       return false;
@@ -129,7 +144,6 @@ windmill.controller.waits.forJS = function (paramObj, obj, pageLoad) {
           }
           else{ 
              if (pageLoad){ windmill.loaded(); }
-             else{ windmill.continueLoop(); }
           }
         
            //set the result in the ide
@@ -161,6 +175,23 @@ windmill.controller.waits.forElement = function (paramObj,obj) {
     p.test = f;
     return windmill.controller.waits.forJS(p, obj);
 };
+
+
+//wait for an element to show up on the page
+//if it doesn't after a provided timeout, defaults to 20 seconds
+windmill.controller.waits.forDisplayObject = function (paramObj,obj) { 
+    var p = paramObj || {};
+    var f = function () {
+      try { 
+        var b = p.movie['wm_lookupFlash'](p.params); 
+        return b;
+      }
+      catch(err){}
+    };
+    p.test = f;
+    return windmill.controller.waits.forJS(p, obj);
+};
+
 
 //wait for an element to show up on the page
 //if it doesn't after a provided timeout, defaults to 20 seconds

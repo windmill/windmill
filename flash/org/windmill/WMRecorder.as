@@ -29,6 +29,7 @@ package org.windmill {
   import mx.events.ListEvent;
   import mx.controls.ComboBox;
   import mx.controls.List;
+  import flash.external.ExternalInterface;
 
   public class WMRecorder {
     // Remember the last event type so we know when to
@@ -202,7 +203,12 @@ package org.windmill {
         res.params = params;
         break;
       }
-      WMLogger.log(res);
+      
+      var r:* = ExternalInterface.call('wm_recorderAction', res);
+      if (!r) {
+        WMLogger.log(res);
+        WMLogger.log('(Windmill Flash bridge not found.)');
+      }
     }
 
   }

@@ -94,6 +94,11 @@ var lookupNode = function (paramObject, scroll){
     var theRest = paramObject.jquery.replace(chain[0],'');
     element = eval('start'+theRest);
   }
+  else if(typeof paramObject.string != "undefined"){
+  	s = "Looking up nodes containing text "+ paramObject.string;
+    var nodes = jQuery(windmill.testWin().document.body).find("*:contains('"+paramObject.string+"')");
+		element = nodes[nodes.length - 1];
+	}
   else if(typeof paramObject.rteID != "undefined"){
     s = 'Looking up rte selector '+ paramObject.rte;
     element = lookupNode({id:paramObject.rteID}).contentWindow.document.body; 
@@ -114,6 +119,36 @@ var lookupNode = function (paramObject, scroll){
     return element;
   }
   else { throw s + ", failed."; }
+};
+
+var arrayToJSPath = function(arr){
+  var s = arr.toString();
+  var path = windmill.helpers.replaceAll(s, ",", ".");
+  return path;
+};
+
+var stringToFunc = function (objPathString) {
+  var arr = objPathString.split('.');
+  var win = windmill.controller;
+  var baseObj;
+  var parseObjPath = function (name) {
+    baseObj = !name ? win : baseObj[name];
+    if (!baseObj) {
+      var errMsg = 'Method "' + objPathString + '" does not exist.';
+      // The syntax-error possibility is only for browsers with
+      // a broken eval (IE, Safari 2) -- the script-append hack
+      // blindly sets the text of the script without checking syntax
+      throw new Error(errMsg);
+    }
+    return arr.length ? parseObjPath(arr.shift()) : baseObj;
+  };
+  // call parseObjPath recursively to append each
+  // property/key onto the window obj from the array
+  // 'foo.bar.baz' => arr = ['foo', 'bar', 'baz']
+  // baseObj = window['foo'] =>
+  // baseObj = window['foo']['bar'] =>
+  // baseObj = window['foo']['bar']['baz']
+  return parseObjPath();
 };
 
 //visually display a node on the page
@@ -203,12 +238,16 @@ var busyOff = function(){
 //     $('ide').style.display = 'block';
 // };
 
+var updateSpeed = function(){
+  windmill.serviceDelay = $('execSpeed').value;
+};
+
 var openSettings = function() {
     //Turn off explorers and recorder
     windmill.ui.recorder.recordOff();
-    windmill.ui.domexplorer.domExplorerOff();
+    windmill.ui.dx.domExplorerOff();
     windmill.ui.assertexplorer.assertExplorerOff();
-
+    $('execSpeed').value = windmill.serviceDelay;
     //$(id).style.display = 'block';
     jQuery("#dialog").dialog('open');
     // $('ide').style.display = 'none';
@@ -255,7 +294,7 @@ var resetDD = function(){
 
 var toggleRec = function() {
     if ($('record').src.indexOf("img/record.png") != -1) {
-        windmill.ui.domexplorer.domExplorerOff();
+        windmill.ui.dx.domExplorerOff();
         windmill.ui.assertexplorer.assertExplorerOff();
         windmill.ui.recorder.recordOn();
         windmill.testWin().focus();
@@ -300,13 +339,13 @@ var toggleExplore = function() {
         if (windmill.ui.recorder.recordState == true) { toggleRec(); }
         $('domExp').style.visibility = 'visible';
         $('domExp').innerHTML = '';
-        windmill.ui.domexplorer.domExplorerOn();
+        windmill.ui.dx.domExplorerOn();
         windmill.testWin().focus();
         $('explorer').src = 'img/xoff.png';
     }
     else {
         $('domExp').style.visibility = 'hidden';
-        windmill.ui.domexplorer.domExplorerOff();
+        windmill.ui.dx.domExplorerOff();
         $('explorer').src = 'img/xon.png';
         $('domExp').innerHTML = '';
     }

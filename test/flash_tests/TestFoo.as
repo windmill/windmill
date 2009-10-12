@@ -3,8 +3,8 @@ package {
   public class TestFoo extends TestCase {
     public var order:Array = ['testClick', 'testClickTimeout', 'testWaitCondition', 'testWaitConditionTimeout',
         'testWaitSleep', 'testAssertDisplayObject', 'testWaitDisplayObject', 'testAssertEqualsString',
-        'testAssertEqualsNumber'];
-    
+        'testAssertEqualsNumber', 'testAppPublicInt', 'testAppPublicString', 'testAppPublicArray'];
+
     public function setup():void {
     }
     public function testClick():void {
@@ -47,6 +47,21 @@ package {
       var num:int = 2111;
       asserts.assertEquals(2112, num);
     }
+
+    // Test some public properties in the main Flex app class
+    public function testAppPublicInt():void {
+      var num:int = context.testAppCode.publicInt;
+      asserts.assertEquals(2112, num);
+    }
+    public function testAppPublicString():void {
+      var str:String = context.testAppCode.publicString;
+      asserts.assertEquals('Geddy Lee', str);
+    }
+    public function testAppPublicArray():void {
+      var arr:Array = context.testAppCode.publicArray;
+      asserts.assertEquals('Snow Dog', arr[1]);
+    }
+
     public function teardown():void {
     }
   }

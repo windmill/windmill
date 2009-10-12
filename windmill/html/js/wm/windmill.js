@@ -28,7 +28,7 @@ var windmill = new function() {
 
     this.serviceDelay = 0;
     this.serviceDelayRunning = 0;
-    this.serviceDelayDefer = 800;
+    this.serviceDelayDefer = 0;
 
     this.safeWaits = true;
     
@@ -380,7 +380,7 @@ var windmill = new function() {
         
         //Reset the explorer and recorder to what
         //they were before the new page load
-        windmill.ui.domexplorer.setExploreState();
+        windmill.ui.dx.setExploreState();
         windmill.ui.recorder.setRecState();
 		    busyOff();
         // if we're currently running JS tests, we need to know the

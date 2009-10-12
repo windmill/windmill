@@ -102,7 +102,13 @@ windmill.controller.commands.getControllerMethods = function (paramObject){
 	  if (str) { str += ',' }
 	  str += 'waits.'+i;
 	}
-	//Clean up
+	
+	for (var i in windmill.controller.flash) {
+	  if (str) { str += ',' }
+	  str += 'flash.'+i;
+	}
+
+  //Clean up
 	var ca = new Array();
 	ca = str.split(",");
 	ca = ca.reverse();
