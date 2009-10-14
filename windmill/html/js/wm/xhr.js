@@ -352,30 +352,30 @@ windmill.xhr = new function() {
     this.setWaitBgAndReport = function(aid, result, obj) {
         
         //Access the action UI and output UI
-				var action = $(aid);
+		var action = $(aid);
         var output = $(aid+"result");
 				
-				//If we are in an auto-wait state
-				if (windmill.xhr.actionQueued){
-				  //No longer in a waiting state after this if
-          windmill.xhr.actionQueued = false;
-					//Update the results
-          windmill.actOut(windmill.xhr.action.method, windmill.xhr.action.params, result);
-					//We want to add a new output line instead of accessing the old one
-					output = null;
+		//If we are in an auto-wait state
+		if (windmill.xhr.actionQueued){
+			//No longer in a waiting state after this if
+			windmill.xhr.actionQueued = false;
+			//Update the results
+			windmill.actOut(windmill.xhr.action.method, windmill.xhr.action.params, result);
+			//We want to add a new output line instead of accessing the old one
+			output = null;
         }
         
         //If no object was provided then we just restart the loop and bail
-				if (!obj) { 
+		if (!obj) { 
           windmill.continueLoop();
           return false; 
         }
 				
-				//End any timing that is happening
+		//End any timing that is happening
         windmill.xhr.action_timer.endTime();
 
         //Failed action case
-				if (!result) {
+		if (!result) {
             if (action != null) { action.style.background = '#FF9692'; }
             if (output != null) { //output.style.background = '#FF9692'; 
               output.removeAttribute('class');
