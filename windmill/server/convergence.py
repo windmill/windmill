@@ -178,11 +178,12 @@ class RecursiveRPC(object):
         
 class RPCMethods(object):
     
-    def __init__(self, queue, test_resolution_suite, command_resolution_suite):
+    def __init__(self, queue, test_resolution_suite, command_resolution_suite, proxy):
         self._queue = queue
         self._logger = logging.getLogger('jsonrpc_methods_instance')
         self._test_resolution_suite = test_resolution_suite
         self._command_resolution_suite = command_resolution_suite
+        self.proxy = proxy
         
     def start_suite(self, suite_name):
         self._test_resolution_suite.start_suite(suite_name)
@@ -316,8 +317,7 @@ class JSONRPCMethods(RPCMethods):
         pass
         
     def set_test_url(self, url):
-        windmill.settings['FORWARDING_TEST_URL'] = url
-        windmill.server.proxy.clearForwardingRegistry()
+        self.proxy.fm.set_test_url(url)
         return 200
         
     def restart_test_run(self, tests):

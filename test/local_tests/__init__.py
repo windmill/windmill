@@ -14,16 +14,17 @@
 
 from windmill.bin import admin_lib
 import windmill
+from windmill import authoring, server
 import os, sys
 from windmill.dep import functest
 from time import sleep
-from windmill.dep import wsgi_fileserver
+from webenv.applications.file_server import FileServerApplication
 
 def setup_module(module):
-    windmill.authoring.setup_module(module)
+    authoring.setup_module(module)
 
-    application = wsgi_fileserver.WSGIFileServerApplication(root_path=os.path.abspath(os.path.dirname(__file__)), mount_point='/windmill-unittests/')
-    windmill.server.wsgi.add_namespace('windmill-unittests', application)
+    application = FileServerApplication(os.path.dirname(__file__))
+    server.add_namespace('windmill-unittests', application)
     
 from windmill.authoring import teardown_module
     

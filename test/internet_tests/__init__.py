@@ -4,13 +4,13 @@
 # hit a forward
 
 from windmill.bin import admin_lib
-import windmill
+from windmill import server, authoring
 import os, sys
-from windmill.dep import wsgi_fileserver
+from webenv.applications.file_server import FileServerApplication
 
 def setup_module(module):
-    windmill.authoring.setup_module(module)
-    application = wsgi_fileserver.WSGIFileServerApplication(root_path=os.path.dirname(__file__), mount_point='/windmill-unittests/')
-    windmill.server.wsgi.add_namespace('windmill-unittests', application)
+    authoring.setup_module(module)
+    application = FileServerApplication(os.path.dirname(__file__))
+    server.add_namespace('windmill-unittests', application)
     
 from windmill.authoring import teardown_module
