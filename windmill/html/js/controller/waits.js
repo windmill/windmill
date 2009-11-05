@@ -237,6 +237,22 @@ windmill.controller.waits.forNotElement = function (paramObj,obj) {
     return windmill.controller.waits.forJS(p, obj);
 };
 
+
+windmill.controller.waits.forImageLoaded = function (paramObj,obj) { 
+    var p = paramObj || {};
+
+    //function
+    var f = function () {
+      try { 
+        windmill.controller.asserts.assertImageLoaded(p);
+				return true;
+      }
+      catch(err){}
+    };
+    p.test = f;
+    return windmill.controller.waits.forJS(p, obj);
+};
+
 //This is more of an internal function used by wait and click events
 //To know when to try and reattach the listeners
 //But if users wanted this manually they could use it

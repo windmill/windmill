@@ -63,6 +63,7 @@ windmill.registry.methods = {
   'waits.forElement': {'locator': true, 'option': 'timeout' },
   'waits.forNotElement': {'locator': true, 'option': 'timeout' },
   'waits.forJS': {'locator': false, 'option': 'js' },
+  'waits.forImageLoaded': {'locator': true, 'option': 'timeout' },
   'waits.forElementProperty': {'locator': true, 'option': 'option' },
   'waits.forPageLoad': {'locator': false, 'option': 'timeout' },
   '-- Other --': {'locator': false, 'option': false, 'section': true},
