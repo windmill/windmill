@@ -83,7 +83,8 @@ class WindmillHttp(httplib2.Http):
             else:
               adjusted_header+="Set-Cookie: "+v
         adjusted_header=adjusted_header.strip()
-        response['set-cookie']=adjusted_header
+        if 'set-cookie' in response:
+          response['set-cookie']=adjusted_header
       except AttributeError,myException:
         print "ERROR: "+str(myException)
       return (response, content)
