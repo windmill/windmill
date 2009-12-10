@@ -71,6 +71,25 @@ class ProxyResponse(Response):
         self.httplib_response.conn.busy = False
         
 class WindmillHttp(httplib2.Http):
+    def _request(self, conn, host, absolute_uri, request_uri, method,body, headers, redirections, cachekey):
+      (response, content) = httplib2.Http._request(self, conn, host,absolute_uri, request_uri, method, body, headers, redirections,cachekey)
+      adjusted_header=""
+      try:
+        for h in response._response.msg.headers:
+          (k,v)=h.split(": ",1)
+          if k.lower() == 'set-cookie':
+            if(len(adjusted_header)==0):
+              adjusted_header=v
+            else:
+              adjusted_header+="Set-Cookie: "+v
+        adjusted_header=adjusted_header.strip()
+        if 'set-cookie' in response:
+          response['set-cookie']=adjusted_header
+      except AttributeError,myException:
+        print "ERROR: "+str(myException)
+      return (response, content)
+
+
     def _conn_request(self, conn, request_uri, method, body, headers):
         """Customized response code for Windmill."""
         for i in range(2):
