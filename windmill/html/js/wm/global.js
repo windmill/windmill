@@ -94,6 +94,16 @@ var lookupNode = function (paramObject, scroll){
     var theRest = paramObject.jquery.replace(chain[0],'');
     element = eval('start'+theRest);
   }
+  else if(typeof paramObject.jqueryframe != "undefined" && typeof paramObject.frameid != "undefined") {
+    s = 'Looking up jqueryframe selector '+paramObject.jqueryframe;
+    paramObject.jqueryframe = windmill.helpers.replaceAll(paramObject.jqueryframe, ").", ")<*>");
+    var jQ = jQuery(windmill.testWin().document.getElementById(paramObject.frameid).contentWindow.document)
+    var chain= paramObject.jqueryframe.split('<*>');
+    paramObject.jqueryframe = windmill.helpers.replaceAll(paramObject.jqueryframe, "<*>", ".");
+    var start = eval('jQ.find'+chain[0]);
+    var theRest = paramObject.jqueryframe.replace(chain[0],'');
+    element = eval('start'+theRest);
+  }
   else if(typeof paramObject.string != "undefined"){
   	s = "Looking up nodes containing text "+ paramObject.string;
     var nodes = jQuery(windmill.testWin().document.body).find("*:contains('"+paramObject.string+"')");
