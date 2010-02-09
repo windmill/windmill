@@ -1019,9 +1019,14 @@ windmill.controller = new function () {
     var title = paramObject.title;
     var newW = windmill.testWin();
     for (var i = 0; i < windmill.windowReg.length; i++){
-      if (windmill.windowReg[i].document.title == title){
-        newW = windmill.windowReg[i];
-      }
+			try {
+				if (windmill.windowReg[i].document.title == title){
+					newW = windmill.windowReg[i];
+				}
+			} catch(err){
+				// The window reference is no longer valid, remove it
+				windmill.windowReg.splice(i,i);
+			}
     }
     windmill.testWindow = newW;
   };
