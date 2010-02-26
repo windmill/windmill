@@ -1078,6 +1078,17 @@ windmill.controller = new function () {
     return windmill.testWin().eval(js);
   };
   
+	this.execJQuery = function(paramObject){
+		paramObject.jquery = windmill.helpers.replaceAll(paramObject.jquery, ").", ")<*>");
+    var jQ = jQuery(windmill.testWin().document);
+    var chain= paramObject.jquery.split('<*>');
+    
+    paramObject.jquery = windmill.helpers.replaceAll(paramObject.jquery, "<*>", ".");
+    var start = eval('jQ.find'+chain[0]);
+    var theRest = paramObject.jquery.replace(chain[0],'');
+    element = eval('start'+theRest);
+  };
+
   this.triggerEvent = function(paramObject){
     var element = lookupNode(paramObject);
     windmill.events.triggerEvent(element, paramObject.option, true);

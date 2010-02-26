@@ -71,6 +71,7 @@ windmill.registry.methods = {
   'closeWindow': {'locator': false, 'option': false},
   'execJS': {'locator': false, 'option': 'js' },
   'execIDEJS': {'locator': false, 'option': 'js' },
+  'execJQuery': {'locator': false, 'option': 'jquery' },
   'overrideDialogs': {'locator': false, 'option': false },
   'revertWindow': {'locator': false, 'option': false},
   'reWriteAlert': {'locator': false, 'option': false },
