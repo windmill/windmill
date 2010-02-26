@@ -9,6 +9,9 @@ from urlparse import urlparse
 from webenv import Application, Response, Response302, HtmlResponse, Response404
 import httplib2
 
+from StringIO import StringIO
+
+
 logger = logging.getLogger()
 
 global_exclude = ['http://sb-ssl.google.com',
@@ -70,8 +73,18 @@ class ProxyResponse(Response):
                 yield body
         self.httplib_response.conn.busy = False
         
+class HTTPProxyConnectionWithTimeout(httplib2.HTTPConnectionWithTimeout):
+    def __init__(self,authority, timeout=None, proxy_info=None):
+      proxy_authority=proxy_info
+      httplib2.HTTPConnectionWithTimeout.__init__(self,proxy_authority, timeout, proxy_info)
+
+
 class WindmillHttp(httplib2.Http):
     def _request(self, conn, host, absolute_uri, request_uri, method,body, headers, redirections, cachekey):
+      #need to send full URL if proxy-chaining
+      if(conn.__class__==HTTPProxyConnectionWithTimeout):
+        request_uri=absolute_uri
+
       (response, content) = httplib2.Http._request(self, conn, host,absolute_uri, request_uri, method, body, headers, redirections,cachekey)
       adjusted_header=""
       try:
@@ -261,13 +274,54 @@ class WindmillHttp(httplib2.Http):
                             })
                     response.reason = "Bad Request" 
             else: raise
+        #workaround for bug in IE7 and zero-length 302 Responses
+        if response['status']=='302' and 'content-length' in response and response['content-length']=='0':
+          newresponse=httplib2.Response(dict({
+              "content-type": "text/plain",
+              "status": "302",
+              "content-length": 5,
+              "location": str(response['location'])
+            }))
+          newresponse._response=MyHTTPResponse(StringIO("HELLO"))
+          newresponse._response.length=5
+          #newresponse._response.conn ???
+          content=ProxyResponse(newresponse)
         return (response, content)
+
+class MyHTTPResponse(httplib.HTTPResponse):
+    def __init__(self,fp,debuglevel=0,strict=0,method=None):
+       _UNKNOWN='UNKNOWN'
+       self.fp=fp
+       self.debuglevel=debuglevel
+       self.strict=strict
+       self._method=method
+       self.msg=None
+       self.version=_UNKNOWN
+       self.status=_UNKNOWN
+       self.reason=_UNKNOWN
+       self.chunked=False
+       self.chunk_left=_UNKNOWN
+       self.length=_UNKNOWN
+       self.will_close=_UNKNOWN
 
 class ProxyClient(object):
     def __init__(self, fm):
         self.http = WindmillHttp()
         self.http.follow_redirects = False
         self.fm = fm
+    
+        #setup proxy chaining
+        self.http.use_http_proxy=False
+        import windmill
+        if 'HTTP_PROXY' in windmill.settings:
+          self.http.use_http_proxy=True
+          self.http.use_http_proxy_auth=False
+          self.http.proxy_info=windmill.settings['HTTP_PROXY']
+          if 'HTTP_PROXY_USER' in windmill.settings:
+            import base64
+            self.http.use_http_proxy_auth=True
+            self.http.http_proxy_auth="Basic "+base64.b64encode(windmill.settings['HTTP_PROXY_USER']+":"+windmill.settings['HTTP_PROXY_PASS'])
+
 
     def is_hop_by_hop(self, header):
       """check if the given header is hop_by_hop"""
@@ -304,8 +358,13 @@ class ProxyClient(object):
         uri = request.proxy_uri.replace(request.host, host, 1)
         headers = self.clean_request_headers(request, host)
         headers['host'] = host[host.rindex('/')+1:]
+        connection_type=None
+        if(self.http.use_http_proxy and scheme=='http'):
+          connection_type=HTTPProxyConnectionWithTimeout
+          if self.http.use_http_proxy_auth:
+            headers['proxy-authorization']=self.http.http_proxy_auth
         resp, response = self.http.request(uri, method=request.method, body=str(request.body),
-                                           headers=headers)
+                                           headers=headers,connection_type=connection_type)
         self.set_response_headers(resp, response, request.host, host)
         response.request = request
         # print resp.status, uri
