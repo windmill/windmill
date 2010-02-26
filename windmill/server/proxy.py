@@ -71,7 +71,10 @@ class ProxyResponse(Response):
             else:
                 body = self.httplib_response.read()
                 yield body
-        self.httplib_response.conn.busy = False
+        try: #Temporary fix for Safari on snowleopard, fix me!
+            self.httplib_response.conn.busy = False
+        except myException:
+            print "ERROR: " + str(myException)
         
 class HTTPProxyConnectionWithTimeout(httplib2.HTTPConnectionWithTimeout):
     def __init__(self,authority, timeout=None, proxy_info=None):
