@@ -48,6 +48,21 @@ windmill.controller = new function () {
     //At some point we may want to display somewhere that we continually get deferred
     //when the backend has nothing for us to do
   };
+
+	this.rightClick = function(paramObject){
+		var element = lookupNode(paramObject);
+		windmill.events.triggerEvent(element, 'focus', false);
+
+		var evt = element.ownerDocument.createEvent("HTMLEvents")
+		evt.initEvent('contextmenu', true, true) // bubbles = true, cancelable = true
+
+		if (document.createEventObject) {
+			element.fireEvent('oncontextmenu', evt);
+		}
+		else {
+			element.dispatchEvent(evt);
+		}
+	};
   
   /**
   * Creates a windmill variable antry from a DOM element attribute

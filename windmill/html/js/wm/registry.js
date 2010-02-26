@@ -34,6 +34,7 @@ windmill.registry.option.push('text','url','option','validator','destination','s
 windmill.registry.methods = {
   '-- Mouse --': {'locator': false, 'option': false, 'section': true},
   'click': {'locator': true, 'option': false},
+  'rightClick': {'locator': true, 'option': false},
   'doubleClick': {'locator': true, 'option': false},
   'mouseDown': {'locator': true, 'option': false},
   'mouseMove': {'locator': false, 'option': 'coords'},
