@@ -45,7 +45,7 @@ def start_firefox():
     """Start the Firefox web browser configured for windmill"""
     controller = browser.get_firefox_controller()
     controller.start()
-    print 'Started '+str(controller.command)
+    #print 'Started '+str(controller.command)
     windmill.settings['controllers'].append(controller)
     return controller
     
