@@ -21,7 +21,7 @@ import os, sys, time
 import windmill
 
 def main():
-    if len(sys.argv) is 0 or len(sys.argv) is 1 or sys.argv[1] == 'help' or sys.argv[1] == '--help':
+    if len(sys.argv) is 0 or len(sys.argv) is 1 or sys.argv[1] == 'help' or sys.argv[1] == '--help' or sys.argv[1] == '-h' or sys.argv[1] == '--h' or sys.argv[1] == '-help':
         from windmill.bin import admin_options
         if len(sys.argv) > 0:
             admin_options.help(sys.argv[0])
