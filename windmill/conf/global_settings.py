@@ -115,8 +115,8 @@ elif sys.platform in ('cygwin', 'win32'):
     if os.path.isfile(os.path.join(program_files, 'Safari', 'Safari.exe')):
         SAFARI_BINARY = os.path.join(program_files, 'Safari', 'Safari.exe')
         
-    if os.path.isfile(os.path.join(os.path.expanduser('~'), 'Local Settings', 'Application Data', 'Google', 'Chrome', 'Application', 'chrome.exe')):
-        CHROME_BINARY = os.path.join(os.path.expanduser('~'), 'Local Settings', 'Application Data', 'Google', 'Chrome', 'Application', 'chrome.exe')
+    if os.path.isfile(os.path.join(os.environ['USERPROFILE'], 'Local Settings', 'Application Data', 'Google', 'Chrome', 'Application', 'chrome.exe')):
+        CHROME_BINARY = os.path.join(os.environ['USERPROFILE'], 'Local Settings', 'Application Data', 'Google', 'Chrome', 'Application', 'chrome.exe')
     
     # firefoxBin = findInPath('firefox')
     # 
