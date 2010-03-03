@@ -133,11 +133,11 @@ def do_test(filename, load=False, threaded=True):
             sleep(1)
         run_functest()
 
-run_test = lambda filename : do_test(filename, load=False)
+run_test = lambda filename : do_test(filename, load=False, threaded=True)
 run_test.__name__ = 'run_test'
 run_test.__doc__ = "Run the test file or directory passed to this function"
 
-load_test = lambda filename : do_test(filename, load=True)    
+load_test = lambda filename : do_test(filename, load=True, threaded=True)    
 load_test.__name__ = 'load_test'
 load_test.__doc__ = "Load the test file or directory passed to this function"   
 
