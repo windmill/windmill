@@ -46,6 +46,7 @@ def start_firefox():
     controller = browser.get_firefox_controller()
     controller.start()
     #print 'Started '+str(controller.command)
+    logger.info(str(controller.command))
     windmill.settings['controllers'].append(controller)
     return controller
     

@@ -91,7 +91,7 @@ class Chrome(safari.Safari):
 	    
 	    command = [self.chrome_binary, '--homepage', self.test_url+'/windmill-serv/start.html', '-disable-popup-blocking']
 	    self.p_handle = subprocess.Popen(command, **kwargs)
-	    #logger.info(command)
+	    logger.info(command)
 
 	def kill(self, kill_signal=None):
 	    """Stop Chrome"""
