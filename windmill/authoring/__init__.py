@@ -159,8 +159,21 @@ class WindmillTestClient(object):
                 self.action_name = action_name
                 self.exec_method = exec_method
             def __call__(self, **kwargs):
-                return self.exec_method(self.action_name, **kwargs)
-                
+                result = self.exec_method(self.action_name, **kwargs)
+
+                class ResultDict(dict):
+                  def exists(self):
+                    return self['result']
+
+                #if we have a lookup, wrap the object so we have .exists
+                if result['method'] == 'lookup':
+                  new_results = ResultDict(result)
+                else:
+                  new_results = result
+
+                return new_results
+
+
         class NSWrapper(object):
             """Namespace wrapper"""
             def __init__(self, name):
@@ -212,7 +225,10 @@ class WindmillTestClient(object):
         if not self.browser_debugging:
             result = self._method_proxy.execute_test({'method':test_name, 'params':kwargs})
             if not result['result']['result'] and assertion:
-                raise WindmillTestClientException(result['result'])
+                if result['result']['method'] != 'lookup':
+                  raise WindmillTestClientException(result['result'])
+                else:
+                  return result['result']
             else:
                 return result['result']
         else:

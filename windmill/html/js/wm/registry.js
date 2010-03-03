@@ -81,6 +81,7 @@ windmill.registry.methods = {
   'setDocDomain': {'locator': false, 'option': 'domain' },
   'setOptions': {'locator': false, 'option':'stopOnFailure'},
   'show': {'locator': true, 'option':false},
+  'lookup': {'locator': true, 'option':false},
   'storeURL': {'locator': true, 'option': false },
   'storeVarFromJS': {'locator': false, 'option': 'options' },
   'storeVarFromIDEJS': {'locator': false, 'option': 'options' },

@@ -49,6 +49,11 @@ windmill.controller = new function () {
     //when the backend has nothing for us to do
   };
 
+	//Expose lookupNode to the python controller
+	this.lookup = function(paramObject){
+		return lookupNode(paramObject);
+	}
+
 	this.rightClick = function(paramObject){
 		var element = lookupNode(paramObject);
 		windmill.events.triggerEvent(element, 'focus', false);
