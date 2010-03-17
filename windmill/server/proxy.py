@@ -8,6 +8,7 @@ from urlparse import urlparse
 
 from webenv import Application, Response, Response302, HtmlResponse, Response404
 import httplib2
+import re
 
 from StringIO import StringIO
 
@@ -89,20 +90,27 @@ class WindmillHttp(httplib2.Http):
         request_uri=absolute_uri
 
       (response, content) = httplib2.Http._request(self, conn, host,absolute_uri, request_uri, method, body, headers, redirections,cachekey)
-      adjusted_header=""
-      try:
-        for h in response._response.msg.headers:
-          (k,v)=h.split(": ",1)
-          if k.lower() == 'set-cookie':
-            if(len(adjusted_header)==0):
-              adjusted_header=v
-            else:
-              adjusted_header+="Set-Cookie: "+v
-        adjusted_header=adjusted_header.strip()
-        if 'set-cookie' in response:
-          response['set-cookie']=adjusted_header
-      except AttributeError,myException:
-        print "ERROR: "+str(myException)
+
+      #re-do all server response header items now
+      #(see: http://code.google.com/p/httplib2/issues/detail?id=1
+      #Issue 1:    email.Message.Message.items() is Set-Cookie hostile)
+      response_items=[]
+      for h in response._response.msg.headers:
+        try:
+          (k,v)=re.split(':\s*',h,1)
+        except ValueError: #this header appears to be malformed -- skip
+          continue
+        k=k.lower()
+        if k not in response_items:
+          del response[k]
+          response[k]=v
+          response_items.append(k)
+        else:
+          response[k]+=k+": "+v
+      #now strip
+      for item in response_items:
+        response[item]=response[item].strip()
+
       return (response, content)
 
 
