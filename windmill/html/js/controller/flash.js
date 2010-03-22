@@ -18,7 +18,7 @@ var _f = windmill.controller.flash;
 _f.asserts = {};
 _f.waits = {};
 
-//find the swf locator if its there and return it
+//find the swf_locator if its there and return it
 var findSWFLocator = function(paramObj){
   for (prop in paramObj){
     if (prop.indexOf("swf") != -1){
@@ -65,7 +65,7 @@ var validate = function(res){
 _f.click = function (paramObj) {
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
-  var loc = prop.replace("swf.","");
+  var loc = prop.replace("swf_","");
   
   var params = {};
   params[loc] = paramObj[prop];
@@ -85,7 +85,7 @@ _f.radio = function (paramObj) {
 _f.doubleClick = function (paramObj) {
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
-  var loc = prop.replace("swf.","");
+  var loc = prop.replace("swf_","");
   
   var params = {};
   params[loc] = paramObj[prop];
@@ -98,7 +98,7 @@ _f.doubleClick = function (paramObj) {
 _f.type = function (paramObj) {
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
-  var loc = prop.replace("swf.","");
+  var loc = prop.replace("swf_","");
   
   var params = {};
   params[loc] = paramObj[prop];
@@ -113,7 +113,7 @@ _f.type = function (paramObj) {
 _f.select = function (paramObj) {
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
-  var loc = prop.replace("swf.","");
+  var loc = prop.replace("swf_","");
   
   var params = {};
   params[loc] = paramObj[prop];
@@ -128,7 +128,7 @@ _f.dragDropElemToElem = function (paramObj) {
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
   var opt = findOpt(paramObj);
-  var loc = prop.replace("swf.","");
+  var loc = prop.replace("swf_","");
   
   var params = {};
   params[loc] = paramObj[prop];
@@ -141,7 +141,7 @@ _f.dragDropElemToElem = function (paramObj) {
 _f.dragDropToCoords = function (paramObj) {  
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
-  var loc = prop.replace("swf.","");
+  var loc = prop.replace("swf_","");
   
   var params = {};
   params[loc] = paramObj[prop];
@@ -154,7 +154,7 @@ _f.dragDropToCoords = function (paramObj) {
 _f.asserts.assertDisplayObject = function (paramObj){
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
-  var loc = prop.replace("swf.","");
+  var loc = prop.replace("swf_","");
   
   var params = {};
   params[loc] = paramObj[prop];
@@ -166,7 +166,7 @@ _f.asserts.assertDisplayObject = function (paramObj){
 _f.asserts.assertProperty = function (paramObj){
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
-  var loc = prop.replace("swf.","");
+  var loc = prop.replace("swf_","");
   var params = {};
   params[loc] = paramObj[prop];
   params.validator = paramObj.validator;
@@ -179,7 +179,7 @@ _f.asserts.assertProperty = function (paramObj){
 _f.asserts.assertText = function (paramObj){
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
-  var loc = prop.replace("swf.","");
+  var loc = prop.replace("swf_","");
   var params = {};
   params[loc] = paramObj[prop];
   params.validator = paramObj.validator;
@@ -192,7 +192,7 @@ _f.asserts.assertText = function (paramObj){
 _f.asserts.assertTextIn = function (paramObj){
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
-  var loc = prop.replace("swf.","");
+  var loc = prop.replace("swf_","");
   var params = {};
   params[loc] = paramObj[prop];
   params.validator = paramObj.validator;
@@ -204,7 +204,7 @@ _f.asserts.assertTextIn = function (paramObj){
 _f.waits.forDisplayObject = function (paramObj, obj){
   var movie = lookupNode(paramObj);
   var prop = findSWFLocator(paramObj);
-  var loc = prop.replace("swf.","");
+  var loc = prop.replace("swf_","");
   var params = {};
   params[loc] = paramObj[prop];
   

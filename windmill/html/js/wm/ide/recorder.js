@@ -273,7 +273,7 @@ windmill.ui.recorder = new function() {
         win.wm_recorderAction = function(obj){
           var method = "flash."+obj.method;
           var params = obj.params || {};
-          params["swf.chain"] = obj.chain;
+          params["swf_chain"] = obj.chain;
                   
           var loc = windmill.ui.recorder.analyzeNode({target:windmill.ui.recorder.lastSWF});
           params[loc.desc] = loc.val;          

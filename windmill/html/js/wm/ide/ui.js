@@ -223,11 +223,11 @@ windmill.ui.playback = new function() {
                                 //if we have a drop down, get the selected element
                                 if (optionNode.tagName.toLowerCase() == "select"){
                                   var si = optionNode.selectedIndex;
-                                  paramsObj['swf.'+$(suites[i].childNodes[j].id + 'swfType')[si].value] = $(suites[i].childNodes[j].id + 'swf').value; 
+                                  paramsObj['swf_'+$(suites[i].childNodes[j].id + 'swfType')[si].value] = $(suites[i].childNodes[j].id + 'swf').value; 
                                 }
                                 //if there is only one option, it's a span, get the innerHTML
                                 else{
-                                  paramsObj['swf.'+$(suites[i].childNodes[j].id + 'swfType').innerHTML] = $(suites[i].childNodes[j].id + 'swf').value;
+                                  paramsObj['swf_'+$(suites[i].childNodes[j].id + 'swfType').innerHTML] = $(suites[i].childNodes[j].id + 'swf').value;
                                 }
                             }
                           
