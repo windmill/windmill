@@ -251,10 +251,19 @@ windmill.ui.remote = new function() {
                   var paramsObj = {};
                   paramsObj.uuid = suite.childNodes[j].id;
 
-                  if (windmill.registry.methods[actionObj.method].locator) {
+									//For correctly saving out flash actions
+                  if (windmill.registry.methods[actionObj.method].swf) {
+                    var si = $(suite.childNodes[j].id + 'swfType').selectedIndex;
+                    paramsObj['swf_'+$(suite.childNodes[j].id + 'swfType')[si].value] = $(suite.childNodes[j].id + 'swf').value;
+                  }
+
+                  //If the action has a locator
+									if (windmill.registry.methods[actionObj.method].locator) {
                     var si = $(suite.childNodes[j].id + 'locatorType').selectedIndex;
                     paramsObj[$(suite.childNodes[j].id + 'locatorType')[si].value] = $(suite.childNodes[j].id + 'locator').value;
                   }
+
+									//If the action has an option
                   if (windmill.registry.methods[actionObj.method].option) {
                     var optNode = $(suite.childNodes[j].id + 'optionType');
                     //if we have a select vs a span (1 option)
