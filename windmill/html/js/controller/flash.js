@@ -211,3 +211,9 @@ _f.waits.forDisplayObject = function (paramObj, obj){
   windmill.controller.waits.forDisplayObject({'aid': paramObj.aid, 'movie':movie, 'params':params}, obj);
   return true;
 };
+_f.waits.forFlash = function (paramObj, obj){
+  var movie = lookupNode(paramObj);
+  
+  windmill.controller.waits.forFlash({'aid': paramObj.aid, 'movie':movie}, obj);
+  return true;
+};

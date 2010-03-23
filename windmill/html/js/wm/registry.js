@@ -98,6 +98,7 @@ windmill.registry.methods = {
   'flash.asserts.assertDisplayObject': {'swf':true, 'locator': true, 'option': false},
   'flash.asserts.assertProperty': {'swf':true, 'locator': true, 'option': 'validator'},
   'flash.waits.forDisplayObject': {'swf':true, 'locator': true, 'option': false},
+  'flash.waits.forFlash': {'swf':false, 'locator': true, 'option': false},
   '-- Asserts --': {'locator': false, 'option': false, 'section': true},
   'asserts.assertJS': {'locator': false, 'option': 'js' },
   'asserts.assertIDEJS': {'locator': false, 'option': 'js' },
