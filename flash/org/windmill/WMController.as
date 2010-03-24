@@ -24,6 +24,18 @@ package org.windmill {
 
   public class WMController {
     public function WMController():void {}
+    
+		public static function mouseOver(params:Object):void {
+      var obj:* = WMLocator.lookupDisplayObject(params);
+      Events.triggerMouseEvent(obj, MouseEvent.MOUSE_OVER);
+      Events.triggerMouseEvent(obj, MouseEvent.ROLL_OVER);
+    }
+
+    public static function mouseOut(params:Object):void {
+      var obj:* = WMLocator.lookupDisplayObject(params);
+      Events.triggerMouseEvent(obj, MouseEvent.MOUSE_OUT);
+      Events.triggerMouseEvent(obj, MouseEvent.ROLL_OUT);
+    }
 
     public static function click(params:Object):void {
       var obj:* = WMLocator.lookupDisplayObject(params);
@@ -79,6 +91,8 @@ package org.windmill {
         stageX: startCoordsAbs.x,
         stageY: startCoordsAbs.y
       });
+			Events.triggerMouseEvent(obj, MouseEvent.ROLL_OVER);
+			Events.triggerMouseEvent(obj, MouseEvent.MOUSE_OVER);
       // Give it focus
       Events.triggerFocusEvent(obj, FocusEvent.FOCUS_IN);
       // Down, (TextEvent.LINK,) up, click
@@ -262,6 +276,49 @@ package org.windmill {
         default:
           // Do nothing
       }
+    }
+    public static function getTextValue(params:Object):String {
+      // Look up the item where we want to get the property
+        var obj:* = WMLocator.lookupDisplayObject(params);
+        var attrs:Object=['htmlText', 'label'];
+        var res:String = 'undefined';
+        var attr:String;
+        for each (attr in attrs){
+            res = obj[attr];
+            if (res != 'undefined'){
+                break;
+            }
+        }
+        return res;
+      }
+      
+    public static function getPropertyValue(params:Object, opts:Object = null):String {
+      // Look up the item where we want to get the property
+        var obj:* = WMLocator.lookupDisplayObject(params);
+        var attrName:String;
+        var attrVal:String = 'undefined';
+        if (opts){
+            if (opts.attrName is String) {
+            attrName = opts.attrName;
+            attrVal = obj[attrName];
+            }
+        }
+        else {
+            if (params.attrName is String) {
+            attrName = params.attrName;
+            attrVal = obj[attrName];
+            }
+        }
+        return String(attrVal);
+      }
+      
+    public static function getObjectCoords(params:Object):String {
+        // Look up the item which coords we want to get
+        var obj:* = WMLocator.lookupDisplayObject(params);
+        var destCoords:Point = new Point(0, 0);
+        destCoords = obj.localToGlobal(destCoords);
+        var coords:String = '(' + String(destCoords.x) + ',' + String(destCoords.y) + ')';
+        return coords;
     }
   }
 }

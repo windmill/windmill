@@ -89,6 +89,8 @@ windmill.registry.methods = {
   'triggerEvent': {'locator': true, 'option': 'option' },
   '-- Flash --': {'locator': false, 'option': false, 'section': true},
   'flash.click': {'swf':true, 'locator': true, 'option': false},
+  'flash.mouseOver': {'swf':true, 'locator': true, 'option': false},
+  'flash.mouseOut': {'swf':true, 'locator': true, 'option': false},
   'flash.check': {'swf':true, 'locator': true, 'option': false},
   'flash.radio': {'swf':true, 'locator': true, 'option': false},  
   'flash.type': {'swf':true, 'locator': true, 'option': 'text'},

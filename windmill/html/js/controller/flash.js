@@ -74,6 +74,30 @@ _f.click = function (paramObj) {
   validate(res);
 };
 
+_f.mouseOver = function (paramObj) {
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf_","");
+  
+  var params = {};
+  params[loc] = paramObj[prop];
+  
+  var res = movie['wm_mouseOver'](params);
+  validate(res);
+};
+
+_f.mouseOut = function (paramObj) {
+  var movie = lookupNode(paramObj);
+  var prop = findSWFLocator(paramObj);
+  var loc = prop.replace("swf_","");
+  
+  var params = {};
+  params[loc] = paramObj[prop];
+  
+  var res = movie['wm_mouseOut'](params);
+  validate(res);
+};
+
 _f.check = function (paramObj) {
   _f.click(paramObj);
 };
