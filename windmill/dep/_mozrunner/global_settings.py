@@ -93,8 +93,11 @@ elif sys.platform == 'linux2':
     for path, name in (('/opt', 'firefox',),
                        ('/usr/lib', 'iceweasel',),
                        ('/usr/share', 'firefox',),
-                       ('/usr/lib/', 'mozilla-firefox',),
-                       ('/usr/lib/', 'firefox',),
+                       ('/usr/lib', 'mozilla-firefox',),
+                       ('/usr/lib', 'firefox',),
+                       ('/usr/lib64', 'iceweasel',),
+                       ('/usr/lib64', 'mozilla-firefox',),
+                       ('/usr/lib64', 'firefox',),
                        ):
         if os.path.isdir(path):
             profiles = sorted([d for d in os.listdir(os.path.join(path)) if (
