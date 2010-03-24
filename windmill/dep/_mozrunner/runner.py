@@ -130,7 +130,9 @@ class Mozilla(object):
                     login = os.getlogin()
                 except OSError:
                     login = pwd.getpwuid(os.geteuid())[0]
-            print commands.getoutput('chown -R %s:%s %s' % (login, login, profile))
+            output = commands.getoutput('chown -R %s:%s %s' % (login, login, profile))
+            if output != '':
+                print output
             
         self.profile = profile
     

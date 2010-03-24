@@ -97,7 +97,9 @@ def create_tmp_profile(settings):
             login = os.getlogin()
         except OSError:
             login = pwd.getpwuid(os.geteuid())[0]
-        print commands.getoutput('chown -R %s:%s %s' % (login, login, tmp_profile))
+        output = commands.getoutput('chown -R %s:%s %s' % (login, login, tmp_profile))
+        if output != '':
+            print output
                                  
     if os.path.exists(tmp_profile) is True:
         shutil.rmtree(tmp_profile)
