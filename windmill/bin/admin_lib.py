@@ -206,24 +206,10 @@ def teardown(shell_objects):
         for directory in windmill.teardown_directories:
             if os.path.isdir(directory):
                 shutil.rmtree(directory)
-
-        # while shell_objects['httpd_thread'].isAlive():
-        #     try:
-        #         shell_objects['httpd'].stop()
-        #     except Exception, e:
-        #         print "Exception occurred while shutting server down:"
-        #         print e
-        #         
-        #     # Hacking workaround for port locking up on linux.
-        #     if sys.platform == 'linux2':
-        #         try:
-        #             shell_objects['httpd'].socket.shutdown(socket.SHUT_RDWR)
-        #             shell_objects['httpd'].socket.close()
-        #         except: pass
         
-        shell_objects['httpd'].stop()
-        #shell_objects['httpd_thread'].join()
-        
+        # We had a ton of code here for killing the process
+        # But I removed it all and things seem to work
+        # Guess we can revert if it's broken :)
 
 def runserver_action(shell_objects):
     """Run the server in the foreground with the options given to the command line"""
