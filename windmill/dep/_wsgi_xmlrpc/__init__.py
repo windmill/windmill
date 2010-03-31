@@ -15,15 +15,9 @@
 from SimpleXMLRPCServer import SimpleXMLRPCDispatcher  
 import logging
 
-from webenv import Response, Response500
-from webenv.rest import RestApplication
-
 logger = logging.getLogger(__name__)
 
-class XMLResponse(Response):
-    content_type = 'text/xml'
-
-class XMLRPCApplication(RestApplication):
+class WSGIXMLRPCApplication(object):
     """Application to handle requests to the XMLRPC service"""
 
     def __init__(self, instance=None, methods=[]):
@@ -38,8 +32,17 @@ class XMLRPCApplication(RestApplication):
         for method in methods:
             self.dispatcher.register_function(method)
         self.dispatcher.register_introspection_functions()
+
+    def handler(self, environ, start_response):
+        """XMLRPC service for windmill browser core to communicate with"""
+
+        if environ['REQUEST_METHOD'] == 'POST':
+            return self.handle_POST(environ, start_response)
+        else:
+            start_response("400 Bad request", [('Content-Type','text/plain')])
+            return ['']
         
-    def POST(self, request, *path):
+    def handle_POST(self, environ, start_response):
         """Handles the HTTP POST request.
 
         Attempts to interpret all HTTP POST requests as XML-RPC calls,
@@ -49,8 +52,17 @@ class XMLRPCApplication(RestApplication):
         """
         
         try:
-            data = str(request.body)
+            # Get arguments by reading body of request.
+            # We read this in chunks to avoid straining
+            # socket.read(); around the 10 or 15Mb mark, some platforms
+            # begin to have problems (bug #792570).
+
+            length = int(environ['CONTENT_LENGTH'])
+            data = environ['wsgi.input'].read(length)
             
+            max_chunk_size = 10*1024*1024
+            size_remaining = length
+
             # In previous versions of SimpleXMLRPCServer, _dispatch
             # could be overridden in this class, instead of in
             # SimpleXMLRPCDispatcher. To maintain backwards compatibility,
@@ -62,7 +74,13 @@ class XMLRPCApplication(RestApplication):
             response += '\n'
         except: # This should only happen if the module is buggy
             # internal error, report as HTTP server error
-            return Response500()
+            start_response("500 Server error", [('Content-Type', 'text/plain')])
+            return []
         else:
             # got a valid XML RPC response
-            return XMLResponse(response)
+            start_response("200 OK", [('Content-Type','text/xml'), ('Content-Length', str(len(response)),)])
+            return [response]
+            
+
+    def __call__(self, environ, start_response):
+        return self.handler(environ, start_response)

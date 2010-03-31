@@ -24,10 +24,8 @@ from windmill.dep import functest
 
 logger = logging.getLogger(__name__)
 
-from windmill import tools, browser, server
-
-jsonrpc_client = tools.make_jsonrpc_client()
-xmlrpc_client = tools.make_xmlrpc_client()
+jsonrpc_client = windmill.tools.make_jsonrpc_client()
+xmlrpc_client = windmill.tools.make_xmlrpc_client()
 
 from StringIO import StringIO
 test_stream_object = StringIO()
@@ -43,7 +41,7 @@ windmill.settings['controllers'] = []
         
 def start_firefox():
     """Start the Firefox web browser configured for windmill"""
-    controller = browser.get_firefox_controller()
+    controller = windmill.browser.get_firefox_controller()
     controller.start()
     #print 'Started '+str(controller.command)
     logger.info(str(controller.command))
@@ -52,21 +50,21 @@ def start_firefox():
     
 def start_ie():
     """Start the Internet Explorer web browser configured for windmill"""
-    controller = browser.get_ie_controller()
+    controller = windmill.browser.get_ie_controller()
     controller.start()
     windmill.settings['controllers'].append(controller)
     return controller
     
 def start_safari():
     """Start the Safari web browser configured for windmill"""
-    controller = browser.get_safari_controller()
+    controller = windmill.browser.get_safari_controller()
     controller.start()
     windmill.settings['controllers'].append(controller)
     return controller
     
 def start_chrome():
     """Start the Crhome web browser configured for windmill"""
-    controller = browser.get_chrome_controller()
+    controller = windmill.browser.get_chrome_controller()
     controller.start()
     windmill.settings['controllers'].append(controller)
     return controller
@@ -146,9 +144,11 @@ def run_js_tests(js_dir, test_filter=None, phase=None):
     import windmill
     windmill.js_framework_active = True
     js_dir = os.path.abspath(os.path.expanduser(js_dir))
-    from webenv.applications.file_server import FileServerApplication
-    application = FileServerApplication(os.path.abspath(js_dir))
-    server.add_namespace('windmill-jstests', application)
+    from windmill.dep import wsgi_fileserver  
+    WSGIFileServerApplication = wsgi_fileserver.WSGIFileServerApplication
+    application = WSGIFileServerApplication(root_path=os.path.abspath(js_dir), mount_point='/windmill-jstest/')
+    from windmill.server import wsgi
+    wsgi.add_namespace('windmill-jstest', application)
     # Build list of files and send to IDE
     base_url = windmill.settings['TEST_URL']+'/windmill-jstest'
     
@@ -172,9 +172,11 @@ def run_js_tests(js_dir, test_filter=None, phase=None):
 def load_extensions_dir(dirname):
    """Mount the directory and send all javascript file links to the IDE in order to execute those test urls under the jsUnit framework"""
    # Mount the fileserver application for tests
-   from webenv.applications.file_server import FileServerApplication
-   application = FileServerApplication(os.path.abspath(dirname))
-   server.add_namespace('windmill-extensions', application)
+   from windmill.dep import wsgi_fileserver
+   WSGIFileServerApplication = wsgi_fileserver.WSGIFileServerApplication
+   application = WSGIFileServerApplication(root_path=os.path.abspath(dirname), mount_point='/windmill-extentions/')
+   from windmill.server import wsgi
+   wsgi.add_namespace('windmill-extentions', application)
    # Build list of files and send to IDE
    base_url = windmill.settings['TEST_URL']+'/windmill-extentions'
 

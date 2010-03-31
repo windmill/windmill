@@ -1,498 +1,342 @@
-import socket
-import httplib
+#   Copyright (c) 2006-2007 Open Source Applications Foundation
+#   Copyright (c) 2008-2009 Mikeal Rogers <mikeal.rogers@gmail.com>
+#   Copyright (c) 2009 Canonical Ltd.
+#   Copyright (c) 2009 Domen Kozar <domen@dev.si>
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+import windmill
+
+from httplib import HTTPConnection
+import copy
+import sys
 import logging
 import urllib
-from time import sleep
-from copy import copy
-from urlparse import urlparse
+logger = logging.getLogger(__name__)
+from forwardmanager import ForwardManager
+if not sys.version.startswith('2.4'):
+    from urlparse import urlparse
+else:
+    # python 2.4
+    from windmill.tools.urlparse_25 import urlparse
 
-from webenv import Application, Response, Response302, HtmlResponse, Response404
-import httplib2
-
-logger = logging.getLogger()
-
-global_exclude = ['http://sb-ssl.google.com',
-                  'https://sb-ssl.google.com', 
-                  'http://en-us.fxfeeds.mozilla.com',
-                  'http://fxfeeds.mozilla.com',
-                  'https://fxfeeds.mozilla.com',
-                  'http://www.google-analytics.com',
-                  ]
+first_forward_domains = []
+exclude_from_retry = ['http://sb-ssl.google.com',
+                      'https://sb-ssl.google.com', 
+                      'http://en-us.fxfeeds.mozilla.com',
+                      'fxfeeds.mozilla.com',
+                      'http://www.google-analytics.com',
+                      ]
 
 # Note that hoppish conntains proxy-connection, which is pre-HTTP-1.1 and
 # is somewhat nebulous
-hoppish_headers = {'connection':1, 'keep-alive':1, 'proxy-authenticate':1,
-                   'proxy-authorization':1, 'te':1, 'trailers':1, 'transfer-encoding':1,
-                   'upgrade':1, 'proxy-connection':1, 
-                   'p3p':1 #Not actually a hop-by-hop header, just really annoying 
-                   }
-
+_hoppish = {
+    'connection':1, 'keep-alive':1, 'proxy-authenticate':1,
+    'proxy-authorization':1, 'te':1, 'trailers':1, 'transfer-encoding':1,
+    'upgrade':1, 'proxy-connection':1, 
+    'p3p':1 #Not actually a hop-by-hop header, just really annoying 
+    }
+    
 # Cache stopping headers
 cache_headers = {'Pragma':'no-cache', 'Cache-Control': 'post-check=0, pre-check=0',
                  'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
                  'Expires': '-1'}
-
+                 
 cache_removal = [k.lower() for k in cache_headers.keys()]
 cache_additions = cache_headers.items()
+    
+def is_hop_by_hop(header):
+    """check if the given header is hop_by_hop"""
+    return _hoppish.has_key(header.lower())
 
-class ProxyResponse(Response):
-    def __init__(self, resp):
-        self.http2lib_response = resp
-        self.status = resp['status']
-        if 'reason' in resp:
-            self.status += ' '+resp['reason']
-        self.httplib_response = resp._response
-        # Anything under .5 meg just return
-        # Anything over .5 meg return in 100 chunked reads
-        if 'content-length' in resp:
-            self.httplib_response.length = int(resp['content-length'])
-        
-        if self.httplib_response.length > 512000:
-            self.read_size = self.httplib_response.length / 100
-        else:
-            self.read_size = None
-    
-    def __iter__(self):
-        if self.read_size is not None:
-            yield self.httplib_response.read(self.read_size)
-            while self.httplib_response.chunk_left is not None:
-                if self.httplib_response.chunk_left < self.read_size:
-                    yield self.httplib_response.read()
-                    self.httplib_response.chunk_left = None
-                else:
-                    yield self.httplib_response.read(self.read_size)
-        else:
-            if self.httplib_response.length:
-                body = self.httplib_response.read(self.httplib_response.length)
-                yield body
-            else:
-                body = self.httplib_response.read()
-                yield body
-        self.httplib_response.conn.busy = False
-        
-class WindmillHttp(httplib2.Http):
-    def _conn_request(self, conn, request_uri, method, body, headers):
-        """Customized response code for Windmill."""
-        for i in range(2):
-            try:
-                conn.request(method, request_uri, body, headers)
-            except socket.gaierror:
-                conn.close()
-                raise httplib2.ServerNotFoundError("Unable to find the server at %s" % conn.host)
-            except (socket.error, httplib.HTTPException):
-                # Just because the server closed the connection doesn't apparently mean
-                # that the server didn't send a response.
-                pass
-            try:
-                response = conn.getresponse()
-                response.conn = conn
-            except (socket.error, httplib.HTTPException):
-                if i == 0:
-                    conn.close()
-                    conn.connect()
-                    continue
-                else:
-                    raise
-            else:
-                # Decompression was removed from this section as was HEAD request checks.
-                resp = httplib2.Response(response)
-                resp._response = response
-            break
-        # Since content is never checked in the rest of the httplib code we can safely return
-        # our own windmill response class here.
-        proxy_response = ProxyResponse(resp)
-        return (resp, proxy_response)
-    def request(self, uri, method="GET", body=None, headers=None, redirections=httplib2.DEFAULT_MAX_REDIRECTS, connection_type=None):
-        """request handler with thread safety hacked in"""
-        try:
-            if headers is None:
-                headers = {}
-            else:
-                headers = httplib2._normalize_headers(headers)
-            if not headers.has_key('user-agent'):
-                headers['user-agent'] = "Python-httplib2/%s" % httplib2.__version__
-            uri = httplib2.iri2uri(uri)
-            (scheme, authority, request_uri, defrag_uri) = httplib2.urlnorm(uri)
-            domain_port = authority.split(":")[0:2]
-            if len(domain_port) == 2 and domain_port[1] == '443' and scheme == 'http':
-                scheme = 'https'
-                authority = domain_port[0]
-            conn_key = scheme+":"+authority
-            def get_conn(conn_key):
-                if conn_key in self.connections:
-                    conn = self.connections[conn_key]
-                    if type(conn) is list:
-                        for c in conn:
-                            if not getattr(c, 'busy', True):
-                                return c
-                    else: return c
-                    if type(conn) is list:
-                        return None
-            conn = get_conn(conn_key)
-            if conn is None:
-                if not connection_type:
-                    connection_type = (scheme == 'https') and httplib2.HTTPSConnectionWithTimeout or httplib2.HTTPConnectionWithTimeout
-                certs = list(self.certificates.iter(authority))
-                if scheme == 'https' and certs:
-                    conn = connection_type(authority, key_file=certs[0][0],
-                        cert_file=certs[0][1], timeout=self.timeout, proxy_info=self.proxy_info)
-                    self.connections.setdefault(conn_key, []).append(conn)
-                else:
-                    conn = connection_type(authority, timeout=self.timeout, proxy_info=self.proxy_info)
-                    self.connections.setdefault(conn_key, []).append(conn) 
-                conn.set_debuglevel(httplib2.debuglevel)
-            conn.busy = True
-            if method in ["GET", "HEAD"] and 'range' not in headers and 'accept-encoding' not in headers:
-                headers['accept-encoding'] = 'deflate, gzip'
-            info = httplib2.email.Message.Message()
-            cached_value = None
-            if self.cache:
-                cachekey = defrag_uri
-                cached_value = self.cache.get(cachekey)
-                if cached_value:
-                    try:
-                        info, content = cached_value.split('\r\n\r\n', 1)
-                        feedparser = httplib2.email.FeedParser.FeedParser()
-                        feedparser.feed(info)
-                        info = feedparser.close()
-                        feedparser._parse = None
-                    except IndexError:
-                        self.cache.delete(cachekey)
-                        cachekey = None
-                        cached_value = None
-            else: cachekey = None
-            if method in self.optimistic_concurrency_methods and self.cache and info.has_key('etag') and not self.ignore_etag and 'if-match' not in headers:
-                # http://www.w3.org/1999/04/Editing/
-                headers['if-match'] = info['etag']
-            if method not in ["GET", "HEAD"] and self.cache and cachekey:
-                # RFC 2616 Section 13.10
-                self.cache.delete(cachekey)
-            if cached_value and method in ["GET", "HEAD"] and self.cache and 'range' not in headers:
-                if info.has_key('-x-permanent-redirect-url'):
-                    (response, new_content) = self.request(info['-x-permanent-redirect-url'], "GET", headers = headers, redirections = redirections - 1)
-                    response.previous = Response(info)
-                    response.previous.fromcache = True
-                else:
-                    entry_disposition = httplib2._entry_disposition(info, headers) 
-                    if entry_disposition == "FRESH":
-                        if not cached_value:
-                            info['status'] = '504'
-                            content = ""
-                        response = Response(info)
-                        if cached_value:
-                            response.fromcache = True
-                        return (response, content)
-                    if entry_disposition == "STALE":
-                        if info.has_key('etag') and not self.ignore_etag and not 'if-none-match' in headers:
-                            headers['if-none-match'] = info['etag']
-                        if info.has_key('last-modified') and not 'last-modified' in headers:
-                            headers['if-modified-since'] = info['last-modified']
-                    elif entry_disposition == "TRANSPARENT": pass
-                    (response, new_content) = self._request(conn, authority, uri, request_uri, method, body, headers, redirections, cachekey)
-                if response.status == 304 and method == "GET":
-                    # Rewrite the cache entry with the new end-to-end headers
-                    # Take all headers that are in response 
-                    # and overwrite their values in info.
-                    # unless they are hop-by-hop, or are listed in the connection header.
-
-                    for key in httplib2._get_end2end_headers(response):
-                        info[key] = response[key]
-                    merged_response = Response(info)
-                    if hasattr(response, "_stale_digest"):
-                        merged_response._stale_digest = response._stale_digest
-                    httplib2._updateCache(headers, merged_response, content, self.cache, cachekey)
-                    response = merged_response
-                    response.status = 200
-                    response.fromcache = True 
-
-                elif response.status == 200:
-                    content = new_content
-                else:
-                    self.cache.delete(cachekey)
-                    content = new_content 
-            else: 
-                cc = httplib2._parse_cache_control(headers)
-                if cc.has_key('only-if-cached'):
-                    info['status'] = '504'
-                    response = Response(info)
-                    content = ""
-                else:
-                    (response, content) = self._request(conn, authority, uri, request_uri, method, body, headers, redirections, cachekey)
-        except Exception, e:
-            if self.force_exception_to_status_code:
-                if isinstance(e, httplib2.HttpLib2ErrorWithResponse):
-                    response = e.response
-                    content = e.content
-                    response.status = 500
-                    response.reason = str(e) 
-                elif isinstance(e, socket.timeout):
-                    content = "Request Timeout"
-                    response = Response( {
-                            "content-type": "text/plain",
-                            "status": "408",
-                            "content-length": len(content)
-                            })
-                    response.reason = "Request Timeout"
-                else:
-                    content = str(e) 
-                    response = Response( {
-                            "content-type": "text/plain",
-                            "status": "400",
-                            "content-length": len(content)
-                            })
-                    response.reason = "Bad Request" 
-            else: raise
-        return (response, content)
-
-class ProxyClient(object):
-    def __init__(self, fm):
-        self.http = WindmillHttp()
-        self.http.follow_redirects = False
-        self.fm = fm
-
-    def is_hop_by_hop(self, header):
-      """check if the given header is hop_by_hop"""
-      return hoppish_headers.has_key(header.lower())
-    
-    def clean_request_headers(self, request, host):
-        headers = {}
-        for key, value in request.headers.items():
-            if '/windmill-serv' in value:
-                value = value.split('/windmill-serv')[-1]
-            if not self.is_hop_by_hop(key):
-                if request.host in value:
-                    headers[key] = value.replace(request.host, host)
-                elif request.url.netloc in value:
-                    headers[key] = value.replace(request.url.netloc, host.split('://')[-1])
-                elif request.url.scheme in value:
-                    headers[key] = value.replace(request.url.scheme, host.split('://')[0])
-                else:
-                    headers[key] = value
-        return headers
-    
-    def set_response_headers(self, resp, response, request_host, proxy_host):
-        # TODO: Cookie handler on headers
-        for k in ['status', 'reason']:
-            if k in resp: del resp[k]
-        #[(k,v.replace(proxy_host, request_host),) for k,v in resp.items()]        
-        response.headers = resp.items() + cache_additions
-    
-    def make_request(self, request, host):
-        if request.proxy_uri in self.fm.form_headers:
-            h = self.fm.form_headers.pop(request.proxy_uri)
-            h.pop('content-length')
-            request.headers.update(h)
-        uri = request.proxy_uri.replace(request.host, host, 1)
-        headers = self.clean_request_headers(request, host)
-        headers['host'] = host[host.rindex('/')+1:]
-        resp, response = self.http.request(uri, method=request.method, body=str(request.body),
-                                           headers=headers)
-        self.set_response_headers(resp, response, request.host, host)
-        response.request = request
-        # print resp.status, uri
-        return response
-    
-
-class ForwardMap(dict):
-    def __init__(self, *args, **kwargs):
-        dict.__init__(self, *args, **kwargs)
-        self.ordered_hosts = []
-    def __setitem__(self, key, value):
-        dict.__setitem__(self, key, value)
-        self.ordered_hosts.append(value)
-    def known_hosts(self, first_forward_hosts, exclude_hosts):
-        hosts = first_forward_hosts
-        for host in reversed(self.ordered_hosts):
-            if host not in hosts and host not in exclude_hosts:
-                hosts.append(host)
-        # print hosts
-        return hosts
-        
-class ForwardingManager(object):
-    mapped_response_pass_codes = [200]
-    mapped_response_pass_threshold = 399
-    unmapped_response_pass_codes = [200]
-    unmapped_response_pass_threshold = 399
-    first_forward_hosts = []
-    exclude_from_retry = copy(global_exclude)
-    
-    def __init__(self, forwarding_test_url=None):
-        self.environ_conditions = []
-        self.request_conditions = []
-        self.response_conditions = []
-        self.initial_forward_map = {}
-        self.redirect_forms = {}
-        self.forwarding_test_url = None
-        self.form_headers = {}
-        
-    @property
-    def enabled(self):
-        if self.forwarding_test_url is not None:
-            return True
-        else: return False
-        
-    def set_test_url(self, test_url):
-        if test_url is None:
-            self.forwarding_test_url = None
-            self.test_url = None
-            self.test_host = None
-        else:
-            url = urlparse(test_url)
-            self.forward_map = ForwardMap()
-            self.forwarding_test_url = test_url
-            self.test_url = urlparse(test_url)
-            self.test_host = self.test_url.scheme+"://"+self.test_url.netloc
-            self.forward_map[self.test_host] = self.test_host
-            # This is for reverse compat with old debugging
-            import windmill
-            windmill.settings['FORWARDING_TEST_URL'] = test_url     
-    def is_mapped(self, request):
-        if (request.proxy_uri in self.forward_map):
-            return True
-        if (request.environ.get('HTTP_REFERER', None) in self.forward_map):
-            return True
-        return False
-    
-    def get_forward_host(self, request):
-        """Check if a request uri is in the forward map by uri and referer"""
-        if request.proxy_uri in self.forward_map:
-            return self.forward_map[request.proxy_uri]
-        # Check referer, use tripple false tuple in case someone added a constant to 
-        # the forward map
-        if request.environ.get('HTTP_REFERER', (False, False, False)) in self.forward_map:
-            return self.forward_map[request.environ['HTTP_REFERER']]
-        return None
-    
-    def create_redirect_form(self, request, uri):
-        inputs = ['<input type="hidden" name="%s" value="%s" />' % 
-                   (urllib.unquote(k), urllib.unquote(v),) for k, v in request.body.form.items() if type(v) is not list
-                   ]
-        for k, v in ((k, v) for k, v in request.body.form.items() if type(v) is list):
-            inputs += ['<input type="checkbox" checked name="%s" value="%s" />' % 
-                      (urllib.unquote(k), urllib.unquote(value),) for value in v
-                      ]
-        form = """<html><head><title>There is no spoon.</title></head>
-    <body onload="document.getElementById('redirect').submit();"
-          style="text-align: center;">
-      <form id="redirect" action="%s" method="POST">%s</form>
-    </body></html>""" % (str(uri), '\n'.join(inputs))
-        self.redirect_forms[uri] = form
-        self.form_headers[uri] = request.headers
-    
-    def is_form_forward(self, request):
-        if self.redirect_forms.has_key(request.proxy_uri):
-            return True
-        return False
-        
-    def form_forward(self, request):
-        form = self.redirect_forms.pop(request.proxy_uri)
-        return form
-    
-    def initial_forward(self, request):
-        new_uri = request.proxy_uri.replace(request.host, self.test_host)
-        self.forward_map[new_uri] = request.host
-        return new_uri
-    
-    def forwardable(self, request):
-        if request.url.netloc.startswith('127.0.0.1') or (
-           not self.proxy_conditions_pass(request)):
-            return False
-        return True
-    
-    add_environ_condition = lambda self, condition: self.environ_conditions.append(condition)
-    add_request_condition = lambda self, condition: self.request_conditions.append(condition)
-    add_response_condition = lambda self, condition: self.response_conditions.append(condition)
-    def remove_environ_condition(self, condition):
-        while condition in self.environ_conditions:
-            self.environ_conditions.remove(condition)
-    def remove_request_condition(self, condition):
-        while condition in self.request_conditions:
-            self.request_conditions.remove(condition)
-         
-    def proxy_conditions_pass(self, request):
-        for condition in self.environ_conditions:
-            if not condition(request.environ):
-                return False
-        for condition in self.request_conditions:
-            if not condition(request):
-                return False
-        return True
-        
-    def response_conditions_pass(self, request, target_host, client_response, mapped):
-        for condition in self.response_conditions:
-            result = condition(request, target_host, client_response, mapped)
-            if result is not None:
-                return result
-        if mapped: g = 'mapped_'
-        else: g = 'unmapped_' 
-        if client_response.http2lib_response.status in getattr(self, g+'response_pass_codes'):
-            return True
-        if client_response.http2lib_response.status > getattr(self, g+'response_pass_threshold'):
-            return False
-        else:
-            return True
-            
-    def get_retry_hosts(self, request):
-        return self.forward_map.known_hosts(self.first_forward_hosts, self.exclude_from_retry)
-
-class InitialForwardResponse(Response302):
-    def __init__(self, uri):
-        self.headers = cache_headers.items()
-        super(InitialForwardResponse, self).__init__(uri)
-    
-class ProxyApplication(Application):
-    def __init__(self):
-        super(ProxyApplication, self).__init__()
-        self.fm = ForwardingManager()
-        self.client = ProxyClient(self.fm)
-    
-    def handler(self, request):
-        request.proxy_uri = request.environ['RAW_PATH']
-        if not request.proxy_uri.startswith('http'):
-            return Response404("Cannot proxy relative requests")
-        if self.fm.enabled and self.fm.forwardable(request):
-            if request.host != self.fm.test_host:
-                # request host is not the same as the test host, we need to do an initial forward
-                new_uri = self.fm.initial_forward(request)
-                if hasattr(request.body, 'form'): # form objects are only created for http forms
-                    self.fm.create_redirect_form(request, new_uri)
-                logger.debug('Domain change, forwarded to ' + new_uri)
-                return InitialForwardResponse(new_uri)
-            elif self.fm.is_form_forward(request):
-                form = self.fm.form_forward(request)
+class IterativeResponse(object):
+    def __init__(self, response_instance):
+        self.response_instance = response_instance
+        self.read_size = response_instance.length / 100
                 
-                response = HtmlResponse(form)
-                response.headers += cache_additions
-                return response
+    def __iter__(self):
+        yield self.response_instance.read(self.read_size)
+        while self.response_instance.chunk_left is not None:
+            if self.response_instance.chunk_left < self.read_size:
+                yield self.response_instance.read()
+                self.response_instance.chunk_left = None
+            else:
+                yield self.response_instance.read(self.read_size)
 
-            # At this point we are 100% sure we will be needing to send a proxy request
+def get_wsgi_response(response):
+        
+    if type(response) is str:
+        return [response]
+    if response.length > 512000:
+        return IterativeResponse(response)
+    else:
+        return [response.read()]
+
+def conditions_pass(e):
+    for c in windmill.server.forwarding_conditions:
+        if c(e) is False:
+            return False
+    return True
+
+def proxy_post_redirect_form(environ, action):
+    body = environ['wsgi.input'].read(int(environ['CONTENT_LENGTH']))
+    parameters = body.split('&')
+    inputs = []
+    for parameter in parameters:
+        parts = parameter.split('=', 1)
+        if len(parts) == 1:
+            continue
+        parts = tuple(unicode(urllib.unquote(part), 'utf-8') for part in parts)
+        inputs.append('<input type="hidden" name="%s" value="%s" />' % parts)
+    form = """<html><head><title>There is no spoon.</title></head>
+<body onload="document.getElementById('redirect').submit();"
+      style="text-align: center;">
+  <form id="redirect" action="%s" method="POST">%s</form>
+</body></html>""" % (action, '\n'.join(inputs))
+    return form.encode('utf-8')
+
+forward_forms = {}
+
+class WindmillProxyApplication(object):
+    """Application to handle requests that need to be proxied"""
+
+    def __init__(self):
+        self.fmgr = None
+        proxyInstances.append(self)
+
+    ConnectionClass = HTTPConnection
+
+    def handler(self, environ, start_response):
+        """Proxy for requests to the actual http server"""
+        url = urlparse(environ['reconstructed_url'])
+        referer = environ.get('HTTP_REFERER', None)
+        test_url = windmill.settings['FORWARDING_TEST_URL']
+        if self.fmgr is None and windmill.settings['FORWARDING_TEST_URL'] is not None:
+            # Be lazy at creating the forward manager to give
+            # FORWARDING_TEST_URL a chance to be set
+            self.fmgr = ForwardManager(test_url)
+        # Once FORWARDING_TEST_URL is set we should check for cross-domain
+        # forward but we must disable for 127.0.0.1 as redirects to 127.0.0.1
+        # will cause the browser to error.
+        if windmill.settings['FORWARDING_TEST_URL'] is not None and (
+                       not url.netloc.startswith('127.0.0.1') ) and (
+                       not url.netloc.startswith('127.0.0.1') ) and (
+                       conditions_pass(environ) ):
+            # Do our domain change magic
+            url = urlparse(environ['reconstructed_url'])
+            test_target = urlparse(test_url)
+            #test_netloc = urlparse(test_url).netloc
+
+            if (self.fmgr.is_static_forwarded(url)):
+                environ = self.fmgr.forward(url, environ)
+                url = self.fmgr.forward_map(url)
             
-            # If the host has been mapped by uri or referrer go with that
-            target_host = self.fm.get_forward_host(request)
-            if target_host is not None:
-                targeted_client_response = self.client.make_request(request, target_host)
-                if self.fm.response_conditions_pass(request, target_host, 
-                                                    targeted_client_response, mapped=True):
-                    return targeted_client_response
-            else:
-                targeted_client_response = None
+            elif ( url.scheme+"://"+url.netloc != test_target.scheme+"://"+test_target.netloc ):
+                # if the url's network address is not the test URL that has
+                # been set we need to return a forward
+                environ = self.fmgr.forward(url, environ)
+                redirect_url = self.fmgr.forward_map(url).geturl()
+                if environ['REQUEST_METHOD'] == 'POST':
+                    form = proxy_post_redirect_form(environ, redirect_url)
+                    forward_forms[redirect_url] = form
+                start_response("302 Found", [('Location', redirect_url), 
+                                             ]+cache_additions)
+                logger.debug('Domain change, forwarded to ' + redirect_url)
+                return ['']
+            elif url.geturl() in forward_forms:
+                response = forward_forms[url.geturl()]
+                length = str(len(response))
+                start_response("200 Ok", [('Content-Type', 'text/html',), 
+                                          ('Content-Length', length,),
+                                         ]+cache_additions)
+                del forward_forms[url.geturl()]
+                return [response]
+            elif (self.fmgr.is_forward_mapped(url)):
+                orig_url = self.fmgr.forward_unmap(url)
+                environ = self.fmgr.change_environ_domain(url, orig_url,
+                                                          environ)
+                url = orig_url
+            elif (not self.fmgr.is_forward_mapped(url) and
+               referer is not None and
+               self.fmgr.is_forward_mapped(urlparse(referer))):
+                # This handles the case that the referer is a url we've already
+                # done a cross-domain request for 
+                orig_referer = self.fmgr.forward_unmap(urlparse(referer))
+                orig_url = self.fmgr.forward_to(url, orig_referer)
+                environ = self.fmgr.change_environ_domain(url, orig_url, environ)
+                url = orig_url
+                self.fmgr.forward(orig_url, {}) # Take note of the forwarding
+        def make_remote_connection(url, environ):
+            # Create connection object
+            try:
+                connection = self.get_connection(url)
+                # Build path
+                path = url.geturl().replace(url.scheme+'://'+url.netloc, '')
+            except Exception, e:
+                logger.exception('Could not Connect')
+                return [("501 Gateway error", [('Content-Type', 'text/html')],),
+                        '<H1>Could not connect:</H1><pre>%s</pre>' % (str(e),)]
 
-            # Now we've hit the retry loop
-            for host in self.fm.get_retry_hosts(request):
-                client_response = self.client.make_request(request, host)
-                if self.fm.response_conditions_pass(request, host, client_response, mapped=False):
-                    self.fm.forward_map[request.proxy_uri] = host
-                    return client_response
+            # Read in request body if it exists    
+            body = None
+            if environ.has_key('body'):
+                body = environ['body']
+            elif environ.get('CONTENT_LENGTH'):
+                length = int(environ['CONTENT_LENGTH'])
+                body = environ['wsgi.input'].read(length)
+                environ['body'] = body
 
-            # At this point all requests have failed
-            if targeted_client_response:
-                # If we had a mapped response return it even if it failed
-                return targeted_client_response
-            else:
-                # If we don't even have a mapped response, return it form test host
-                return self.client.make_request(request, request.host)
+            # Build headers
+            headers = {}
+            logger.debug('Environ ; %s' % str(environ))
+            for key in environ.keys():
+                # Keys that start with HTTP_ are all headers
+                if key.startswith('HTTP_'):
+                    # This is a hacky way of getting the header names right
+                    value = environ[key]
+                    key = key.replace('HTTP_', '', 1).swapcase().replace('_', '-')
+                    if is_hop_by_hop(key) is False:
+                        headers[key] = value
+                    if key.lower() == 'location':
+                        # There should never be a legitimate redirect
+                        # to /windmill-serv from a remote site
+                        if '/windmill-serv' in value:
+                            value = value.split('/windmill-serv')[0]
+
+            # Handler headers that aren't HTTP_ in environ
+            if environ.get('CONTENT_TYPE'):
+                headers['content-type'] = environ['CONTENT_TYPE']
+
+            # Add our host if one isn't defined
+            if not headers.has_key('host'):
+                headers['host'] = environ['SERVER_NAME']   
+
+            # Make the remote request
+            try:
+                
+                logger.debug('%s %s %s' % (environ['REQUEST_METHOD'], path,
+                                           str(headers)))
+                connection.request(environ['REQUEST_METHOD'], path, body=body,
+                                   headers=headers)
+                connection.url = url
+                return connection
+            except Exception, e:
+                # We need extra exception handling in the case the server
+                # fails in mid connection, it's an edge case but I've seen it
+                return [("501 Gateway error", [('Content-Type', 'text/html')],),
+                    '<H1>Could not make request:</H1><pre>%s</pre>' % (str(e),)]
+
+        def retry_known_hosts(url, environ):
+            # retry the given request against all the hosts the current session
+            # has run against
+            if self.fmgr is None:
+                return
+            for host in self.fmgr.known_hosts():
+                orig_url = self.fmgr.forward_to(url, host)
+                new_environ = self.fmgr.change_environ_domain(
+                                        self.fmgr.forward_map(orig_url),
+                                        orig_url, environ)
+                connection = make_remote_connection(orig_url, new_environ)
+                if isinstance(connection, HTTPConnection):
+                    try:
+                        new_response = connection.getresponse()
+                    except:
+                        return
+                    if new_response.status > 199 and new_response.status < 399:
+                        logger.info('Retry success, ' + url.geturl() + ' to ' +
+                                    host.geturl())
+                        new_response.url = connection.url
+                        return new_response
+        connection = make_remote_connection(url, environ)
+        # This following code is ugly.  It should be refactored in to some
+        # elegant way to decide when to retry, and which URLs to retry.
+        # Maybe hand that responsability to the ForwardManager?
+        if isinstance(connection, HTTPConnection):
+            response = connection.getresponse()
+            response.url = connection.url
+            
+        if environ['REQUEST_METHOD'] == 'POST':
+            threshold = 399
         else:
-            return self.client.make_request(request, request.host)
+            threshold = 399 
 
-#
-# class IterativeResponse(object):
+        if not isinstance(connection, HTTPConnection) or \
+            response.status > threshold:
+            # if it's not an HTTPConnection object then the request failed
+            # so we should retry
+            new_response = retry_known_hosts(url, environ)
+            if new_response is not None: 
+                response = new_response
+            elif not isinstance(connection, HTTPConnection):
+                status = connection[0][0]
+                headers = connection[0][1]
+                body = connection[1]
+                for header in copy.copy(headers):
+                    if header[0].lower() == 'content-length':
+                        body.length = int(header[1].strip())
+                    if header[0].lower() in cache_removal:
+                        headers.remove(header)
+                start_response(status, headers+cache_additions)
+                return get_wsgi_response(body)
+
+        # Remove hop by hop headers
+        headers = self.parse_headers(response)
+        if response.status == 404:
+            logger.info('Could not fullfill proxy request to ' + url.geturl())
+
+        for header in copy.copy(headers):
+            if header[0].lower() == 'content-length':
+                response.length = int(header[1].strip())
+            if header[0].lower() in cache_removal:
+                headers.remove(header)
+
+        start_response(response.status.__str__()+' '+response.reason, 
+                       headers+cache_additions)
+        return get_wsgi_response(response)
+
+    def parse_headers(self, response):
+        headers = [(x.lower(), y) for x, y in [z.split(':', 1) for z in
+                             str(response.msg).splitlines() if ':' in z]]
+        #all this does is cookie management, which we currently turned off
+        #if self.fmgr is not None:
+            #self.fmgr.parse_headers(headers, response.url.netloc)
+        for header in headers:
+            if is_hop_by_hop(header[0]):
+                headers.remove(header)
+            elif header[0] == 'location':
+                # There should never be a legitimate redirect to /windmill-serv
+                # from a remote site
+                if '/windmill-serv' in header[1]:
+                    i = headers.index(header)
+                    location = header[1]
+                    headers.remove(header)
+                    headers.insert(i, ('location',
+                                   location.split('/windmill-serv')[0],))
+        return headers
+
+    def get_connection(self, url):
+        """ Factory method for connections """
+        connection = self.ConnectionClass(url.netloc)
+        return connection
+
+    def clearForwardingRegistry(self):
+        if self.fmgr is not None:
+            self.fmgr.clear()
+
+    def __call__(self, environ, start_response):
+        return self.handler(environ, start_response)
+
+proxyInstances = []
+def clearForwardingRegistry():
+    for p in proxyInstances:
+        p.clearForwardingRegistry()

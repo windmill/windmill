@@ -14,8 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-import sys
-
+import bin, browser, server, conf, tools, sys
 if not sys.version.startswith('2.4'):
     from urlparse import urlparse
 else:
@@ -49,6 +48,3 @@ def get_test_url(url):
     else:
         test_url = url.geturl().replace(url.netloc, url.netloc+'/windmill-serv/start.html')
     return test_url
-
-# Backwards compat, I hate this import!
-from windmill import authoring, server

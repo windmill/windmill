@@ -17,7 +17,6 @@
 import os
 import sys
 import windmill
-from windmill import server, tools
 from windmill.dep import json
 import tempfile
 
@@ -25,7 +24,7 @@ if not sys.version.startswith('2.4'):
     from urlparse import urlparse
 else:
     # python 2.4
-    from tools.urlparse_25 import urlparse
+    from windmill.tools.urlparse_25 import urlparse
     
 
 def get_save_url(suite_name, extension):
@@ -35,9 +34,11 @@ def get_save_url(suite_name, extension):
 def create_saves_path():
     directory = tempfile.mkdtemp(suffix='.windmill-saves')
     # Mount the fileserver application for tests
-    from webenv.applications.file_server import FileServerApplication
-    application = FileServerApplication(os.path.dirname(__file__))
-    server.add_namespace('windmill-unittests', application)
+    from windmill.dep import wsgi_fileserver 
+    WSGIFileServerApplication = wsgi_fileserver.WSGIFileServerApplication
+    application = WSGIFileServerApplication(root_path=os.path.abspath(directory), mount_point='/windmill-saves/')
+    from windmill.server import wsgi
+    wsgi.add_namespace('windmill-saves', application)
     windmill.settings['SAVES_PATH'] = directory
     windmill.teardown_directories.append(directory)
 

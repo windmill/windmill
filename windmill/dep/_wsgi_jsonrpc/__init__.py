@@ -1,5 +1,4 @@
 #   Copyright (c) 2006-2007 Open Source Applications Foundation
-#   Copyright (c) 2009 Mikeal Rogers
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -13,11 +12,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+from datetime import datetime
+from StringIO import StringIO
+import sys, traceback
 import logging
+import json_tools, test_jsonrpc
 
 from windmill.dep import json
-from webenv import Response, Response500
-from webenv.rest import RestApplication
 
 logger = logging.getLogger(__name__)
 
@@ -209,23 +210,36 @@ class JSONRPCDispatcher(object):
     def _decode(self, s):
         """Internal method for decoding json objects, uses simplejson"""
         return json.loads(s)
-
-class JsonResponse(Response):
-    content_type = 'application/json'
     
-class JSONRPCApplication(JSONRPCDispatcher, RestApplication):
+class WSGIJSONRPCApplication(JSONRPCDispatcher):
     """A WSGI Application for generic JSONRPC requests."""
-    def __init__(self, *args, **kwargs):
-        JSONRPCDispatcher.__init__(self, *args, **kwargs)
-        RestApplication.__init__(self)
     
-    def POST(self, request):
+    def handler(self, environ, start_response):
         """A WSGI handler for generic JSONRPC requests."""
-        body = str(request.body)
-        try:
-            logger.debug('Sending %s to dispatcher' % body)
-            response = self.dispatch(body) + '\n'
-            return JsonResponse(response)
-        except Exception, e:
-            logger.exception('WSGIJSONRPCApplication Dispatcher excountered exception')
-            return Response500(str(e))
+        
+        if environ['REQUEST_METHOD'].endswith('POST'):
+            body = None
+            if environ.get('CONTENT_LENGTH'):
+                length = int(environ['CONTENT_LENGTH'])
+                body = environ['wsgi.input'].read(length)
+            
+            try:
+                logger.debug('Sending %s to dispatcher' % body)
+                response = self.dispatch(body) + '\n'
+                start_response('200 OK', [('Cache-Control','no-cache'), ('Pragma','no-cache'),
+                                          ('Content-Length', str(len(response)),),
+                                          ('Content-Type', 'application/json')])
+                return [response]
+            except Exception, e:
+                logger.exception('WSGIJSONRPCApplication Dispatcher excountered exception')
+                start_response('500 Internal Server Error', [('Cache-Control','no-cache'), ('Content-Type', 'text/plain')])
+                return ['500 Internal Server Error']
+        
+        else:
+            start_response('405 Method Not Allowed', [('Cache-Control','no-cache'), ('Content-Type', 'text/plain')])
+            return ['405 Method Not Allowed. This JSONRPC interface only supports POST. Method used was "'+str(environ['REQUEST_METHOD'])+'"']
+            
+    def __call__(self, environ, start_response):
+        return self.handler(environ, start_response)
+
+
