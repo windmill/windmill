@@ -25,7 +25,6 @@ class CompressorApplication(RestApplication):
         ('controller', 'commands.js',),
         ('controller', 'asserts.js',),
         ('controller', 'waits.js',),
-        ('controller', 'flash.js',),
         ('wm', 'registry.js',),
         ('extensions', 'extensions.js',),
         ('wm', 'utils.js',),
