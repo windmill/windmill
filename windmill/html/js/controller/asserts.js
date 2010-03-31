@@ -139,7 +139,9 @@ windmill.controller.asserts.assertText = function (paramObject) {
 };
 
 windmill.controller.asserts.assertTextIn = function (paramObject) {
-  var n = lookupNode(paramObject, false);
+  try { var n = lookupNode(paramObject, false); }
+	catch(err){ n = false }
+
   var validator = paramObject.validator;
 
 	//If no lookup was provided, search the whole document
