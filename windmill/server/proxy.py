@@ -68,10 +68,7 @@ class ProxyResponse(Response):
             else:
                 body = self.httplib_response.read()
                 yield body
-        try: #Temporary fix for Safari on snowleopard, fix me!
-            self.httplib_response.conn.busy = False
-        except myException:
-            print "ERROR: " + str(myException)
+        self.httplib_response.conn.busy = False
         
 class WindmillHttp(httplib2.Http):
     def _conn_request(self, conn, request_uri, method, body, headers):
