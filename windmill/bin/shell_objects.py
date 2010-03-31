@@ -148,7 +148,7 @@ def run_js_tests(js_dir, test_filter=None, phase=None):
     js_dir = os.path.abspath(os.path.expanduser(js_dir))
     from webenv.applications.file_server import FileServerApplication
     application = FileServerApplication(os.path.abspath(js_dir))
-    server.add_namespace('windmill-jstests', application)
+    server.add_namespace('windmill-jstest', application)
     # Build list of files and send to IDE
     base_url = windmill.settings['TEST_URL']+'/windmill-jstest'
     
