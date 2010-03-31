@@ -31,7 +31,7 @@ We welcome any and all interest and contribution, as we work diligently at addin
 Thanks for your interest and participation!
 """
 
-dependencies =  ['webenv >= 0.6.1', 'httplib2 >= 0.6.0']
+dependencies =  ['webenv >= 0.6.1', 'httplib2']
 
 two_four_dependencies = ['ctypes']
 
