@@ -370,6 +370,7 @@ class ProxyClient(object):
         headers = self.clean_request_headers(request, host)
         headers['host'] = host[host.rindex('/')+1:]
         connection_type=None
+        (scheme, authority, request_uri, defrag_uri) = httplib2.urlnorm(uri)
         if(self.http.use_http_proxy and scheme=='http'):
           connection_type=HTTPProxyConnectionWithTimeout
           if self.http.use_http_proxy_auth:
