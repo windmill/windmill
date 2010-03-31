@@ -550,8 +550,8 @@ windmill.ui.remote = new function() {
       input.id = state.action.id + 'swf';
       input.className = 'texta';
       
-      if (state.params["swf_chain"]){
-        input.setAttribute("value", state.params["swf_chain"]);
+      if (state.params["swf.chain"]){
+        input.setAttribute("value", state.params["swf.chain"]);
         swfLoc.value = "chain";
       }
       
