@@ -143,9 +143,9 @@ windmill.controller.asserts.assertTextIn = function (paramObject) {
 	catch(err){ n = false }
 
   var validator = paramObject.validator;
-
+	
 	//If no lookup was provided, search the whole document
-	if (n == false || []){
+	if (n == false || n == []){
 		n = windmill.testWin().document.body;	
 	}
 	var inner = n.innerHTML;
@@ -158,7 +158,6 @@ windmill.controller.asserts.assertTextIn = function (paramObject) {
   
   // new lines and spaces break a lot of these, so removing them makes sense
   var iHTML = inner.replace(/^\s*|\s*$/g,'');
-
   if (iHTML.indexOf(validator) != -1){
     return true;
   }
