@@ -21,6 +21,7 @@ import transforms
 from windmill.dep import json
 import os, sys, re
 from time import sleep
+from windmill import tools
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +140,7 @@ class WindmillTestClient(object):
         """Assign all available attributes to instance so they are easily introspected"""
         
         if method_proxy is None:
-            method_proxy = windmill.tools.make_jsonrpc_client()
+            method_proxy = tools.make_jsonrpc_client()
         
         self._method_proxy = method_proxy
         
