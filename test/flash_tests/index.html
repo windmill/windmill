@@ -4,40 +4,65 @@
     <title>
     </title>
     <script type="text/javascript">
-      var testApp;
+      var wmDemo;
       function init() {
         var html = '';
-        var swfName = 'TestApp.swf';
+        var swfName = 'WMDemo.swf';
         if (document.all) {
           html = '<object type="application/x-shockwave-flash"' +
-          '    width="100%" height="100%" id="testApp">' +
+          '    width="100%" height="100%" id="wmDemo">' +
           '  <param name="movie" value="' + swfName + '">' +
           '  <param name="quality" value="high">' +
           '  <param name="bgcolor" value="#ffffff">' +
           '</object>';
         }
         else {
-          html = '<embed id="testApp" height="100%" width="100%"' +
-          '    name="testApp" src="' + swfName + '"' +
+          html = '<embed id="wmDemo" height="100%" width="100%"' +
+          '    name="wmDemo" src="' + swfName + '"' +
           '    type="application/x-shockwave-flash"/>';
         }
-        document.getElementById('testAppContainer').innerHTML = html;
-        testApp = document.getElementById('testApp')
+        document.getElementById('wmDemoContainer').innerHTML = html;
+        wmDemo = document.getElementById('wmDemo')
       }
       function wmClick(p) {
-        testApp.wm_click(p);
+        wmDemo.wm_click(p);
       }
       window.onload = init;
   </script>
   <style type="text/css">
     body {
+      padding: 24px;
       overflow: hidden;
     }
   </style>
   </head>
   <body>
-    <div id="testAppContainer" style="width: 760px;
-        height: 640px; border: 1px solid #ccc;">
+    <div style="width: 280px; float: left; margin-right: 24px;">
+      <h2>Testin' Flash</h2>
+      <form>
+        <div>Here's a text input</div>
+        <div><input type="text" id="htmlTextInput" name="htmlTextInput" value=""/></div>
+        <div>&nbsp;</div>
+        <div>Here's a select</div>
+        <div>
+          <select id="htmlSelect" name="htmlSelect">
+            <option>(Select a value)</option>
+            <option value="selectGeddy">Geddy Lee</option>
+            <option value="selectNeil">Neil Peart</option>
+            <option value="selectAlex">Alex Lifeson</option>
+          </select>
+        </div>
+        <div>&nbsp;</div>
+        <div>Here are some radio buttons</div>
+        <div>
+          <input type="radio" id="radioGeddy" value="radioGeddy"/>&nbsp;Geddy
+          <input type="radio" id="radioNeil" value="radioNeil"/>&nbsp;Neil
+          <input type="radio" id="radioAlex" value="radioAlex"/>&nbsp;Alex
+        </div>
+      </form>
+    </div>
+    <div id="wmDemoContainer" style="width: 480px;
+        height: 400px; border: 1px solid #ccc; float: left;">
     </div>
   </body>
 </html>

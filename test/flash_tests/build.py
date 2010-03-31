@@ -13,7 +13,7 @@ as_re = re.compile('\.as$|\.mxml$')
 
 def app():
     cmd = MXMLC_PATH + ' -source-path=. -source-path+=../../flash ./TestApp.mxml -o ./TestApp.swf'
-    #print cmd
+    print cmd
     os.system(cmd)
 
 def tests():

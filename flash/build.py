@@ -22,7 +22,7 @@ def bootstrap():
 def clean():
     for root, dirs, file_list in os.walk('./'):
         for file in file_list:
-            if file.endswith('.swf') or file.endswith('.swc'):
+            if file.endswith('.swf') or file.endswith('.swc') or file.endswith('.swf.cache'):
                 path = root + '/' + file
                 cmd = 'rm ' + path
                 #print cmd
