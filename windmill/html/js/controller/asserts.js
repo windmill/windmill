@@ -139,14 +139,15 @@ windmill.controller.asserts.assertText = function (paramObject) {
 };
 
 windmill.controller.asserts.assertTextIn = function (paramObject) {
-  var n = lookupNode(paramObject, false);
+  try { var n = lookupNode(paramObject, false); }
+	catch(err){ n = false }
+
   var validator = paramObject.validator;
-  
+	
 	//If no lookup was provided, search the whole document
-	if (n == false){
+	if (n == false || n == []){
 		n = windmill.testWin().document.body;	
 	}
-  
 	var inner = n.innerHTML;
   if (n.textContent){
     inner = n.textContent;
@@ -157,7 +158,6 @@ windmill.controller.asserts.assertTextIn = function (paramObject) {
   
   // new lines and spaces break a lot of these, so removing them makes sense
   var iHTML = inner.replace(/^\s*|\s*$/g,'');
-  
   if (iHTML.indexOf(validator) != -1){
     return true;
   }
@@ -169,7 +169,6 @@ windmill.controller.asserts.assertTextIn = function (paramObject) {
         "' was not found in the provided node.  Found instead: " + inner;
 	}
 };
-
 
 //Assert that a specified node exists
 windmill.controller.asserts.assertNode = function (paramObject) {
