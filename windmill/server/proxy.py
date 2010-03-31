@@ -9,9 +9,6 @@ from urlparse import urlparse
 from webenv import Application, Response, Response302, HtmlResponse, Response404
 import httplib2
 
-from StringIO import StringIO
-
-
 logger = logging.getLogger()
 
 global_exclude = ['http://sb-ssl.google.com',
@@ -267,35 +264,7 @@ class WindmillHttp(httplib2.Http):
                             })
                     response.reason = "Bad Request" 
             else: raise
-        #workaround for bug in IE7 and zero-length 302 Responses
-        if response['status']=='302' and 'content-length' in response and response['content-length']=='0':
-          newresponse=httplib2.Response(dict({
-              "content-type": "text/plain",
-              "status": "302",
-              "content-length": 5,
-              "location": str(response['location'])
-            }))
-          newresponse._response=MyHTTPResponse(StringIO("HELLO"))
-          newresponse._response.length=5
-          #newresponse._response.conn ???
-          content=ProxyResponse(newresponse)
         return (response, content)
-
-class MyHTTPResponse(httplib.HTTPResponse):
-    def __init__(self,fp,debuglevel=0,strict=0,method=None):
-       _UNKNOWN='UNKNOWN'
-       self.fp=fp
-       self.debuglevel=debuglevel
-       self.strict=strict
-       self._method=method
-       self.msg=None
-       self.version=_UNKNOWN
-       self.status=_UNKNOWN
-       self.reason=_UNKNOWN
-       self.chunked=False
-       self.chunk_left=_UNKNOWN
-       self.length=_UNKNOWN
-       self.will_close=_UNKNOWN
 
 class ProxyClient(object):
     def __init__(self, fm):
