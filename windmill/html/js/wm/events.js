@@ -174,7 +174,7 @@ windmill.events = new function() {
 
         canBubble = (typeof(canBubble) == undefined) ? true: canBubble;
 
-        if (element && element.fireEvent && windmill.browser.isIE) {
+        if (element.fireEvent && windmill.browser.isIE) {
             //LOG.info("element has fireEvent");
             var evt = windmill.events.createEventObject(element, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown);
             evt.detail = 0;

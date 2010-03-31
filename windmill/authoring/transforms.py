@@ -33,17 +33,13 @@ def get_save_url(suite_name, extension):
     return url.scheme+'://'+url.netloc+'/windmill-saves/'+suite_name+'.'+extension
 
 def create_saves_path():
-   directory = tempfile.mkdtemp(suffix='.windmill-saves')
-   # Mount the fileserver application for tests
-   from webenv.applications.file_server import FileServerApplication
-   #application = FileServerApplication(os.path.dirname(__file__))
-   #XXX
-   application = FileServerApplication(directory)
-   #server.add_namespace('windmill-unittests', application)
-   #XXX
-   server.add_namespace('windmill-saves', application)
-   windmill.settings['SAVES_PATH'] = directory
-   windmill.teardown_directories.append(directory)
+    directory = tempfile.mkdtemp(suffix='.windmill-saves')
+    # Mount the fileserver application for tests
+    from webenv.applications.file_server import FileServerApplication
+    application = FileServerApplication(os.path.dirname(__file__))
+    server.add_namespace('windmill-unittests', application)
+    windmill.settings['SAVES_PATH'] = directory
+    windmill.teardown_directories.append(directory)
 
 def test_object_transform_to_python(test):
     """Transform test object in to controller call in python."""

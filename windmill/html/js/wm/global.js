@@ -85,9 +85,9 @@ var lookupNode = function (paramObject, scroll){
   //if jquery was passed
   else if(typeof paramObject.jquery != "undefined") {
     s = 'Looking up jquery selector '+ paramObject.jquery;
-		paramObject.jquery = windmill.helpers.replaceAll(paramObject.jquery, ").", ")<*>");
+    paramObject.jquery = windmill.helpers.replaceAll(paramObject.jquery, ").", ")<*>");
     var jQ = jQuery(windmill.testWin().document);
-    var chain= paramObject.jquery.split('<*>');
+    var chain= paramObject.jquery.split('||');
     
     paramObject.jquery = windmill.helpers.replaceAll(paramObject.jquery, "<*>", ".");
     var start = eval('jQ.find'+chain[0]);
