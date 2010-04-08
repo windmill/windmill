@@ -165,10 +165,13 @@ class WindmillTestClient(object):
                     return self['result']
 
                 #if we have a lookup, wrap the object so we have .exists
-                if result['method'] == 'lookup':
-                  new_results = ResultDict(result)
-                else:
-                  new_results = result
+                try:
+                    if result['method'] == 'lookup':
+                      new_results = ResultDict(result)
+                    else:
+                      new_results = result
+                except Exception:
+                    new_results = result
 
                 return new_results
 
