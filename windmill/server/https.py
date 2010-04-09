@@ -218,6 +218,8 @@ class WindmillHTTPRequestHandler(SocketServer.ThreadingMixIn, BaseHTTPRequestHan
 
     do_GET = handle_ALL
     do_POST = handle_ALL
+    do_PUT = handle_ALL
+    do_DELETE = handle_ALL
 
     def start_response(self, status, headers, exc_info=None):
         if exc_info:
