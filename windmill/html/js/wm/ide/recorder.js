@@ -264,14 +264,14 @@ windmill.ui.recorder = new function() {
     };
     
     this.enableFlashRecorder = function(win){
-      //turn on flash explorer if it's available
+      //turn on flex explorer if it's available
       var embeds = win.document.getElementsByTagName("embed");
       var objects = win.document.getElementsByTagName("object");
 
-      //only add the explorer call back method if we have some flash on the page
+      //only add the explorer call back method if we have some flex on the page
       if ((embeds.length > 0) || (objects.length > 0)){
-        win.wm_recorderAction = function(obj){
-          var method = "flash."+obj.method;
+        win.fp_recorderAction = function(obj){
+          var method = "flex."+obj.method;
           var params = obj.params || {};
           params["swf.chain"] = obj.chain;
                   
@@ -286,32 +286,32 @@ windmill.ui.recorder = new function() {
       //star the explorers on the page
       for (var i=0;i<embeds.length;i++){
         try {
-          embeds[i].wm_recorderStart();
+          embeds[i].fp_recorderStart();
         } catch(err){ windmill.err(err); };
       }
       for (var i=0;i<objects.length;i++){
         try {
-          objects[i].wm_recorderStart();
+          objects[i].fp_recorderStart();
         } catch(err){ windmill.err(err); }
       }
     };
 
     this.disableFlashRecorder = function(win){
-      //turn on flash explorer if it's available
+      //turn on flex explorer if it's available
       var embeds = win.document.getElementsByTagName("embed");
       var objects = win.document.getElementsByTagName("object");
 
-      //only add the explorer call back method if we have some flash on the page
+      //only add the explorer call back method if we have some flex on the page
 
       //start the explorers on the page
       for (var i=0;i<embeds.length;i++){
         try {
-          embeds[i].wm_recorderStop();
+          embeds[i].fp_recorderStop();
         } catch(err){ windmill.err(err); }
       }
       for (var i=0;i<objects.length;i++){
         try {
-          objects[i].wm_recorderStop();
+          objects[i].fp_recorderStop();
         } catch(err){ windmill.err(err); }
       }
     };

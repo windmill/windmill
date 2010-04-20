@@ -14,7 +14,7 @@ Copyright 2009, Adam Christian (adam.christian@gmail.com) and Slide, Inc.
  limitations under the License.
 */
 
-var _f = windmill.controller.flash;
+var _f = windmill.controller.flex;
 _f.asserts = {};
 _f.waits = {};
 
@@ -25,7 +25,7 @@ var findSWFLocator = function(paramObj){
       return prop;
     }
   }
-  throw ("Could not find a flash locator in the provided object");
+  throw ("Could not find a flex locator in the provided object");
 };
 
 //find an opt locator if its there and return it
@@ -35,7 +35,7 @@ var findOpt = function(paramObj){
       return prop;
     }
   }
-  throw ("Could not find a flash locator in the provided object");
+  throw ("Could not find a flex locator in the provided object");
 };
 
 //find any of the provided options for a select and return it
@@ -70,7 +70,7 @@ _f.click = function (paramObj) {
   var params = {};
   params[loc] = paramObj[prop];
   
-  var res = movie['wm_click'](params);
+  var res = movie['fp_click'](params);
   validate(res);
 };
 
@@ -82,7 +82,7 @@ _f.mouseOver = function (paramObj) {
   var params = {};
   params[loc] = paramObj[prop];
   
-  var res = movie['wm_mouseOver'](params);
+  var res = movie['fp_mouseOver'](params);
   validate(res);
 };
 
@@ -94,7 +94,7 @@ _f.mouseOut = function (paramObj) {
   var params = {};
   params[loc] = paramObj[prop];
   
-  var res = movie['wm_mouseOut'](params);
+  var res = movie['fp_mouseOut'](params);
   validate(res);
 };
 
@@ -114,7 +114,7 @@ _f.doubleClick = function (paramObj) {
   var params = {};
   params[loc] = paramObj[prop];
   
-  var res = movie['wm_click'](params);
+  var res = movie['fp_click'](params);
     
   validate(res);
 };
@@ -128,7 +128,7 @@ _f.type = function (paramObj) {
   params[loc] = paramObj[prop];
   params.text = paramObj.text;
   
-  var res = movie['wm_type'](params);
+  var res = movie['fp_type'](params);
     
   validate(res);
 };
@@ -144,7 +144,7 @@ _f.select = function (paramObj) {
   
   var val = findSWFOptions(paramObj);
   params[val] = paramObj[val];
-  var res = movie['wm_select'](params);    
+  var res = movie['fp_select'](params);    
   validate(res);
 };
 
@@ -158,7 +158,7 @@ _f.dragDropElemToElem = function (paramObj) {
   params[loc] = paramObj[prop];
   params[opt] = paramObj[opt];
   
-  var res = movie['wm_dragDropElemToElem'](params);
+  var res = movie['fp_dragDropElemToElem'](params);
   validate(res);
 };
 
@@ -171,7 +171,7 @@ _f.dragDropToCoords = function (paramObj) {
   params[loc] = paramObj[prop];
   params['coords'] = paramObj['coords'];
   
-  var res = movie['wm_dragDropToCoords'](params);
+  var res = movie['fp_dragDropToCoords'](params);
   validate(res);
 };
 
@@ -182,7 +182,7 @@ _f.asserts.assertDisplayObject = function (paramObj){
   
   var params = {};
   params[loc] = paramObj[prop];
-  var res = movie['wm_assertDisplayObject'](params);
+  var res = movie['fp_assertDisplayObject'](params);
   validate(res);
 };
 
@@ -195,7 +195,7 @@ _f.asserts.assertProperty = function (paramObj){
   params[loc] = paramObj[prop];
   params.validator = paramObj.validator;
   
-  var res = movie['wm_assertProperty'](params);
+  var res = movie['fp_assertProperty'](params);
   validate(res);
 };
 
@@ -208,7 +208,7 @@ _f.asserts.assertText = function (paramObj){
   params[loc] = paramObj[prop];
   params.validator = paramObj.validator;
   
-  var res = movie['wm_assertText'](params);
+  var res = movie['fp_assertText'](params);
   validate(res);
 };
 
@@ -221,7 +221,7 @@ _f.asserts.assertTextIn = function (paramObj){
   params[loc] = paramObj[prop];
   params.validator = paramObj.validator;
   
-  var res = movie['wm_assertTextIn'](params);
+  var res = movie['fp_assertTextIn'](params);
   validate(res);
 };
 

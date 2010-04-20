@@ -251,7 +251,7 @@ windmill.ui.remote = new function() {
                   var paramsObj = {};
                   paramsObj.uuid = suite.childNodes[j].id;
 
-									//For correctly saving out flash actions
+									//For correctly saving out flex actions
                   if (windmill.registry.methods[actionObj.method].swf) {
                     var si = $(suite.childNodes[j].id + 'swfType').selectedIndex;
                     paramsObj['swf_'+$(suite.childNodes[j].id + 'swfType')[si].value] = $(suite.childNodes[j].id + 'swf').value;
@@ -612,7 +612,7 @@ windmill.ui.remote = new function() {
           jQuery(action).append(jQuery(locCont));
         }
         
-        //if we have a flash action swf is true
+        //if we have a flex action swf is true
         //build the swf UI
         if (reg.methods[method].swf){          
          var swfCont = _this.getSWF(state);

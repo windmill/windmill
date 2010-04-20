@@ -35,7 +35,7 @@ windmill.controller = new function () {
   this.commands             = {};
   this.asserts              = {};
   this.waits                = {};
-  this.flash                = {};  
+  this.flex                = {};  
 
 /************************************
 /* User facing windmill functionality

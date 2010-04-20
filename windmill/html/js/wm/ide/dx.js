@@ -230,17 +230,17 @@ windmill.ui.dx = new function() {
   };
   
   this.enableFlashExplorer = function(win){
-    //turn on flash explorer if it's available
+    //turn on flex explorer if it's available
     var embeds = win.document.getElementsByTagName("embed");
     var objects = win.document.getElementsByTagName("object");
     
-    //only add the explorer call back method if we have some flash on the page
+    //only add the explorer call back method if we have some flex on the page
     if ((embeds.length > 0) || (objects.length > 0)){
-      win.wm_explorerSelect = function(obj){
+      win.fp_explorerSelect = function(obj){
         $("domExp").innerHTML = "chain: "+obj;
         return true;
       };
-      win.wm_explorerStopped = function(obj){
+      win.fp_explorerStopped = function(obj){
         windmill.ui.dx.domExplorerOff();
         return true;
       }
@@ -249,32 +249,32 @@ windmill.ui.dx = new function() {
     //star the explorers on the page
     for (var i=0;i<embeds.length;i++){
       try {
-        embeds[i].wm_explorerStart();
+        embeds[i].fp_explorerStart();
       } catch(err){};
     }
     for (var i=0;i<objects.length;i++){
       try {
-        objects[i].wm_explorerStart();
+        objects[i].fp_explorerStart();
       } catch(err){}
     }
   };
   
   this.disableFlashExplorer = function(win){
-    //turn on flash explorer if it's available
+    //turn on flex explorer if it's available
     var embeds = win.document.getElementsByTagName("embed");
     var objects = win.document.getElementsByTagName("object");
     
-    //only add the explorer call back method if we have some flash on the page
+    //only add the explorer call back method if we have some flex on the page
     
     //start the explorers on the page
     for (var i=0;i<embeds.length;i++){
       try {
-        embeds[i].wm_explorerStop();
+        embeds[i].fp_explorerStop();
       } catch(err){}
     }
     for (var i=0;i<objects.length;i++){
       try {
-        objects[i].wm_explorerStart();
+        objects[i].fp_explorerStart();
       } catch(err){}
     }
   };

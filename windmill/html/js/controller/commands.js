@@ -103,14 +103,14 @@ windmill.controller.commands.getControllerMethods = function (paramObject){
 	  str += 'waits.'+i;
 	}
 	
-	for (var i in windmill.controller.flash) {
+	for (var i in windmill.controller.flex) {
 	  if (str) { str += ',' }
-	  str += 'flash.'+i;
+	  str += 'flex.'+i;
 	}
 	
-	for (var i in windmill.controller.flash.waits) {
+	for (var i in windmill.controller.flex.waits) {
 	  if (str) { str += ',' }
-	  str += 'flash.waits.'+i;
+	  str += 'flex.waits.'+i;
 	}
 
   //Clean up

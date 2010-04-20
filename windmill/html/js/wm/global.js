@@ -118,7 +118,7 @@ var lookupNode = function (paramObject, scroll){
   }
   //scroll so that the element is in view
   if (element) { 
-    //if the element you accessed is a flash object
+    //if the element you accessed is a flex object
     //the scroll into view will actually fail and 
     //throw a crazy DOM exception
     if (scroll != false){
