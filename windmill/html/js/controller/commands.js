@@ -153,6 +153,23 @@ windmill.controller.commands.getPageText = function (paramObject){
   sendCommandResult(true, paramObject.uuid, dom);
 };
 
+//return the contents of a given node
+windmill.controller.commands.getNodeContents = function (paramObject){
+  var node = lookupNode(paramObject);
+  var dom = node.innerHTML.replace('\n','');
+  //Send to the server
+  sendCommandResult(true, paramObject.uuid, dom);
+};
+
+//return the contents of a given node
+windmill.controller.commands.getNodeProperty = function (paramObject){
+  var node = lookupNode(paramObject);
+  var prop = paramObject.property;
+  var value = String(eval('node.' + prop+';'));
+  //Send to the server
+  sendCommandResult(true, paramObject.uuid, value);
+};
+
 //Function to start the running of jsTests
 windmill.controller.commands.jsTests = function (paramObj) {
     var jsTest = windmill.jsTest;
