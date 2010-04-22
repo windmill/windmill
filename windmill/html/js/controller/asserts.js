@@ -252,22 +252,29 @@ windmill.controller.asserts.assertChecked = function (paramObject) {
 // Assert that a an element's property is a particular value
 windmill.controller.asserts.assertProperty = function (paramObject) {
   var element = lookupNode(paramObject, false);
-  var vArray = paramObject.validator.split('|');
-  if (vArray.length != 2)
+  var arr = paramObject.validator.split('|');
+
+  //if we didnt get two params
+  if (arr.length != 2) {
     throw "Invalid validator '" + paramObject.validator + "'.  Use '|' to separate key from value.";
+  }
 
-  var expected = "Expected property '" + vArray[0] + "' to have value '" + vArray[1] + "'. ";
+  //base exception
+  var expected = "Expected property '" + arr[0] + "' to have value '" + arr[1] + "'. ";
+  var value = String(eval('element.' + arr[0]+';'));
 
-  var value = eval ('element.' + vArray[0]+';');
-  if (value == undefined)
-    throw expected + "No '" + vArray[0] + "' property found.";
-
-  if (value.indexOf(vArray[1]) != -1){
+  //cases where we achieve success
+  if (value == undefined){
+    throw expected + "No '" + arr[0] + "' property found.";
+  }
+  else if (value.indexOf(arr[1]) != -1){
     return true;
   }
-  if (String(value) == String(vArray[1])) {
+  else if (String(value) == String(arr[1])) {
     return true;
   }
+
+  //fail throw exception
   throw expected + "Found value '" + value + "' instead."
 };
 
