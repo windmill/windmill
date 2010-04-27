@@ -173,15 +173,15 @@ class Firefox(Mozilla):
     
     def set_binary(self, binary):
         """Set the binary path and do any cleanup or platform specific hacks"""
-        if sys.platform == 'linux2':    
+        binary_content = open(binary, 'r').read()
+        if sys.platform == 'linux2' and binary_content[0:3] == '#!/':
             # This block is to fix Ubuntu's stupid shell script that breaks a bunch of options
-            new_bin = open(binary, 'r').read()
-            new_bin = new_bin.replace('$0', 'firefox')
-            new_bin = new_bin.replace('file://', '')
-            new_bin = new_bin.replace('MOZILLA_BIN="${progbase}-bin"', 'MOZILLA_BIN="firefox-bin"')
+            binary_content = binary_content.replace('$0', 'firefox')
+            binary_content = binary_content.replace('file://', '')
+            binary_content = binary_content.replace('MOZILLA_BIN="${progbase}-bin"', 'MOZILLA_BIN="firefox-bin"')
             new_bin_path = self.profile+'/'+'mozrunner-firefox'
             f = open(new_bin_path, 'w')
-            f.write(new_bin); f.flush(); f.close()
+            f.write(binary_content); f.flush(); f.close()
             subprocess.call(['chmod', '755', new_bin_path])
             self.binary = new_bin_path
         else:
