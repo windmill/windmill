@@ -786,7 +786,7 @@ windmill.controller = new function () {
     var opts = paramObject.options.split(",");
     windmill.events.triggerEvent(element, 'focus', false);
     //element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown
-    windmill.events.triggerKeyEvent(element, "keypress", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]));
+    windmill.events.triggerKeyEvent(element, "keypress", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]), opts[6]);
   };
   
   /**
@@ -803,7 +803,7 @@ windmill.controller = new function () {
     var opts = paramObject.options.split(",");
     windmill.events.triggerEvent(element, 'focus', false);
     //element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown
-    windmill.events.triggerKeyEvent(element, "keyDown", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]));
+    windmill.events.triggerKeyEvent(element, "keyDown", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]), opts[6]);
   };
   
   /**
@@ -820,7 +820,7 @@ windmill.controller = new function () {
     var opts = paramObject.options.split(",");
     windmill.events.triggerEvent(element, 'focus', false);
     //element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown
-    windmill.events.triggerKeyEvent(element, "keyUp", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]));
+    windmill.events.triggerKeyEvent(element, "keyUp", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]), opts[6]);
   };
   
   /**
