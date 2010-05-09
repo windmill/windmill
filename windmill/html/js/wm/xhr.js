@@ -94,10 +94,16 @@ windmill.xhr = new function() {
               //if there is no node, this will be false
               //if there is a node, but it doesn't return it will throw
               //else we have a node
+              if (_this.node) { var tempNode = _this.node; }
               try {
                 _this.node = lookupNode(_this.action.params);
-              } catch(err){
+                } catch(err){
                 _this.node = null;
+              }
+              if (tempNode) {
+                if (tempNode != _this.node) {
+                    windmill.events.triggerEvent(tempNode, 'blur', false);
+                }
               }
               
               //auto wait for only UI actions
