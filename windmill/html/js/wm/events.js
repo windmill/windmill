@@ -168,6 +168,10 @@ windmill.events = new function() {
 
     /* Fire a mouse event in a browser-compatible manner */
     this.triggerMouseEvent = function(element, eventType, canBubble, clientX, clientY, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown) {
+        //Sometimes the inspector gets in here and the element has dissapeared
+        //if we have no element, we bail
+        if (!element){ return; }
+
         clientX = clientX ? clientX: 0;
         clientY = clientY ? clientY: 0;
 
