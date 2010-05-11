@@ -421,6 +421,7 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
         while True:
             # Wait for the server to shut down, before killing the threads.
             try:
+                socket.setdefaulttimeout(0.5)
                 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
                 s.connect(self.server_address)
                 s.send("\n")
@@ -428,7 +429,7 @@ class WindmillHTTPServer(SocketServer.ThreadingMixIn, HTTPServer):
                 # We can't talk to the server anymore, so it should be
                 # closed.
                 break
-            
+        
         for t in [t for t in self.threads if t.isAlive()]:
             t.terminate()
         

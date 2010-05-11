@@ -206,6 +206,8 @@ def teardown(shell_objects):
             if os.path.isdir(directory):
                 shutil.rmtree(directory)
         
+        shell_objects['httpd'].stop()
+        
         # We had a ton of code here for killing the process
         # But I removed it all and things seem to work
         # Guess we can revert if it's broken :)
