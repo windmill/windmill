@@ -40,7 +40,7 @@ import os, sys
 import shutil
 from time import sleep
 
-from windmill.dep import simplesettings
+from windmill.dep import _simplesettings
 
 import global_settings
 import runner
