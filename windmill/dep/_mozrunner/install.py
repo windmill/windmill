@@ -37,6 +37,7 @@
 # ***** END LICENSE BLOCK *****
 
 import sys, os
+import os
 if sys.platform != 'win32':
     import pwd
 import tempfile
@@ -153,21 +154,8 @@ def install_plugins(settings, runner_class):
         if plugin_path.endswith('.xpi'):
             tmpdir = tempfile.mkdtemp(suffix=".mozrunner_plugins")
             compressed_file = zipfile.ZipFile(plugin_path, "r")
-            for name in compressed_file.namelist():
-                if name.endswith('/'):
-                    makedirs(os.path.join(tmpdir, name))
-                else:
-                    data = compressed_file.read(name)
-                    f = open(os.path.join(tmpdir, name), 'w')
-                    f.write(data) ; f.close()
-                    
-            install_plugin(tmpdir, profile)
+            compressed_file.extractall(tmpdir)
+
+            install_plugin(tmpdir, profile) 
         else:
             install_plugin(plugin_path, profile)
-        
-    # moz = runner_class(binary, profile)
-    # moz.start()
-    # sleep(3.5)
-    # moz.stop()
-    
-
