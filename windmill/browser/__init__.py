@@ -45,7 +45,7 @@ def get_firefox_controller():
     test_url = windmill.get_test_url(windmill.settings['TEST_URL'])  
     
     if windmill.settings['INSTALL_FIREBUG']:
-        windmill.settings['MOZILLA_PLUGINS'] = [os.path.join(os.path.dirname(__file__), os.path.pardir, 'xpi', 'firebug-1.5.0.xpi.xpi')]
+        windmill.settings['MOZILLA_PLUGINS'] = [os.path.join(os.path.dirname(__file__), os.path.pardir, 'xpi', 'firebug-1.5.0.xpi')]
     
     prop_hash = {
                 'extensions.chromebug.openalways' : True,
