@@ -37,7 +37,6 @@
 # ***** END LICENSE BLOCK *****
 
 import sys, os
-import os
 if sys.platform != 'win32':
     import pwd
 import tempfile
