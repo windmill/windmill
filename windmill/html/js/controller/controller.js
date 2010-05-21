@@ -807,7 +807,7 @@ windmill.controller = new function () {
   };
   
   /**
-  * Fire keydown event
+  * Fire keyup event
   * @param
   */
   this.keyUp = function(paramObject){
