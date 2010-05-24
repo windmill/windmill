@@ -303,11 +303,25 @@ class JSONRPCMethods(RPCMethods):
         if result is True:
             sys.stdout.write('.')
         else:
-            sys.stdout.write('F')
+            sys.stdout.write(self.format_failure_message(suite_name, debug))
         sys.stdout.flush()
         return 200
     
     count = 0    
+        
+    def format_failure_message(self, suite_name, debug):
+        if debug is None: return 'F'
+        message = 'F\n' + suite_name
+        if debug.__class__ == dict:
+            message += '\n' + '=' * len(suite_name)
+            message += '\nMessage:\t%s\n' % debug['message']
+            if 'lineNumber' in debug:
+                message += 'Line:\t\t%d\n' % debug['lineNumber']
+            if 'stack' in debug:
+                message += 'Stack:\n%s' + debug['stack']
+        else:
+            message += debug
+        return message + "\n"
         
     def command_result(self, status, uuid, result):
         self._command_resolution_suite.resolve(status, uuid, result)
