@@ -311,9 +311,10 @@ class JSONRPCMethods(RPCMethods):
         
     def format_failure_message(self, suite_name, debug):
         if debug is None: return 'F'
-        message = 'Failure:\n' + suite_name
+        subject = 'Failure: ' + suite_name
+        message = '\n' + subject
         if debug.__class__ == dict:
-            message += '\n' + '=' * len(suite_name)
+            message += '\n' + '=' * len(subject)
             message += '\nMessage:\t%s\n' % debug['message']
             if 'lineNumber' in debug:
                 message += 'Line:\t\t%d\n' % debug['lineNumber']
