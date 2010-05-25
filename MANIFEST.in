@@ -1,4 +1,4 @@
 include windmill/browser/cert8.db
 include windmill/xpi/firebug-1.5.0.xpi
 recursive-include windmill/html *
-recursive-include windmill/server/sslcerts/ *
+recursive-include windmill/server/sslcerts *
