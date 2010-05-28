@@ -106,10 +106,12 @@ def start_test_server(self, address='127.0.0.1', port=8000):
     self.server_thread.started.wait()
     if self.server_thread.error:
         raise self.server_thread.error
+start_test_server.__test__ = False   # Tell nose this is not a method to test
 
 def stop_test_server(self):
     if self.server_thread:
         self.server_thread.join()
+stop_test_server.__test__ = False    # Tell nose this is not a method to test
 
 ## New Code
         
