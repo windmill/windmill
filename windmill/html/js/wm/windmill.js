@@ -86,6 +86,8 @@ var windmill = new function() {
     this.remote = parent.window;
     this.browser = null;
     
+    this.scriptAppendOnly = false;
+    
     //results storage if IDE isn't ready
     this.errorArr = [];
     this.out = function(s){
