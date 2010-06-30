@@ -142,9 +142,20 @@ windmill.jsTest = new function () {
     head.removeChild(script);
     return true;
   }
-    
+  
   function globalEval(path, code, testWin) {
     var win = testWin ? windmill.testWin() : window;
+    // Do we have a working eval?
+    if (typeof _brokenEval == 'undefined') {
+      window.eval.call(window, 'var __EVAL_TEST__ = true;');
+      if (typeof window.__EVAL_TEST__ != 'boolean') {
+        _brokenEval = true;
+      }
+      else {
+        _brokenEval = false;
+        delete window.__EVAL_TEST__;
+      }
+    }
     
     // Try to eval the code
     try {
