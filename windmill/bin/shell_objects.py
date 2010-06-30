@@ -166,6 +166,13 @@ def run_js_tests(js_dir, test_filter=None, phase=None):
         kwargs['filter'] = test_filter
     if phase:
         kwargs['phase'] = phase
+    
+    xmlrpc_client.add_command({
+      'method':'commands.setOptions',
+      'params': {
+        'scriptAppendOnly': windmill.settings['SCRIPT_APPEND_ONLY']
+      }
+    })
     xmlrpc_client.add_command({'method':'commands.jsTests', 'params':kwargs})
     
 

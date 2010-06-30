@@ -128,6 +128,15 @@ class JavascriptTestRunOnly(object):
     def __call__(self, value):
         windmill.settings[self.setting] = value
 
+class JavascriptScriptAppend(GeneralBoolSettingToTrue):
+  """JavaScript Test Framework :
+      Specify method of running the tests.
+      If your code aguments native JavaScript objects and Windmill complains about
+      those methods, enable this option.
+      Note that syntax errors won't be reported with this option enabled."""
+  option_names = (None, 'scriptappend')
+  setting = 'SCRIPT_APPEND_ONLY'
+
 class Extensions(object):
     """The directory containing any windmill javascript extensions."""
     option_names = (None, 'extensions')

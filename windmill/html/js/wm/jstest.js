@@ -115,7 +115,7 @@ windmill.jsTest = new function () {
     // e.g., item[0]
     // Have to squelch errors because doing this test
     // on generic objects throws
-    if (fleegix.isIE) {
+    //if (fleegix.isIE) {
       try {
         if (typeof item[0] != 'undefined') {
           testableType = _testables.ARR;
@@ -123,7 +123,7 @@ windmill.jsTest = new function () {
       }
       // Squelch, throws on plain object
       catch (e) {}
-    }
+      //}
     return testableType;
   };
 
@@ -142,25 +142,15 @@ windmill.jsTest = new function () {
     head.removeChild(script);
     return true;
   }
+    
   function globalEval(path, code, testWin) {
     var win = testWin ? windmill.testWin() : window;
-    // Do we have a working eval?
-    if (typeof _brokenEval == 'undefined') {
-      window.eval.call(window, 'var __EVAL_TEST__ = true;');
-      if (typeof window.__EVAL_TEST__ != 'boolean') {
-        _brokenEval = true;
-      }
-      else {
-        _brokenEval = false;
-        delete window.__EVAL_TEST__;
-      }
-    }
+    
     // Try to eval the code
     try {
-      if (_brokenEval) {
+      if (_brokenEval || windmill.scriptAppendOnly === true) {
         appendScriptTag(win, code);
-      }
-      else {
+      } else {
         win.eval.call(win, code);
       }
     }

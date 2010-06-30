@@ -140,6 +140,9 @@ windmill.controller.commands.setOptions = function (paramObject){
     }
     else{ windmill.serviceDelay = 1000; }
   }
+  if(typeof paramObject.scriptAppendOnly != "undefined") {
+    windmill.scriptAppendOnly = paramObject.scriptAppendOnly;
+  }
   //Send to the server
   sendCommandResult(true, paramObject.uuid, 'true');
   return true;
