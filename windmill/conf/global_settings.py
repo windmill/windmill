@@ -94,7 +94,11 @@ if PLATFORM == 'darwin':
         elif os.path.isfile(os.path.join(networksetup_base, 'networksetup-panther')):
             NETWORKSETUP_BINARY = os.path.join(networksetup_base, 'networksetup-panther')
 
-# elif sys.platform == 'linux2':
+elif sys.platform == 'linux2':
+    #Get Chrome bin for linux
+    chromebin = findInPath('google-chrome')
+    if os.path.isfile(chromebin):
+        CHROME_BINARY=chromebin
 #     firefoxBin = findInPath('firefox')
 # 
 #     if firefoxBin is not None and os.path.isfile(firefoxBin):
