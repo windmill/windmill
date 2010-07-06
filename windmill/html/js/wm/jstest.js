@@ -115,7 +115,7 @@ windmill.jsTest = new function () {
     // e.g., item[0]
     // Have to squelch errors because doing this test
     // on generic objects throws
-    //if (fleegix.isIE) {
+    if (fleegix.isIE) {
       try {
         if (typeof item[0] != 'undefined') {
           testableType = _testables.ARR;
@@ -123,7 +123,7 @@ windmill.jsTest = new function () {
       }
       // Squelch, throws on plain object
       catch (e) {}
-      //}
+    }
     return testableType;
   };
 
@@ -161,7 +161,8 @@ windmill.jsTest = new function () {
     try {
       if (_brokenEval || windmill.scriptAppendOnly === true) {
         appendScriptTag(win, code);
-      } else {
+      }
+      else {
         win.eval.call(win, code);
       }
     }
