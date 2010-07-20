@@ -97,7 +97,7 @@ if PLATFORM == 'darwin':
 elif sys.platform == 'linux2':
     #Get Chrome bin for linux
     chromebin = findInPath('google-chrome')
-    if os.path.isfile(chromebin):
+    if chromebin and os.path.isfile(chromebin):
         CHROME_BINARY=chromebin
 #     firefoxBin = findInPath('firefox')
 # 
