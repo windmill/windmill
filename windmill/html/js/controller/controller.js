@@ -286,9 +286,9 @@ windmill.controller = new function () {
 
        windmill.controller.moveCount--;
        if (windmill.controller.moveCount == 0){
-         windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true, startx, starty);
+         windmill.events.triggerMouseEvent(windmill.controller.destElem, 'mouseup', true, startx, starty);
          if (!windmill.browser.isIE){
-           windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'click', true, startx, starty);
+           windmill.events.triggerMouseEvent(windmill.controller.destElem, 'click', true, startx, starty);
          }
          setTimeout('windmill.controller.doRem()', 1000);
        }
