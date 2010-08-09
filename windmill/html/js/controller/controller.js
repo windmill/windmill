@@ -220,7 +220,7 @@ windmill.controller = new function () {
   this.dragDropElemToElem = function(paramObject){
     var p = paramObject;
     //Get the drag and dest
-    var drag = lookupNode(p);
+    var drag = lookupNode(p, false);
 
     //create the params for the destination
     var destParams = {};
@@ -230,7 +230,7 @@ windmill.controller = new function () {
         break;
       }
     }
-    var dest = lookupNode(destParams);
+    var dest = lookupNode(destParams, false);
     windmill.pauseLoop();
     
     windmill.controller.dragElem = drag;
@@ -325,7 +325,7 @@ windmill.controller = new function () {
   */  
   this.dragDropElem = function(paramObject) {
     var p = paramObject;
-    var el = lookupNode(p);
+    var el = lookupNode(p, false);
 
     windmill.pauseLoop();
     windmill.controller.moveCount = 0;
@@ -449,13 +449,92 @@ windmill.controller = new function () {
     }
   };
   
+ /**
+ * Use absolute coordinates to click an element, and move it from one set of coords to another. 
+ * @param {Object} paramObject The JavaScript object providing: Locator, coords ( Format; ex. '(100,100),(300,350)' )
+ */
+ this.dragDropAbs = function (paramObject) {
+    var p = paramObject;
+    var el = lookupNode(p);
+
+    windmill.pauseLoop();
+    windmill.controller.moveCount = 0;
+    windmill.controller.ddeParamObj = paramObject;
+
+    var webApp = windmill.testWin();
+    //takes a coordinates param (x,y),(x,y) start, end
+    var coords = p.coords.split('),(');
+
+    var start = coords[0].split(',');
+    start[0] = start[0].replace('(','');
+
+    var end = coords[1].split(',');
+    end[1] = end[1].replace(')','');
+
+    //get to the starting point
+     var i = windmill.testWin().document.createElement('img');
+     i.id = "mc";
+     i.style.border = "0px";
+     i.style.left = start[0]+'px';
+     i.style.top = start[1]+'px';
+     i.style.position = "absolute";
+     i.zIndex = "100000000000";
+     windmill.testWin().document.body.appendChild(i);
+     i.src = "/windmill-serv/img/mousecursor.png";
+
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
+    windmill.events.triggerMouseEvent(lookupNode(p), 'mousedown', true, start[0], start[1]);
+    var startx = start[0];
+    var starty = start[1];
+
+    windmill.controller.remMouse = function(x,y) {
+      windmill.events.triggerMouseEvent(lookupNode(p), 'mouseup', true, x, y);
+      windmill.events.triggerMouseEvent(lookupNode(p), 'click', true);
+      var c = windmill.testWin().document.getElementById('mc');
+      windmill.testWin().document.body.removeChild(c);
+      windmill.continueLoop();
+    }
+
+    windmill.controller.doMove = function(attrib, startx, starty) {
+      var w = windmill.testWin().document;
+      if (attrib == "left"){ w.getElementById('mc').style['left'] = startx+'px'; }
+      else{ w.getElementById('mc').style['top'] = starty+'px'; }
+      windmill.events.triggerMouseEvent(w.body, 'mousemove', true, startx, starty); 
+
+      windmill.controller.moveCount--;
+      if (windmill.controller.moveCount == 0){
+        w.getElementById('mc').src = "/windmill-serv/img/mousecursorred.png";
+        setTimeout('windmill.controller.remMouse('+startx+','+starty+')', 1500);
+      }
+    }
+
+    //move the x
+    var delay = 0;
+    while (startx != end[0]) {
+      if (startx < end[0]){ startx++; }
+      else{ startx--; }
+      setTimeout("windmill.controller.doMove('left',"+startx+","+starty+")", delay)
+      windmill.controller.moveCount++;
+      delay = delay + 5;      
+    }
+    //move the y
+    //var delay = 0;
+    while (starty != end[1]){
+       if (starty < end[1]){ starty++; }
+       else{ starty--; }
+       setTimeout("windmill.controller.doMove('top',"+startx+","+starty+")", delay);
+       windmill.controller.moveCount++;
+       delay = delay + 5;      
+     }
+  };
+  
   /**
-  * Use absolute coordinates to click an element, and move it from one set of coords to another. 
-  * @param {Object} paramObject The JavaScript object providing: Locator, coords ( Format; ex. '(100,100),(300,350)' )
+  * Move draggable emement to absolute coordinates
+  * @param {Object} paramObject The JavaScript object providing: Locator, coords ( Format; ex. '(100,100)' )
   */
-  this.dragDropAbs = function (paramObject) {
+  this.dragDropElemToAbs = function (paramObject) {
      var p = paramObject;
-     var el = lookupNode(p);
+     var el = lookupNode(p, false);
     
      windmill.pauseLoop();
      windmill.controller.moveCount = 0;
@@ -463,47 +542,51 @@ windmill.controller = new function () {
      
      var webApp = windmill.testWin();
      //takes a coordinates param (x,y),(x,y) start, end
-     var coords = p.coords.split('),(');
+     p.coords = p.coords.replace('(','');
+     p.coords = p.coords.replace(')','');
+     var end = p.coords.split(',');
      
-     var start = coords[0].split(',');
-     start[0] = start[0].replace('(','');
-     
-     var end = coords[1].split(',');
-     end[1] = end[1].replace(')','');
+     //var start = coords[0].split(',');
+     //start[0] = start[0].replace('(','');
+     var start = [];
+     start[0] = el.style.left.replace('px','');
+     start[1] = el.style.top.replace('px','');
+     var startx = start[0];
+     var starty = start[1];
      
      //get to the starting point
-      var i = windmill.testWin().document.createElement('img');
-      i.id = "mc";
-      i.style.border = "0px";
-      i.style.left = start[0]+'px';
-      i.style.top = start[1]+'px';
-      i.style.position = "absolute";
-      i.zIndex = "100000000000";
-      windmill.testWin().document.body.appendChild(i);
-      i.src = "/windmill-serv/img/mousecursor.png";
+      // var i = windmill.testWin().document.createElement('img');
+      // i.id = "mc";
+      // i.style.border = "0px";
+      // i.style.left = start[0]+'px';
+      // i.style.top = start[1]+'px';
+      // i.style.position = "absolute";
+      // i.zIndex = "100000000000";
+      // windmill.testWin().document.body.appendChild(i);
+      // i.src = "/windmill-serv/img/mousecursor.png";
      
      windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
-     windmill.events.triggerMouseEvent(lookupNode(p), 'mousedown', true, start[0], start[1]);
+     windmill.events.triggerMouseEvent(lookupNode(p, false), 'mousedown', true, start[0], start[1]);
      var startx = start[0];
      var starty = start[1];
    
      windmill.controller.remMouse = function(x,y) {
-       windmill.events.triggerMouseEvent(lookupNode(p), 'mouseup', true, x, y);
-       windmill.events.triggerMouseEvent(lookupNode(p), 'click', true);
-       var c = windmill.testWin().document.getElementById('mc');
-       windmill.testWin().document.body.removeChild(c);
+       windmill.events.triggerMouseEvent(lookupNode(p, false), 'mouseup', true, x, y);
+       windmill.events.triggerMouseEvent(lookupNode(p, false), 'click', true);
+       //var c = windmill.testWin().document.getElementById('mc');
+       //windmill.testWin().document.body.removeChild(c);
        windmill.continueLoop();
      }
    
      windmill.controller.doMove = function(attrib, startx, starty) {
        var w = windmill.testWin().document;
-       if (attrib == "left"){ w.getElementById('mc').style['left'] = startx+'px'; }
-       else{ w.getElementById('mc').style['top'] = starty+'px'; }
+       //if (attrib == "left"){ w.getElementById('mc').style['left'] = startx+'px'; }
+       //else{ w.getElementById('mc').style['top'] = starty+'px'; }
        windmill.events.triggerMouseEvent(w.body, 'mousemove', true, startx, starty); 
      
        windmill.controller.moveCount--;
        if (windmill.controller.moveCount == 0){
-         w.getElementById('mc').src = "/windmill-serv/img/mousecursorred.png";
+         //w.getElementById('mc').src = "/windmill-serv/img/mousecursorred.png";
          setTimeout('windmill.controller.remMouse('+startx+','+starty+')', 1500);
        }
      }
@@ -563,8 +646,8 @@ windmill.controller = new function () {
       return res;
     };     
     
-    var dragged = lookupNode(p.dragged);
-    var dest = lookupNode(p.destination);
+    var dragged = lookupNode(p.dragged, false);
+    var dest = lookupNode(p.destination, false);
     var mouseDownPos = getPos(dragged, 'mouseDown');
     var mouseUpPos = getPos(dest, 'mouseUp');
     

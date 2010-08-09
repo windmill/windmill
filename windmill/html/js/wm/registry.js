@@ -44,6 +44,7 @@ windmill.registry.methods = {
   'mouseOver': {'locator': true,'option': false},
   'dragDropElem': {'locator': true,'option': 'pixels'},
   'dragDropAbs': {'locator': true,'option': 'coords'},
+  'dragDropElemToAbs': {'locator': true,'option': 'coords'},
   'dragDropElemToElem': {'locator': true,'option': true, 'optionIsLocator': true},
   'radio': {'locator': true, 'option': false },
   'check': {'locator': true, 'option': false },

@@ -96,7 +96,7 @@ windmill.xhr = new function() {
               //else we have a node
               if (_this.node) { var tempNode = _this.node; }
               try {
-                _this.node = lookupNode(_this.action.params);
+                _this.node = lookupNode(_this.action.params, false);
                 } catch(err){
                 _this.node = null;
               }
