@@ -162,7 +162,13 @@ windmill.controller = new function () {
     
     //if the index selector was used, select by index
     if (paramObject.index){
-      element.options[paramObject.index].selected = true;
+      //toggle
+      if (element.options[paramObject.index].selected == true){
+        element.options[paramObject.index].selected = false;
+      }
+      else {
+        element.options[paramObject.index].selected = true;
+      }
       return true;
     }
         
