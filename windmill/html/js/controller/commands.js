@@ -176,7 +176,6 @@ windmill.controller.commands.getNodeProperty = function (paramObject){
 
 //return the contents of a given node
 windmill.controller.commands.getRegistryValue = function (paramObject){
-  console.log(paramObject);
   var val = null;
   if (windmill.varRegistry.hasKey(paramObject.key)){
     val = windmill.varRegistry.getByKey(paramObject.key);
