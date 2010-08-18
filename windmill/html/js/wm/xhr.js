@@ -32,6 +32,7 @@ windmill.xhr = new function() {
     this.processVar = function(str){
       //only process if it's no an exec method
       if ((str.indexOf('"method": "exec') == -1)
+        && (str.indexOf('commands.') == -1)
         && (str.indexOf('{$') != -1) 
         && (windmill.runTests)) {
         str = handleVariable(str);

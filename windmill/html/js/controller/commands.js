@@ -50,16 +50,17 @@ windmill.controller.commands.createVariable = function(paramObject){
 
 //This function allows the user to specify a string of JS and execute it
 windmill.controller.commands.execJS = function(paramObject){
-      var res = true;
-      var result = null;
-      try {
-	      result = eval(paramObject.code);
-      } catch(error){
-	      res = false;
-      }
-      //Send to the server
-      sendCommandResult(res, paramObject.uuid, result);
-      return true;
+  if (paramObject.code){ paramObject.js = paramObject.code; }
+  var res = true;
+  var result = null;
+  try {
+	  result = eval(paramObject.js);
+    } catch(error){
+	    res = false;
+    }
+    //Send to the server
+    sendCommandResult(res, paramObject.uuid, result);
+    return true;
 };
 
 //Dynamically loading an extensions directory
@@ -171,6 +172,17 @@ windmill.controller.commands.getNodeProperty = function (paramObject){
   var value = String(eval('node.' + prop+';'));
   //Send to the server
   sendCommandResult(true, paramObject.uuid, value);
+};
+
+//return the contents of a given node
+windmill.controller.commands.getRegistryValue = function (paramObject){
+  console.log(paramObject);
+  var val = null;
+  if (windmill.varRegistry.hasKey(paramObject.key)){
+    val = windmill.varRegistry.getByKey(paramObject.key);
+  }
+  //Send to the server
+  sendCommandResult(true, paramObject.uuid, val);
 };
 
 //Function to start the running of jsTests
