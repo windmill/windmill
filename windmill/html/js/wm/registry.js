@@ -49,6 +49,7 @@ windmill.registry.methods = {
   'radio': {'locator': true, 'option': false },
   'check': {'locator': true, 'option': false },
   'select': {'locator': true, 'option': 'option,val,index'},
+  'selectReset': {'locator': true, 'option': false },
   '-- Keyboard --': {'locator': false, 'option': false, 'section': true},
   'type': {'locator': true, 'option': 'text'},
   'keyPress': {'locator': true, 'option': 'options'},

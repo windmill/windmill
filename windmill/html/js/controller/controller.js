@@ -150,6 +150,14 @@ windmill.controller = new function () {
     windmill.testWin().location = paramObject.url;
   };
 
+  //Set a select box to not selected
+  this.selectReset = function (paramObject) {
+    //lookup
+    var element = lookupNode(paramObject);
+    for (var i=0; i< element.options.length; i++) {
+      element.options[i].selected = false;
+    }
+  };
 
   /**
   * Select an option from a Select element by either value or innerHTML
