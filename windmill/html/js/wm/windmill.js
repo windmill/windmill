@@ -417,10 +417,14 @@ var windmill = new function() {
        }
        //Just making sure the page is fully loaded
        setTimeout("cont()", 1);
+       //Resume JS tests
+       windmill.jsTest.resumeTests();
      };
 
      this.pauseLoop = function () {
        windmill.xhr.loopState = false;
+       //Pause JS tests
+       windmill.jsTest.pauseTests();
      };
     
     //windmill Options to be set
