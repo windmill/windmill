@@ -49,26 +49,26 @@ windmill.controller = new function () {
     //when the backend has nothing for us to do
   };
 
-	//Expose lookupNode to the python controller
-	this.lookup = function(paramObject){
-		return lookupNode(paramObject);
-	}
+  //Expose lookupNode to the python controller
+  this.lookup = function(paramObject){
+    return lookupNode(paramObject);
+  };
 
-	this.rightClick = function(paramObject){
-		var element = lookupNode(paramObject);
-		windmill.events.triggerEvent(element, 'focus', false);
+  this.rightClick = function(paramObject){
+    var element = lookupNode(paramObject);
+    windmill.events.triggerEvent(element, 'focus', false);
 
-		var evt = element.ownerDocument.createEvent("HTMLEvents")
-		evt.initEvent('contextmenu', true, true) // bubbles = true, cancelable = true
+    var evt = element.ownerDocument.createEvent("HTMLEvents");
+    evt.initEvent('contextmenu', true, true); // bubbles = true, cancelable = true
 
-		if (document.createEventObject) {
-			element.fireEvent('oncontextmenu', evt);
-		}
-		else {
-			element.dispatchEvent(evt);
-		}
-	};
-  
+    if (document.createEventObject) {
+      element.fireEvent('oncontextmenu', evt);
+    }
+    else {
+      element.dispatchEvent(evt);
+    }
+  };
+
   /**
   * Creates a windmill variable antry from a DOM element attribute
   * @param {Object} paramObject The JavaScript object providing the necessary options 
@@ -167,7 +167,7 @@ windmill.controller = new function () {
   this.select = function (paramObject) {
     //lookup
     var element = lookupNode(paramObject);
-    
+
     //if the index selector was used, select by index
     if (paramObject.index){
       //toggle
@@ -179,19 +179,19 @@ windmill.controller = new function () {
       }
       return true;
     }
-        
+
     //Sometimes we can't directly access these at this point, not sure why
     try {
       if (element.options[element.options.selectedIndex].text == paramObject['option']){
         return true;
       }
-    } catch(err){ windmill.err(err)}
-    try {  
+    } catch(err){ windmill.err(err); }
+    try {
       if (element.options[element.options.selectedIndex].value == paramObject['val']){
         return true;
       }
-    } catch(err){ windmill.err(err)}
-    
+    } catch(err){ windmill.err(err); }
+
     windmill.events.triggerEvent(element, 'focus', false);
     var optionToSelect = null;
     for (opt = 0; opt < element.options.length; opt++){
@@ -209,7 +209,7 @@ windmill.controller = new function () {
           }
         }
         else {
-           if(el.value.indexOf(paramObject.val) != -1){
+          if(el.value.indexOf(paramObject.val) != -1){
               if (el.selected && el.options[opt] == optionToSelect){
                 continue;
               }
@@ -226,7 +226,7 @@ windmill.controller = new function () {
       throw "Unable to select the specified option.";
     }
   };
-  
+
   /**
   * Drag one DOM element to the top x,y coords of another specified DOM element
   * @param {Object} paramObject The JavaScript object providing: Locator, option or value
@@ -679,7 +679,6 @@ windmill.controller = new function () {
   * @param {Object} paramObject The JavaScript object providing: Locator, source paramObject, dest paramObj
   */
   this.dragDropXY = function (paramObject) {
-
     var p = paramObject;
     var webApp = windmill.testWin();
     windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, p.source[0], p.source[1]);
@@ -689,7 +688,7 @@ windmill.controller = new function () {
     windmill.events.triggerMouseEvent(webApp.document.body, 'click', true);
 
   };
-   
+
   /**
   * Create a Windmill variable registry entry from the href of a provided locator
   * @param {Object} paramObject The JavaScript object providing: Locator
@@ -697,8 +696,8 @@ windmill.controller = new function () {
   this.storeURL = function(paramObject) {
     var linkNode = lookupNode(paramObject);
     windmill.varRegistry.addItem('{$'+paramObject.link +'}',linkNode.href);
-  }
-  
+  };
+
   /**
   * Manually change the document.domain of the windmill IDE window
   * @param {Object} paramObject The JavaScript object providing: domain
@@ -710,7 +709,7 @@ windmill.controller = new function () {
   /**
   * Fire a mousedown event on the provided node
   * @param {Object} paramObject The JavaScript object providing: Locator
-  */  
+  */
   this.mouseDown = function (paramObject) {
       var mupElement = lookupNode(paramObject);
       if (mupElement == null){
@@ -738,24 +737,7 @@ windmill.controller = new function () {
     
     windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, coords[0], coords[1]);
   };
-  
-  // this.mouseMove = function (paramObject){
-  //    var p = paramObject;
-  //    var webApp = windmill.testWin();
-  //    var coords = p.coords.split('),(');
-  //          
-  //    var start = coords[0].split(',');
-  //    start[0] = start[0].replace('(','');
-  //           
-  //    var end = coords[1].split(',');
-  //    end[1] = end[1].replace(')','');
-  //    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
-  //    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, end[0], end[1]);
-  //    alert('mooch??');
-  //      
-  //   return true;
-  // };
-    
+
   /**
   * Fire the mousemove event starting at one point and ending at another
   * @param {Object} paramObject The JavaScript object providing: coords (Format: '(x,y),(x,y)' )
@@ -850,16 +832,16 @@ windmill.controller = new function () {
       windmill.events.triggerMouseEvent(mupElement, 'mouseup', true);
     }
   };
-  
+
   /**
   * Fire the mouseover event against a specified DOM element
   * @param {Object} paramObject The JavaScript object providing: Locator
-  */  
+  */
   this.mouseOver = function (paramObject){
     var mdnElement = lookupNode(paramObject);
     windmill.events.triggerMouseEvent(mdnElement, 'mouseover', true);
   };
-  
+
   /**
   * Fire the mouseout event against a specified DOM element
   * @param {Object} paramObject The JavaScript object providing: Locator
@@ -919,28 +901,28 @@ windmill.controller = new function () {
     //element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown
     windmill.events.triggerKeyEvent(element, "keyUp", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]), opts[6]);
   };
-  
+
   /**
   * Trigger the back function in the Windmill Testing Application Window
   */
   this.goBack = function(paramObject){
     windmill.testWin().history.back();
-  }
-  
+  };
+
   /**
   * Trigger the forward function in the Windmill Testing Application Window
   */
   this.goForward = function(paramObject){
     windmill.testWin().history.forward();
-  }
-  
+  };
+
   /**
   * Trigger the refresh function in the Windmill Testing Application Window
   */
   this.refresh = function(paramObject){
     windmill.testWin().location.reload(true);
-  }
-  
+  };
+
   /**
   * Trigger the scroll function in the Windmill Testing Application Window
   * @param {Object} paramObject The JavaScript object providing: coords
@@ -955,8 +937,8 @@ windmill.controller = new function () {
   
   this.overrideDialogs = function(paramObject){
     windmill.overWrite();
-  }
-  
+  };
+
   this.show = function(paramObject){
     show(lookupNode(paramObject));
   }
@@ -971,7 +953,7 @@ windmill.controller = new function () {
         windmill.out("Alert: <b>" + s + ".</b>");     
       };
     } catch(err){ windmill.err(err); }
-    
+
     rwaRecurse = function(frame){
       var iframeCount = frame.frames.length;
       var iframeArray = frame.frames;
@@ -1061,21 +1043,21 @@ windmill.controller = new function () {
    };
   
   this.reWritePopups = function(paramObject){
-     if (typeof windmill.testWin().oldOpen == "function"){
-       return;
-     }
-     
+    if (typeof windmill.testWin().oldOpen == "function"){
+      return;
+    }
+
     //Window popup wrapper
-     try { windmill.testWin().oldOpen = windmill.testWin().open; } 
-     catch(err){ 
-       windmill.err("Did you close a popup window, without using closeWindow?");
-       windmill.err("We can no longer access test windows, start over and don't close windows manually.");
-       return;
-     }
-   
-     //re-define the open function
-     windmill.testWin().open = function(){
-       if (windmill.browser.isIE){
+    try { windmill.testWin().oldOpen = windmill.testWin().open; } 
+    catch(err){ 
+      windmill.err("Did you close a popup window, without using closeWindow?");
+      windmill.err("We can no longer access test windows, start over and don't close windows manually.");
+      return;
+    }
+
+    //re-define the open function
+    windmill.testWin().open = function(){
+      if (windmill.browser.isIE){
           var str = '';
           var arg;
           for (var i = 0; i < arguments.length; i++) {
@@ -1086,35 +1068,34 @@ windmill.controller = new function () {
             else {
               str += arg;
             }
-            str += ","
+            str += ",";
           }
           str = str.substr(0, str.length-1);
           eval('var newWindow = windmill.testWin().oldOpen(' + str + ');');
-       }
-       else {
-         var newWindow = windmill.testWin().oldOpen.apply(windmill.testWin(), arguments);
-       }
+      }
+      else {
+        var newWindow = windmill.testWin().oldOpen.apply(windmill.testWin(), arguments);
+      }
 
-       var newReg = [];
-       for (var i = 0; i < windmill.windowReg.length; i++){
-         try{
-           var wDoc = windmill.windowReg[i].document;              
-           newReg.push(windmill.windowReg[i]);
-         } catch(err){}
-         windmill.windowReg = newReg;
-       }
-       windmill.windowReg.push(newWindow);
-     };
-   };
+      var newReg = [];
+      for (i = 0; i < windmill.windowReg.length; i++){
+        try{
+          var wDoc = windmill.windowReg[i].document;
+          newReg.push(windmill.windowReg[i]);
+        } catch(err){}
+        windmill.windowReg = newReg;
+      }
+      windmill.windowReg.push(newWindow);
+    };
+  };
 
-   this.setPromptDefault = function(paramObject){
-     if (paramObject.val){
-       windmill.promptAnswer = paramObject.val;
-     } else {
-       windmill.promptAnswer = "Windmill is great!";
-     }
-     
-   }
+  this.setPromptDefault = function(paramObject){
+    if (paramObject.val){
+      windmill.promptAnswer = paramObject.val;
+    } else {
+      windmill.promptAnswer = "Windmill is great!";
+    }
+  };
 
   /**
   * Update the windmill.testWindow reference to point to a different window
@@ -1124,10 +1105,10 @@ windmill.controller = new function () {
   this.setTestWindow = function(paramObject){
     var res = eval ('windmill.testWindow ='+ paramObject.path +';');
     if (typeof(res) == 'undefined'){
-      throw "Error setting the test window, undefined."
+      throw "Error setting the test window, undefined.";
     }
   };
-  
+
   /**
   * Set the windmill.testWindow by iterating through the windowReg to find a matching title
   * @param {Object} paramObject The JavaScript object providing: title
@@ -1136,18 +1117,18 @@ windmill.controller = new function () {
     var title = paramObject.title;
     var newW = windmill.testWin();
     for (var i = 0; i < windmill.windowReg.length; i++){
-			try {
-				if (windmill.windowReg[i].document.title == title){
-					newW = windmill.windowReg[i];
-				}
-			} catch(err){
-				// The window reference is no longer valid, remove it
-				windmill.windowReg.splice(i,i);
-			}
+      try {
+        if (windmill.windowReg[i].document.title == title){
+          newW = windmill.windowReg[i];
+        }
+      } catch(err){
+        // The window reference is no longer valid, remove it
+        windmill.windowReg.splice(i,i);
+      }
     }
     windmill.testWindow = newW;
   };
-  
+
   /**
   * Revert the windmill.testWindow to the original when the page was loaded
   * @param {Object} paramObject The JavaScript object providing: title
@@ -1155,7 +1136,7 @@ windmill.controller = new function () {
   this.revertWindow = function(paramObject){
     windmill.testWindow = windmill.baseTestWindow;
   };
-  
+
   /**
   * If the windmill.testWindow is not the original opener, close it.
   */
@@ -1165,7 +1146,7 @@ windmill.controller = new function () {
       windmill.testWindow = windmill.baseTestWindow;
     }
   };
-  
+
   /**
   * Execute some arbitrary JS
   * @param {Object} paramObject The JavaScript object providing: js
@@ -1174,17 +1155,17 @@ windmill.controller = new function () {
     var js = paramObject.js;
     return eval.call(window, js);
   };
-  
+
   this.execJS = function(paramObject){
     var js = paramObject.js;
     return windmill.testWin().eval(js);
   };
-  
-	this.execJQuery = function(paramObject){
-		paramObject.jquery = windmill.helpers.replaceAll(paramObject.jquery, ").", ")<*>");
+
+  this.execJQuery = function(paramObject){
+    paramObject.jquery = windmill.helpers.replaceAll(paramObject.jquery, ").", ")<*>");
     var jQ = jQuery(windmill.testWin().document);
     var chain= paramObject.jquery.split('<*>');
-    
+
     paramObject.jquery = windmill.helpers.replaceAll(paramObject.jquery, "<*>", ".");
     var start = eval('jQ.find'+chain[0]);
     var theRest = paramObject.jquery.replace(chain[0],'');
