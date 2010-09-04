@@ -482,13 +482,10 @@ windmill.controller = new function () {
   * @param {Object} paramObject The JavaScript object providing: coords
   */
   this.scroll = function(paramObject){
-    var d = paramObject.coords;
-    d = d.replace('(','');
-    d = d.replace(')','');
-    var cArr = d.split(',');
-    windmill.testWin().scrollTo(cArr[0],cArr[1]);
-  }
-  
+    var coords = utils.parseCoords(paramObject.coords);
+    windmill.testWin().scrollTo(coords.x,coords.y);
+  };
+
   this.overrideDialogs = function(paramObject){
     windmill.overWrite();
   };
