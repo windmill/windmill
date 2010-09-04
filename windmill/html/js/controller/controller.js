@@ -417,56 +417,43 @@ windmill.controller = new function () {
     var mdnElement = lookupNode(paramObject);
     windmill.events.triggerMouseEvent(mdnElement, 'mouseout', true);
   };
-  
+
+  var keyEvent = function(paramObject, event){
+    var element;
+    try {
+      element = lookupNode(paramObject);
+    } catch(err){ element = windmill.testWin().document.body; }
+
+    paramObject.options = paramObject.options.replace(/ /g, "");
+
+    var opts = paramObject.options.split(",");
+    windmill.events.triggerEvent(element, 'focus', false);
+    //element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown
+    windmill.events.triggerKeyEvent(element, event, opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]), opts[6]);
+  };
+
   /**
   * Fire keypress event
   * @param
   */
   this.keyPress = function(paramObject){
-    try {
-      var element = lookupNode(paramObject);
-    } catch(err){ var element = windmill.testWin().document.body; }
-
-    paramObject.options = paramObject.options.replace(/ /g, "");
-
-    var opts = paramObject.options.split(",");
-    windmill.events.triggerEvent(element, 'focus', false);
-    //element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown
-    windmill.events.triggerKeyEvent(element, "keypress", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]), opts[6]);
+    keyEvent(paramObject, 'keypress');
   };
-  
+
   /**
   * Fire keydown event
   * @param
   */
   this.keyDown = function(paramObject){
-    try {
-      var element = lookupNode(paramObject);
-    } catch(err){ var element = windmill.testWin().document.body; }
-
-    paramObject.options = paramObject.options.replace(/ /g, "");
-
-    var opts = paramObject.options.split(",");
-    windmill.events.triggerEvent(element, 'focus', false);
-    //element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown
-    windmill.events.triggerKeyEvent(element, "keyDown", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]), opts[6]);
+    keyEvent(paramObject, 'keydown');
   };
-  
+
   /**
   * Fire keyup event
   * @param
   */
   this.keyUp = function(paramObject){
-    try {
-      var element = lookupNode(paramObject);
-    } catch(err){ var element = windmill.testWin().document.body; }
-
-    paramObject.options = paramObject.options.replace(/ /g, "");
-
-    var opts = paramObject.options.split(",");
-    windmill.events.triggerEvent(element, 'focus', false);
-    //element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown
-    windmill.events.triggerKeyEvent(element, "keyUp", opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]), opts[6]);
+    keyEvent(paramObject, 'keyup');
   };
 
   /**
