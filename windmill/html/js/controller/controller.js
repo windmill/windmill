@@ -1177,3 +1177,448 @@ windmill.controller = new function () {
     windmill.events.triggerEvent(element, paramObject.option, true);
   };
 };
+
+
+
+
+
+
+/* MooTools Element.Dimensions code, refactored to work as generic methods instead of prototype alterations. */
+
+
+
+var utils = {
+
+  getWindowScroll: function(win){
+    var doc = win.document;
+    doc = (!doc.compatMode || doc.compatMode == 'CSS1Compat') ? doc.html : doc.body;
+    return {x: win.pageXOffset || doc.scrollLeft, y: win.pageYOffset || doc.scrollTop};
+  },
+
+  getSize: function(element){
+    return {x: element.offsetWidth, y: element.offsetHeight};
+  },
+
+  getScrollSize: function(element){
+    return {x: element.scrollWidth, y: element.scrollHeight};
+  },
+
+  getScroll: function(element){
+    return {x: element.scrollLeft, y: element.scrollTop};
+  },
+
+  getScrolls: function(element){
+    var position = {x: 0, y: 0};
+    while (element && !utils.isBody(element)){
+      position.x += element.scrollLeft;
+      position.y += element.scrollTop;
+      element = element.parentNode;
+    }
+    return position;
+  },
+
+  getOffsetParent: function(element){
+    if (utils.isBody(element)) return null;
+    if (!windmill.browser.isIE) return element.offsetParent;
+    while ((element = element.parentNode) && !utils.isBody(element)){
+      if (utils.styleString(element, 'position') != 'static') return element;
+    }
+    return null;
+  },
+
+  getOffsets: function(element){
+    if (element.getBoundingClientRect){
+      var bound = element.getBoundingClientRect(),
+          bod = windmill.testWin().document.body,
+          bodScroll = utils.getScroll(bod),
+          elemScrolls = utils.getScrolls(element),
+          elemScroll = utils.getScroll(element),
+          isFixed = (utils.styleString(element, 'position') == 'fixed');
+
+      return {
+        x: parseInt(bound.left, 10) + elemScrolls.x - elemScroll.x + ((isFixed) ? 0 : bodScroll.x) - bod.clientLeft,
+        y: parseInt(bound.top, 10)  + elemScrolls.y - elemScroll.y + ((isFixed) ? 0 : bodScroll.y) - bod.clientTop
+      };
+    }
+
+    position = {x: 0, y: 0};
+    if (utils.isBody(element)) return position;
+    var el = element;
+    while (el && !utils.isBody(el)){
+      position.x += el.offsetLeft;
+      position.y += el.offsetTop;
+
+      if (Browser.Engine.gecko){
+        if (!utils.borderBox(el)){
+          position.x += utils.leftBorder(el);
+          position.y += utils.topBorder(el);
+        }
+        var parent = el.parentNode;
+        if (parent && utils.styleString(parent, 'overflow') != 'visible'){
+          position.x += utils.leftBorder(parent);
+          position.y += utils.topBorder(parent);
+        }
+                                   //no detection for webkit in general?
+      } else if (el != element && (windmill.browser.isChrome || windmill.browser.isSafari)){
+        position.x += utils.leftBorder(el);
+        position.y += utils.topBorder(el);
+      }
+
+      el = element.offsetParent;
+    }
+    if (windmill.browser.isGecko && !utils.borderBox(element)){
+      position.x -= utils.leftBorder(element);
+      position.y -= utils.topBorder(element);
+    }
+    return position;
+  },
+
+  getPosition: function(element, relative){
+    if (utils.isBody(element)) return {x: 0, y: 0};
+    var offset = utils.getOffsets(element),
+        scroll = utils.getScrolls(element);
+    var position = {
+      x: offset.x - scroll.x,
+      y: offset.y - scroll.y
+    };
+    var relativePosition = (relative && (relative = relative)) ? utils.getPosition(relative) : {x: 0, y: 0};
+    return {x: position.x - relativePosition.x, y: position.y - relativePosition.y};
+  },
+
+  getCoordinates: function(element, relative){
+    var position = utils.getPosition(element, relative),
+        size = utils.getSize(element);
+    var obj = {
+      left: position.x,
+      top: position.y,
+      width: size.x,
+      height: size.y
+    };
+    obj.right = obj.left + obj.width;
+    obj.bottom = obj.top + obj.height;
+    return obj;
+  },
+  getDocument: function(element){
+    return element.ownerDocument;
+  },
+  getWindow: function(element){
+    return element.ownerDocument.window;
+  },
+  camelCase: function(str){
+    return str.replace(/-\D/g, function(match){
+      return match.charAt(1).toUpperCase();
+    });
+  },
+  hyphenate: function(str){
+    return str.replace(/[A-Z]/g, function(match){
+      return ('-' + match.charAt(0).toLowerCase());
+    });
+  },
+  capitalize: function(str){
+    return str.replace(/\b[a-z]/g, function(match){
+      return match.toUpperCase();
+    });
+  },
+  styleString: function(element, property){
+    if (element.currentStyle) return element.currentStyle[utils.camelCase(property)];
+    var computed = utils.getDocument(element).defaultView.getComputedStyle(element, null);
+    return (computed) ? computed.getPropertyValue([utils.hyphenate(property)]) : null;
+  },
+  styleNumber: function(element, style){
+    var parsed = parseInt(utils.styleString(element, style), 10);
+    if (isNaN(parsed)) parsed = 0;
+    return parsed;
+  },
+  borderBox: function(element){
+    return utils.styleString(element, '-moz-box-sizing') == 'border-box';
+  },
+  topBorder: function(element){
+    return styleNumber(element, 'border-top-width');
+  },
+  leftBorder: function(element){
+    return styleNumber(element, 'border-left-width');
+  },
+  isBody: function(element){
+    return (/^(?:body|html)$/i).test(element.tagName);
+  },
+  getCompatElement: function(element){
+    var doc = utils.getDocument(element);
+    return (!doc.compatMode || doc.compatMode == 'CSS1Compat') ? doc.html : doc.body;
+  },
+  getStyle: function(element, property, returnInt) {
+    returnInt = returnInt == null ? true : returnInt;
+    switch (property){
+      case 'opacity': return this.get('opacity');
+      case 'float': property = (windmill.browser.isIE) ? 'styleFloat' : 'cssFloat';
+    }
+    var result = element.style[property];
+    if (result !== 0 && !result) result = utils.styleString(element, property);
+    if (returnInt) {
+      result = parseInt(result, 10);
+      if (isNaN(result)) result = 0;
+    }
+    return result;
+  },
+  curry: function (fn, scope) {
+    scope = scope || window;
+    var args = [];
+    for (var i=2, len = arguments.length; i < len; ++i) {
+      args.push(arguments[i]);
+    };
+    return function() {
+      fn.apply(scope, args);
+    };
+  },
+  now: Date.now || function(){
+    return +new Date;
+  },
+  splitterRegex: /[-|+]?\d+/g,
+  parseCoords: function(str){
+    if (str.indexOf('),(') >= 0) {
+      var split = str.split('),(');
+      return {
+        start: utils.parseCoords(split[0]),
+        end: utils.parseCoords(split[1])
+      };
+    } else {
+      var match = str.match(utils.splitterRegex);
+      return {
+        x: parseInt(match[0], 10),
+        y: parseInt(match[1], 10)
+      };
+    }
+  },
+  extend: function(obj1, obj2){
+    for (name in obj2) {
+      obj1[name] = obj2[name];
+    }
+    return obj1;
+  },
+  getCursor: function(){
+    if (!this._cursor) {
+      var i = this._cursor = windmill.testWin().document.createElement('img');
+      i.id = "mc";
+      i.style.display = 'none';
+      i.style.border = "0px";
+      i.style.position = "absolute";
+      i.zIndex = "100000000000";
+      windmill.testWin().document.body.appendChild(i);
+      i.src = "/windmill-serv/img/mousecursor.png";
+    }
+    return this._cursor;
+  },
+  dragFromTo: function(opts){
+    var options = {
+      //the element to drag
+      element: null,
+      //or specify an explicit x/y for the start position
+      start: null,
+      //a callback to execute after the transition
+      callback: function(){},
+      // + one of the following
+      //an element to move the dragged element to
+        toElement: null, 
+      //an offset with x/y integers that represent absolute position in the window to drag the element to
+        endPosition: null,
+      //an offset with x/y integers relative to the current element position to drag the element to
+        offset: null
+    };
+    utils.extend(options, opts);
+    var webApp = windmill.testWin();
+    var start = options.start;
+    if (!start) {
+      var pos = utils.getCoordinates(options.element, windmill.testWin().document.body);
+      var scrolls = utils.getWindowScroll(windmill.testWin().window);
+      start = {
+        x: pos.left + scrolls.x,
+        y: pos.top + scrolls.y
+      };
+    }
+    
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start.x, start.y);
+    windmill.events.triggerMouseEvent(element, 'mousedown', true, start.x, start.y);
+    var end;
+    //if there's a specific offset, go to that
+    if (options.offset) {
+      end = {
+        x: start.x + options.offset.x,
+        y: start.y + options.offset.y
+      };
+    //if there's an element, go to its offset position
+    } else if (options.toElement){
+      end = utils.getPosition(options.toElement, document.body);
+    //else go to the specified end position
+    } else {
+      end = options.endPosition;
+    }
+    this.moveMouse({
+      start: {
+        x: start.x,
+        y: start.y
+      }, 
+      end: end, 
+      callback: function(){
+        windmill.events.triggerMouseEvent(element, 'mouseup', true, end.x, end.y);
+        windmill.events.triggerMouseEvent(element, 'click', true);
+        options.callback();
+      }
+    });
+  },
+  moveMouse: function(opts){
+
+    var options = {
+      start: null,
+      end: null,
+      callback: function(){},
+      showCursor: true,
+      //if pause execution while we run the transition
+      pauseLoop: true
+    };
+
+    utils.extend(options, opts);
+    if (options.pauseLoop) {
+      windmill.pauseLoop();
+    }
+
+    var cursor;
+    if (options.showCursor) {
+      cursor = this.getCursor();
+      cursor.style.top = options.start.y + 'px';
+      cursor.style.left = options.start.x + 'px';
+      cursor.style.display = 'block';
+    }
+    windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, options.start.x, options.start.y);
+    var xtrans = new Transition({
+      from: options.start.x,
+      to: options.end.x,
+      onStep: function(x) {
+        windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, x, options.start.y); 
+        if (cursor) cursor.style.left = x + 'px';
+      }
+    });
+    var ytrans = new Transition({
+      from: options.start.y,
+      to: options.end.y,
+      onStep: function(y) {
+        windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, options.end.x, y);
+        if (cursor) cursor.style.top = y + 'px';
+      },
+      onComplete: function(){
+        if (cursor) cursor.style.display = 'none';
+        if (options.callback) options.callback();
+        if (options.pauseLoop) windmill.continueLoop();
+      }
+    });
+    xtrans.start().chain(function(){
+      ytrans.start();
+    });
+  },
+  type: function(obj){
+    if (obj == undefined) return false;
+    if (obj.nodeName){
+      switch (obj.nodeType){
+        case 1: return 'element';
+        case 3: return (/\S/).test(obj.nodeValue) ? 'textnode' : 'whitespace';
+      }
+    } else if (typeof obj.length == 'number'){
+      if (obj.callee) return 'arguments';
+    }
+    return typeof obj;
+  },
+  log: function(){
+    var parse = function(){
+      var str = '';
+      for (var i = 0; i < arguments.length; i++) {
+        var value = arguments[i];
+        switch (utils.type(value)) {
+          case 'element':
+            str += value.tagName.toLowerCase();
+            if (value.id) str += '#' + value.id;
+            if (value.className) str += value.className.split(' ').join('.');
+            break;
+
+          case 'array':
+            str +='[';
+            var results = [];
+            for (var index = 0; index < value.length; index++) {
+              results.push(parse(value[index]));
+            }
+            str += results.join(', ') + ']';
+            break;
+
+          case 'object':
+            var objs = [];
+            for (name in value) {
+              if (utils.type(value[name]) != 'object') {
+                objs.push(name + ': ' + parse(value[name]));
+              } else {
+                objs.push(name + ': (object)');
+              }
+            }
+            str += '{' + objs.join(', ') + '}';
+            break;
+
+          case 'function':
+            str += '(function)';
+            break;
+
+          case 'boolean':
+            str += String(value);
+            break;
+
+          default: str += value;
+        }
+        if (i != (arguments.length - 1)) str += ' ';
+      }
+      return str;
+    };
+    windmill.out(parse.apply(this, arguments));
+  }
+};
+var Transition = function(options){
+  /* 
+    options = {
+      from: 0, //required, integer
+      to: 100, //required, integer
+      duration: 10000, //milliseconds; optional - defaults to 1000
+      onStep: someFunction(delta){}, //required
+      onComplete: someOtherFunction(){}, //optional
+      intOnly: true //the delta arg passed to onStep will be an integer (rounded)
+    }
+  */
+  options.intOnly = options.intOnly != null ? options.intOnly : true;
+  if (!options.duration) options.duration = 1000;
+  this.start = function(){
+    this.time = utils.now();
+    this.timer = setInterval(utils.curry(this.step, this), 20);
+    return this;
+  };
+  this.step = function(){
+    var time = utils.now();
+    var delta = (options.to - options.from);
+    var timeDelta = time - this.time;
+    var destination = options.from + (delta * (timeDelta / options.duration));
+    if (options.intOnly) destination = parseInt(destination, 10);
+    if (time < this.time + options.duration && destination != options.to) {
+      options.onStep(destination);
+    } else {
+      options.onStep(options.to);
+      this.stop();
+    }
+  };
+  this.stop = function(){
+    clearInterval(this.timer);
+    if (options.onComplete) options.onComplete();
+    this.callChain();
+    return this;
+  };
+  this.chained = [];
+  this.chain = function(fn){
+    this.chained.push(fn);
+    return this;
+  };
+  this.callChain = function(){
+    return (this.chained.length) ? this.chained.shift().apply(this, arguments) : false;
+  };
+  return this;
+};
