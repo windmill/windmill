@@ -492,33 +492,36 @@ windmill.controller = new function () {
 
   this.show = function(paramObject){
     show(lookupNode(paramObject));
-  }
-  
-  /**
-  * Re-write the window alert function to instead send it's output to the output tab
-  */
-  this.reWriteAlert = function(paramObject){
+  };
+
+  var rewritePopup = function(which){
     try {
-      windmill.testWin().alert = function(s){
-        windmill.alertStore.push(s);
-        windmill.out("Alert: <b>" + s + ".</b>");     
+      windmill.testWin()[which] = function(s){
+        windmill[which + 'Store'].push(s);
+        var out = utils.capitalize(which) + ": <b>" + s + ".</b>";
+        if (windmill[which + 'Answer'] !== undefined) out += ' - ' + windmill[which + 'Answer'];
+        windmill.out(out); 
+        if (windmill[which + 'Answer'] !== undefined) return windmill[which + 'Answer'];
       };
     } catch(err){ windmill.err(err); }
 
     rwaRecurse = function(frame){
       var iframeCount = frame.frames.length;
       var iframeArray = frame.frames;
-      
+
       for (var i=0;i<iframeCount;i++){
           try{
-  	        iframeArray[i].alert = function(s){
-        		  windmill.alertStore.push(s);
-        		  windmill.out("Alert: <b>" + s + ".</b>");     
-     	      };
-  	        rwaRecurse(iframeArray[i]);
+            iframeArray[i][which] = function(s){
+              windmill[which + 'Store'].push(s);
+              var out = utils.capitalize(which) + ": <b>" + s + ".</b>";
+              if (windmill[which + 'Answer'] !== undefined) out += ' - ' + windmill[which + 'Answer'];
+              windmill.out(out);
+              if (windmill[which + 'Answer'] !== undefined) return windmill[which + 'Answer'];
+            };
+            rwaRecurse(iframeArray[i]);
           }
-          catch(error){             
-           	windmill.err('Could not bind to iframe number '+ iframeCount +' '+error);     
+          catch(error){
+            windmill.err('Could not bind to iframe number '+ iframeCount +' '+error);
           }
         }
       };
@@ -528,71 +531,24 @@ windmill.controller = new function () {
   /**
   * Re-write the window alert function to instead send it's output to the output tab
   */
-  this.reWriteConfirm = function(paramObject){
-    
-    try {
-      windmill.testWin().confirm = function(s){
-        windmill.confirmStore.push(s);
-        windmill.out("Confirm: <b>" + s + ".</b> -"+windmill.confirmAnswer);
-        return windmill.confirmAnswer;
-      };
-    } catch(err){ windmill.err(err); }
-    
-    rwcRecurse = function(frame){
-      var iframeCount = frame.frames.length;
-      var iframeArray = frame.frames;
-      
-      for (var i=0;i<iframeCount;i++){
-          try{
-  	        iframeArray[i].confirm = function(s){
-  	          windmill.confirmStore.push(s);
-  	          windmill.out("Confirm: <b>" + s + ".</b> -"+windmill.confirmAnswer);
-        		  return windmill.confirmAnswer;    
-     	      };
-  	        rwaRecurse(iframeArray[i]);
-          }
-          catch(error){             
-           	windmill.err('Could not bind to iframe number '+ iframeCount +' '+error);     
-          }
-        }
-      };
-      rwcRecurse(windmill.testWin());
+  this.reWriteAlert = function(paramObject){
+    rewritePopup('alert');
   };
-  
+
+  /**
+  * Re-write the window alert function to instead send it's output to the output tab
+  */
+  this.reWriteConfirm = function(paramObject){
+    rewritePopup('confirm');
+  };
+
   /**
    * Re-write the window prompt function to instead send it's output to the output tab
    */
-   this.reWritePrompt = function(paramObject){
+  this.reWritePrompt = function(paramObject){
+    rewritePopup('prompt');
+  };
 
-     try {
-       windmill.testWin().prompt = function(s, d){
-         windmill.promptStore.push(s);
-         windmill.out("Prompt: <b>" + s + ".</b> -"+windmill.promptAnswer);
-         return windmill.promptAnswer;      
-       };
-     } catch(err){ windmill.err(err); }
-
-     rwaRecurse = function(frame){
-       var iframeCount = frame.frames.length;
-       var iframeArray = frame.frames;
-
-       for (var i=0;i<iframeCount;i++){
-           try{
-   	         iframeArray[i].prompt = function(s, d){
-         		   windmill.promptStore.push(s);
-               windmill.out("Prompt: <b>" + s + "</b> -"+windmill.promptAnswer);
-               return windmill.promptAnswer;          
-      	      };
-   	        rwaRecurse(iframeArray[i]);
-           }
-           catch(error){             
-            	windmill.err('Could not bind to iframe number '+ iframeCount +' '+error);     
-           }
-         }
-       };
-       rwaRecurse(windmill.testWin());
-   };
-  
   this.reWritePopups = function(paramObject){
     if (typeof windmill.testWin().oldOpen == "function"){
       return;
