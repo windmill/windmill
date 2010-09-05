@@ -38,8 +38,8 @@ windmill.controller = new function () {
   this.flex                = {};  
 
 /************************************
-/* User facing windmill functionality
-/************************************/
+ * User facing windmill functionality
+ ************************************/
 
   /**
   * Does absolutely nothing
