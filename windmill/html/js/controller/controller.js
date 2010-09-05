@@ -49,6 +49,16 @@ windmill.controller = new function () {
     //when the backend has nothing for us to do
   };
 
+  /**
+  * Logs a message to the IDE window
+  * @param
+  */
+  this.log = function(paramObject){
+    if (paramObject.string) utils.log(paramObject.string);
+    if (paramObject.array) utils.log.apply(this, paramObject.array);
+    if (paramObject.method) utils.log.apply(this, paramObject.method());
+  };
+
   //Expose lookupNode to the python controller
   this.lookup = function(paramObject){
     return lookupNode(paramObject);
@@ -430,6 +440,30 @@ windmill.controller = new function () {
     windmill.events.triggerEvent(element, 'focus', false);
     //element, eventType, keySequence, canBubble, controlKeyDown, altKeyDown, shiftKeyDown, metaKeyDown
     windmill.events.triggerKeyEvent(element, event, opts[0], eval(opts[1]), eval(opts[2]), eval(opts[3]), eval(opts[4]), eval(opts[5]), opts[6]);
+  };
+
+  /**
+  * Fire focus event
+  * @param
+  */
+  this.focus = function(paramObject){
+    var element;
+    try {
+      element = lookupNode(paramObject);
+    } catch(err){ element = windmill.testWin().document.body; }
+    windmill.events.triggerEvent(element, 'focus', false);
+  };
+
+  /**
+  * Fire focus event
+  * @param
+  */
+  this.blur = function(paramObject){
+    var element;
+    try {
+      element = lookupNode(paramObject);
+    } catch(err){ element = windmill.testWin().document.body; }
+    windmill.events.triggerEvent(element, 'blur', false);
   };
 
   /**
@@ -1094,7 +1128,7 @@ var Transition = function(options){
     }
   */
   options.intOnly = options.intOnly != null ? options.intOnly : true;
-  if (!options.duration) options.duration = 1000;
+  if (!options.duration) options.duration = 500;
   this.start = function(){
     this.time = utils.now();
     this.timer = setInterval(utils.curry(this.step, this), 20);
