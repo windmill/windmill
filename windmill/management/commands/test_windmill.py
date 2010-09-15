@@ -36,14 +36,14 @@ def attempt_import(name, suffix):
         return mod
 
 class Command(BaseCommand):
-    
+
     help = "Run windmill tests. Specify a browser, if one is not passed Firefox will be used"
-    
+
     args = '<label label ...>'
     label = 'label'
-    
+
     def handle(self, *labels, **options):
-                
+
         from windmill.conf import global_settings
         from windmill.authoring.djangotest import WindmillDjangoUnitTest
         if 'ie' in labels:
@@ -59,55 +59,53 @@ class Command(BaseCommand):
             global_settings.START_FIREFOX = True
             if 'firefox' in labels:
                 sys.argv.remove('firefox')
-        
+
         if 'manage.py' in sys.argv:
             sys.argv.remove('manage.py')
         if 'test_windmill' in sys.argv:
             sys.argv.remove('test_windmill')
         server_container = ServerContainer()
         server_container.start_test_server()
-        
+
         global_settings.TEST_URL = 'http://127.0.0.1:%d' % server_container.server_thread.port
-        
+
         # import windmill
         # windmill.stdout, windmill.stdin = sys.stdout, sys.stdin
         from windmill.authoring import setup_module, teardown_module
-        
+
         from django.conf import settings
         tests = []
         for name in settings.INSTALLED_APPS:
-            for suffix in ['tests', 'wmtests', 'windmilltests']:    
+            for suffix in ['tests', 'wmtests', 'windmilltests']:
                 x = attempt_import(name, suffix)
-                if x is not None: tests.append((suffix,x,)); 
-        
+                if x is not None: tests.append((suffix,x,));
+
         wmtests = []
         for (ttype, mod,) in tests:
             if ttype == 'tests':
-                for ucls in [getattr(mod, x) for x in dir(mod) 
-                             if ( type(getattr(mod, x, None)) in (types.ClassType, 
-                                                               types.TypeType) ) and 
+                for ucls in [getattr(mod, x) for x in dir(mod)
+                             if ( type(getattr(mod, x, None)) in (types.ClassType,
+                                                               types.TypeType) ) and
                              issubclass(getattr(mod, x), WindmillDjangoUnitTest)
                              ]:
                     wmtests.append(ucls.test_dir)
-                    
+
             else:
-                if mod.__file__.endswith('__init__.py') or mod.__file__.endswith('__init__.pyc'): 
+                if mod.__file__.endswith('__init__.py') or mod.__file__.endswith('__init__.pyc'):
                     wmtests.append(os.path.join(*os.path.split(os.path.abspath(mod.__file__))[:-1]))
                 else:
                     wmtests.append(os.path.abspath(mod.__file__))
-        
+
         if len(wmtests) is 0:
             print 'Sorry, no windmill tests found.'
         else:
             testtotals = {}
             x = logging.getLogger()
             x.setLevel(0)
-            from windmill.server.proxy import logger
-            from windmil.dep import functest
+            from windmill.dep import functest
             bin = functest.bin
             runner = functest.runner
             runner.CLIRunner.final = classmethod(lambda self, totals: testtotals.update(totals) )
-            import windmill
             setup_module(tests[0][1])
             sys.argv = sys.argv + wmtests
             bin.cli()
