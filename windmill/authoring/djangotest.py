@@ -78,8 +78,19 @@ class TestServerThread(threading.Thread):
 
         # Must do database stuff in this new thread if database in memory.
         from django.conf import settings
-        if settings.DATABASE_ENGINE == 'sqlite3' \
-            and (not settings.TEST_DATABASE_NAME or settings.TEST_DATABASE_NAME == ':memory:'):
+        create_db = False
+        if settings.DATABASES:
+            # Django > 1.2
+            if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3' or \
+                settings.DATABASES['default']['TEST_NAME']:
+                create_db = True
+        elif settings.DATABASE_ENGINE:
+            # Django < 1.2
+            if settings.DATABASE_ENGINE == 'sqlite3' and \
+                (not settings.TEST_DATABASE_NAME or settings.TEST_DATABASE_NAME == ':memory:'):
+                create_db = True
+            
+        if create_db:
             from django.db import connection
             db_name = connection.creation.create_test_db(0)
             # Import the fixture data into the test database.
