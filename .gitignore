@@ -1,1 +1,3 @@
-*pyc
+*.pyc
+env
+windmill.egg-info
