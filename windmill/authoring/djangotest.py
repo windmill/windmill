@@ -47,12 +47,13 @@ class StoppableWSGIServer(basehttp.WSGIServer):
 class TestServerThread(threading.Thread):
     """Thread for running a http server while tests are running."""
 
-    def __init__(self, address, port):
+    def __init__(self, address, port, fixtures):
         self.address = address
         self.port = port
         self._stopevent = threading.Event()
         self.started = threading.Event()
         self.error = None
+        self.fixtures = fixtures
         super(TestServerThread, self).__init__()
 
     def run(self):
@@ -97,7 +98,7 @@ class TestServerThread(threading.Thread):
             if hasattr(self, 'fixtures'):
                 # We have to use this slightly awkward syntax due to the fact
                 # that we're using *args and **kwargs together.
-                call_command('loaddata', *self.fixtures, **{'verbosity': 0})
+                call_command('loaddata', *self.fixtures, **{'verbosity': 1})
 
         # Loop until we get a stop event.
         while not self._stopevent.isSet():
@@ -110,9 +111,9 @@ class TestServerThread(threading.Thread):
         threading.Thread.join(self, timeout)
 
 
-def start_test_server(self, address='127.0.0.1', port=8000):
+def start_test_server(self, address='127.0.0.1', port=8000, fixtures=[]):
     """Creates a live test server object (instance of WSGIServer)."""
-    self.server_thread = TestServerThread(address, port)
+    self.server_thread = TestServerThread(address, port, fixtures=fixtures)
     self.server_thread.start()
     self.server_thread.started.wait()
     if self.server_thread.error:
@@ -133,8 +134,9 @@ from windmill.authoring import unit
 
 class WindmillDjangoUnitTest(TestCase, unit.WindmillUnitTestCase):
     test_port = 8000
+    fixtures = []
     def setUp(self):
-        self.start_test_server('127.0.0.1', self.test_port)
+        self.start_test_server('127.0.0.1', self.test_port, self.fixtures)
         self.test_url = 'http://127.0.0.1:%d' % self.server_thread.port
         unit.WindmillUnitTestCase.setUp(self)
 
