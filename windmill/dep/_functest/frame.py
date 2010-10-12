@@ -152,7 +152,7 @@ def run_test_function(test, args=[]):
         return True
     except AssertionError, inst:
         test.endtime = datetime.now()
-        if pygments:
+        if pygments and sys.stderr.isatty():
             formatter.highlight_traceback(sys.exc_info())
         else:
             tb = traceback.format_exception(*sys.exc_info())
@@ -169,7 +169,7 @@ def run_test_function(test, args=[]):
         return False
     except Exception, inst:
         test.endtime = datetime.now()
-        if pygments:
+        if pygments and sys.stderr.isatty():
             formatter.highlight_traceback(sys.exc_info())
         else:
             tb = traceback.format_exception(*sys.exc_info())
