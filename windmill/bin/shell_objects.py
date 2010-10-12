@@ -63,7 +63,7 @@ def start_safari():
     return controller
     
 def start_chrome():
-    """Start the Crhome web browser configured for windmill"""
+    """Start the Chrome web browser configured for windmill"""
     controller = windmill.browser.get_chrome_controller()
     controller.start()
     windmill.settings['controllers'].append(controller)
