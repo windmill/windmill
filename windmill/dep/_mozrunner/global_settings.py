@@ -39,7 +39,10 @@
 
 import os, sys, copy
 
-def findInPath(fileName, path=os.environ['PATH']):
+def findInPath(fileName, path=None):
+    if path is None:
+        path = os.environ.get('PATH', '')
+
     dirs = path.split(os.pathsep)
     for dir in dirs:
         if os.path.isfile(os.path.join(dir, fileName)):
