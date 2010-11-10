@@ -147,7 +147,8 @@ class Chrome(safari.Safari):
         """Stop Chrome"""
         if not sys.version.startswith('2.6'):
             raise Exception("Kill doesn't work for Chrome on Python version pre-2.6")
-        
+        if sys.platform == 'darwin':
+	        self.unset_proxy_mac()
         #if sys.platform in ('cygwin', 'win32'):
         #    self.unset_proxy_windows()
         #    
