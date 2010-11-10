@@ -244,7 +244,7 @@ windmill.controller = new function () {
   this.dragDropElemToElem = function(paramObject){
     var p = paramObject;
     //Get the drag and dest
-    var el = lookupNode(p, false);
+    var drag = lookupNode(p, false);
 
     //create the params for the destination
     var destParams = {};
@@ -254,74 +254,434 @@ windmill.controller = new function () {
         break;
       }
     }
-    utils.dragFromTo({
-      element: el,
-      toElement: lookupNode(destParams, false)
-    });
-  };
+    var dest = lookupNode(destParams, false);
+    windmill.pauseLoop();
+    
+    windmill.controller.dragElem = drag;
+    windmill.controller.destElem = dest;
+    
+    //get the bounding objects we want for starting and ending places
+    //for the drag
+    function getBounding(elem){
+      //backup way to get the coords
+      function getCoords(obj) {
+      	var curleft = curtop = 0;
+      	if (obj.offsetParent) {
+          do {
+          	curleft += obj.offsetLeft;
+          	curtop += obj.offsetTop;
+          } while (obj = obj.offsetParent);
+        }  
+        return {left:curleft,top:curtop};
+      }
+      
+      //get the coords and divide to find the middle
+      if ( windmill.browser.isIE || windmill.browser.isGecko ) {
+        var bound = elem.getBoundingClientRect();
+        bound = {left:parseInt((bound.left+bound.right)/
+        2),top:parseInt((bound.top+bound.bottom)/2)};
+      }
+      else {
+        var bound = getCoords(elem);
+        bound =  {left:parseInt(bound.left+elem.offsetWidth/
+        2),top:parseInt(bound.top+elem.offsetHeight/2)}
+      }
+      return bound;
+    };
 
+    
+    var dragCoords = null;
+    var destCoords = null;
+
+    dragCoords = getBounding(drag);
+    destCoords = getBounding(dest);
+
+    
+    //Do the initial move to the drag element position
+    windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, dragCoords.left, dragCoords.top);
+    windmill.events.triggerMouseEvent(drag, 'mousedown', true, dragCoords.left, dragCoords.top);
+    windmill.events.triggerMouseEvent(drag, 'mouseout', true, dragCoords.left, dragCoords.top);
+    
+    windmill.controller.doRem = function() {
+      windmill.continueLoop();
+    }
+    windmill.controller.doMove = function(attrib, startx, starty) {
+       windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, startx, starty); 
+
+       windmill.controller.moveCount--;
+       if (windmill.controller.moveCount == 0){
+         windmill.events.triggerMouseEvent(windmill.controller.destElem, 'mouseup', true, startx, starty);
+         if (!windmill.browser.isIE){
+           windmill.events.triggerMouseEvent(windmill.controller.destElem, 'click', true, startx, starty);
+         }
+         setTimeout('windmill.controller.doRem()', 1000);
+       }
+     }
+
+     windmill.controller.moveCount = 0;
+     var startx = dragCoords.left;
+     var starty = dragCoords.top;
+     var endx = destCoords.left;
+     var endy = destCoords.top;
+     
+     var delay = 0;
+     while (startx != endx){
+       if (startx < endx){ startx++; }
+       else{ startx--; }
+       setTimeout("windmill.controller.doMove('left',"+startx+","+starty+")", delay)
+       windmill.controller.moveCount++;
+       delay = delay + 5;      
+     }
+    
+     //move the y
+     while (starty != endy){
+       if (starty < endy){ starty++; }
+       else{ starty--; }
+       setTimeout("windmill.controller.doMove('top',"+startx+","+starty+")", delay);
+       windmill.controller.moveCount++;
+       delay = delay + 5;      
+     }
+  };
+  
   /**
   * Drag a specified DOM element a specified amount of pixels
   * @param {Object} paramObject The JavaScript object providing: Locator and pixels (x,y)
-  */
+  */  
   this.dragDropElem = function(paramObject) {
     var p = paramObject;
-    utils.dragFromTo({
-      element: lookupNode(p, false),
-      offset: utils.parseCoords(p.pixels)
-    });
-  };
+    var el = lookupNode(p, false);
 
+    windmill.pauseLoop();
+    windmill.controller.moveCount = 0;
+    windmill.controller.dragElem = el;
+
+    //ie specific drag and drop simulation
+    if (windmill.browser.isIE){
+       var dist = p.pixels.split(',');
+        dist[0] = dist[0].replace('(','');
+        dist[1] = dist[1].replace(')','');
+        
+        var box = el.getBoundingClientRect(); 
+        var left = box.left;
+        var top = box.top + 2;
+
+        windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, left, top);
+        windmill.events.triggerMouseEvent(el, 'mousedown', true, left, top);
+        windmill.events.triggerMouseEvent(el, 'mouseout', true, left, top);
+        // windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, left+100, top);
+        //        windmill.events.triggerMouseEvent(el, 'mouseup', true, left, top);
+
+        windmill.controller.doRem = function(x,y) {
+            try{
+              windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true, x, y);
+            }
+            catch(err){}
+            windmill.continueLoop();
+         }
+         windmill.controller.doMove = function(x,y) {
+           windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, x, y);
+           windmill.controller.moveCount--;
+           if (windmill.controller.moveCount == 0){
+             setTimeout('windmill.controller.doRem('+x+','+y+')', 1000);
+           }
+         }
+
+         var delay = 0;
+         var i = 0;
+         var newX = left;
+
+         while(i != dist[0]){
+           if (i < dist[0]){ newX++; }
+           else{ newX--; }
+
+           setTimeout("windmill.controller.doMove("+newX+","+top+")", delay)
+           if (i < dist[0]){ i++; }
+           else{ i--; }
+           windmill.controller.moveCount++;
+           delay = delay + 5;
+         }
+
+         //var delay = 0;
+         var i = 0;
+         var newBox = el.getBoundingClientRect(); 
+         var newY = top;
+
+         while(i != dist[1]){
+           if (i < dist[1]){ newY++; }
+           else{ newY--; }
+
+           setTimeout("windmill.controller.doMove("+newX+", "+newY+")", delay)
+           if (i < dist[1]){ i++; }
+           else{ i--; }
+           windmill.controller.moveCount++;
+           delay = delay + 5;
+         }
+    }
+    //all other browsers with sane event models
+    else {
+       // var i = windmill.testWindow.document.createElement('img');
+       //     i.id = "mc";
+       //     i.style.border = "0px";
+       //     i.style.left = '0px';
+       //     i.style.top = '0px';
+       //     i.style.position = "absolute";
+       //     i.zIndex = "100000000000";
+       //     el.appendChild(i);
+       //     i.src = "/windmill-serv/img/mousecursor.png"; 
+
+        //takes a coordinates param (x,y),(x,y) start, end
+        var dist = p.pixels.split(',');
+        dist[0] = dist[0].replace('(','');
+        dist[1] = dist[1].replace(')','');
+
+        windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, el.offsetLeft, el.offsetTop);
+        windmill.events.triggerMouseEvent(el, 'mousedown', true);
+    
+        windmill.controller.doRem = function() {
+           windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'mouseup', true);
+           windmill.events.triggerMouseEvent(windmill.controller.dragElem, 'click', true);
+           windmill.continueLoop();
+        }
+        windmill.controller.doMove = function(x,y) {
+          windmill.events.triggerMouseEvent(windmill.testWin().document.body, 'mousemove', true, x, y);
+          windmill.controller.moveCount--;
+          if (windmill.controller.moveCount == 0){
+            setTimeout('windmill.controller.doRem()', 1000);
+          }
+        }
+
+        var delay = 0;
+        var i = 0;
+        while(i != dist[0]) {
+          setTimeout("windmill.controller.doMove("+i+", 0)", delay)
+          if (i < dist[0]){ i++; }
+          else{ i--; }
+          windmill.controller.moveCount++;
+          delay = delay + 5;
+        }
+    
+        var newX = i;
+        //var delay = 0;
+        var i = 0;
+        while(i != dist[1]) {
+          setTimeout("windmill.controller.doMove("+newX+", "+i+")", delay)
+          if (i < dist[1]){ i++; }
+          else{ i--; }
+          windmill.controller.moveCount++;
+          delay = delay + 5;
+        }
+    }
+  };
+  
  /**
  * Use absolute coordinates to click an element, and move it from one set of coords to another. 
  * @param {Object} paramObject The JavaScript object providing: Locator, coords ( Format; ex. '(100,100),(300,350)' )
  */
-  this.dragDropAbs = function (paramObject) {
-    var startEnd = utils.parseCoords(paramObject.coords);
-    utils.dragFromTo({
-      start: startEnd.start,
-      offset: startEnd.end
-    });
-  };
+ this.dragDropAbs = function (paramObject) {
+    var p = paramObject;
+    var el = lookupNode(p);
 
+    windmill.pauseLoop();
+    windmill.controller.moveCount = 0;
+    windmill.controller.ddeParamObj = paramObject;
+
+    var webApp = windmill.testWin();
+    //takes a coordinates param (x,y),(x,y) start, end
+    var coords = p.coords.split('),(');
+
+    var start = coords[0].split(',');
+    start[0] = start[0].replace('(','');
+
+    var end = coords[1].split(',');
+    end[1] = end[1].replace(')','');
+
+    //get to the starting point
+     var i = windmill.testWin().document.createElement('img');
+     i.id = "mc";
+     i.style.border = "0px";
+     i.style.left = start[0]+'px';
+     i.style.top = start[1]+'px';
+     i.style.position = "absolute";
+     i.zIndex = "100000000000";
+     windmill.testWin().document.body.appendChild(i);
+     i.src = "/windmill-serv/img/mousecursor.png";
+
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
+    windmill.events.triggerMouseEvent(lookupNode(p), 'mousedown', true, start[0], start[1]);
+    var startx = start[0];
+    var starty = start[1];
+
+    windmill.controller.remMouse = function(x,y) {
+      windmill.events.triggerMouseEvent(lookupNode(p), 'mouseup', true, x, y);
+      windmill.events.triggerMouseEvent(lookupNode(p), 'click', true);
+      var c = windmill.testWin().document.getElementById('mc');
+      windmill.testWin().document.body.removeChild(c);
+      windmill.continueLoop();
+    }
+
+    windmill.controller.doMove = function(attrib, startx, starty) {
+      var w = windmill.testWin().document;
+      if (attrib == "left"){ w.getElementById('mc').style['left'] = startx+'px'; }
+      else{ w.getElementById('mc').style['top'] = starty+'px'; }
+      windmill.events.triggerMouseEvent(w.body, 'mousemove', true, startx, starty); 
+
+      windmill.controller.moveCount--;
+      if (windmill.controller.moveCount == 0){
+        w.getElementById('mc').src = "/windmill-serv/img/mousecursorred.png";
+        setTimeout('windmill.controller.remMouse('+startx+','+starty+')', 1500);
+      }
+    }
+
+    //move the x
+    var delay = 0;
+    while (startx != end[0]) {
+      if (startx < end[0]){ startx++; }
+      else{ startx--; }
+      setTimeout("windmill.controller.doMove('left',"+startx+","+starty+")", delay)
+      windmill.controller.moveCount++;
+      delay = delay + 5;      
+    }
+    //move the y
+    //var delay = 0;
+    while (starty != end[1]){
+       if (starty < end[1]){ starty++; }
+       else{ starty--; }
+       setTimeout("windmill.controller.doMove('top',"+startx+","+starty+")", delay);
+       windmill.controller.moveCount++;
+       delay = delay + 5;      
+     }
+  };
+  
   /**
   * Move draggable emement to absolute coordinates
   * @param {Object} paramObject The JavaScript object providing: Locator, coords ( Format; ex. '(100,100)' )
   */
   this.dragDropElemToAbs = function (paramObject) {
-    var el = lookupNode(paramObject, false);
-
-    windmill.controller.ddeParamObj = paramObject;
-
-    //takes a coordinates param (x,y) start, end
-    utils.dragFromTo({
-      element: el, 
-      endPosition: utils.parseCoords(paramObject.coords)
-    });
-  };
+     var p = paramObject;
+     var el = lookupNode(p, false);
+    
+     windmill.pauseLoop();
+     windmill.controller.moveCount = 0;
+     windmill.controller.ddeParamObj = paramObject;
+     
+     var webApp = windmill.testWin();
+     //takes a coordinates param (x,y),(x,y) start, end
+     p.coords = p.coords.replace('(','');
+     p.coords = p.coords.replace(')','');
+     var end = p.coords.split(',');
+     
+     //var start = coords[0].split(',');
+     //start[0] = start[0].replace('(','');
+     var start = [];
+     start[0] = el.style.left.replace('px','');
+     start[1] = el.style.top.replace('px','');
+     var startx = start[0];
+     var starty = start[1];
+     
+     //get to the starting point
+      // var i = windmill.testWin().document.createElement('img');
+      // i.id = "mc";
+      // i.style.border = "0px";
+      // i.style.left = start[0]+'px';
+      // i.style.top = start[1]+'px';
+      // i.style.position = "absolute";
+      // i.zIndex = "100000000000";
+      // windmill.testWin().document.body.appendChild(i);
+      // i.src = "/windmill-serv/img/mousecursor.png";
+     
+     windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
+     windmill.events.triggerMouseEvent(lookupNode(p, false), 'mousedown', true, start[0], start[1]);
+     var startx = start[0];
+     var starty = start[1];
+   
+     windmill.controller.remMouse = function(x,y) {
+       windmill.events.triggerMouseEvent(lookupNode(p, false), 'mouseup', true, x, y);
+       windmill.events.triggerMouseEvent(lookupNode(p, false), 'click', true);
+       //var c = windmill.testWin().document.getElementById('mc');
+       //windmill.testWin().document.body.removeChild(c);
+       windmill.continueLoop();
+     }
+   
+     windmill.controller.doMove = function(attrib, startx, starty) {
+       var w = windmill.testWin().document;
+       //if (attrib == "left"){ w.getElementById('mc').style['left'] = startx+'px'; }
+       //else{ w.getElementById('mc').style['top'] = starty+'px'; }
+       windmill.events.triggerMouseEvent(w.body, 'mousemove', true, startx, starty); 
+     
+       windmill.controller.moveCount--;
+       if (windmill.controller.moveCount == 0){
+         //w.getElementById('mc').src = "/windmill-serv/img/mousecursorred.png";
+         setTimeout('windmill.controller.remMouse('+startx+','+starty+')', 1500);
+       }
+     }
+   
+     //move the x
+     var delay = 0;
+     while (startx != end[0]) {
+       if (startx < end[0]){ startx++; }
+       else{ startx--; }
+       setTimeout("windmill.controller.doMove('left',"+startx+","+starty+")", delay)
+       windmill.controller.moveCount++;
+       delay = delay + 5;      
+     }
+     //move the y
+     //var delay = 0;
+     while (starty != end[1]){
+        if (starty < end[1]){ starty++; }
+        else{ starty--; }
+        setTimeout("windmill.controller.doMove('top',"+startx+","+starty+")", delay);
+        windmill.controller.moveCount++;
+        delay = delay + 5;      
+      }
+   };
 
   /**
   * Use absolute coordinates to click an element, and move it from one set of coords to another. 
   * @param {Object} paramObject The JavaScript object providing: Locator, destination paramObject
   */
-  this.dragDrop = function (paramObject) {
-
+  this.dragDrop = function (paramObject) {   
+   
     var p = paramObject;
-    var hash_key = p.dragged.jsid;
-
+    var hash_key;
+     
     eval ("hash_key=" + p.dragged.jsid + ";");
     p.dragged.id = hash_key;
     delete p.dragged.jsid;
+             
+    function getPos(elem, evType) {
+      // paramObject.mouseDownPos or param_obj.mouseUpPos
+      var t = evType + 'Pos';
+      var res = [];
+      // Explicit function for getting XY of both
+      // start and end position for drag  start 
+      // to be calculated from the initial pos of the
+      // dragged, and end to be calculated from the
+      // position of the destination
+      if (p[t]) {
+        var f = eval(p[t]);
+        res = f(elem);
+      }
+      // Otherwise naively assume top/left XY for both
+      // start (dragged) and end (destination)
+      else {
+        res = [elem.offsetLeft, elem.offsetTop];
+      }
+       
+      return res;
+    };     
+    
     var dragged = lookupNode(p.dragged, false);
     var dest = lookupNode(p.destination, false);
+    var mouseDownPos = getPos(dragged, 'mouseDown');
+    var mouseUpPos = getPos(dest, 'mouseUp');
+    
     var webApp = windmill.testWin();
-    var from = utils.getCoordinates(dragged);
-    var to = utils.getCoordinates(dest);
-    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, from.x, from.y);
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseDownPos[0], mouseDownPos[1]);
     windmill.events.triggerMouseEvent(dragged, 'mousedown', true);
-    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, to.x, to.y);
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, mouseUpPos[0], mouseUpPos[1]);
     windmill.events.triggerMouseEvent(dragged, 'mouseup', true);
     windmill.events.triggerMouseEvent(dragged, 'click', true);
+    
   };
 
   /**
@@ -356,33 +716,24 @@ windmill.controller = new function () {
     document.domain = paramObject.domain;
   };
 
-  var mouseUpDown = function(paramObject, event){
-    var mupElement = lookupNode(paramObject);
-    if (mupElement == null){
-      mupElement = windmill.testWin().document.body;
-    }
-    if (windmill.browser.isIE){
-        var pos = mupElement == windmill.testWin().document.body ? {x: 0, y: 0} : utils.getOffsets(mupElement);
-        windmill.events.triggerMouseEvent(mupElement, event, true, pos.x, pos.y);
-    }
-    else { windmill.events.triggerMouseEvent(mupElement, event, true);  }
-  };
-
   /**
   * Fire a mousedown event on the provided node
   * @param {Object} paramObject The JavaScript object providing: Locator
   */
   this.mouseDown = function (paramObject) {
-    mouseUpDown(paramObject, 'mousedown');
+      var mupElement = lookupNode(paramObject);
+      if (mupElement == null){
+        mupElement = windmill.testWin().document.body;
+      }
+      if (windmill.browser.isIE){
+          var box = mupElement.getBoundingClientRect(); 
+          var left = box.left;
+          var top = box.top + 2;
+          windmill.events.triggerMouseEvent(mupElement, 'mousedown', true, left, top);  
+      }
+      else { windmill.events.triggerMouseEvent(mupElement, 'mousedown', true);  }
   };
-  /**
-  * Fire the mouseup event against a specified node, defaulting to document.body
-  * @param {Object} paramObject The JavaScript object providing: Locator
-  */
-  this.mouseUp = function (paramObject){
-    mouseUpDown(paramObject, 'mouseup');
-  };
-
+  
   /**
   * Fire a mousemove event ending at a specified set of coordinates
   * @param {Object} paramObject The JavaScript object providing: coords
@@ -390,9 +741,11 @@ windmill.controller = new function () {
   this.mouseMoveTo = function (paramObject) {
     var p = paramObject;
     var webApp = windmill.testWin();
-    var coords = utils.parseCoords(p.coords);
-
-    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, coords.x, coords.y);
+    var coords = p.coords.split(',');
+    coords[0] = coords[0].replace('(','');
+    coords[1] = coords[1].replace(')','');
+    
+    windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, coords[0], coords[1]);
   };
 
   /**
@@ -400,14 +753,94 @@ windmill.controller = new function () {
   * @param {Object} paramObject The JavaScript object providing: coords (Format: '(x,y),(x,y)' )
   */
   this.mouseMove = function (paramObject) {
-    var p = paramObject;
-    var webApp = windmill.testWin();
-    //takes a coordinates param (x,y),(x,y) start, end
-    var coords = utils.parseCoords(p.coords);
-    utils.moveMouse({
-      start: coords.start, 
-      end: coords.end
-    });
+     windmill.pauseLoop();
+     windmill.controller.moveCount = 0;
+     var p = paramObject;
+     var webApp = windmill.testWin();
+     //takes a coordinates param (x,y),(x,y) start, end
+     var coords = p.coords.split('),(');
+     
+     var start = coords[0].split(',');
+     start[0] = start[0].replace('(','');
+     
+     var end = coords[1].split(',');
+     end[1] = end[1].replace(')','');
+  
+     //get to the starting point
+      var i = windmill.testWin().document.createElement('img');
+      i.id = "mc";
+      i.style.border = "0px";
+      i.style.left = start[0]+'px';
+      i.style.top = start[1]+'px';
+      i.style.position = "absolute";
+      i.zIndex = "100000000000";
+      windmill.testWin().document.body.appendChild(i);
+      i.src = "/windmill-serv/img/mousecursor.png";
+     
+     windmill.events.triggerMouseEvent(webApp.document.body, 'mousemove', true, start[0], start[1]);
+     var startx = start[0];
+     var starty = start[1];
+   
+     windmill.controller.remMouse = function() {
+       var c = windmill.testWin().document.getElementById('mc');
+       windmill.testWin().document.body.removeChild(c);
+       windmill.continueLoop();
+     }
+   
+     windmill.controller.doMove = function(attrib, startx, starty) {
+       var w = windmill.testWin().document;
+       if (attrib == "left"){ w.getElementById('mc').style['left'] = startx+'px'; }
+       else{ w.getElementById('mc').style['top'] = starty+'px'; }
+       windmill.events.triggerMouseEvent(w.body, 'mousemove', true, startx, starty); 
+     
+       windmill.controller.moveCount--;
+       if (windmill.controller.moveCount == 0){
+         w.getElementById('mc').src = "/windmill-serv/img/mousecursorred.png";
+         setTimeout('windmill.controller.remMouse()', 1000);
+       }
+     }
+   
+     //move the x
+     var delay = 0;
+     while (startx != end[0]){
+       if (startx < end[0]){ startx++; }
+       else{ startx--; }
+       setTimeout("windmill.controller.doMove('left',"+startx+","+starty+")", delay)
+       windmill.controller.moveCount++;
+       delay = delay + 5;      
+     }
+     //move the y
+     //var delay = 0;
+     while (starty != end[1]){
+        if (starty < end[1]){ starty++; }
+        else{ starty--; }
+        setTimeout("windmill.controller.doMove('top',"+startx+","+starty+")", delay);
+        windmill.controller.moveCount++;
+        delay = delay + 5;      
+      }
+  };
+  
+  /**
+  * Fire the mouseup event against a specified node, defaulting to document.body
+  * @param {Object} paramObject The JavaScript object providing: Locator
+  */
+  this.mouseUp = function (paramObject){
+    try {
+      var mupElement = lookupNode(paramObject);
+    } catch(err){}
+    
+    if (mupElement == null){
+      mupElement = windmill.testWin().document.body;
+    }
+    if(windmill.browser.isIE){
+      var box = mupElement.getBoundingClientRect(); 
+      var left = box.left;
+      var top = box.top + 2;
+      windmill.events.triggerMouseEvent(mupElement, 'mouseup', true, left, top);
+    }
+    else{
+      windmill.events.triggerMouseEvent(mupElement, 'mouseup', true);
+    }
   };
 
   /**
