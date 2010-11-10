@@ -80,7 +80,7 @@ class TestServerThread(threading.Thread):
         # Must do database stuff in this new thread if database in memory.
         from django.conf import settings
         create_db = False
-        if settings.DATABASES:
+        if hasattr(settings, 'DATABASES') and settings.DATABASES:
             # Django > 1.2
             if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3' or \
                 settings.DATABASES['default']['TEST_NAME']:
