@@ -84,7 +84,7 @@ def find_default_interface_name():
     if windmill.settings['NETWORK_INTERFACE_NAME'] is not None:
         return windmill.settings['NETWORK_INTERFACE_NAME']
     target_host = urlparse.urlparse(windmill.settings['TEST_URL']).hostname
-    x = ['/sbin/route', 'get', target_host]
+    x = ['/sbin/route', 'get', target_host]    
     interface_id = [l for l in getoutput(x).splitlines() if 'interface' in l][0].split(":")[-1].strip()
     all_inet = getoutput([windmill.settings['NETWORKSETUP_BINARY'], '-listallhardwareports']).splitlines()
     try:

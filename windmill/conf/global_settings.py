@@ -81,6 +81,7 @@ if PLATFORM == 'darwin':
     # MOZILLA_DEFAULT_PROFILE = os.path.join(firefoxDir, 'Contents', 'MacOS', 'defaults', 'profile')
     # MOZILLA_BINARY          = os.path.join(firefoxDir, 'Contents', 'MacOS', 'firefox-bin')
     SAFARI_BINARY           = '/Applications/Safari.app/Contents/MacOS/Safari'
+    CHROME_BINARY           = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     
     import distutils.version, commands
     OS_VERSION = distutils.version.StrictVersion(commands.getoutput('sw_vers -productVersion'))
