@@ -36,8 +36,6 @@ def remove_old():
     commands.getoutput('cd %s && rm -rf windmill*' % PYTHON_BIN_DIR)
     
 def build():
-    outs = commands.getoutput('svn status %s' % SETUP_DIR)
-    assert outs == ''
     roll_version(is_release=True)
     outs = commands.getoutput('cd %s && python setup.py bdist_egg' % SETUP_DIR)
     assert outs.find('creating \'dist/%s-' % APP_NAME) is not -1
