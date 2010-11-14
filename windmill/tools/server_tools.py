@@ -50,7 +50,17 @@ class ProxiedTransport(xmlrpclib.Transport):
     def make_connection(self, host):
         self.realhost = host
         import httplib
-        return httplib.HTTP(self.proxy)
+        if ((sys.version_info[0] == 2 and sys.version_info[1] == 7) or
+            (sys.version_info[0] == 3 and sys.version_info[1] == 2)):
+            # Fix for incompatibility bug between Python version
+            # 2.6/3.1 and 2.7/3.2 (current, as of 2010/11/13).  This
+            # has yet to be fixed in 2.7.1 RC1, but it is addressed
+            # here http://bugs.python.org/issue8194 and may be fixed
+            # in the future, so we'd need to remove this or update it
+            # to check the version patch level.
+            return httplib.HTTPConnection(self.proxy)
+        else:
+            return httplib.HTTP(self.proxy)
 
     def send_request(self, connection, handler, request_body):
         connection.putrequest("POST", 'http://%s%s' % (self.realhost, handler))
