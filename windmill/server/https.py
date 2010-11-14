@@ -44,10 +44,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 try:
-    import ssl # python 2.6
+    import ssl
     _ssl_wrap_socket = ssl.wrap_socket
+    # python 2.6:
     _socket_create_connection = socket.create_connection
-except ImportError:
+except (AttributeError, ImportError):
     # python 2.5
     if windmill.has_ssl:
         from OpenSSL import SSL
