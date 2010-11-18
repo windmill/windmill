@@ -7,200 +7,160 @@
 	
 	<link rel="stylesheet" type="text/css" href="css/windmill.css"/>
 	<link rel="stylesheet" type="text/css" href="css/superfish.css" media="screen">
-	<link type="text/css" href="css/smoothness/jquery-ui-1.7.custom.css" rel="stylesheet" />	
+	<link type="text/css" href="css/dark-hive/jquery-ui-1.8.6.custom.css" rel="stylesheet" />	
 	
 	<script type='text/javascript' src="js/lib/fleegix_js/fleegix.js"></script>
-	<script type="text/javascript" src="js/lib/jquery/jquery-1.4.1.min.js"></script>
+	<script type="text/javascript" src="js/lib/jquery/jquery-1.4.2.min.js"></script>
 	<script type="text/javascript" charset="utf-8">
 	  jQuery.noConflict();
 	</script>
-	<script type='text/javascript' src="js/lib/jquery/jquery-ui-1.7.2.custom.min.js"></script>
+	<script type='text/javascript' src="js/lib/jquery/jquery-ui-1.8.6.custom.min.js"></script>
 	<script type='text/javascript' src="js/lib/jquery/ui.progressbar.js"></script>
 	<script type="text/javascript" src="js/lib/jquery/hoverIntent.js"></script>
 	<script type="text/javascript" src="js/lib/jquery/superfish.js"></script>
 	<script type="text/javascript" src="js/lib/jquery/jquery.bgiframe.js"></script>
   <script type="text/javascript" src="js/lib/jquery/jquery.dimensions.js"></script>
-  <script type="text/javascript" src="js/lib/jquery/jquery.tooltip.min.js"></script>
-	
-		<script type="text/javascript">
-			jQuery(function(){
-			  //tabs
-        jQuery('#tabs').tabs();
-        jQuery("#dialog").dialog({
-          height: 460,
-          width: 410,
-          modal:true,
-          autoOpen: false,
-          overlay: { 
-              opacity: 0.5, 
-              background: "black" 
-          },
-          buttons: { 
-           "Ok": function() { 
-               jQuery(this).dialog("close"); 
-           } 
-          }
-        });
-        
-         jQuery("#domInspector").dialog({
-            modal:false,
-            autoOpen: false,
-            buttons: {
-             "Close": function() { 
-               jQuery(this).dialog("close");
-               windmill.ui.dx.domExplorerOff();
-             },
-             "Use": function() {
-               windmill.ui.dx.updateAction();
-               jQuery(this).dialog("close");
-             },             
-             "Pause": function(e) {
-               if (e.target.innerHTML == "Pause"){
-                 windmill.ui.dx.dxRecursiveUnBind(windmill.testWin());
-                 e.target.innerHTML = "Resume";
-               } else {
-                 windmill.ui.dx.domExplorerOn();
-                 windmill.testWin().focus();
-                 e.target.innerHTML = "Pause";
-               }
+  <script type="text/javascript" src="js/lib/jquery/jquery.tooltip.min.js"></script>	
+	<script type="text/javascript">
+		jQuery(function(){
+		  //tabs
+       jQuery('#tabs').tabs();
+       jQuery("#dialog").dialog({
+         height: 460,
+         width: 410,
+         modal:true,
+         autoOpen: false,
+         overlay: { 
+             opacity: 0.5, 
+             background: "black" 
+         },
+         buttons: { 
+          "Ok": function() { 
+              jQuery(this).dialog("close"); 
+          } 
+         }
+       });
+       
+        jQuery("#domInspector").dialog({
+           modal:false,
+           autoOpen: false,
+           buttons: {
+            "Close": function() { 
+              jQuery(this).dialog("close");
+              windmill.ui.dx.domExplorerOff();
+            },
+            "Use": function() {
+              windmill.ui.dx.updateAction();
+              jQuery(this).dialog("close");
+            },             
+            "Pause": function(e) {
+              if (e.target.innerHTML == "Pause"){
+                windmill.ui.dx.dxRecursiveUnBind(windmill.testWin());
+                e.target.innerHTML = "Resume";
+              } else {
+                windmill.ui.dx.domExplorerOn();
+                windmill.testWin().focus();
+                e.target.innerHTML = "Pause";
               }
-            }
-          });
-        
-        jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
-          ui.panel.style.height = "95%";
-          jQuery('ul.sf-menu').superfish({
-            speed: 'fast',
-            autoArrows:  false,                     
-            dropShadows: false
-          });
-        });
-    });
-    
-	</script>
+             }
+           }
+         });
+       
+       jQuery('.ui-tabs-nav').bind('tabsshow', function(event, ui) {
+         ui.panel.style.height = "95%";
+       });
+   });
+
+   jQuery(document).ready(function(){
+		jQuery(".trigger").click(function(){
+			jQuery(".panel").toggle("fast");
+			jQuery(this).toggleClass("active");
+			return false;
+		});
+	});
+</script>
 </head>
 <body>
-  <img style="position:absolute;" id="icon" src="img/wmIcon.png" alt="Welcome to Windmill!">
-  
-  <div id="menu" style="position:relative;height:20px;z-index:99;font-size:11px">
-    <ul class="sf-menu" style="float:right;">
-     			<li class="current">
-     				<a href="#a">Test Building</a>
-     				<ul id="actionDD">
-     					<li>
-     						<a id="addSuite" href="#aa">New Suite</a>
-     					</li>
-     					<li>
-     						<a id="addAction" href="#ab">New Action</a>
-     					</li>
-     					<li>
-     						<a id="clearIDE" href="#">Clear IDE</a>
-     					</li>
-     				</ul>
-     			</li>
-     			<li>
-     				<a href="#">Tools</a>
-     				<ul>
-     					<li>
-     					  <a href="#" onclick="javascript:openFirebug()">Firebug Lite</a>
-     					</li>
-     					<li>
-     						<a href="#" onclick="javascript:openSettings()">Settings</a>
-     					</li>
-     				</ul>
-     			</li>
-     			<li>
-     				<a href="#">Information</a>
-     				<ul>
-     					<li>
-     						<a target="_blank" href="http://www.getwindmill.com">Homepage</a>
-     					</li>
-     					<li>
-     						<a target="_blank" href="http://trac.getwindmill.com/wiki">Wiki</a>
-     					</li>
-     					<li>
-     						<a target="_blank" href="http://trac.getwindmill.com/report">Tickets</a>
-     					</li>
-     					<li>
-     						<a target="_blank" href="http://trac.getwindmill.com/browser">Source</a>
-     					</li>
-     					<li>
-     						<a target="_blank" href="http://trac.getwindmill.com">Docs</a>
-     					</li>
-     				</ul>
-     			</li>
-     		</ul>
-  </div>
-  
-    <div id="runningStatus" align="center">
-      <br><br><br><br><br>
+  	<div id="runningStatus" align="center">
       <center><h2>Loading, Please Wait...</h2></center>
       <center><div id="progressbar"></div></center>
     </div>
-  
+  	
     <div id="cover">
       <div id="statusMessage">
-        <center><div style="font-weight:bold;font-size:14px;" id="loadMessage">Starting Up..</div></center><br>
-        <center><img src="img/loading.gif"></center>
+				<br><br><br>
+        <center><div id="loadMessage">Starting Up..</div></center><br>
+				<center><img src="img/wmIcon.png"></center>
       </div>
     </div>
-	
-	  <div id="controllers">
-		  <a href="#" title="Toggle Recorder">
-			  <img title="Toggle Recorder" name='record' 
-			    id="record" border=no src="img/record.png" onclick="toggleRec();">
-		  </a>
-
-		  <a href="#" title="Play All">
-			  <img title="Play All" name='playback' 
-			    id="playback" border=no src="img/playback.png" onclick="togglePlay();">
-		  </a>
-
-	  	<a href="#" title="Toggle DOM Explorer">
-  			<img title="Toggle DOM Explorer" name='explorer' 
-  			id="explorer" border=no src="img/xon.png" onclick="toggleExplore();">
-  		</a>
-
-  		<a href="#" title="Toggle Assert Explorer">
-  			<img title="Toggle Assert Explorer" name='assertx' 
-  			id="assertx" border=no src="img/axon.png" onclick="toggleAExplore();">
-  		</a>
-  	</div>
 	
 	  <div id="domInspector" title="DOM Inspector">
   	  <div id="domExp"></div><br><br>
   	  <div style="float:right" id="mouseExp"></div>
   	</div>
+
+		<div style="display:none;position:absolute;color:white;" class="panel">
+			<ul class="">
+	 			<li class="current">
+	 				<b>Test Building</b>
+	 				<ul id="actionDD">
+						<li><a href="#" id="record" onclick="toggleRec();">Start Recorder</a></li>
+						<li><a href="#" id="playback" onclick="togglePlay();">Start Play All</a></li>
+						<li><a href="#" id="explorer" onclick="toggleExplore();">Start DOM Explorer</a></li>
+						<li><a href="#" id="assertx" onclick="toggleAExplore();">Start Assert Explorer</a></li>
+	 					<li><a id="addSuite" href="#aa">New Suite</a></li>
+	 					<li><a id="addAction" href="#ab">New Action</a></li>
+	 					<li><a id="clearIDE" href="#">Clear IDE</a></li>
+	 				</ul>
+	 			</li>
+	 			<li>
+	 				<b>Tools</b>
+	 				<ul>
+	 					<li><a href="#" onclick="javascript:openFirebug()">Firebug Lite</a></li>
+	 					<li><a href="#" onclick="javascript:openSettings()">Settings</a></li>
+	 				</ul>
+	 			</li>
+	 			<li>
+	 				<b>Information</b>
+	 				<ul>
+	 					<li><a target="_blank" href="http://www.getwindmill.com">Homepage</a></li>
+	 					<li><a target="_blank" href="http://trac.getwindmill.com/wiki">Wiki</a></li>
+	 					<li><a target="_blank" href="http://trac.getwindmill.com/report">Tickets</a></li>
+	 					<li><a target="_blank" href="http://trac.getwindmill.com/browser">Source</a></li>
+	 					<li><a target="_blank" href="http://trac.getwindmill.com">Docs</a></li>
+	 				</ul>
+	 			</li>
+ 			</ul>
+		</div>
   	
     <div id="tabs">
       <ul>
-          <li class="ui-tabs-nav-item tabHead"><a href="#actionsTab">Actions</a></li>
-          <li class="ui-tabs-nav-item tabHead"><a href="#outputTab">Output</a></li>
-          <li class="ui-tabs-nav-item tabHead"><a href="#performanceTab">Performance</a></li>
+	      <li class="ui-tabs-nav-item tabHead"><a href="#actionsTab">Actions</a></li>
+	      <li class="ui-tabs-nav-item tabHead"><a href="#outputTab">Output</a></li>
+	      <li class="ui-tabs-nav-item tabHead"><a href="#performanceTab">Performance</a></li>
       </ul>
-      
-      <div id="actionsTab" style="padding:0px;margin:0px;">
-        <div id="ide" class="tab">
-        		<form id="ideForm" name="ideForm" onsubmit="return false;" onscroll="scroll();"></form>
-        	</div>
+
+      <div id="actionsTab">
+      	<div id="ide" class="tab">
+       		<form id="ideForm" name="ideForm" onsubmit="return false;" onscroll="scroll();"></form>
+       	</div>
       </div>
-      
-      <div id="outputTab" style="padding:0px;margin:0px;">
+
+      <div id="outputTab">
         <div class="tab">
           <form id="resOut" onsubmit="return false;"></form>
         </div>
       </div>
-      
-      <div id="performanceTab" style="padding:0px;margin:0px;">
+ 
+      <div id="performanceTab">
         <div class="tab">
           <div id="perfOut"></div>
         </div>
       </div>
-
     </div>
         
-    <div id="dialog" title="Windmill Settings" style="padding-top:0px;margin-top:0px;">
-      <div id="settings" style="font-size:12px;">
+    <div id="dialog" title="Windmill Settings">
+      <div id="settings">
        		<form id='settingsForm' name='settingsForm' onsubmit="return false;">
             <br>
        		  <strong>System</strong><br>
@@ -280,6 +240,7 @@
        	</form>
        </div>
     </div>
+		<a class="trigger" href="#">Menu</a>		
 </body>
 
 <script type="text/javascript">
@@ -385,17 +346,17 @@
   var reFlow = function(){
     if (/MSIE[\/\s](\d+\.\d+)/.test(navigator.userAgent)){
       //document.getElementById('ide').style.height = document.body.clientHeight -70 + "px";
-      document.getElementById('ideForm').style.height = document.body.clientHeight -80 + "px";
-      document.getElementById('resOut').style.height = document.body.clientHeight -80 + "px";
-      document.getElementById('perfOut').style.height = document.body.clientHeight -80 + "px";
+      document.getElementById('ideForm').style.height = document.body.clientHeight -90 + "px";
+      document.getElementById('resOut').style.height = document.body.clientHeight -90 + "px";
+      document.getElementById('perfOut').style.height = document.body.clientHeight -90 + "px";
       //jQuery('.texta').css("width", fleegix.dom.getViewportWidth() - 250+"px");
 
     }
     else {
       //document.getElementById('ide').style.height = window.innerHeight -70 + "px";
-      document.getElementById('ideForm').style.height = window.innerHeight -80 + "px";
-      document.getElementById('resOut').style.height = window.innerHeight -80 + "px";
-      document.getElementById('perfOut').style.height = window.innerHeight -80 + "px";
+      document.getElementById('ideForm').style.height = window.innerHeight -90 + "px";
+      document.getElementById('resOut').style.height = window.innerHeight -90 + "px";
+      document.getElementById('perfOut').style.height = window.innerHeight -90 + "px";
       //jQuery('.texta').css("width", fleegix.dom.getViewportWidth() - 250+"px");
     }
   }
@@ -428,14 +389,14 @@
 <textarea id="suiteHeaderTemplate" style="display:none">
     <table id="<%= suiteName %>Header" class="suiteHeader">
       <tr>
-        <td VALIGN='top' style="font-size:13px;">
-          <strong ondblclick="windmill.ui.remote.updateSuite('<%= suiteName %>');" style="cursor:all-scroll">Suite </strong>
+        <td VALIGN='top'>
+          <strong>Suite </strong>
           <span class="suiteTitleDiv" title="<%= suiteName %>" id="<%= suiteName %>Title">
-            <%= suiteNameCrop %>
+            <%= suiteNameCrop %> <span onclick="windmill.ui.remote.updateSuite('<%= suiteName %>');" style="cursor:pointer;font-size:8px">(edit)</span>
           </span>
         </td>
         <td VALIGN='top'>
-          <span id="<%= suiteName %>Links" align="right" style="top:0px;float:right;height:15px;overflow:hidden;">
+          <span id="<%= suiteName %>Links" style="float:right;">
             <a title="Play entire suite." class="ui-state-default ui-corner-all suiteButton" href="#" 
               onclick="windmill.ui.playback.sendPlayBack(null,'<%= suiteName %>')">play</a>
             <a title="Save this suite." class="ui-state-default ui-corner-all suiteButton" href="#" 

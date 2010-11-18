@@ -22,12 +22,14 @@ function Load() {
     load.style.position = 'absolute';
     load.style.zIndex = '99999';
     load.style.display = 'block';
-    load.innerHTML = '<center><img src="img/wlogo.png"><br>Loading <img src="img/loading.gif"></center>';
+    load.style.color = 'white';
+    load.innerHTML = '<center><img src="img/wlogo.png"><br><br><img src="img/load_new.gif"></center>';
+    document.body.style.background = "black";
     document.body.appendChild(load);
     fleegix.dom.center(load);
     
     var remUrl = window.location.href.replace("start.html", "remote.html");
-    var remote = window.open(remUrl, 'windmill_Remote', 'width=467,height=500,toolbar=no,' + 
+    var remote = window.open(remUrl, 'windmill_Remote', 'width=567,height=600,toolbar=no,' + 
     'location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');
    
     if (!remote) {
@@ -36,5 +38,5 @@ function Load() {
     }	
 
     var redirect = function() { window.location = urlSTR; }
-    setTimeout(redirect, 2000);
+    setTimeout(redirect, 3000);
 }

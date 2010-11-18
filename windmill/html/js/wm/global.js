@@ -231,13 +231,13 @@ var busyOn = function(){
   load.style.top = topInt+"px";
 
   //Show it
-  $('actionDD').style.visibility = "hidden";
+  //$('actionDD').style.visibility = "hidden";
   $('cover').style.display = "block";
 }
 var busyOff = function(){
 
   jQuery("#loadMessage").html("Please wait...");
-  $('actionDD').style.visibility = "visible";
+  //$('actionDD').style.visibility = "visible";
   $('cover').style.display = "none";
 }
 
@@ -303,30 +303,29 @@ var resetDD = function(){
 }
 
 var toggleRec = function() {
-    if ($('record').src.indexOf("img/record.png") != -1) {
+    if ($('record').innerHTML.indexOf("Start") != -1) {
         windmill.ui.dx.domExplorerOff();
         windmill.ui.assertexplorer.assertExplorerOff();
         windmill.ui.recorder.recordOn();
         windmill.testWin().focus();
-        $('record').src = 'img/stoprecord.png';
+        $('record').innerHTML = 'Stop Recorder';
     }
     else {
         windmill.ui.recorder.recordOff();
-        $('record').src = 'img/record.png';
+        $('record').innerHTML = 'Start Recorder';
     }
 
 }
 var togglePlay = function() {
-    if ($('playback').src.indexOf("img/playback.png") != -1) {
+    if ($('playback').innerHTML.indexOf("Start") != -1) {
         windmill.stat("Playing IDE Actions...");
         windmill.continueLoop();
         windmill.ui.playback.sendPlayBack();
-        $('playback').src = 'img/playbackstop.png';
-
+        $('playback').innerHTML = 'Stop Play All';
     }
     else {
         windmill.ui.playback.running = false;
-        $('playback').src = 'img/playback.png';
+        $('playback').innerHTML = 'Start Play All';
         windmill.xhr.clearQueue();
     }
 
@@ -344,38 +343,38 @@ var toggleLoop = function() {
 }
 
 var toggleExplore = function() {
-    if ($('explorer').src.indexOf("img/xon.png") != -1) {
+    if ($('explorer').innerHTML.indexOf("Start") != -1) {
         //Turn off the recorder to avoid confusion
         if (windmill.ui.recorder.recordState == true) { toggleRec(); }
         $('domExp').style.visibility = 'visible';
         $('domExp').innerHTML = '';
         windmill.ui.dx.domExplorerOn();
         windmill.testWin().focus();
-        $('explorer').src = 'img/xoff.png';
+        $('explorer').innerHTML = 'Stop DOM Explorer';
     }
     else {
         $('domExp').style.visibility = 'hidden';
         windmill.ui.dx.domExplorerOff();
-        $('explorer').src = 'img/xon.png';
+        $('explorer').innerHTML = 'Start DOM Explorer';
         $('domExp').innerHTML = '';
     }
 
 }
 
 var toggleAExplore = function() {
-    if ($('assertx').src.indexOf("img/axon.png") != -1) {
+    if ($('assertx').innerHTML.indexOf("Start") != -1) {
         //Turn off the recorder to avoid confusion
         if (windmill.ui.recorder.recordState == true) { toggleRec(); }
         $('domExp').style.visibility = 'visible';
         $('domExp').innerHTML = '';
         windmill.ui.assertexplorer.assertExplorerOn();
         windmill.testWin().focus();
-        $('assertx').src = 'img/axoff.png';
+        $('assertx').innerHTML = 'Stop Assert Explorer';
     }
     else {
         $('domExp').style.visibility = 'hidden';
         windmill.ui.assertexplorer.assertExplorerOff();
-        $('assertx').src = 'img/axon.png';
+        $('assertx').innerHTML = 'Start DOM Explorer';
         $('domExp').innerHTML = '';
     }
 

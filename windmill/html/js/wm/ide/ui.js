@@ -122,15 +122,15 @@ windmill.ui.playback = new function() {
   this.running = false;
   this.resetPlayBack = function() {
     if (($('runningStatus').innerHTML.indexOf('Waiting for tests...') != -1) && 
-      ($('playback').src.indexOf("img/playbackstop.png") != -1) && windmill.ui.playback.running) {
+      ($('playback').innerHTML.indexOf("Stop") != -1) && windmill.ui.playback.running) {
         
-      $('playback').src = 'img/playback.png';
+      $('playback').innerHTML = 'Start Play All';
       windmill.ui.playback.running = false;
     }
   };
   
   this.setPlaying = function() {
-    $('playback').src = 'img/playbackstop.png';
+    $('playback').innerHTML = 'Stop Play All';
     windmill.ui.playback.running = true;
   };
 
@@ -258,7 +258,7 @@ windmill.ui.playback = new function() {
           //we need the user to be able to stop the playback while it's
           //cascading, so I check if thats the state and set change the image accordingly
           if ($('playCascade').checked) {
-              $('playback').src = "img/playbackstop.png";
+              $('playback').innerHTML = "Stop Play All";
           }
           return true;
       }
