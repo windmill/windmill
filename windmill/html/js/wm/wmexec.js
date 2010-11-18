@@ -24,9 +24,10 @@ function Load() {
     load.style.display = 'block';
     load.style.color = 'white';
     load.innerHTML = '<center><img src="img/wlogo.png"><br><br><img src="img/load_new.gif"></center>';
-    document.body.style.background = "black";
+    load.style.left = "40%";
+    load.style.top = "25%";
     document.body.appendChild(load);
-    fleegix.dom.center(load);
+    //fleegix.dom.center(load);
     
     var remUrl = window.location.href.replace("start.html", "remote.html");
     var remote = window.open(remUrl, 'windmill_Remote', 'width=567,height=600,toolbar=no,' + 
