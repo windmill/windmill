@@ -188,13 +188,13 @@ windmill.ui.dx = new function() {
     
     this.exploreState = true;
     try {
-      $('explorer').src = 'img/xoff.png';
+      $('explorer').innerHTML = 'Stop DOM Explorer';
       $('domExp').innerHTML = '';
       this.dxRecursiveBind(windmill.testWin());
     }
     catch(error) {
       windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
-      $('explorer').src = 'img/xon.png';
+      $('explorer').innerHTML = 'Start DOM Explorer';
       this.exploreState = false;
     }
   };
@@ -219,12 +219,12 @@ windmill.ui.dx = new function() {
       //Reset the selected element
       windmill.ui.remote.selectedInputID = null;
       
-      $('explorer').src = 'img/xon.png';
+      $('explorer').innerHTML = 'Start DOM Explorer';
       this.dxRecursiveUnBind(windmill.testWin());
     }
     catch(error) {
       windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
-      $('explorer').src = 'img/xon.png';
+      $('explorer').innerHTML = 'Start DOM Explorer';
       this.exploreState = false;
     }
   };

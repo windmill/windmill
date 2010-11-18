@@ -240,20 +240,20 @@ windmill.ui.recorder = new function() {
         this.recordOff();
         //keep track of the recorder state, for page refreshes
         windmill.ui.recorder.recordState = true;
-        $('record').src = 'img/stoprecord.png';
+        $('record').innerHTML = 'Stop Recorder';
 
         windmill.ui.remote.getSuite();
         try { this.recRecursiveBind(windmill.testWin()); }
         catch(error) {
             windmill.err('You must not have set your URL correctly when launching Windmill, we are getting cross domain exceptions.');
-            $('record').src = 'img/record.png';
+            $('record').innerHTML = 'Start Recorder';
             this.recordState = false;
         }
     };
 
     this.recordOff = function() {      
         windmill.ui.recorder.recordState = false;
-        $('record').src = 'img/record.png';
+        $('record').innerHTML = 'Start Recorder';
 
         try {
             this.recRecursiveUnBind(windmill.testWin());

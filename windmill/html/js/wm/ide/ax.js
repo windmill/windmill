@@ -158,14 +158,14 @@ windmill.ui.assertexplorer = new function() {
     this.assertExplorerOn = function() {
       this.exploreState = true;
       try {
-        $('assertx').src = 'img/axoff.png';
+        $('assertx').innerHTML = 'Stop Assert Explorer';
         $('domExp').style.display = 'block';
         $('domExp').innerHTML = '';
         this.axRecursiveBind(windmill.testWin());
       }
       catch(error) {
         windmill.err('Binding to windows and iframes, '+error +'.. binding all others.');
-        $('assertx').src = 'img/axon.png';
+        $('assertx').innerHTML = 'Start Assert Explorer';
         this.exploreState = false;
       }
     }
@@ -177,7 +177,7 @@ windmill.ui.assertexplorer = new function() {
       try {
         //Reset the selected element
         windmill.ui.remote.selectedInputID = null;
-        $('assertx').src = 'img/axon.png';
+        $('assertx').innerHTML = 'Start Assert Explorer';
         $('domExp').style.visibility = 'hidden';
         $('domExp').innerHTML = '';
         this.axRecursiveUnBind(windmill.testWin());
