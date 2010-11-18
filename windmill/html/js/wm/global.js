@@ -374,7 +374,7 @@ var toggleAExplore = function() {
     else {
         $('domExp').style.visibility = 'hidden';
         windmill.ui.assertexplorer.assertExplorerOff();
-        $('assertx').innerHTML = 'Start DOM Explorer';
+        $('assertx').innerHTML = 'Start Assert Explorer';
         $('domExp').innerHTML = '';
     }
 
