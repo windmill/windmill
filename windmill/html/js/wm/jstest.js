@@ -915,8 +915,8 @@ windmill.jsTest = new function () {
       else {
         setTimeout(function () { _this.runNextTest.call(_this); },
           item.params.milliseconds);
-        return true;
       }
+      return true;
     }
     // Public waits methods, not including sleep --
     // these execute in a setTimemout loop over in the waits
