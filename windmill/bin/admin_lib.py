@@ -193,7 +193,7 @@ def teardown(shell_objects):
     if windmill.is_active:
         windmill.is_active = False
     
-        shell_objects['clear_queue']()
+        shell_objects.get('clear_queue', lambda: None)()
     
         for controller in windmill.settings['controllers']:
             controller.stop()
