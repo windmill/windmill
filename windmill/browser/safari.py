@@ -28,10 +28,10 @@ else:
 
 from StringIO import StringIO
 
-import windmill	
+import windmill 
 
 logger = logging.getLogger(__name__)
-		
+        
 """
 Colossus:/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Support mikeal$ ./networksetup -getwebproxy "AirPort"                                          [14:12]
 cp: /Library/Preferences/SystemConfiguration/preferences.plist.old: Permission denied
@@ -55,13 +55,13 @@ mikeal
 html_redirection = """
 <html>
   <head>
-    <script type="text/javascript">	
+    <script type="text/javascript"> 
     var i = function(){
-    	window.location = "{replace}";
+        window.location = "{replace}";
     }
     </script>
  </head>
-  <body onload="i();">	
+  <body onload="i();">  
   </body>
 <html>"""
 
@@ -69,8 +69,11 @@ def getoutput(l):
     tmp = tempfile.mktemp()
     x = open(tmp, 'w')
     subprocess.call(l, stdout=x, stderr=x)
-    x.close(); x = open(tmp, 'r')
-    r = x.read() ; x.close()
+    x.close()
+
+    x = open(tmp, 'r')
+    r = x.read()
+    x.close()
     os.remove(tmp)
     return r
 
@@ -84,7 +87,7 @@ def find_default_interface_name():
     if windmill.settings['NETWORK_INTERFACE_NAME'] is not None:
         return windmill.settings['NETWORK_INTERFACE_NAME']
     target_host = urlparse.urlparse(windmill.settings['TEST_URL']).hostname
-    x = ['/sbin/route', 'get', target_host]    
+    x = ['/sbin/route', 'get', target_host]
     interface_id = [l for l in getoutput(x).splitlines() if 'interface' in l][0].split(":")[-1].strip()
     all_inet = getoutput([windmill.settings['NETWORKSETUP_BINARY'], '-listallhardwareports']).splitlines()
     try:
@@ -101,7 +104,7 @@ def find_default_interface_name():
         from windmill.bin import admin_lib
         admin_lib.teardown(admin_lib.shell_objects_dict)
         sys.exit()
-    
+
     # interfaces = getoutput().split('\n\n')
     # print 'interfaces::\n', '\n'.join(interfaces)
     # for line in interfaces:
@@ -109,96 +112,101 @@ def find_default_interface_name():
     #         line = '(1)'+line.split('(1)')[-1]
     #     if line.find('Device: '+interface) is not -1:
     #         interface_name = ' '.join(line.splitlines()[0].split()[1:])
-    
-    return interface_name     
-			
-class Safari(object):
-	
-	def __init__(self):
-	    self.safari_binary = windmill.settings['SAFARI_BINARY']
-	    self.test_url = windmill.settings['TEST_URL']
-	
-	def create_redirect(self):
-	    self.redirection_page = tempfile.mktemp(suffix='.html')
-	    f = open(self.redirection_page, 'w') 
-	    test_url = windmill.get_test_url(windmill.settings['TEST_URL']) 
-	    f.write( html_redirection.replace('{replace}', test_url) )
-	    f.flush() ; f.close()
-	    
-	def set_proxy_mac(self):
-	    """Set local Proxy"""
-	    self.netsetup_binary = windmill.settings['NETWORKSETUP_BINARY']
-	    interface_name = find_default_interface_name()
-	    uri = urlparse.urlparse(self.test_url)
-	    set_proxy_command = [ self.netsetup_binary, '-setwebproxy', 
-	                          interface_name, '127.0.0.1', 
-	                          str(windmill.settings['SERVER_HTTP_PORT'])
-	                        ]
-	    dprint(getoutput(set_proxy_command))
-	    
-	    enable_proxy_command = [ self.netsetup_binary, '-setwebproxystate',
-	                             interface_name, 'on'
-	                           ]
-	    dprint(getoutput(enable_proxy_command))
-	    if windmill.has_ssl:
-	        set_ssl_proxy_command = [ self.netsetup_binary, '-setsecurewebproxy', 
-    	                              interface_name, '127.0.0.1', 
-    	                              str(windmill.settings['SERVER_HTTP_PORT'])
-    	                            ]
-    	    dprint(getoutput(set_proxy_command))
-    	    enable_ssl_proxy_command = [ self.netsetup_binary, '-setsecurewebproxystate',
-    	                                 interface_name, 'on'
-    	                               ]
-    	    dprint(getoutput(enable_proxy_command))
-	    
-	        
-	    self.create_redirect()
-	    self.interface_name = interface_name
-	
-	def unset_proxy_mac(self):
-	    getoutput([self.netsetup_binary, '-setwebproxystate', self.interface_name, 'off'])
-	    getoutput([self.netsetup_binary, '-setsecurewebproxystate', self.interface_name, 'off'])
-	
-	def set_proxy_windows(self):
-	    self.create_redirect()
-	    import ie
-	    self.ie_obj = ie.InternetExplorer()
-	    self.ie_obj.set_proxy()
-	
-	def unset_proxy_windows(self):
-	    self.ie_obj.unset_proxy()
-	    
-	def start(self):
-	    """Start Safari"""
-	    if sys.platform == 'darwin':
-	        self.set_proxy_mac()
-	    elif sys.platform in ('cygwin', 'win32'):
-	        self.set_proxy_windows()
-	    # Workaround for bug in nose
-	    if hasattr(sys.stdout, 'fileno'):
-	        kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
-	    else:
-	        kwargs = {'stdout':sys.__stdout__ ,'stderr':sys.__stderr__, 'stdin':sys.stdin}
-	    self.p_handle = killableprocess.runCommand([self.safari_binary, self.redirection_page], **kwargs)
-	    logger.info([self.safari_binary, self.redirection_page])
 
-	def kill(self, kill_signal=None):
-	    """Stop Safari"""
-	    if sys.platform == 'darwin':
-	        self.unset_proxy_mac()
-	    elif sys.platform in ('cygwin', 'win32'):
-	        self.unset_proxy_windows()
-	        
-	    try:
-	        self.p_handle.kill(group=True)
-	    except:
-	        logger.error('Cannot kill Safari')
-	        
-	def stop(self):
-	    self.kill(signal.SIGTERM)
-	        
-	def is_alive(self):
-	    if self.p_handle.poll() is None:
-	        return False
-	    return True
-	    
+    return interface_name
+
+class Safari(object):
+
+    def __init__(self):
+        self.safari_binary = windmill.settings['SAFARI_BINARY']
+        self.test_url = windmill.settings['TEST_URL']
+
+    def create_redirect(self):
+        self.redirection_page = tempfile.mktemp(suffix='.html')
+        f = open(self.redirection_page, 'w')
+        test_url = windmill.get_test_url(windmill.settings['TEST_URL']) 
+        f.write( html_redirection.replace('{replace}', test_url) )
+        f.flush() ; f.close()
+
+    def set_proxy_mac(self):
+        """Set local Proxy"""
+        self.netsetup_binary = windmill.settings['NETWORKSETUP_BINARY']
+        interface_name = find_default_interface_name()
+        uri = urlparse.urlparse(self.test_url)
+        set_proxy_command = (
+            self.netsetup_binary, '-setwebproxy',
+            interface_name, '127.0.0.1',
+            str(windmill.settings['SERVER_HTTP_PORT'])
+        )
+        dprint(getoutput(set_proxy_command))
+
+        enable_proxy_command = (
+            self.netsetup_binary,
+            '-setwebproxystate',
+            interface_name,
+            'on'
+        )
+
+        dprint(getoutput(enable_proxy_command))
+        if windmill.has_ssl:
+            set_ssl_proxy_command = (
+                self.netsetup_binary, '-setsecurewebproxy',
+                interface_name, '127.0.0.1',
+                str(windmill.settings['SERVER_HTTP_PORT'])
+            )
+            dprint(getoutput(set_proxy_command))
+            enable_ssl_proxy_command = (
+                self.netsetup_binary, '-setsecurewebproxystate',
+                interface_name, 'on'
+            )
+            dprint(getoutput(enable_proxy_command))
+
+        self.create_redirect()
+        self.interface_name = interface_name
+
+    def unset_proxy_mac(self):
+        getoutput([self.netsetup_binary, '-setwebproxystate', self.interface_name, 'off'])
+        getoutput([self.netsetup_binary, '-setsecurewebproxystate', self.interface_name, 'off'])
+
+    def set_proxy_windows(self):
+        self.create_redirect()
+        import ie
+        self.ie_obj = ie.InternetExplorer()
+        self.ie_obj.set_proxy()
+
+    def unset_proxy_windows(self):
+        self.ie_obj.unset_proxy()
+
+    def start(self):
+        """Start Safari"""
+        if sys.platform == 'darwin':
+            self.set_proxy_mac()
+        elif sys.platform in ('cygwin', 'win32'):
+            self.set_proxy_windows()
+        # Workaround for bug in nose
+        if hasattr(sys.stdout, 'fileno'):
+            kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
+        else:
+            kwargs = {'stdout':sys.__stdout__ ,'stderr':sys.__stderr__, 'stdin':sys.stdin}
+        self.p_handle = killableprocess.runCommand([self.safari_binary, self.redirection_page], **kwargs)
+        logger.info([self.safari_binary, self.redirection_page])
+
+    def kill(self, kill_signal=None):
+        """Stop Safari"""
+        if sys.platform == 'darwin':
+            self.unset_proxy_mac()
+        elif sys.platform in ('cygwin', 'win32'):
+            self.unset_proxy_windows()
+
+        try:
+            self.p_handle.kill(group=True)
+        except:
+            logger.error('Cannot kill Safari')
+
+    def stop(self):
+        self.kill(signal.SIGTERM)
+
+    def is_alive(self):
+        if self.p_handle.poll() is None:
+            return False
+        return True
