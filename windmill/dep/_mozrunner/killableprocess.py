@@ -213,7 +213,7 @@ class Popen(subprocess.Popen):
                             time.sleep(.5)
                     except exceptions.OSError:
                         return self.returncode
-                        
+
             if timeout is None:
                 if group is True:
                     return group_wait()
