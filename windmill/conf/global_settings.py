@@ -86,6 +86,7 @@ if PLATFORM == 'darwin':
     import distutils.version, commands
     OS_VERSION = distutils.version.StrictVersion(commands.getoutput('sw_vers -productVersion'))
     leopard = distutils.version.StrictVersion('10.5')
+    # TODO: Consider using "/usr/bin/env networksetup"
     if OS_VERSION >= leopard:
         NETWORKSETUP_BINARY = '/usr/sbin/networksetup'
     else:
@@ -95,7 +96,7 @@ if PLATFORM == 'darwin':
         elif os.path.isfile(os.path.join(networksetup_base, 'networksetup-panther')):
             NETWORKSETUP_BINARY = os.path.join(networksetup_base, 'networksetup-panther')
 
-elif sys.platform == 'linux2':
+elif PLATFORM == 'linux2':
     #Get Chrome bin for linux
     chromebin = findInPath('google-chrome')
     if chromebin and os.path.isfile(chromebin):
@@ -111,7 +112,7 @@ elif sys.platform == 'linux2':
 #         if os.path.isdir(path):
 #             MOZILLA_DEFAULT_PROFILE = path
 
-elif sys.platform in ('cygwin', 'win32'):
+elif PLATFORM in ('cygwin', 'win32'):
     if sys.platform == 'cygwin':
         program_files = os.environ['PROGRAMFILES']
     else:
