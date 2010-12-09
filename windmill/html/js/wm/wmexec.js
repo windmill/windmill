@@ -16,28 +16,43 @@ Copyright 2006-2007, Open Source Applications Foundation
 
 //Loader function
 function Load() {
-    var load = document.createElement('div');
-    load.id = 'loading';
-    load.style.font = '14pt "Lucida Grande","Verdana",sans-serif';
-    load.style.position = 'absolute';
-    load.style.zIndex = '99999';
-    load.style.display = 'block';
-    load.style.color = 'white';
-    load.innerHTML = '<center><img src="img/wlogo.png"><br><br><img src="img/load_new.gif"></center>';
-    load.style.left = "40%";
-    load.style.top = "25%";
-    document.body.appendChild(load);
-    //fleegix.dom.center(load);
-    
-    var remUrl = window.location.href.replace("start.html", "remote.html");
+    $(
+        '<div>' +
+        '<p><img src="img/wlogo.png" alt="Windmill" /></p>' +
+        '<p><img src="img/load_new.gif" alt="loading please wait" /></p>' +
+        '</div>'
+    )
+    .attr('id', 'loading')
+    .css({
+        'position': 'absolute',
+        'z-index': '1000',
+        'text-align': 'center',
+        'left': '40%',
+        'top': '25%'
+    })
+    .appendTo('body');
+
+    var remUrl = window.location.href.replace('start.html', 'remote.html');
     var remote = window.open(remUrl, 'windmill_Remote', 'width=567,height=600,toolbar=no,' + 
     'location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');
-   
-    if (!remote) {
-        alert('We detected a popup blocker, please disable it while ' + 
-        'you are using Windmill as we load the UI in a popup window. This requires a reload of the page.');
-    }	
 
-    var redirect = function() { window.location = urlSTR; }
-    setTimeout(redirect, 3000);
+    var message = 'We detected a popup blocker, please disable it while ' + 
+    'you are using Windmill as we load the UI in a popup window. This requires a reload of the page.';
+    if (!remote) {
+        alert(message);
+    } else {
+        // Check to see if Chrome blocked the popup
+        // Reffrence: http://stackoverflow.com/questions/668286/detect-blocked-popup-in-chrome
+        remote.onload = function() {
+            setTimeout(function() {
+                if (remote.screenX === 0) {
+                    alert(message);
+                }
+            }, 0);
+        };
+    }
+
+    setTimeout(function() {
+        window.location = urlSTR;
+    }, 3000);
 }

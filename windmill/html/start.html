@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <!--
 Copyright 2006-2007, Open Source Applications Foundation
 
@@ -13,29 +14,37 @@ Copyright 2006-2007, Open Source Applications Foundation
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-
- <html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
-		<script type="text/javascript" src="js/lib/fleegix_js/fleegix.js"></script>
+		<meta charset="UTF-8" />
+		<title>Loading Windmill Testing Framework</title>
+		<style type="text/css">
+			body {
+				background: #000;
+				color: #fff;
+				font: 14pt "Lucida Grande","Verdana",sans-serif;
+			}
+		</style>
+		<script type="text/javascript" src="js/lib/jquery/jquery-1.4.2.min.js"></script>
 		<script type="text/javascript" src="js/lib/json2.js"></script>
 		<script type="text/javascript" src="js/wm/wmexec.js"></script>
 		<script type="text/javascript">
-		  var urlSTR = window.location.href.replace("/windmill-serv/start.html","");
-		  //set the url
-		  var jsonObject = {version:'1.1', method:'set_test_url', params:{url:urlSTR}};
-      var jsonString = JSON.stringify(jsonObject)
+			var urlSTR = window.location.href.replace('/windmill-serv/start.html', '');
+			//set the url
+			var jsonObject = {
+				version: '1.1',
+				method: 'set_test_url',
+				params: {url: urlSTR}
+			};
 
-      var resp = function(str) { return true; }
-      result = fleegix.xhr.doPost('/windmill-jsonrpc/', jsonString);
-      resp(result);
+			var jsonString = JSON.stringify(jsonObject);
+			$.ajax({type: 'POST', url: '/windmill-jsonrpc/', dataType: 'json', data: jsonString});
 		
-			//Enabling the ability to start out out a page that requires query parameters
-			//By parsing the url they requested and opening it and storing that url
-			//Then when we open write the iframe src we can give it the correct starting src attrib
-      fleegix.event.listen(window, 'onload', Load);
+			// Enabling the ability to start out out a page that requires query parameters
+			// By parsing the url they requested and opening it and storing that url
+			// Then when we open write the iframe src we can give it the correct starting src attrib
+			$(document).ready(Load);
 		</script>
 	</head>
-	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-	<title>Loading Windmill Testing Framework</title>
-	<body topmargin="0" leftmargin="0" style="background:black;"/>	
+	<body></body>
 <html>
