@@ -253,8 +253,7 @@ windmill.xhr = new function() {
     this.sendReport = function(method, result, timer, info, output) {
       
         //handle the response
-        var reportHandler = function(str) {
-            response = eval('(' + str + ')');
+        var reportHandler = function(response) {
             if (!response.result == 200) {
                 windmill.err('Error: Report receiving non 200 response.');
             }
@@ -274,7 +273,8 @@ windmill.xhr = new function() {
         jsonObject.params = test_obj;
         var jsonString = JSON.stringify(jsonObject);
         //Actually send the report
-        fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', jsonString);
+        //fleegix.xhr.doPost(reportHandler, '/windmill-jsonrpc/', jsonString);
+        jQuery.post('/windmill-jsonrpc/', jsonString, reportHandler);
     };
 
     //Get the next action from the server
@@ -295,29 +295,41 @@ windmill.xhr = new function() {
             //Set the xhr timeout to be really high
             //handle the timeout manually
             //Prevent caching
-            fleegix.xhr.doReq({
-                method: 'POST',
-                handleSuccess: this.actionHandler,
-                handleErr: function(){ setTimeout("windmill.xhr.getNext()", windmill.serviceDelay); },
-                responseFormat: 'text',
-                url: '/windmill-jsonrpc/',
-                timeoutSeconds: windmill.xhrTimeout,
-                handleTimeout: handleTimeout,
-                preventCache: true,
-                dataPayload: jsonString
-            });
+            // fleegix.xhr.doReq({
+            //     method: 'POST',
+            //     handleSuccess: this.actionHandler,
+            //     handleErr: function(){ setTimeout("windmill.xhr.getNext()", windmill.serviceDelay); },
+            //     responseFormat: 'text',
+            //     url: '/windmill-jsonrpc/',
+            //     timeoutSeconds: windmill.xhrTimeout,
+            //     handleTimeout: handleTimeout,
+            //     preventCache: true,
+            //     dataPayload: jsonString
+            // });
+            
+            jQuery.ajax({
+               type: "POST",
+               url: "/windmill-jsonrpc/",
+               data: jsonString,
+               success: this.actionHandler,
+               error:function(){ setTimeout("windmill.xhr.getNext()", windmill.serviceDelay); },
+               cache: false,
+               dataType: "text"
+             });
+            
         }
     };
 
     this.clearQueue = function() {
-        var h = function(str) {
-            windmill.out('Cleared backend queue, ' + str);
+        var h = function(obj) {
+            windmill.out('Cleared backend queue, ' + JSON.stringify(obj));
         }
         var test_obj = {};
         var jsonObject = new jsonCall('1.1', 'clear_queue');
         var jsonString = JSON.stringify(jsonObject);
         //Actually send the report
-        fleegix.xhr.doPost(h, '/windmill-jsonrpc/', jsonString);
+        //fleegix.xhr.doPost(h, '/windmill-jsonrpc/', jsonString);
+        jQuery.post('/windmill-jsonrpc/', jsonString, h);
 
     };
 

@@ -256,7 +256,7 @@ windmill.controller.waits.forPageLoad = function (paramObj,obj) {
       //If the document.domain can't be accessed
       try {
         var v = windmill.testWin().document.domain;
-      }catch(err){
+      } catch(err){
 //        document.domain = windmill.docDomain;
       }
       //check to see if we can get the window body

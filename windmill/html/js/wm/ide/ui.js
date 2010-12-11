@@ -249,7 +249,7 @@ windmill.ui.playback = new function() {
 
       windmill.ui.recorder.recordOff();
 
-      var respRun = function(str) {
+      var respRun = function(response) {
           //setTimeout('$(\'playback\').src = \'img/playback.png\'', 3000);
           windmill.ui.playback.running = true;
 
@@ -273,7 +273,8 @@ windmill.ui.playback = new function() {
       var jsonString = JSON.stringify(jsonObject);
       
       doCall = function() {
-        var z = fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', jsonString);
+        //var z = fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', jsonString);
+        jQuery.post('/windmill-jsonrpc/', jsonString, respRun);
       }
 
       setTimeout('doCall()', 100);

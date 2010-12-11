@@ -280,8 +280,7 @@ windmill.ui.remote = new function() {
                 testArray.push(actionObj);
             }
 
-            var respRun = function(str){
-              response = eval('(' + str + ')');
+            var respRun = function(response){
               window.open(response.result, null, "height=500,width=600,status=no,toolbar=no,menubar=no,location=no,resizable=yes,scrollbars=1");
               return true;
             };
@@ -298,7 +297,8 @@ windmill.ui.remote = new function() {
             jsonObject.params = params_obj;
 
             var jsonString = JSON.stringify(jsonObject);
-            fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', jsonString);
+            //fleegix.xhr.doPost(respRun, '/windmill-jsonrpc/', jsonString);
+            jQuery.post('/windmill-jsonrpc/', jsonString, respRun);
         }
         else {
           alert('You need test actions to save!');
