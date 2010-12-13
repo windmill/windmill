@@ -30,9 +30,9 @@ def process_options(argv_list):
     import admin_options
     admin_options.process_module(admin_options)
     argv_list.pop(0)
-    
+
     action = None
-    
+
     # This might be the hairiest code in windmill :)
     # We have a very specific way we need to parse arguments 
     # because of the way different arguments interact with each other
@@ -58,7 +58,7 @@ def process_options(argv_list):
                 name, value = arg.split('=')
             else:
                 name = arg
-            
+
             if name in admin_options.options_dict:
                 processor = admin_options.options_dict[name]
                 if value is None:
@@ -72,7 +72,7 @@ def process_options(argv_list):
                  if value is None:
                     value = True
                  functest.registry[name] = value
-    
+
     if action is None:
         # If an action is not defined we default to running the service in the foreground
         return action_mapping['runserver']
@@ -93,23 +93,23 @@ def run_threaded(console_level=logging.INFO):
     """Run the server threaded."""
 
     httpd = setup_servers(console_level)
-    
+
     httpd_thread = Thread(target=httpd.start)
     getattr(httpd_thread, 'setDaemon', lambda x: x)(True)
     httpd_thread.start()
     while not httpd.ready:
         sleep(.25)
-    
+
     return httpd, httpd_thread
 
 def configure_global_settings(logging_on=True):
     """Configure that global settings for the current run"""
-    
+
     # This logging stuff probably shouldn't be here, it should probably be abstracted
-    
+
     if logging_on:
         logging.getLogger().setLevel(0)
-    
+
         console = logging.StreamHandler()
         console.setLevel(logging.INFO)
         formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
@@ -124,9 +124,9 @@ def configure_global_settings(logging_on=True):
     windmill.settings = windmill.conf.configure_settings(localSettings=local_settings)
     if 'controllers' not in windmill.settings:
         windmill.settings['controllers'] = []
-    
+
     port = windmill.settings['SERVER_HTTP_PORT']
-    
+
     while 1:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -135,9 +135,9 @@ def configure_global_settings(logging_on=True):
             port += 1
         except socket.error:
             break
-    
+
     windmill.settings['SERVER_HTTP_PORT'] = port
-    
+
     return windmill.settings
 
 on_ide_awake = []
@@ -146,7 +146,7 @@ def setup():
     """Setup server and shell objects"""
     global shell_objects_dict
     shell_objects_dict = {}
-        
+
     windmill.settings['shell_objects'] = shell_objects_dict
     assert not windmill.settings.get('setup_has_run', False)
 
@@ -154,25 +154,25 @@ def setup():
 
     shell_objects_dict['httpd'] = httpd
     shell_objects_dict['httpd_thread'] = httpd_thread
-    
+
     from windmill.bin import shell_objects
-    
+
     if windmill.settings['CONTINUE_ON_FAILURE'] is not False:
         shell_objects.jsonrpc_client.add_json_command('{"method": "commands.setOptions", "params": {"stopOnFailure" : false}}')
-        
+
     if windmill.settings['EXTENSIONS_DIR'] is not None:
         shell_objects.load_extensions_dir(windmill.settings['EXTENSIONS_DIR'])
-                
+
     if windmill.settings['RUN_TEST'] is not None:
         shell_objects.run_test(windmill.settings['RUN_TEST'])
     if windmill.settings['LOAD_TEST'] is not None:
         shell_objects.load_test(windmill.settings['LOAD_TEST'])
-         
+
     if windmill.settings['JAVASCRIPT_TEST_DIR']:
         shell_objects.run_js_tests(windmill.settings['JAVASCRIPT_TEST_DIR'], 
-                                      windmill.settings['JAVASCRIPT_TEST_FILTER'],
-                                      windmill.settings['JAVASCRIPT_TEST_PHASE'])
-         
+                                   windmill.settings['JAVASCRIPT_TEST_FILTER'],
+                                   windmill.settings['JAVASCRIPT_TEST_PHASE'])
+
     browser = [setting for setting in windmill.settings.keys() if setting.startswith('START_') and \
                                                                   windmill.settings[setting] is True]
 
@@ -192,22 +192,22 @@ def teardown(shell_objects):
     """Teardown the server, threads, and open browsers."""
     if windmill.is_active:
         windmill.is_active = False
-    
+
         shell_objects.get('clear_queue', lambda: None)()
-    
+
         for controller in windmill.settings['controllers']:
             controller.stop()
             del(controller)
-        
+
         if windmill.settings['START_FIREFOX'] and windmill.settings['MOZILLA_CREATE_NEW_PROFILE']:
             shutil.rmtree(windmill.settings['MOZILLA_PROFILE'])
-        
+
         for directory in windmill.teardown_directories:
             if os.path.isdir(directory):
                 shutil.rmtree(directory)
-        
+
         shell_objects['httpd'].stop()
-        
+
         # We had a ton of code here for killing the process
         # But I removed it all and things seem to work
         # Guess we can revert if it's broken :)
@@ -226,16 +226,16 @@ def runserver_action(shell_objects):
             windmill.runserver_running = True
             while windmill.runserver_running:
                 sleep(.25)
-        
+
         else:
             windmill.runserver_running = True
             while windmill.runserver_running:
                 sleep(.25)
-            
+
         teardown(shell_objects)
         if windmill.test_has_failed:
             sys.exit(1)
-        
+
     except KeyboardInterrupt:
         teardown(shell_objects)
         sys.exit(1)
@@ -255,8 +255,8 @@ def shell_action(shell_objects):
         code.interact(local=shell_objects)    
 
     teardown(shell_objects)
-    
-    
+
+
 # def wxui_action(shell_objects):
 #     """Start the wxPython based service GUI"""
 #     try:
@@ -348,8 +348,11 @@ def command_line_startup():
     shell_objects = setup()
 
     action(shell_objects)
-            
 
-action_mapping = {'shell':shell_action, 'runserver':runserver_action, 
-                  'run_service':runserver_action}
+
+action_mapping = {
+    'shell': shell_action,
+    'runserver': runserver_action,
+    'run_service': runserver_action
+}
 
