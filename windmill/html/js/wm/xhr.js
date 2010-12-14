@@ -103,7 +103,10 @@ windmill.xhr = new function() {
               }
               if (tempNode) {
                 if (tempNode != _this.node) {
-                    windmill.events.triggerEvent(tempNode, 'blur', false);
+                    //crazy bug in IE if this happens after a page reload
+                    try {
+                      windmill.events.triggerEvent(tempNode, 'blur', false);
+                    } catch(e){}
                 }
               }
               

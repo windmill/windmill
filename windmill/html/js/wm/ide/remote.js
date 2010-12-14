@@ -308,51 +308,56 @@ windmill.ui.remote = new function() {
     this.getMethods = function(state){
       var reg = windmill.registry;
       
-      var select = document.createElement('select');
-      select.className = 'smalloption';
-      select.id = state.action.id + 'method';
+      var select = jQuery("<select>");
+      select.addClass("smalloption");
+      select.attr("id", state.action.id + "method");
+      
       //Setup default method
-      var option = document.createElement('option');
-      option.value = state.method;
-      option.selected = 'selected';
-      option.innerHTML += state.method;
-      select.appendChild(option);
+      var option = jQuery("<option>");
+      option.attr("value", state.method);
+      option.attr("selected", "selected");
+      option.html(option.html() + state.method);
+      select.append(option);
 
       //Setup methods option  
       for (var m in reg.methods) {
-        var option = document.createElement('option');
-        option.value = m;
-        option.innerHTML += m;
+        var option = jQuery("<option>");
+        option.attr("value", m);
+        option.html(option.html() + m);
         var mObj = reg.methods[m];
 
-        if (mObj.section != undefined){ option.disabled = true; }
-        select.appendChild(option);
+        if (mObj.section != undefined){ option.attr("disabled", true); }
+        select.append(option);
       }
-      select.setAttribute("onchange", "windmill.ui.remote.methodChange('" + state.action.id + "');");
-      select.title = "Controller method to execute.";
+      
+      select.change(function() {
+        windmill.ui.remote.methodChange(state.action.id);
+      });
+      select.attr("title", "Controller method to execute.");
+      
       if ($('showToolTips').checked){
-        jQuery(select).tooltip({showURL: false});
+        select.tooltip({showURL: false});
       }
-      return select;  
+      return select[0];
     };
     
     this.getOptions = function(state){
       var reg = windmill.registry;
       
-      var select = document.createElement('select');
-      select.className = 'smalloption';
-      select.id = state.action.id + 'optionType';
+      var select = jQuery("<select>");
+      select.addClass("smalloption");
+      select.attr("id", state.action.id + "optionType");
           
       if (reg.methods[state.method].optionIsLocator){
         for (var loc = 0; loc < reg.locator.length;loc++){
-          newOpt = document.createElement('option');
-          newOpt.value = 'opt'+reg.locator[loc];
-          newOpt.innerHTML =  reg.locator[loc];
+          newOpt = jQuery('<option>');
+          newOpt.attr("value", "opt"+reg.locator[loc]);
+          newOpt.html(reg.locator[loc]);
           if (state.params[newOpt.value]){
-            newOpt.selected = 'selected';
+            newOpt.attr("selected", "selected");
             windmill.ui.remote.optionValue = state.params[newOpt.value];
           }
-          select.appendChild(newOpt);
+          select.append(newOpt);
         }
       }
       //if the options are a comma delimited list, build the drop down
@@ -360,39 +365,39 @@ windmill.ui.remote = new function() {
         var optArr = reg.methods[state.method].option.split(',');
         //if there is only one option available
         if (optArr.length == 1){
-          var spanNode = jQuery(document.createElement('span')).html(optArr[0]);
-          spanNode[0].className = "textSpan";
-          spanNode[0].id = state.action.id + 'optionType';
+          var spanNode = jQuery("<span>").html(optArr[0]);
+          spanNode.addClass("textSpan");
+          spanNode.attr("id", state.action.id + "optionType");
           return spanNode[0];
         }
         for (var opt = 0; opt < optArr.length; opt++){
-          var newOpt = document.createElement('option');
+          var newOpt = jQuery('<option>');
           if (state.params[optArr[opt]]){
-            newOpt.selected = true;
+            newOpt.attr("selected", true);
           }
-          newOpt.value = optArr[opt];
-          newOpt.innerHTML = optArr[opt];
-          select.appendChild(newOpt);
+          newOpt.attr("value", optArr[opt]);
+          newOpt.html(optArr[opt]);
+          select.append(newOpt);
         }
       }
       else {
         if (reg.methods[state.method].option == false){
           return false;
         }
-        var option = document.createElement('option');
+        var option = jQuery('<option>');
         if (typeof(reg.methods[state.method].option) != 'undefined') {
-          option.value = reg.methods[state.method].option;
+          option.attr("value", reg.methods[state.method].option);
         }
-        option.selected = 'selected';
-        option.innerHTML += reg.methods[state.method].option;
-        select.appendChild(option);
+        option.attr("selected", "selected");
+        option.html(option.html() + reg.methods[state.method].option);
+        select.append(option);
       }
       
-      select.title = "Optional parameters.";
+      select.attr("title", "Optional parameters.");
       if ($('showToolTips').checked){
-        jQuery(select).tooltip({showURL: false});
+        select.tooltip({showURL: false});
       }
-      return select;
+      return select[0];
     };
     
     this.getLocatorType = function(params){
@@ -419,30 +424,30 @@ windmill.ui.remote = new function() {
       var locator = _this.getLocatorType(state.params);
 
       //Setup second select
-      var select = document.createElement('select');
-      select.className = 'smalloption';
-      select.id = state.action.id + 'locatorType';
+      var select = jQuery("<select>");
+      select.addClass("smalloption");
+      select.attr("id", state.action.id + "locatorType");
 
-      var option = document.createElement('option');
-      option.selected = 'selected';
+      var option = jQuery("<option>");
+      option.attr("selected", "selected");
       
       if (locator) {
-         option.value = locator;
-         option.innerHTML += locator;
-         select.appendChild(option);
+         option.attr("value", locator);
+         option.html(option.html() + locator);
+         select.append(option);
       }
 
       for (var i = 0; i < reg.locator.length; i++) {
-         var option = document.createElement('option');
-         option.value = reg.locator[i];
-         option.innerHTML += reg.locator[i];
-         select.appendChild(option);
+         var option = jQuery("<option>");
+         option.attr("value", reg.locator[i]);
+         option.html(option.html() + reg.locator[i]);
+         select.append(option);
       }
-      select.title = "Locator used to lookup node.";
+      select.attr("title", "Locator used to lookup node.");
       if ($('showToolTips').checked){
-        jQuery(select).tooltip({showURL: false});
+        select.tooltip({showURL: false});
       }
-      return select;
+      return select[0];
     };
     
     this.getLocatorInput = function(state){
@@ -451,38 +456,35 @@ windmill.ui.remote = new function() {
       var locator = _this.getLocatorType(state.params);
       
       //Add the text box
-      var input = document.createElement('input');
-      input.name = 'locValue';
-      input.className = 'texta';
-      //var iWidth  = ( fleegix.dom.getViewportWidth() - 250 )+"px";
-      //input.style.width = iWidth;
-      //input.style.width = "70%";
+      var input = jQuery("<input>");
+      input.attr("name", "locValue");
+      input.addClass("texta");
       
       //Dont know why I have to do this.. but it wont work if its not setattrib
       if (state.params[locator]) { 
-        input.setAttribute('value', state.params[locator]);
+        input.attr("value", state.params[locator]);
       }
-      input.id = state.action.id + 'locator';
+      input.attr("id", state.action.id + "locator");
       //in firefox there was a bug moving the focus to the element we clicked, not sure why
       //but this seems to fix it. 
       if (!windmill.browser.isIE6x) {
-        input.setAttribute('onFocus', 'windmill.ui.remote.setInputID(\'' + input.id + '\')');
+        input.focus(function() {
+          windmill.ui.remote.setInputID(input.attr("id"));
+        });
       } 
-      return input;
+      return input[0];
     };
     
     this.getOptionInput = function(state){
       var reg = windmill.registry;
       
-      var input = document.createElement('input');
-      input.name = 'optValue';
-      input.className = 'texta';
-      //var iWidth  = ( fleegix.dom.getViewportWidth() - 250 )+"px";
-      //input.style.width = "90%";
+      var input = jQuery("<input>");
+      input.attr("name", "optValue");
+      input.addClass("texta");
             
       //if the action had a special flag, dragDropElemToElem
       if (windmill.ui.remote.optionValue != undefined){
-        input.setAttribute("value", windmill.ui.remote.optionValue);
+        input.attr("value", windmill.ui.remote.optionValue);
         delete windmill.ui.remote.optionValue;
       }
       //for the commad delimited list of options case
@@ -491,40 +493,42 @@ windmill.ui.remote = new function() {
           var opts = reg.methods[state.method].option.split(',');
             for (i=0; i<opts.length; i++){
             if (state.params[opts[i]]){
-              input.setAttribute("value", state.params[opts[i]]);
+              input.attr("value", state.params[opts[i]]);
             }
           }
         }
       }
       catch(err){ windmill.err(err); }
       //for the single option case
-      if (typeof(state.params[reg.methods[state.method].option]) != 'undefined') {
-        input.setAttribute("value", state.params[reg.methods[state.method].option]);
+      if (typeof(state.params[reg.methods[state.method].option]) != "undefined") {
+        input.attr("value", state.params[reg.methods[state.method].option]);
       }
 
       //give the value input an id
-      input.id = state.action.id + 'option';
+      input.attr("id", state.action.id + "option");
       if (!windmill.browser.isIE6x) {
-        input.setAttribute('onFocus', 'windmill.ui.remote.setInputID(\'' + input.id + '\')');
+        input.focus(function(){
+          windmill.ui.remote.setInputID(input.attr("id"));
+        });
       }
 
-      return input;
+      return input[0];
     };
     
     this.getBaseAction = function(method, params){
-      var action = document.createElement('div');
-      action.className = "ui-corner-all action";
-      action.style.background = "#FBF9EE";
+      var action = jQuery("<div>");
+      action.addClass("ui-corner-all action");
+      action.css("background", "#FBF9EE");
       
-      if (typeof(params) == 'undefined') {
+      if (typeof(params) == "undefined") {
         var params = {};
       }
 
-      if (typeof(params.uuid) == 'undefined') {
+      if (typeof(params.uuid) == "undefined") {
         var date = new Date();
-        action.id = date.getTime();
+        action.attr("id", date.getTime());
       }
-      else { action.id = params.uuid; }
+      else { action.attr("id", params.uuid); }
       
       //if the user turns on the option to run actions by hitting enter
       var catchEnter = function(e){
@@ -534,35 +538,37 @@ windmill.ui.remote = new function() {
          windmill.ui.playback.sendPlayBack(aid);
        }
       };
-      fleegix.event.listen(action, 'onkeypress', catchEnter);
+      action.keypress(catchEnter);
       
-      action.style.border = "1px solid white";
-      return action;
+      action.css("border", "1px solid white");
+      return action[0];
     };
     
     this.getSWF = function(state){
       var _this = windmill.ui.remote;
-      var swfCont = document.createElement('div');
-      var swfLoc = _this.getLocators(state);
-      swfLoc.id = state.action.id +"swfType";
+      var swfCont = jQuery("<div>");
+      var swfLoc = jQuery(_this.getLocators(state));
+      swfLoc.attr("id", state.action.id +"swfType");
       
-      var input = document.createElement('input');
-      input.id = state.action.id + 'swf';
-      input.className = 'texta';
+      var input = jQuery("<input>");
+      input.attr("id", state.action.id + "swf");
+      input.addClass("texta");
       
       if (state.params["swf.chain"]){
-        input.setAttribute("value", state.params["swf.chain"]);
-        swfLoc.value = "chain";
+        input.attr("value", state.params["swf.chain"]);
+        swfLoc.attr("value", "chain");
       }
       
       if (!windmill.browser.isIE6x) {
-        input.setAttribute('onFocus', 'windmill.ui.remote.setInputID(\'' + input.id + '\')');
+        input.focus(function() {
+          windmill.ui.remote.setInputID(input.attr("id"));
+        });
       }
       
-      swfCont.appendChild(swfLoc);
-      swfCont.appendChild(input);
+      swfCont.append(swfLoc);
+      swfCont.append(input);
 
-      return swfCont;
+      return swfCont[0];
     };
     
     //This function takes a method and it's params and returns a DOM
@@ -606,9 +612,9 @@ windmill.ui.remote = new function() {
         
         //if this action has locators, add them in a container
         if (locators){
-          var locCont = document.createElement('div');
-          locCont.appendChild(locators)
-          locCont.appendChild(locatorInput);
+          var locCont = jQuery("<div>");
+          locCont.append(jQuery(locators))
+          locCont.append(jQuery(locatorInput));
           jQuery(action).append(jQuery(locCont));
         }
         
@@ -621,16 +627,15 @@ windmill.ui.remote = new function() {
         
         //if this action has options, add them in a container
         if (options){
-          var optCont = document.createElement('div');
-          optCont.appendChild(options);
+          var optCont = jQuery("<div>");
+          optCont.append(options);
           
           //if its a string not a drop down: only one option
           if (options.tagName.toLowerCase() != "select"){
-            jQuery(optCont).append(jQuery(document.createElement('span')).html(': ').addClass("textSpan"));
+            jQuery(optCont).append(jQuery("<span>").html(': ').addClass("textSpan"));
           }
           jQuery(optCont).append(jQuery(optionInput));
-          //append options
-          jQuery(action).append(jQuery(optCont));
+          jQuery(action).append(optCont);
         }        
         return action;
     };
