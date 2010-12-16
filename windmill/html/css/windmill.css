@@ -251,3 +251,7 @@ a.active.trigger {
  height:100%;
  overflow: hidden;
 }
+
+.texta {
+  width:200px;
+}
