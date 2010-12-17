@@ -36,20 +36,11 @@ function Load() {
     var remote = window.open(remUrl, 'windmill_Remote', 'width=567,height=600,toolbar=no,' + 
     'location=no,directories=no,status=yes,menubar=no,scrollbars=yes,copyhistory=no,resizable=yes');
 
-    var message = 'We detected a popup blocker, please disable it while ' + 
-    'you are using Windmill as we load the UI in a popup window. This requires a reload of the page.';
+    // FIXME: We are unable to determin if chrome blocked the popup.
+// Reffrence: http://stackoverflow.com/questions/668286/detect-blocked-popup-in-chrome
     if (!remote) {
-        alert(message);
-    } else {
-        // Check to see if Chrome blocked the popup
-        // Reffrence: http://stackoverflow.com/questions/668286/detect-blocked-popup-in-chrome
-        remote.onload = function() {
-            setTimeout(function() {
-                if (remote.screenX === 0) {
-                    alert(message);
-                }
-            }, 0);
-        };
+        alert('We detected a popup blocker, please disable it while ' + 
+        'you are using Windmill as we load the UI in a popup window. This requires a reload of the page.');
     }
 
     setTimeout(function() {
