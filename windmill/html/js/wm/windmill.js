@@ -259,10 +259,8 @@ var windmill = new function() {
 		else {
 		  //Safely attach onbeforeunloads for IE, was a major bug
 		  //spurred permission denied errors
-			$(w).ready(function(){
-				w.detachEvent("onbeforeunload", windmill.unloaded);
-				w.attachEvent("onbeforeunload", windmill.unloaded);
-			});
+			w.detachEvent("onunload", windmill.unloaded);
+			w.attachEvent("onunload", windmill.unloaded);
 		}
 	};
 
