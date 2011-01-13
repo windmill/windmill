@@ -255,11 +255,14 @@ var windmill = new function() {
 		if (!windmill.browser.isIE) {
 			fleegix.event.unlisten(windmill.testWin(), 'onbeforeunload', windmill, 'unloaded');
 			fleegix.event.listen(windmill.testWin(), 'onbeforeunload', windmill, 'unloaded');
-		} else {
-			try {
+		} 
+		else {
+		  //Safely attach onbeforeunloads for IE, was a major bug
+		  //spurred permission denied errors
+			$(w).ready(function(){
 				w.detachEvent("onbeforeunload", windmill.unloaded);
-			} catch(err) {}
-			w.attachEvent("onbeforeunload", windmill.unloaded)
+				w.attachEvent("onbeforeunload", windmill.unloaded);
+			});
 		}
 	};
 
