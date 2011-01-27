@@ -111,11 +111,11 @@ class Chrome(safari.Safari):
     
     def get_chrome_command(self):
         #default options, what was used for windows chrome build
-        chrome_options = ['--homepage', self.test_url+'/windmill-serv/start.html','--disable-popup-blocking']
+        chrome_options = ['--temp-profile', '--disable-popup-blocking', '--no-first-run', '--homepage', self.test_url+'/windmill-serv/start.html']
         if sys.platform in ('cygwin', 'win32','linux2'):
             # options for running in windows and linux (same options format)
             # Run Proxy using option
-            chrome_options = ['--homepage', self.test_url+'/windmill-serv/start.html','--disable-popup-blocking','--proxy-server='+'127.0.0.1:'+str(windmill.settings['SERVER_HTTP_PORT'])]
+            chrome_options = ['--temp-profile', '--disable-popup-blocking', '--no-first-run', '--proxy-server='+'127.0.0.1:'+str(windmill.settings['SERVER_HTTP_PORT']), '--homepage', self.test_url+'/windmill-serv/start.html']
         return [self.chrome_binary]+chrome_options
     
     #def set_proxy_windows(self):

@@ -50,7 +50,7 @@ class InternetExplorer(object):
             except exceptions.WindowsError:
                 self.registry_modifications[key]['previous_value'] = None
         self.ie_binary = windmill.settings['IE_BINARY']
-        self.cmd = [self.ie_binary, self.test_url]
+        self.cmd = [self.ie_binary, '-private', self.test_url]
         
     
     def set_proxy(self):
