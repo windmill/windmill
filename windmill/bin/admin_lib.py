@@ -200,7 +200,10 @@ def teardown(shell_objects):
             del(controller)
 
         if windmill.settings['START_FIREFOX'] and windmill.settings['MOZILLA_CREATE_NEW_PROFILE']:
-            shutil.rmtree(windmill.settings['MOZILLA_PROFILE'])
+            try:
+                shutil.rmtree(windmill.settings['MOZILLA_PROFILE'])
+            except WindowsError:
+                pass # FIXME: retry this later?
 
         for directory in windmill.teardown_directories:
             if os.path.isdir(directory):
