@@ -53,7 +53,10 @@ stdout_wrap = StringIO()
 
 def run_command(cmd, env=None):
     """Run the given command in killable process."""
-    kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
+    if hasattr(sys.stdout, "fileno"):
+        kwargs = {'stdout':sys.stdout ,'stderr':sys.stderr, 'stdin':sys.stdin}
+    else:
+        kwargs = {'stdout':sys.__stdout__ ,'stderr':sys.__stderr__, 'stdin':sys.stdin}
     
     if sys.platform != "win32":
         return killableprocess.Popen(cmd, preexec_fn=lambda : os.setpgid(0, 0), env=env, **kwargs)
