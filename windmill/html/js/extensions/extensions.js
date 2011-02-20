@@ -15,7 +15,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 */
 
 /*For information on how to build your own extensions, visit:
-  http://trac.getwindmill.com/wiki/BookChapter-7-Extensions
+  https://github.com/windmill/windmill/wiki/Advanced-Topics
 */
 windmill.controller.extensions = new function () {};
 

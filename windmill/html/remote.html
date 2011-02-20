@@ -40,9 +40,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 				//tabs
 				 jQuery('#tabs').tabs();
 				 jQuery("#dialog").dialog({
-					 height: 460,
-					 width: 410,
-					 modal:true,
+				   width:450,
 					 autoOpen: false,
 					 overlay: {
 						opacity: 0.5,
@@ -54,7 +52,6 @@ Copyright 2006-2007, Open Source Applications Foundation
 				 });
 
 				jQuery("#domInspector").dialog({
-					 modal: false,
 					 autoOpen: false,
 					 buttons: {
 						"Close": function() { 
@@ -111,17 +108,27 @@ Copyright 2006-2007, Open Source Applications Foundation
 		<div style="display:none;position:absolute;color:white;" class="panel">
 			<ul class="">
 				<li class="current">
-					<b>Test Building</b>
-					<ul id="actionDD">
+					<b>Mode</b>
+					<ul>
 						<li><a href="#" id="record" onclick="toggleRec();">Start Recorder</a></li>
 						<li><a href="#" id="playback" onclick="togglePlay();">Start Play All</a></li>
-						<li><a href="#" id="explorer" onclick="toggleExplore();">Start DOM Explorer</a></li>
-						<li><a href="#" id="assertx" onclick="toggleAExplore();">Start Assert Explorer</a></li>
-						<li><a id="addSuite" href="#aa">New Suite</a></li>
-						<li><a id="addAction" href="#ab">New Action</a></li>
-						<li><a id="clearIDE" href="#">Clear IDE</a></li>
 					</ul>
 				</li>
+				<li>
+				  <b>Explore</b>
+				  <ul>
+				    <li><a href="#" id="explorer" onclick="toggleExplore();">Start DOM Explorer</a></li>
+					  <li><a href="#" id="assertx" onclick="toggleAExplore();">Start Assert Explorer</a></li>
+					</ul>
+				</li>
+				<li>
+				  <b>IDE</b>
+				  <ul id="actionDD">
+				    <li><a id="addSuite" href="#aa">New Suite</a></li>
+						<li><a id="addAction" href="#ab">New Action</a></li>
+						<li><a id="clearIDE" href="#">Clear</a></li>
+					</ul>
+					</li>
 				<li>
 					<b>Tools</b>
 					<ul>
@@ -133,10 +140,9 @@ Copyright 2006-2007, Open Source Applications Foundation
 					<b>Information</b>
 					<ul>
 						<li><a target="_blank" href="http://www.getwindmill.com">Homepage</a></li>
-						<li><a target="_blank" href="http://trac.getwindmill.com/wiki">Wiki</a></li>
-						<li><a target="_blank" href="http://trac.getwindmill.com/report">Tickets</a></li>
-						<li><a target="_blank" href="http://trac.getwindmill.com/browser">Source</a></li>
-						<li><a target="_blank" href="http://trac.getwindmill.com">Docs</a></li>
+						<li><a target="_blank" href="https://github.com/windmill/windmill/wiki/">Wiki</a></li>
+						<li><a target="_blank" href="https://github.com/windmill/windmill/issues">Issues</a></li>
+						<li><a target="_blank" href="https://github.com/windmill/windmill">Source</a></li>
 					</ul>
 				</li>
 			</ul>
@@ -163,7 +169,7 @@ Copyright 2006-2007, Open Source Applications Foundation
 				</div>
 			</div>
 		</div>
-		<div id="dialog" title="Windmill Settings">
+		<div id="dialog" title="Settings">
 			<div id="settings">
 				<form id='settingsForm' name='settingsForm' onsubmit="return false;">
 					<br />

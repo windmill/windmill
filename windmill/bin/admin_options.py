@@ -195,9 +195,9 @@ class SSL(GeneralBool):
             print "* Windmill cannot automatically install the Certificate Authority."
             print "* You will need to do this manually, the process is fully documented."
             if sys.platform in ('win32', 'cygwin'): 
-                print "* http://trac.getwindmill.com/wiki/SSL#InstallingCAonWindows"
+                print "* https://github.com/windmill/windmill/wiki/SSL-Support"
             else:
-                print "* http://trac.getwindmill.com/wiki/SSL#InstallingCAonMacOSX"
+                print "* https://github.com/windmill/windmill/wiki/SSL-Support"
             print "*" * 60
     
 class Port(object):
