@@ -89,23 +89,35 @@ def clean_prefs_file(prefs_file):
 
 def create_tmp_profile(settings):
     """Create a new profile in tmp from default mozilla profile."""
-    default_profile = settings['MOZILLA_DEFAULT_PROFILE']
-    tmp_profile = tempfile.mkdtemp(suffix='.mozrunner')
+    process = subprocess.Popen([settings['MOZILLA_BINARY'], "-version"], shell=False, stdout=subprocess.PIPE)
+    version = process.communicate()
     
-    if sys.platform == 'linux2':
-        try:
-            login = os.getlogin()
-        except OSError:
-            login = pwd.getpwuid(os.geteuid())[0]
-        output = commands.getoutput('chown -R %s:%s %s' % (login, login, tmp_profile))
-        if output != '':
-            print output
-                                 
-    if os.path.exists(tmp_profile) is True:
-        shutil.rmtree(tmp_profile)
+    if version[0].find("3.") != -1 or version[0].find("2.") != -1: #any firefox 2.x/3.x version
+        default_profile = settings['MOZILLA_DEFAULT_PROFILE']
+        tmp_profile = tempfile.mkdtemp(suffix='.mozrunner')
 
-    copytree(default_profile, tmp_profile, preserve_symlinks=1)
-    settings['MOZILLA_PROFILE'] = tmp_profile
+        if sys.platform == 'linux2':
+            try:
+                login = os.getlogin()
+            except OSError:
+                login = pwd.getpwuid(os.geteuid())[0]
+            output = commands.getoutput('chown -R %s:%s %s' % (login, login, tmp_profile))
+            if output != '':
+                print output
+
+        if os.path.exists(tmp_profile) is True:
+            shutil.rmtree(tmp_profile)
+
+        copytree(default_profile, tmp_profile, preserve_symlinks=1)
+        settings['MOZILLA_PROFILE'] = tmp_profile
+        
+    else: #firefox 4+
+        #nasty subproccess parsing to use built in firefox to create a profile for us
+        process = subprocess.Popen([settings['MOZILLA_BINARY'], "-createprofile", "mozrunner"], shell=False, stderr=subprocess.PIPE)
+        out = process.communicate()
+        arr = out[1].replace("'", "").replace("\n","").split(" at ")
+        tmp_profile = arr[1].replace("prefs.js", "")
+        settings['MOZILLA_PROFILE'] = tmp_profile
     
 # ./firefox-bin -no-remote -profile "/Users/mikeal/Library/Application Support/windmill/firefox.profile" -install-global-extension /Users/mikeal/Desktop/jssh-firefox-3.x.xpi    
 
