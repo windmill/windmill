@@ -353,9 +353,9 @@ windmill.ui.remote = new function() {
           newOpt = jQuery('<option>');
           newOpt.attr("value", "opt"+reg.locator[loc]);
           newOpt.html(reg.locator[loc]);
-          if (state.params[newOpt.value]){
+          if (state.params[newOpt.attr('value')]){
             newOpt.attr("selected", "selected");
-            windmill.ui.remote.optionValue = state.params[newOpt.value];
+            windmill.ui.remote.optionValue = state.params[newOpt.attr('value')];
           }
           select.append(newOpt);
         }
