@@ -1,3 +1,8 @@
+Windmill is no lnonger actively maintained, it has been eclipsed by Webdriver/Selenium 2.
+* I suggest, http://webdriver.io
+
+
+** Legacy **
 Windmill is currently a very active work-in-progress so the best place
 to find up-to-date information would be online:
 
